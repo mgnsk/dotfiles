@@ -1,0 +1,20 @@
+[global_config]
+  title_transmit_fg_color = "#d3d7cf"
+  title_transmit_bg_color = "#2e3436"
+[keybindings]
+[profiles]
+  [[default]]
+    background_color = "#1e1e1e"
+    cursor_color = "#aaaaaa"
+    font = Monospace Semi-Condensed 10
+    foreground_color = "#abb2aa"
+    scrollback_lines = 99999
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      type = Window
+[plugins]

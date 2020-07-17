@@ -1,0 +1,38 @@
+{
+	"languageserver": {
+		"golang": {
+			"command": "$HOME/.vim/plugged/gopher.vim/tools/bin/gopls",
+			"args": [
+				"-remote=auto"
+			],
+			"rootPatterns": [
+				"go.mod",
+				".vim/",
+				".git/",
+				".hg/"
+			],
+			"filetypes": [
+				"go"
+			]
+		}
+	},
+	"go.goplsOptions": {
+		"go.goplsOptions": [
+			"-remote=auto"
+		],
+		"completeUnimported": true
+	},
+	"coc.preferences": {
+		"jumpCommand": "tab drop",
+		"extensionUpdateCheck": "never"
+	},
+	"clangd": {
+		"path": "/usr/bin/clangd",
+		"semanticHighlighting": true
+	},
+	"yaml": {
+		"format": {
+			"enable": true
+		}
+	}
+}

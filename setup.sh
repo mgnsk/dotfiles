@@ -35,7 +35,7 @@ function setup_vim() {
 	cd ~/.config/coc/extensions
 	yarn
 
-	pip install neovim-remote
+	pip install --no-cache-dir neovim-remote
 }
 
 function setup_php() {

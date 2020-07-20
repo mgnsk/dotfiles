@@ -305,6 +305,8 @@ nnoremap <leader>V :Vista!!<CR>
 " Toggle symbol finder for the current buffer.
 nnoremap <leader>F :Vista finder<CR>
 
+nnoremap <leader>T :Tags<CR>
+
 " By default vista.vim never run if you don't call it explicitly.
 "
 " If you want to show the nearest function in your statusline automatically,

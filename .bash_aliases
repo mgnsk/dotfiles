@@ -5,6 +5,8 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 config config status.showUntrackedFiles no
+git config --global alias.br branch
+git config --global alias.st status
 
 # Should be run on master branch with a clean status.
 gitprune() {

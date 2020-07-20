@@ -2,9 +2,6 @@
 	"languageserver": {
 		"golang": {
 			"command": "$HOME/.vim/plugged/gopher.vim/tools/bin/gopls",
-			"args": [
-				"-remote=auto"
-			],
 			"rootPatterns": [
 				"go.mod",
 				".vim/",
@@ -17,9 +14,6 @@
 		}
 	},
 	"go.goplsOptions": {
-		"go.goplsOptions": [
-			"-remote=auto"
-		],
 		"completeUnimported": true
 	},
 	"coc.preferences": {

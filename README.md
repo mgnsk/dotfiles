@@ -1,5 +1,7 @@
 # Installation
 
+Warning: overwrites the user's files.
+
 ```
 $ git clone --separate-git-dir=$HOME/.dotfiles https://github.com/mgnsk/dotfiles.git $HOME/dotfiles-tmp
 $ rm -r ~/dotfiles-tmp/

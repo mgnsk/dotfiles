@@ -43,6 +43,11 @@ function setup_php() {
 	composer global clearcache
 }
 
+function setup_rust() {
+	rustup component add rls rust-analysis rust-src
+}
+
 setup_tmux
 setup_vim
 setup_php
+setup_rust

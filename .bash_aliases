@@ -35,16 +35,6 @@ mergesquashn() {
     git commit --edit
 }
 
-removeDockerC() {
-    docker stop $(docker ps -aq)
-    docker rm $(docker ps -aq)
-}
-
-removePodmanC() {
-    podman stop $(podman ps -aq)
-    podman rm $(podman ps -aq)
-}
-
 pick() {
 	grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:-
 }

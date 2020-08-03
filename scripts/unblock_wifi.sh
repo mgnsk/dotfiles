@@ -1,10 +1,12 @@
 #!bin/bash
 
+# A hack for realtek wifi driver to wake up from suspends.
+# Must run as a minute cron job.
 for i in {3..20}
 do
-        if rfkill list | grep -q yes; then
-                rfkill unblock wifi
-        fi
-        sleep 3
+	if rfkill list wifi | grep -q yes; then
+		rfkill unblock wifi
+	fi
+	sleep 3
 done
 

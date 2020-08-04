@@ -38,16 +38,10 @@ function setup_vim() {
 	pip install --no-cache-dir neovim-remote
 }
 
-function setup_php() {
-	composer global require hirak/prestissimo
-	composer global clearcache
-}
-
 function setup_rust() {
 	rustup component add rls rust-analysis rust-src
 }
 
 setup_tmux
 setup_vim
-setup_php
 setup_rust

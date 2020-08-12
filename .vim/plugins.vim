@@ -1,5 +1,4 @@
 call plug#begin()
-Plug 'sbdchd/neoformat'
 Plug 'preservim/nerdcommenter'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'

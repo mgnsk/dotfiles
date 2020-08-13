@@ -2,6 +2,7 @@ call plug#begin()
 Plug 'preservim/nerdcommenter'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'PhilRunninger/nerdtree-visual-selection'
 Plug 'arp242/gopher.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'jackguo380/vim-lsp-cxx-highlight'

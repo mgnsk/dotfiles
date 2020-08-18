@@ -196,6 +196,9 @@ nnoremap <leader>mT :tabm -1<CR>
 " Kill the buffer including terminal process if any.
 nnoremap qq :bd!<CR>
 
+" Custom tabline to show tab numbers.
+set tabline=%!MyTabLine()
+
 " Go to tab by number
 noremap <leader>1 1gt
 noremap <leader>2 2gt

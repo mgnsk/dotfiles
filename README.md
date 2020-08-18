@@ -7,5 +7,5 @@ $ git clone --separate-git-dir=$HOME/.dotfiles https://github.com/mgnsk/dotfiles
 $ rm -r ~/dotfiles-tmp/
 $ alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 $ config config status.showUntrackedFiles no
-$ config reset --hard master
+$ config reset --hard origin/master
 ```

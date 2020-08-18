@@ -68,17 +68,6 @@ let mapleader = ","
 
 set nofoldenable
 
-" TODO might be useful for statusline
-"" Debounce the hover.
-"let s:timer = 0
-
-"function! s:onHover()
-"call timer_stop(s:timer)
-"let s:timer = timer_start(500, { tid -> execute('call GOVIMHover()')})
-"endfunction
-
-":autocmd CursorMoved *.go :call s:onHover()
-
 "B
 "au InsertEnter * silent execute "!echo -en \<esc>[5 q"
 "au InsertLeave * silent execute "!echo -en \<esc>[2 q" 
@@ -128,7 +117,6 @@ endif
 set undodir=$VIM_UNDO_DIR
 set undofile
 
-
 " Give more space for displaying messages.
 set cmdheight=2
 
@@ -138,10 +126,10 @@ set updatetime=500
 
 " The time in milliseconds that is waited for a key code or mapped key
 " sequence to complete.
-set timeoutlen=500
+set timeoutlen=300
 
-autocmd InsertEnter * set timeoutlen=300
-autocmd InsertLeave * set timeoutlen=500
+"autocmd InsertEnter * set timeoutlen=300
+"autocmd InsertLeave * set timeoutlen=500
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
@@ -238,11 +226,25 @@ nnoremap <Esc><Esc> :nohlsearch<CR>
 nnoremap <leader>l :call fns#CursorLockToggle()<CR>
 
 
+let s:branch = ''
+
+function! GitBranch()
+	return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! UpdateBranch()
+	let s:branch = GitBranch()
+endfunction
+
+call timer_start(3000, { tid -> execute('call UpdateBranch()') }, {'repeat': -1})
+
+function! Branch()
+	return s:branch
+endfunction
 
 set statusline=
 set statusline+=%#lv15c#
-" TODO throttle/debounce git command
-" set statusline+=\ %{GitBranch()}
+set statusline+=\ %{Branch()}
 set statusline+=%#LineNr#
 set statusline+=\ %m
 set statusline+=\ %f

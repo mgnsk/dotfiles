@@ -162,6 +162,10 @@ set splitright
 " Quickly enter command mode.
 nnoremap <leader>. :
 
+" Switch between horizontal and vertical layouts.
+nnoremap <leader>K <C-w>K<CR>
+nnoremap <leader>H <C-w>H<CR>
+
 " Hide line numbers in terminal.
 "autocmd TermOpen * setlocal nonu
 

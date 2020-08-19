@@ -16,7 +16,7 @@ export VIM_UNDO_DIR="$HOME/.local/share/nvim/undo"
 export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 
 export PAGER="most"
-export TERM=screen-256color
+export TERM=xterm-256color
 
 git config --global mergetool.keepBackup false
 

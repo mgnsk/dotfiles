@@ -1,6 +1,6 @@
 source ~/.vim/plugins.vim
 
-" COC autostar.
+" COC autostart.
 let g:coc_start_at_startup = 1
 
 " the configuration options should be placed before `colorscheme sonokai`
@@ -46,6 +46,7 @@ let g:fzf_colors =
 			\ 'header':  ['fg', 'Comment'] }
 
 
+set lazyredraw
 
 set termguicolors
 colorscheme sonokai
@@ -225,22 +226,24 @@ nnoremap <Esc><Esc> :nohlsearch<CR>
 " Lock the cursor in middle of screen when scrolling.
 nnoremap <leader>l :call fns#CursorLockToggle()<CR>
 
-
 let s:branch = ''
-
-function! GitBranch()
-	return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-endfunction
-
-function! UpdateBranch()
-	let s:branch = GitBranch()
-endfunction
-
-call timer_start(3000, { tid -> execute('call UpdateBranch()') }, {'repeat': -1})
 
 function! Branch()
 	return s:branch
 endfunction
+
+function! GitBranch()
+endfunction
+
+function! UpdateBranch()
+	let s:branch = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+" TODO currently using a slow timer instead of autocmd CursorHold
+" every time 'system' is called there's a cursor flicker.
+call timer_start(10000, { tid -> execute('call UpdateBranch()') }, {'repeat': -1})
+
+"autocmd CursorHold * silent call UpdateBranch()
 
 set statusline=
 set statusline+=%#lv15c#

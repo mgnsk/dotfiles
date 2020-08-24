@@ -39,6 +39,7 @@ function setup_vim() {
 }
 
 function setup_rust() {
+	rustup default stable
 	rustup component add rls rust-analysis rust-src
 }
 

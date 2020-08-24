@@ -54,8 +54,7 @@ bindsym $mod+Return exec alacritty
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# start dmenu (a program launcher)
-bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --term alacritty
+bindsym $mod+d exec wofi --show drun -i | xargs swaymsg exec --
 
 # change focus
 bindsym $mod+h focus left
@@ -150,7 +149,7 @@ bindsym $mod+Control+Shift+0 move container to workspace 20
 # Reload the config file.
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Exit sway?' -b 'Yes' 'i3-msg exit'"
+bindsym $mod+Shift+e exec "swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {

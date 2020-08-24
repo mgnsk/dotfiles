@@ -5,7 +5,7 @@ let g:coc_start_at_startup = 1
 
 " the configuration options should be placed before `colorscheme sonokai`
 let g:sonokai_style = 'atlantis'
-let g:sonokai_enable_italic = 1
+let g:sonokai_enable_italic = 0
 let g:sonokai_disable_italic_comment = 1
 
 let g:rainbow_active = 1

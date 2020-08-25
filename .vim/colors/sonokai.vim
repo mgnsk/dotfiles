@@ -98,7 +98,7 @@ elseif s:configuration.style ==# 'atlantis'
         \ 'green':      ['#6B9A72',   '107',  'Green'],
         \ 'blue':       ['#3E9898',   '110',  'Blue'],
         \ 'purple':     ['#b66bb2',   '176',  'Magenta'],
-        \ 'grey':       ['#393e46',   '246',  'LightGrey'],
+        \ 'grey':       ['#454b54',   '246',  'LightGrey'],
         \ 'none':       ['NONE',      'NONE', 'NONE']
         \ }
 elseif s:configuration.style ==# 'maia'

@@ -43,6 +43,14 @@ function setup_rust() {
 	rustup component add rls rust-analysis rust-src
 }
 
+function setup_fzf() {
+	git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+	~/.fzf/install --all
+	cd ~/.fzf
+	find . -regextype egrep ! -regex "^.\/(bin|shell).*" -delete
+}
+
 setup_tmux
 setup_vim
 setup_rust
+setup_fzf

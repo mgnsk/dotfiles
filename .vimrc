@@ -1,5 +1,7 @@
 source ~/.vim/plugins.vim
 
+set rtp+=~/.fzf
+
 " COC autostart.
 let g:coc_start_at_startup = 1
 
@@ -352,9 +354,8 @@ let g:fzf_action = {
 			\ 'ctrl-t': 'GotoOrOpen tab',
 			\ 'ctrl-s': 'split',
 			\ 'ctrl-v': 'vsplit' }
+
 let g:fzf_buffers_jump = 1
-
-
 
 command! FZFMru call fzf#run({
 			\ 'source':  reverse(s:all_files()),

@@ -76,32 +76,6 @@ set nofoldenable
 "au InsertLeave * silent execute "!echo -en \<esc>[2 q" 
 "set guicursor=
 
-augroup golang
-	au!
-	" Quicker way to make, lint, and test code.
-	" au FileType go nnoremap MM :wa<CR>:compiler go<CR>:silent make!<CR>:redraw!<CR>
-	au FileType go nnoremap LL :wa<CR>:compiler golint<CR>:silent make!<CR>:redraw!<CR>
-	" au FileType go nnoremap TT :wa<CR>:compiler gotest<CR>:silent make!<CR>:redraw!<CR>
-
-	" Basic lint on write.
-	autocmd BufWritePost *.go compiler golint | silent make! | redraw!
-
-	" Put a path before GOPATH to use tools from there. Not recommended
-	" unless you have special needs or want to test a modified version.
-	" autocmd Filetype go let $PATH = $HOME . '/go/bin:' . $PATH
-
-	" Format buffer on write.
-	autocmd BufWritePre *.go
-				\  let s:save = winsaveview()
-				\| exe 'keepjumps %!goimports 2>/dev/null || cat /dev/stdin'
-				\| call winrestview(s:save)
-augroup end
-
-
-autocmd BufWritePre *.rs
-			\  let s:save = winsaveview()
-			\| exe 'keepjumps %!rustfmt 2>/dev/null || cat /dev/stdin'
-			\| call winrestview(s:save)
 
 " TextEdit might fail if hidden is not set.
 set hidden
@@ -489,9 +463,34 @@ command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 
 " Add `:OR` command for organize imports of the current buffer.
-" TODO: doesn't work much
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
+augroup golang
+	au!
+	" Quicker way to make, lint, and test code.
+	" au FileType go nnoremap MM :wa<CR>:compiler go<CR>:silent make!<CR>:redraw!<CR>
+	au FileType go nnoremap LL :wa<CR>:compiler golint<CR>:silent make!<CR>:redraw!<CR>
+	" au FileType go nnoremap TT :wa<CR>:compiler gotest<CR>:silent make!<CR>:redraw!<CR>
+
+	" Basic lint on write.
+	autocmd BufWritePost *.go compiler golint | silent make! | redraw!
+
+	" Put a path before GOPATH to use tools from there. Not recommended
+	" unless you have special needs or want to test a modified version.
+	" autocmd Filetype go let $PATH = $HOME . '/go/bin:' . $PATH
+
+	" Format buffer on write.
+	autocmd BufWritePre *.go
+				\ execute(':OR')
+				\| execute(':Format')
+augroup end
+
+
+" TODO can we also call the LS here?
+autocmd BufWritePre *.rs
+			\  let s:save = winsaveview()
+			\| exe 'keepjumps %!rustfmt 2>/dev/null || cat /dev/stdin'
+			\| call winrestview(s:save)
 
 " Mappings using CoCList:
 " Show all diagnostics.

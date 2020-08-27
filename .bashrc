@@ -8,6 +8,8 @@ export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="/homedir/.vim/plugged/gopher.vim/tools/bin:$PATH"
 
+export GOFLAGS="-modcacherw"
+
 export RUSTUP_HOME="$HOME/.rustup"
 export CARGO_HOME="$HOME/.cargo"
 

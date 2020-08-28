@@ -53,7 +53,13 @@ function setup_fzf() {
 	~/.fzf/install --all
 }
 
+# TODO setup tools module
+function setup_gotools() {
+	go get mvdan.cc/gofumpt/gofumports
+}
+
 setup_tmux
 setup_vim
 setup_rust
 setup_fzf
+setup_gotools

@@ -481,12 +481,11 @@ augroup golang
 
 	" Format buffer on write.
 	autocmd BufWritePre *.go
-				\ execute(':OR')
-				\| execute(':Format')
+			\  let s:save = winsaveview()
+			\| exe 'keepjumps %!gofumports 2>/dev/null || cat /dev/stdin'
+			\| call winrestview(s:save)
 augroup end
 
-
-" TODO can we also call the LS here?
 autocmd BufWritePre *.rs
 			\  let s:save = winsaveview()
 			\| exe 'keepjumps %!rustfmt 2>/dev/null || cat /dev/stdin'

@@ -54,7 +54,7 @@ function setup_fzf() {
 
 function setup_gotools() {
 	cd ~/gotools
-	go get $(awk '/import/{flag=1;next}/)/{flag=0}flag' tools.go | cut -d \" -f2)
+	go install $(awk '/import/{flag=1;next}/)/{flag=0}flag' tools.go | cut -d \" -f2)
 }
 
 setup_tmux

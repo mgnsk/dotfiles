@@ -6,7 +6,6 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="/homedir/.vim/plugged/gopher.vim/tools/bin:$PATH"
 
 export GOFLAGS="-modcacherw"
 

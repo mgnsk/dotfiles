@@ -1,7 +1,7 @@
 {
 	"languageserver": {
 		"golang": {
-			"command": "$HOME/.vim/plugged/gopher.vim/tools/bin/gopls",
+			"command": "gopls",
 			"rootPatterns": [
 				"go.mod",
 				".vim/",

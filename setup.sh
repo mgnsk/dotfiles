@@ -53,9 +53,9 @@ function setup_fzf() {
 	~/.fzf/install --all
 }
 
-# TODO setup tools module
 function setup_gotools() {
-	go get mvdan.cc/gofumpt/gofumports
+	cd ~/gotools
+	go get $(awk '/import/{flag=1;next}/)/{flag=0}flag' tools.go | cut -d \" -f2)
 }
 
 setup_tmux

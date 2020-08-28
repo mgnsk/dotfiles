@@ -28,7 +28,6 @@ function setup_vim() {
 	fi
 
 	nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
-	nvim --headless -u ~/.vim/plugins.vim -c 'call gopher#system#setup()' -c 'qa'
 
 	go clean -modcache
 

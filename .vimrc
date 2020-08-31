@@ -258,9 +258,6 @@ set smartindent
 filetype indent on
 syntax on
 
-" Hack to enable syntax on for php files.
-let s:syntax_hack = timer_start(0, { -> execute('syntax on')})
-
 set pastetoggle=<F2>
 
 " Reduce cursor flicker when using language plugins.

@@ -470,7 +470,7 @@ augroup golang
 	" au FileType go nnoremap TT :wa<CR>:compiler gotest<CR>:silent make!<CR>:redraw!<CR>
 
 	" Basic lint on write.
-	"autocmd BufWritePost *.go compiler golint | silent make! | redraw!
+	autocmd BufWritePost *.go compiler golint | silent make! | redraw!
 
 	" Put a path before GOPATH to use tools from there. Not recommended
 	" unless you have special needs or want to test a modified version.

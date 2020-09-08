@@ -477,7 +477,7 @@ augroup golang
 	" autocmd Filetype go let $PATH = $HOME . '/go/bin:' . $PATH
 
 	" Format buffer on write.
-	autocmd BufWritePre *.go
+	autocmd BufWritePost *.go
 			\  let s:save = winsaveview()
 			\| execute system('gofumports -w ' . expand('%:p'))
 			\| e!

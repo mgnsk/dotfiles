@@ -3,7 +3,7 @@ source ~/.vim/plugins.vim
 set rtp+=~/.fzf
 
 " COC autostart.
-let g:coc_start_at_startup = 1
+let g:coc_start_at_startup = 0
 
 " the configuration options should be placed before `colorscheme sonokai`
 let g:sonokai_style = 'atlantis'
@@ -479,10 +479,12 @@ augroup golang
 	" Format buffer on write.
 	autocmd BufWritePre *.go
 			\  let s:save = winsaveview()
-			\| exe 'keepjumps %!gofumports 2>/dev/null || cat /dev/stdin'
+			\| execute system('gofumports -w ' . expand('%:p'))
+			\| e!
 			\| call winrestview(s:save)
 augroup end
 
+" TODO format in place
 autocmd BufWritePre *.rs
 			\  let s:save = winsaveview()
 			\| exe 'keepjumps %!rustfmt 2>/dev/null || cat /dev/stdin'

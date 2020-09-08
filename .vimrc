@@ -479,7 +479,7 @@ augroup golang
 	" Format buffer on write.
 	autocmd BufWritePost *.go
 			\  let s:save = winsaveview()
-			\| execute system('gofumports -w ' . expand('%:p'))
+			\| silent exe '!gofumports -w ' . expand('%:p')
 			\| e!
 			\| call winrestview(s:save)
 augroup end

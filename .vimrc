@@ -477,7 +477,7 @@ augroup golang
 	" autocmd Filetype go let $PATH = $HOME . '/go/bin:' . $PATH
 
 	" Format buffer on write.
-	autocmd BufWritePost *.go
+	autocmd BufWritePre *.go
 			\  let s:save = winsaveview()
 			\| exe 'keepjumps %!gofumports 2>/dev/null || cat /dev/stdin'
 			\| call winrestview(s:save)

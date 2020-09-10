@@ -13,5 +13,4 @@ Plug 'liuchengxu/vista.vim'
 Plug 'Townk/vim-autoclose'
 Plug 'StanAngeloff/php.vim'
 Plug 'psliwka/vim-smoothie'
-Plug 'frazrepo/vim-rainbow'
 call plug#end()

@@ -15,7 +15,6 @@ silent! let g:plugs['rust.vim'].commit = 'f24b96b'
 silent! let g:plugs['vim-autoclose'].commit = 'a9a3b73'
 silent! let g:plugs['vim-gitgutter'].commit = '94ee004'
 silent! let g:plugs['vim-lsp-cxx-highlight'].commit = '7c47d39'
-silent! let g:plugs['vim-rainbow'].commit = 'a6c7fd5'
 silent! let g:plugs['vim-smoothie'].commit = 'd3de4fb'
 silent! let g:plugs['vista.vim'].commit = '7f97d30'
 

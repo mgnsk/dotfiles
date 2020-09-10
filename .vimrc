@@ -483,10 +483,14 @@ augroup golang
 			\| call winrestview(s:save)
 augroup end
 
-" TODO format in place
 autocmd BufWritePre *.rs
 			\  let s:save = winsaveview()
 			\| exe 'keepjumps %!rustfmt 2>/dev/null || cat /dev/stdin'
+			\| call winrestview(s:save)
+
+autocmd BufWritePre *.proto
+			\  let s:save = winsaveview()
+			\| exe 'keepjumps %!clang-format 2>/dev/null || cat /dev/stdin'
 			\| call winrestview(s:save)
 
 " Mappings using CoCList:

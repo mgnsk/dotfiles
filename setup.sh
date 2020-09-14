@@ -29,12 +29,10 @@ function setup_vim() {
 
 	nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
 
-	go clean -modcache
-
 	cd ~/.config/coc/extensions
 	yarn
 
-	pip install --no-cache-dir neovim-remote
+	pip3 install --no-cache-dir neovim-remote
 }
 
 function setup_rust() {
@@ -55,6 +53,7 @@ function setup_fzf() {
 function setup_gotools() {
 	cd ~/gotools
 	go install $(awk '/import\s\(/{flag=1;next}/)/{flag=0}flag' tools.go | cut -d \" -f2)
+	go clean -modcache
 }
 
 setup_tmux

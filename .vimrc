@@ -183,7 +183,7 @@ noremap <leader>0 :tablast<cr>
 " Switch through buffers.
 nnoremap <leader>j :bnext<CR>
 nnoremap <leader>k :bprev<CR>
-nnoremap <leader>b :buffers<CR>
+nnoremap <leader>b :Buffers<CR>
 
 " Move focus to window in direction.
 nnoremap <C-h> <C-w>h

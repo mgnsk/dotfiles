@@ -4,6 +4,9 @@ set -e
 
 yarn
 
-if test ! -d $HOME/.config/coc/extensions/node_modules; then
-	ln -s $PWD/node_modules $HOME/.config/coc/extensions/node_modules
+dir="$HOME/.config/coc/extensions"
+
+if test ! -d "$dir/node_modules"; then
+	mkdir -p $dir
+	ln -s $PWD/node_modules $dir/node_modules
 fi

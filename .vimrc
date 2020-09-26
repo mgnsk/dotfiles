@@ -2,6 +2,8 @@ source ~/.vim/plugins.vim
 
 set rtp+=~/.fzf
 
+let g:neomake_open_list = 2
+
 " COC autostart.
 let g:coc_start_at_startup = 0
 
@@ -183,7 +185,7 @@ noremap <leader>0 :tablast<cr>
 " Switch through buffers.
 nnoremap <leader>j :bnext<CR>
 nnoremap <leader>k :bprev<CR>
-nnoremap <leader>b :buffers<CR>
+nnoremap <leader>b :Buffers<CR>
 
 " Move focus to window in direction.
 nnoremap <C-h> <C-w>h
@@ -410,7 +412,7 @@ function! s:show_documentation()
 endfunction
 
 " Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold *.go,*.rs silent call CocActionAsync('highlight')
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Disabled: Show documentation when holding the cursor.
 "autocmd CursorHold *.go,*.rs silent call CocAction('doHover')
@@ -462,26 +464,10 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
-augroup golang
-	au!
-	" Quicker way to make, lint, and test code.
-	" au FileType go nnoremap MM :wa<CR>:compiler go<CR>:silent make!<CR>:redraw!<CR>
-	"au FileType go nnoremap LL :wa<CR>:compiler golint<CR>:silent make!<CR>:redraw!<CR>
-	" au FileType go nnoremap TT :wa<CR>:compiler gotest<CR>:silent make!<CR>:redraw!<CR>
-
-	" Basic lint on write.
-	autocmd BufWritePost *.go compiler golint | silent make! | redraw!
-
-	" Put a path before GOPATH to use tools from there. Not recommended
-	" unless you have special needs or want to test a modified version.
-	" autocmd Filetype go let $PATH = $HOME . '/go/bin:' . $PATH
-
-	" Format buffer on write.
-	autocmd BufWritePre *.go
-			\  let s:save = winsaveview()
-			\| exe 'keepjumps %!gofumports 2>/dev/null || cat /dev/stdin'
-			\| call winrestview(s:save)
-augroup end
+autocmd BufWritePre *.go
+		\  let s:save = winsaveview()
+		\| exe 'keepjumps %!gofumports 2>/dev/null || cat /dev/stdin'
+		\| call winrestview(s:save)
 
 autocmd BufWritePre *.rs
 			\  let s:save = winsaveview()
@@ -492,6 +478,10 @@ autocmd BufWritePre *.proto
 			\  let s:save = winsaveview()
 			\| exe 'keepjumps %!clang-format 2>/dev/null || cat /dev/stdin'
 			\| call winrestview(s:save)
+
+" Lint the directory of current buffer.
+autocmd BufWritePost *.go Neomake
+autocmd BufWritePost *.rs Neomake
 
 " Mappings using CoCList:
 " Show all diagnostics.

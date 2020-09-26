@@ -12,5 +12,5 @@ Plug 'rust-lang/rust.vim'
 Plug 'liuchengxu/vista.vim'
 Plug 'Townk/vim-autoclose'
 Plug 'StanAngeloff/php.vim'
-Plug 'psliwka/vim-smoothie'
+Plug 'neomake/neomake'
 call plug#end()

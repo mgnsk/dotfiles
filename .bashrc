@@ -19,8 +19,6 @@ export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 export PAGER="most"
 export TERM=xterm-256color
 
-git config --global mergetool.keepBackup false
-
 . "$HOME/.local/share/lscolors.sh"
 
 eval "$(direnv hook bash)"

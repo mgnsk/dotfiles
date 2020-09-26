@@ -17,7 +17,4 @@ fi
 
 nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
 
-cd ~/.config/coc/extensions
-yarn
-
 pip3 install --no-cache-dir neovim-remote

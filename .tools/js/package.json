@@ -7,6 +7,8 @@
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
     "eslint": "^7.9.0",
+    "pug-lint": "^2.6.0",
+    "stylelint": "^13.7.2",
     "typescript": "^4.0.3"
   }
 }

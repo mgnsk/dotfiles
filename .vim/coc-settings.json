@@ -22,7 +22,8 @@
 	"coc.preferences": {
 		"jumpCommand": "tab drop",
 		"extensionUpdateCheck": "never",
-		"mesageLevel": "error"
+		"mesageLevel": "error",
+		"formatOnSaveFiletypes": ["javascript", "typescript", "json", "css", "markdown"]
 	},
 	"clangd": {
 		"path": "/usr/bin/clangd",
@@ -32,5 +33,5 @@
 		"format": {
 			"enable": true
 		}
-	}
+	},
 }

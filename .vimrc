@@ -1,6 +1,6 @@
 source ~/.vim/plugins.vim
 
-set rtp+=~/.fzf
+set runtimepath+=~/.fzf
 
 let g:neomake_open_list = 2
 
@@ -64,7 +64,7 @@ map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans
 
 
 
-let mapleader = ","
+let mapleader = ','
 
 " govim
 "set completeopt+=popup
@@ -83,7 +83,7 @@ set nofoldenable
 set hidden
 
 set nobackup
-set nocompatible
+"set nocompatible
 
 " Safety settings.
 set writebackup
@@ -421,7 +421,7 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
+vmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
 "augroup mygroup
@@ -454,6 +454,7 @@ omap af <Plug>(coc-funcobj-a)
 " coc-tsserver, coc-python are the examples of servers that support it.
 "nmap <silent> <TAB> <Plug>(coc-range-select)
 "xmap <silent> <TAB> <Plug>(coc-range-select)
+autocmd QuickFixCmdPost [^l]* cwindow
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
@@ -479,9 +480,12 @@ autocmd BufWritePre *.proto
 			\| exe 'keepjumps %!clang-format 2>/dev/null || cat /dev/stdin'
 			\| call winrestview(s:save)
 
+let g:neomake_typescript_enabled_makers = ['eslint']
+
+autocmd FileType typescript setlocal makeprg=eslint\ --format\ compact
+
 " Lint the directory of current buffer.
-autocmd BufWritePost *.go Neomake
-autocmd BufWritePost *.rs Neomake
+"autocmd BufWritePost * Neomake
 
 " Mappings using CoCList:
 " Show all diagnostics.

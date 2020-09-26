@@ -11,6 +11,7 @@ require (
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/josharian/impl v1.0.0
+	github.com/uber/prototool v1.10.0 // indirect
 	golang.org/x/tools v0.0.0-20200828013309-97019fc2e64b
 	golang.org/x/tools/gopls v0.4.4
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect

@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # markdownlinter
-gem install mdl
+gem install --user-install mdl

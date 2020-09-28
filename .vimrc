@@ -355,6 +355,7 @@ nnoremap mru :FZFMru<CR>
 
 " Fuzzy command search.
 nnoremap <leader>- :Commands<CR>
+nnoremap <leader>/ :Commands<CR>
 
 map <leader>e :NERDTreeToggle<CR>
 

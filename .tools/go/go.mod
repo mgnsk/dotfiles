@@ -9,6 +9,7 @@ require (
 	github.com/fatih/gomodifytags v1.6.0
 	github.com/fatih/motion v1.1.0
 	github.com/fatih/structtag v1.2.0 // indirect
+	github.com/golangci/golangci-lint v1.31.0 // indirect
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/josharian/impl v1.0.0
 	github.com/uber/prototool v1.10.0 // indirect

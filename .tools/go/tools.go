@@ -18,4 +18,5 @@ import (
 	_ "golang.org/x/tools/cmd/guru"
 	_ "golang.org/x/tools/gopls"
 	_ "mvdan.cc/gofumpt/gofumports"
+	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 )

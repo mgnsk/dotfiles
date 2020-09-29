@@ -101,11 +101,11 @@ set cmdheight=2
 
 " How often the swapfile will be written.
 " Also used for the CursorHold autocommand event.
-set updatetime=500
+set updatetime=1000
 
 " The time in milliseconds that is waited for a key code or mapped key
 " sequence to complete.
-set timeoutlen=300
+set timeoutlen=500
 
 "autocmd InsertEnter * set timeoutlen=300
 "autocmd InsertLeave * set timeoutlen=500

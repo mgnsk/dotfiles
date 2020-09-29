@@ -1,0 +1,11 @@
+linters:
+  enable-all: true
+  disable:
+    - wsl
+    - testpackage
+    - nlreturn
+    - gomodguard
+    - depguard
+    - gochecknoinits
+    - gochecknoglobals
+

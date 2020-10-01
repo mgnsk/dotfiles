@@ -13,4 +13,5 @@ Plug 'liuchengxu/vista.vim'
 Plug 'Townk/vim-autoclose'
 Plug 'StanAngeloff/php.vim', {'for': 'php'}
 Plug 'neomake/neomake'
+Plug 'tpope/vim-fugitive'
 call plug#end()

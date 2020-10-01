@@ -88,7 +88,7 @@ elseif s:configuration.style ==# 'atlantis'
         \ 'bg_red':     ['#ff6d7e',   '203',  'Red'],
         \ 'diff_red':   ['#473536',   '52',   'DarkRed'],
         \ 'bg_green':   ['#a5e179',   '107',  'Green'],
-        \ 'diff_green': ['#8EA66C',   '22',   'DarkGreen'],
+        \ 'diff_green': ['#425030',   '22',   'DarkGreen'],
         \ 'bg_blue':    ['#7ad5f1',   '110',  'Blue'],
         \ 'diff_blue':  ['#39607D',   '17',   'DarkBlue'],
         \ 'fg':         ['#abb2aa',   '250',  'White'],

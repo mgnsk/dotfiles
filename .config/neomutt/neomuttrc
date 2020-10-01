@@ -1,4 +1,4 @@
-source ~/.config/neomutt/accounts/smaily
+source ~/.config/neomutt/accounts/work
 
 set mailcap_path = ~/.mutt/mailcap
 auto_view text/html
@@ -23,37 +23,3 @@ color search white black
 color tilde brightmagenta black
 color index blue black ~F
 color index red black "~N|~O"
-
-# color body brightwhite black '\*+[^*]+\*+'
-# color body brightwhite black '_+[^_]+_+'
-## main options
-#set envelope_from
-#set edit_headers                     # show headers when composing
-#set fast_reply                       # skip to compose when replying
-#set askcc                            # ask for CC:
-#set fcc_attach                       # save attachments with the body
-#set forward_format = "Fwd: %s"       # format of subject when forwarding
-#set forward_decode                   # decode when forwarding
-#set attribution = "On %d, %n wrote:" # format of quoting header
-#set reply_to                         # reply to Reply to: field
-#set reverse_name                     # reply as whomever it was to
-#set include                          # include message in replies
-#set forward_quote                    # include message in forwards
-##set text_flowed
-#unset mime_forward                   # forward attachments as part of body
-#unset help                           # No help bar at the top of index
-## set status_on_top                    # Status bar on top of index
-
-#unset confirmappend      # don't ask, just do!
-#set quit                 # don't ask, just do!!
-#unset mark_old           # read/new is good enough for me
-#set beep_new             # bell on new mails
-#set pipe_decode          # strip headers and eval mimes when piping
-#set thorough_search      # strip headers and eval mimes before searching
-#set timeout = 0
-
-## status bar, date format, finding stuff etc.
-#set date_format = "%d.%m.%Y %H:%M"
-#set sort = threads
-#set charset = "utf-8"
-

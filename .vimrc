@@ -358,6 +358,7 @@ nnoremap <leader>- :Commands<CR>
 nnoremap <leader>/ :Commands<CR>
 
 map <leader>e :NERDTreeToggle<CR>
+let NERDTreeShowHidden = 1
 
 " Open files in new tab.
 let g:netrw_browse_split = 3

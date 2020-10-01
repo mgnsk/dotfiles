@@ -1,0 +1,13 @@
+[include]
+	path = ~/.gitconfig_local
+[alias]
+	st = status
+	br = branch
+[mergetool]
+	keepBackup = false
+[diff]
+	tool = nvim
+[mergetool "nvim"]
+	cmd = nvim -f -c \"Gdiffsplit!\" \"$MERGED\"
+[merge]
+	tool = nvim

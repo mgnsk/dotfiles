@@ -4,8 +4,13 @@ set runtimepath+=~/.fzf
 
 let g:neomake_open_list = 2
 
-" COC autostart.
-let g:coc_start_at_startup = 0
+" COC autostart. Disabled on tablet.
+let uname = trim(system('uname -m'))
+if uname == 'x86_64'
+	let g:coc_start_at_startup = 1
+else
+	let g:coc_start_at_startup = 0
+endif
 
 " the configuration options should be placed before `colorscheme sonokai`
 let g:sonokai_style = 'atlantis'

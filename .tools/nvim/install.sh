@@ -17,6 +17,6 @@ fi
 
 nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
 
-cd ~/.config/coc
+cd ~/.config/coc/extensions
 
 yarn install --frozen-lockfile

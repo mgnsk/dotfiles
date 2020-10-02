@@ -1,5 +1,19 @@
 set scrolloff=999
 
+function fns#ShowDocs()
+	if (index(['vim','help'], &filetype) >= 0)
+		execute 'h '.expand('<cword>')
+	else
+		call CocAction('doHover')
+	endif
+endfunction
+
+function fns#Format(cmd)
+	let s:save = winsaveview()
+	exe 'keepjumps %!' . a:cmd . ' 2>/dev/null || cat /dev/stdin'
+	call winrestview(s:save)
+endfunction
+
 function! fns#CursorLockToggle()
 	if &scrolloff
 		setlocal scrolloff=0

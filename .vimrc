@@ -408,15 +408,7 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-	if (index(['vim','help'], &filetype) >= 0)
-		execute 'h '.expand('<cword>')
-	else
-		call CocAction('doHover')
-	endif
-endfunction
+nnoremap <silent> K :call fns#ShowDocs()<CR>
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -472,24 +464,6 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
-autocmd BufWritePre *.go
-		\  let s:save = winsaveview()
-		\| exe 'keepjumps %!gofumports 2>/dev/null || cat /dev/stdin'
-		\| call winrestview(s:save)
-
-autocmd BufWritePre *.rs
-			\  let s:save = winsaveview()
-			\| exe 'keepjumps %!rustfmt 2>/dev/null || cat /dev/stdin'
-			\| call winrestview(s:save)
-
-autocmd BufWritePre *.proto
-			\  let s:save = winsaveview()
-			\| exe 'keepjumps %!clang-format 2>/dev/null || cat /dev/stdin'
-			\| call winrestview(s:save)
-
-let g:neomake_typescript_enabled_makers = ['eslint']
-
-autocmd FileType typescript setlocal makeprg=eslint\ --format\ compact
 
 " Lint the directory of current buffer.
 "autocmd BufWritePost * Neomake

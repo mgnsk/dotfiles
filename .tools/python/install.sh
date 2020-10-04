@@ -2,4 +2,5 @@
 
 pip3 install --no-cache-dir \
 	neovim-remote \
-	yamllint
+	yamllint \
+	vim-vint

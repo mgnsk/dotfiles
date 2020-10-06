@@ -1,25 +1,7 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
-
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.npm-global/bin:$PATH"
-export PATH="$HOME/.tools/js/node_modules/.bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.gem/ruby/2.7.0/bin:$PATH"
-
-export GOFLAGS="-modcacherw"
-export GOPATH="$HOME/go"
-
-export RUSTUP_HOME="$HOME/.rustup"
-export CARGO_HOME="$HOME/.cargo"
-
-export EDITOR=/usr/bin/nvim
-export VIM_UNDO_DIR="$HOME/.local/share/nvim/undo"
-export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
-
-export PAGER="most"
+[[ -f ~/.env ]] && . ~/.env
 
 . "$HOME/.local/share/lscolors.sh"
 

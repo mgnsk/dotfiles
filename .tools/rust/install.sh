@@ -6,4 +6,4 @@ if ! command -v rustup &> /dev/null; then
 fi
 
 echo "### Installing rust tools"
-rustup component add rls rust-analysis rust-src clippy
+rustup component add rustfmt rls rust-analysis rust-src clippy

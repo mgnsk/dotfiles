@@ -10,6 +10,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.gem/ruby/2.7.0/bin:$PATH"
 
 export GOFLAGS="-modcacherw"
+export GOPATH="$HOME/go"
 
 export RUSTUP_HOME="$HOME/.rustup"
 export CARGO_HOME="$HOME/.cargo"

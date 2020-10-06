@@ -1,6 +1,5 @@
 #!/bin/bash
 
 set -euo pipefail
-
-go install $(awk '/import\s\(/{flag=1;next}/)/{flag=0}flag' tools.go | cut -d \" -f2)
+cat tools.go | grep _ | awk -F'"' '{print $2}' | xargs -tI % go install %
 go clean -modcache

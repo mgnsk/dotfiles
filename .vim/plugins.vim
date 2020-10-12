@@ -14,4 +14,5 @@ Plug 'Townk/vim-autoclose'
 Plug 'StanAngeloff/php.vim', {'for': 'php'}
 Plug 'neomake/neomake'
 Plug 'tpope/vim-fugitive'
+Plug 'tikhomirov/vim-glsl'
 call plug#end()

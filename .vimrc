@@ -88,6 +88,7 @@ set nofoldenable
 set hidden
 
 set nobackup
+set backupcopy=yes
 "set nocompatible
 
 " Safety settings.

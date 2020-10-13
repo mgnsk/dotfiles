@@ -6,7 +6,7 @@ alias ...='cd ../..'
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 config config status.showUntrackedFiles no
 
-gch() {
+gsw() {
 	git switch "$(git branch --all | fzf | tr -d '[:space:]')"
 }
 

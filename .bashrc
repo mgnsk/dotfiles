@@ -8,6 +8,7 @@
 eval "$(direnv hook bash)"
 
 export PROMPT_COMMAND="history -a; history -n"
+export FZF_DEFAULT_COMMAND="find -L -not -path '*/\.git/*'"
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in

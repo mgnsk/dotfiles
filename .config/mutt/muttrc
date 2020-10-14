@@ -1,4 +1,4 @@
-source ~/.config/neomutt/accounts/work
+source ~/.config/mutt/accounts/accountrc
 
 set mailcap_path = ~/.mutt/mailcap
 auto_view text/html

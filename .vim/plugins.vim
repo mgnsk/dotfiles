@@ -8,6 +8,7 @@ Plug 'jackguo380/vim-lsp-cxx-highlight'
 Plug 'junegunn/fzf.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'arp242/gopher.vim', {'for': 'go'}
+Plug 'sebdah/vim-delve', {'for': 'go'}
 Plug 'rust-lang/rust.vim', {'for': 'rust'}
 Plug 'liuchengxu/vista.vim'
 Plug 'Townk/vim-autoclose'

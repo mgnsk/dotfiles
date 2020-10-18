@@ -10,6 +10,7 @@ import (
 	_ "github.com/davidrjenni/reftools/cmd/fillstruct"
 	_ "github.com/fatih/gomodifytags"
 	_ "github.com/fatih/motion"
+	_ "github.com/go-delve/delve/cmd/dlv"
 	_ "github.com/golang/mock/mockgen"
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/josharian/impl"

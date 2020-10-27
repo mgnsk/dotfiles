@@ -293,26 +293,7 @@ nnoremap <leader>nt :call fns#MoveToNextTab()<CR>
 
 nnoremap <leader>nT :call fns#MoveToPrevTab()<CR>
 
-
-" Toggle Vista window.
-nnoremap <leader>V :Vista!!<CR>
-" Toggle symbol finder for the current buffer.
-nnoremap <leader>F :Vista finder<CR>
-
 nnoremap <leader>T :Tags<CR>
-
-" By default vista.vim never run if you don't call it explicitly.
-"
-" If you want to show the nearest function in your statusline automatically,
-" you can add the following line to your vimrc 
-"autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
-
-
-" GGrep is git grep.
-command! -bang -nargs=* GGrep
-			\ call fzf#vim#grep(
-			\   'git grep --line-number -- '.shellescape(<q-args>), 0,
-			\   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
 
 " Rg uses ripgrep.
 command! -bang -nargs=* Rg
@@ -325,7 +306,6 @@ nnoremap <leader>g :Rg<CR>
 
 command! -bang -nargs=? -complete=dir Files
 			\ call fzf#vim#files(<q-args>, {'options': ['--layout=reverse', '--info=inline', '--preview', '~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}']}, <bang>0)
-
 
 command! -nargs=+ GotoOrOpen call fns#GotoOrOpen(<f-args>)
 
@@ -349,6 +329,8 @@ function! s:all_files()
 				\ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
 endfunction
 
+" TODO ctrl-t doesn't work with this command
+nnoremap mru :FZFMru<CR>
 
 " Search lines in all open buffers.
 nnoremap <silent> <leader><Enter> :Lines<CR>
@@ -356,15 +338,12 @@ nnoremap <silent> <leader><Enter> :Lines<CR>
 " Open the fzf file finder.
 nnoremap <leader>o :FZF<CR>
 
-" TODO ctrl-t doesn't work with this command
-nnoremap mru :FZFMru<CR>
 
 " Fuzzy command search.
 nnoremap <leader>- :Commands<CR>
 nnoremap <leader>/ :Commands<CR>
 
-map <leader>e :NERDTreeToggle<CR>
-let NERDTreeShowHidden = 1
+map <leader>e :Tex<CR>
 
 " Open files in new tab.
 let g:netrw_browse_split = 3

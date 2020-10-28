@@ -55,7 +55,7 @@ require'nvim_lsp'.yamlls.setup{on_attach=on_attach_vim}
 require'nvim_lsp'.html.setup{on_attach=on_attach_vim}
 EOF
 
-" use omni completion provided by lsp
+" use omni completion provided by lsp, seems to work by itself
 "autocmd Filetype go,rust setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 " Use <Tab> and <S-Tab> to navigate through popup menu

@@ -17,6 +17,7 @@ require'nvim_lsp'.rls.setup{on_attach=on_attach_vim}
 require'nvim_lsp'.tsserver.setup{on_attach=on_attach_vim}
 require'nvim_lsp'.vimls.setup{on_attach=on_attach_vim}
 require'nvim_lsp'.yamlls.setup{on_attach=on_attach_vim}
+require'nvim_lsp'.html.setup{on_attach=on_attach_vim}
 EOF
 
 " use omni completion provided by lsp

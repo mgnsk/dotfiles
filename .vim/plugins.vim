@@ -1,6 +1,8 @@
 call plug#begin()
 Plug 'preservim/nerdcommenter'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lua/completion-nvim'
+Plug 'nvim-lua/diagnostic-nvim'
 Plug 'jackguo380/vim-lsp-cxx-highlight'
 Plug 'junegunn/fzf.vim'
 Plug 'airblade/vim-gitgutter'

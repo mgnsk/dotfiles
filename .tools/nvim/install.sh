@@ -16,7 +16,3 @@ if test ! -d ~/.config/nvim; then
 fi
 
 nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
-
-cd ~/.config/coc/extensions
-
-yarn install --frozen-lockfile

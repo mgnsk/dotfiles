@@ -62,7 +62,10 @@ EOF
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-nnoremap <silent> <space>a  :OpenDiagnostic<cr>
+nnoremap <silent> <space>a  :OpenDiagnostic<CR>
+nnoremap <silent> <space>j  :NextDiagnosticCycle<CR>
+nnoremap <silent> <space>k  :PrevDiagnosticCycle<CR>
+
 let g:diagnostic_enable_virtual_text = 1
 
 " Set completeopt to have a better completion experience

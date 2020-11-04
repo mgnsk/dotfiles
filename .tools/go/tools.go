@@ -21,5 +21,4 @@ import (
 	_ "golang.org/x/tools/cmd/gorename"
 	_ "golang.org/x/tools/cmd/guru"
 	_ "golang.org/x/tools/gopls"
-	_ "mvdan.cc/gofumpt/gofumports"
 )

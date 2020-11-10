@@ -6,6 +6,7 @@ function! GoFormatToggle()
 	else
 		let s:formatter = 'goimports'
 	endif
+	echo 'Go formatter set to ' . s:formatter
 endfunction
 
 command GoFormatToggle :call GoFormatToggle()

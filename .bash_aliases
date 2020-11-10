@@ -10,6 +10,10 @@ gsw() {
 	git switch "$(git branch --all | fzf | tr -d '[:space:]')"
 }
 
+cdf() {
+	cd $(fzf)
+}
+
 # Should be run on master branch with a clean status.
 gitprune() {
 	git fetch --prune

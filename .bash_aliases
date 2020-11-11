@@ -20,12 +20,6 @@ gitprune() {
 	for branch in `git for-each-ref --format '%(refname) %(upstream:track)' refs/heads | awk '$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'`; do git branch -D $branch; done
 }
 
-# squash N last commits and edit the new commit message.
-squashn() {
-	git reset --soft "HEAD~$1"
-	git commit --edit -m "$(git log --format=%B --reverse HEAD..HEAD@{1})"
-}
-
 # squash N last commits using merge and edit the new commit message.
 mergesquashn() {
 	# Reset the current branch to the commit just before the last 12:

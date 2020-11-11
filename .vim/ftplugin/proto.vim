@@ -1,1 +1,1 @@
-autocmd BufWritePre *.proto silent call fns#Format('clang-format')
+autocmd BufWritePre *.proto silent Neoformat

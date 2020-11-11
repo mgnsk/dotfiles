@@ -14,4 +14,6 @@ Plug 'StanAngeloff/php.vim', {'for': 'php'}
 Plug 'neomake/neomake'
 Plug 'tpope/vim-fugitive'
 Plug 'tikhomirov/vim-glsl'
+Plug 'pearofducks/ansible-vim'
+Plug 'sbdchd/neoformat'
 call plug#end()

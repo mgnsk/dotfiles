@@ -8,12 +8,6 @@ function fns#ShowDocs()
 	endif
 endfunction
 
-function fns#Format(cmd)
-	let s:save = winsaveview()
-	exe 'keepjumps %!' . a:cmd . ' 2>/dev/null || cat /dev/stdin'
-	call winrestview(s:save)
-endfunction
-
 function! fns#CursorLockToggle()
 	if &scrolloff
 		setlocal scrolloff=0

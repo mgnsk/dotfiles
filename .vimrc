@@ -6,6 +6,7 @@ lua require('init')
 
 let mapleader = ','
 
+map Y "+y<CR>
 
 " use omni completion provided by lsp, seems to work by itself
 "autocmd Filetype go,rust setlocal omnifunc=v:lua.vim.lsp.omnifunc

@@ -6,6 +6,16 @@ lua require('init')
 
 let mapleader = ','
 
+let g:clipboard = {
+     \ 'name': 'myClipboard',
+     \     'copy': {
+     \         '+': 'osc52',
+     \     },
+     \     'paste': {
+     \         '+': '',
+     \     },
+     \ }
+
 map Y "+y<CR>
 
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())

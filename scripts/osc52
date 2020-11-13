@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -eo pipefail
+
+tty=`(tty || tty </proc/$PPID/fd/0) 2>/dev/null | grep /dev/`
+buffer=$(base64)
+
+printf $'\e]52;c;%s\a' "$buffer" > "$tty"

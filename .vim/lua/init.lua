@@ -35,7 +35,6 @@ callbacks["textDocument/implementation"] = location_callback
 
 local attach = function(client)
     require "completion".on_attach(client)
-    require "diagnostic".on_attach(client)
 end
 
 local lsp = require "nvim_lsp"

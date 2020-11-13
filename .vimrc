@@ -8,25 +8,18 @@ let mapleader = ','
 
 map Y "+y<CR>
 
+command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
+
 " use omni completion provided by lsp, seems to work by itself
-"autocmd Filetype go,rust setlocal omnifunc=v:lua.vim.lsp.omnifunc
+autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 " Use <Tab> and <S-Tab> to navigate through popup menu
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-nnoremap <silent> <space>a  :OpenDiagnostic<CR>
-nnoremap <silent> <space>j  :NextDiagnosticCycle<CR>
-nnoremap <silent> <space>k  :PrevDiagnosticCycle<CR>
-
-let g:diagnostic_enable_virtual_text = 1
-
-" Set completeopt to have a better completion experience
-set completeopt=menuone,noinsert,noselect
-
-" Avoid showing message extra message when using completion
-set shortmess+=c
-
+nnoremap <silent> <space>a  <cmd>lua vim.lsp.diagnostic.set_loclist()<CR>
+nnoremap <silent> <space>j  <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+nnoremap <silent> <space>k  <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 
 nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
@@ -85,6 +78,11 @@ let g:fzf_colors =
 			\ 'spinner': ['fg', 'Label'],
 			\ 'header':  ['fg', 'Comment'] }
 
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+
+" Avoid showing message extra message when using completion
+set shortmess+=c
 
 set lazyredraw
 

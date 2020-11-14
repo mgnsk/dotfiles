@@ -1,0 +1,65 @@
+---
+version: "3.4"
+services:
+  base:
+    image: github.com/mgnsk/toolbox/base:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+      target: base
+      args:
+        - uid
+        - gid
+        - user
+        - group
+        - neovim_commit
+
+  toolbox:
+    image: github.com/mgnsk/toolbox/toolbox:latest
+    depends_on:
+      - base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - user
+        - group
+    # cap_drop:
+    # - ALL
+    mem_limit: 2g
+    volumes:
+      - "${WORKSPACE_ROOT}:/workspace"
+      - "tmp:/tmp"
+      - "cache:/homedir/.cache"
+      - "nvim-data:/homedir/.local/share/nvim"
+      - "direnv-data:/homedir/.local/share/direnv"
+      - "tmux-resurrect:/homedir/.tmux/resurrect"
+      - "composer-global:/homedir/.composer"
+      - "npm-global:/homedir/.npm-global"
+      - "go-global:/homedir/go"
+      - "cargo-data:/homedir/.cargo"
+      - "local-bin:/homedir/.local/bin"
+      - "local-lib:/homedir/.local/lib"
+      - "bash-history:/homedir/.bash_history"
+    hostname: toolbox
+    ports:
+      # parcel
+      - 1234
+      - 5000
+      - 33969
+
+volumes:
+  tmp:
+  cache:
+  bash-history:
+  nvim-data:
+  coc-clangd-data:
+  coc-phpls-data:
+  direnv-data:
+  tmux-resurrect:
+  composer-global:
+  npm-global:
+  go-global:
+  cargo-data:
+  local-bin:
+  local-lib:

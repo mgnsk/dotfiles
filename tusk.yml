@@ -1,0 +1,96 @@
+---
+options:
+  uid:
+    default: 3000
+  gid:
+    default: 3000
+  user:
+    default: user
+  group:
+    default: user
+  neovim_commit:
+    private: true
+    default: 35325ddac04b1b59b7982797021cdaabdabc87fb
+
+tasks:
+  build:
+    usage: Build the toolbox-base and toolbox images.
+    run:
+      - command: >
+          podman-compose
+          build
+          --pull
+          --build-arg uid=${uid}
+          --build-arg gid=${gid}
+          --build-arg user=${user}
+          --build-arg group=${group}
+          --build-arg neovim_commit=${neovim_commit}
+      - command: podman image prune -f
+
+  bash:
+    usage: Run a bash shell as the container UID in user namespace while mounting a shifted view of the filesystem.
+    args:
+      workspace:
+        usage: The workspace directory to run in.
+    options:
+      tmp:
+        private: true
+        default:
+          command: bash -c "echo $(pwd)/.fuse-$(cat /proc/sys/kernel/random/uuid | cut -c-8)"
+      upperdir:
+        private: true
+        default:
+          command: realpath ${workspace}
+      starttime:
+        private: true
+        default:
+          command: date
+    run:
+      - command: |
+          if [ "$(pwd)" == "${upperdir}" ]; then echo "invalid workspace: ${upperdir}"; exit 1; fi
+      - task:
+          name: _mount
+          options:
+            uid: ${uid}
+            gid: ${gid}
+            upperdir: ${upperdir}
+            tmp: ${tmp}
+      - set-environment:
+          WORKSPACE_ROOT: ${tmp}/merged
+      - command: podman-compose -p dev-env run --rm --service-ports toolbox /bin/bash
+    finally:
+      - task:
+          name: _unmount
+          options:
+            tmp: ${tmp}
+      - command: find ${workspace} -newermt "${starttime}" \( -type c -or \( -type f -and -name ".wh..wh..opq" \) \) -delete
+
+  root:
+    args:
+      workspace:
+        usage: The workspace directory to run in.
+    options:
+      tmp:
+        private: yes
+        default:
+          command: realpath ${workspace}
+    run:
+      - set-environment:
+          WORKSPACE_ROOT: ${tmp}
+      - command: podman-compose -p dev-env run --rm --service-ports --user root toolbox /bin/bash
+
+  clean:
+    run:
+      - command: podman pod kill dev-env || true
+      - command: podman pod rm dev-env || true
+      - command: for v in $(podman volume ls | awk 'NR>1 {print $2}' | grep "^dev-env"); do podman volume rm $v; done
+      - task:
+          name: _unmount
+          options:
+            tmp: .fuse-*
+
+  _mount:
+    include: cmd/mount.yml
+
+  _unmount:
+    include: cmd/unmount.yml

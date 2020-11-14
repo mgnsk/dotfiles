@@ -1,0 +1,27 @@
+---
+private: true
+options:
+  uid:
+    required: true
+  gid:
+    required: true
+  flags:
+    # These flags only apply to the custom bind mount.
+    # Container storage options can be configured in ~/.config/containers/storage.conf
+    default: noxattrs=1,fsync=0,threaded=0
+  upperdir:
+    required: true
+  tmp:
+    required: true
+  lowerdir:
+    private: true
+    default: ${tmp}/lowerdir
+  workdir:
+    private: true
+    default: ${tmp}/workdir
+  merged:
+    private: true
+    default: ${tmp}/merged
+run:
+  - command: mkdir -p ${lowerdir} ${workdir} ${merged}
+  - command: podman unshare fuse-overlayfs -o uidmapping=0:${uid}:1,gidmapping=0:${gid}:1,lowerdir=${lowerdir},upperdir=${upperdir},workdir=${workdir},${flags} ${merged}

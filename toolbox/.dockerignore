@@ -1,3 +1,2 @@
-code/
-.direnv/
-.git/
+workspaces/
+.fuse-*

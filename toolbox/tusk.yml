@@ -15,7 +15,13 @@ options:
 tasks:
   build:
     usage: Build the toolbox-base and toolbox images.
+    description: Before building, copies fresh dotfiles from $HOME.
     run:
+      - command: rm -rf dotfiles
+      - command: mkdir dotfiles
+      - command: |
+          cd $HOME
+          git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME ls-files | tar Tc - | tar Cx $HOME/toolbox/dotfiles
       - command: >
           podman-compose
           build
@@ -26,6 +32,8 @@ tasks:
           --build-arg group=${group}
           --build-arg neovim_commit=${neovim_commit}
       - command: podman image prune -f
+    finally:
+      - command: rm -rf dotfiles
 
   bash:
     usage: Run a bash shell as the container UID in user namespace while mounting a shifted view of the filesystem.

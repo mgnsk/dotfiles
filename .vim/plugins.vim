@@ -2,7 +2,6 @@ call plug#begin()
 Plug 'preservim/nerdcommenter'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
-Plug 'jackguo380/vim-lsp-cxx-highlight'
 Plug 'junegunn/fzf.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'arp242/gopher.vim', {'for': 'go'}
@@ -12,7 +11,6 @@ Plug 'Townk/vim-autoclose'
 Plug 'StanAngeloff/php.vim', {'for': 'php'}
 Plug 'neomake/neomake'
 Plug 'tpope/vim-fugitive'
-Plug 'tikhomirov/vim-glsl'
-Plug 'pearofducks/ansible-vim'
 Plug 'sbdchd/neoformat'
+Plug 'sheerun/vim-polyglot'
 call plug#end()

@@ -13,4 +13,5 @@ Plug 'neomake/neomake'
 Plug 'tpope/vim-fugitive'
 Plug 'sbdchd/neoformat'
 Plug 'sheerun/vim-polyglot'
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 call plug#end()

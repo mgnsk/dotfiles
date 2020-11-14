@@ -6,10 +6,19 @@ lua require('init')
 
 let mapleader = ','
 
+lua <<EOF
+local base64 = require "base64"
+function _G.copy(content)
+	local w = assert(io.open("/dev/tty", "w"))
+	assert(w:write(string.format("\x1b]52;c;%s\x1b", base64.encode(content))))
+	assert(w:close())
+end
+EOF
+
 let g:clipboard = {
      \ 'name': 'myClipboard',
      \     'copy': {
-     \         '+': 'osc52',
+     \         '+': {lines, regtype -> v:lua.copy(join(lines, "\n"))},
      \     },
      \     'paste': {
      \         '+': '',

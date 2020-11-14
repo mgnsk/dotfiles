@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -euo pipefail
+set -e
 
-rm go.mod go.sum
+rm -f go.mod go.sum
 go mod init tools
 bash ./install.sh

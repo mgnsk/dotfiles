@@ -1,1 +1,1 @@
-autocmd BufWritePre *.html silent Neoformat
+autocmd BufWritePre *.html silent call fns#Format()

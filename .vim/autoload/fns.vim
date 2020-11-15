@@ -1,13 +1,24 @@
-set scrolloff=999
+let s:autoformat_enabled = 1
 
-function fns#ShowDocs()
-	if (index(['vim','help'], &filetype) >= 0)
-		execute 'h '.expand('<cword>')
+function! AutoformatToggle()
+	if s:autoformat_enabled == 1
+		let s:autoformat_enabled = 0
+		echo 'Autoformat disabled'
 	else
-		lua vim.lsp.buf.hover()
+		let s:autoformat_enabled = 1
+		echo 'Autoformat enabled'
 	endif
 endfunction
 
+command AutoformatToggle :call AutoformatToggle()
+
+function! fns#Format()
+	if s:autoformat_enabled
+		execute('Neoformat')
+	endif
+endfunction
+
+set scrolloff=999
 function! fns#CursorLockToggle()
 	if &scrolloff
 		setlocal scrolloff=0

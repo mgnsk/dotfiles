@@ -1,1 +1,1 @@
-autocmd BufWritePre *.lua silent Neoformat
+autocmd BufWritePre *.lua silent call fns#Format()

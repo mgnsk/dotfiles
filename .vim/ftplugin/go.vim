@@ -12,4 +12,4 @@ endfunction
 
 command GoFormatToggle :call GoFormatToggle()
 
-autocmd BufWritePre *.go silent Neoformat
+autocmd BufWritePre *.go silent call fns#Format()

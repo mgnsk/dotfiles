@@ -1,1 +1,1 @@
-autocmd BufWritePre *.scss silent Neoformat
+autocmd BufWritePre *.scss silent call fns#Format()

@@ -1,1 +1,1 @@
-autocmd BufWritePre *.rs silent Neoformat
+autocmd BufWritePre *.rs silent call fns#Format()

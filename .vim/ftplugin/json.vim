@@ -1,1 +1,1 @@
-autocmd BufWritePre *.json silent Neoformat
+autocmd BufWritePre *.json silent call fns#Format()

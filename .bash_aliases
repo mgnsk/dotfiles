@@ -11,7 +11,7 @@ gsw() {
 }
 
 cdf() {
-	cd $(fzf)
+	cd $(find -type d | fzf)
 }
 
 # Should be run on master branch with a clean status.

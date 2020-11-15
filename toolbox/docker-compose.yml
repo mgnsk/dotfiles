@@ -1,26 +1,39 @@
 ---
 version: "3.4"
 services:
-  base:
-    image: github.com/mgnsk/toolbox/base:latest
+  build:
     build:
-      context: .
-      dockerfile: Dockerfile.base
-      target: base
+      context: images/build
       args:
         - uid
         - gid
         - user
         - group
+
+  neovim:
+    depends_on:
+      - build
+    build:
+      context: images/neovim
+      args:
+        - user
         - neovim_commit
 
-  toolbox:
-    image: github.com/mgnsk/toolbox/toolbox:latest
+  rust:
     depends_on:
-      - base
+      - build
+    build:
+      context: images/rust
+      args:
+        - user
+
+  toolbox:
+    depends_on:
+      - neovim
+      - rust
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: images/toolbox/Dockerfile
       args:
         - user
         - group

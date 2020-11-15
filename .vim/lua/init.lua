@@ -37,7 +37,7 @@ local attach = function(client)
     require "completion".on_attach(client)
 end
 
-local lsp = require "nvim_lsp"
+local lsp = require "lspconfig"
 
 lsp.gopls.setup {on_attach = attach}
 lsp.clangd.setup {on_attach = attach}

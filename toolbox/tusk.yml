@@ -14,16 +14,15 @@ options:
 
 tasks:
   build:
-    usage: Build the toolbox-base and toolbox images.
+    usage: Build the toolbox images.
     description: Before building, copies fresh dotfiles from $HOME.
     run:
       - command: rm -rf dotfiles
       - command: mkdir dotfiles
-      - command: |
-          cd $HOME
-          git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME ls-files | tar Tc - | tar Cx $HOME/toolbox/dotfiles
+      - command: bash -c "set -eo pipefail; cd $HOME; git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME ls-files | tar Tc - | tar Cx $HOME/toolbox/dotfiles"
       - command: >
           podman-compose
+          -p toolbox
           build
           --pull
           --build-arg uid=${uid}
@@ -65,7 +64,7 @@ tasks:
             tmp: ${tmp}
       - set-environment:
           WORKSPACE_ROOT: ${tmp}/merged
-      - command: podman-compose -p dev-env run --rm --service-ports toolbox /bin/bash
+      - command: podman-compose -p toolbox run --rm --service-ports toolbox /bin/bash
     finally:
       - task:
           name: _unmount
@@ -85,13 +84,13 @@ tasks:
     run:
       - set-environment:
           WORKSPACE_ROOT: ${tmp}
-      - command: podman-compose -p dev-env run --rm --service-ports --user root toolbox /bin/bash
+      - command: podman-compose -p toolbox run --rm --service-ports --user root toolbox /bin/bash
 
   clean:
     run:
-      - command: podman pod kill dev-env || true
-      - command: podman pod rm dev-env || true
-      - command: for v in $(podman volume ls | awk 'NR>1 {print $2}' | grep "^dev-env"); do podman volume rm $v; done
+      - command: podman pod kill toolbox || true
+      - command: podman pod rm toolbox || true
+      - command: for v in $(podman volume ls | awk 'NR>1 {print $2}' | grep "^toolbox"); do podman volume rm $v; done
       - task:
           name: _unmount
           options:

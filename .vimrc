@@ -16,14 +16,14 @@ end
 EOF
 
 let g:clipboard = {
-     \ 'name': 'myClipboard',
-     \     'copy': {
-     \         '+': {lines, regtype -> v:lua.copy(join(lines, "\n"))},
-     \     },
-     \     'paste': {
-     \         '+': '',
-     \     },
-     \ }
+	\ 'name': 'myClipboard',
+	\     'copy': {
+	\         '+': {lines, regtype -> v:lua.copy(join(lines, "\n"))},
+	\     },
+	\     'paste': {
+	\         '+': '',
+	\     },
+	\ }
 
 map Y "+y<CR>
 
@@ -64,40 +64,40 @@ let g:sonokai_disable_italic_comment = 0
 
 "let g:rainbow_active = 1
 "let g:rainbow_guifgs = [
-			"\ '#458588',
-			"\ '#d19a66',
-			"\ '#2D72AB',
-			"\ '#d65d0e',
-			"\ '#458588',
-			"\ '#b16286',
-			"\ '#78cee9',
-			"\ '#d65d0e',
-			"\ '#458588',
-			"\ '#b16286',
-			"\ '#98c379',
-			"\ '#d65d0e',
-			"\ '#458588',
-			"\ '#b16286',
-			"\ '#ff6d7e',
-			"\ '#d65d0e',
-			"\ ]
+"\ '#458588',
+"\ '#d19a66',
+"\ '#2D72AB',
+"\ '#d65d0e',
+"\ '#458588',
+"\ '#b16286',
+"\ '#78cee9',
+"\ '#d65d0e',
+"\ '#458588',
+"\ '#b16286',
+"\ '#98c379',
+"\ '#d65d0e',
+"\ '#458588',
+"\ '#b16286',
+"\ '#ff6d7e',
+"\ '#d65d0e',
+"\ ]
 
 " Customize fzf colors to match your color scheme
 " - fzf#wrap translates this to a set of `--color` options
 let g:fzf_colors =
-			\ { 'fg':      ['fg', 'Normal'],
-			\ 'bg':      ['bg', 'Normal'],
-			\ 'hl':      ['fg', 'Comment'],
-			\ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-			\ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-			\ 'hl+':     ['fg', 'Statement'],
-			\ 'info':    ['fg', 'PreProc'],
-			\ 'border':  ['fg', 'Ignore'],
-			\ 'prompt':  ['fg', 'Conditional'],
-			\ 'pointer': ['fg', 'Exception'],
-			\ 'marker':  ['fg', 'Keyword'],
-			\ 'spinner': ['fg', 'Label'],
-			\ 'header':  ['fg', 'Comment'] }
+	\ { 'fg':      ['fg', 'Normal'],
+	\ 'bg':      ['bg', 'Normal'],
+	\ 'hl':      ['fg', 'Comment'],
+	\ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+	\ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+	\ 'hl+':     ['fg', 'Statement'],
+	\ 'info':    ['fg', 'PreProc'],
+	\ 'border':  ['fg', 'Ignore'],
+	\ 'prompt':  ['fg', 'Conditional'],
+	\ 'pointer': ['fg', 'Exception'],
+	\ 'marker':  ['fg', 'Keyword'],
+	\ 'spinner': ['fg', 'Label'],
+	\ 'header':  ['fg', 'Comment'] }
 
 " Set completeopt to have a better completion experience
 set completeopt=menuone,noinsert,noselect
@@ -113,8 +113,8 @@ set t_ut=
 
 " Show syn hi groups under cursor.
 map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-			\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-			\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 
 set nofoldenable
@@ -226,7 +226,7 @@ nnoremap <C-l> <C-w>l
 
 
 " Indent
-map <leader>u gg=G
+map <leader>u gg=G``
 
 " Escape from search highlight.
 nnoremap <Esc><Esc> :nohlsearch<CR>
@@ -322,36 +322,36 @@ nnoremap <leader>T :Tags<CR>
 
 " Rg uses ripgrep.
 command! -bang -nargs=* Rg
-			\ call fzf#vim#grep(
-			\   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-			\   fzf#vim#with_preview(), <bang>0)
+	\ call fzf#vim#grep(
+	\   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+	\   fzf#vim#with_preview(), <bang>0)
 
 
 nnoremap <leader>g :Rg<CR>
 
 command! -bang -nargs=? -complete=dir Files
-			\ call fzf#vim#files(<q-args>, {'options': ['--layout=reverse', '--info=inline', '--preview', '~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}']}, <bang>0)
+	\ call fzf#vim#files(<q-args>, {'options': ['--layout=reverse', '--info=inline', '--preview', '~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}']}, <bang>0)
 
 command! -nargs=+ GotoOrOpen call fns#GotoOrOpen(<f-args>)
 
 let g:fzf_action = {
-			\ 'ctrl-t': 'GotoOrOpen tab',
-			\ 'ctrl-s': 'split',
-			\ 'ctrl-v': 'vsplit' }
+	\ 'ctrl-t': 'GotoOrOpen tab',
+	\ 'ctrl-s': 'split',
+	\ 'ctrl-v': 'vsplit' }
 
 let g:fzf_buffers_jump = 1
 
 command! FZFMru call fzf#run({
-			\ 'source':  reverse(s:all_files()),
-			\ 'sink':    'edit',
-			\ 'options': '-m -x +s',
-			\ 'down':    '40%' })
+	\ 'source':  reverse(s:all_files()),
+	\ 'sink':    'edit',
+	\ 'options': '-m -x +s',
+	\ 'down':    '40%' })
 
 function! s:all_files()
 	return extend(
-				\ filter(copy(v:oldfiles),
-				\        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
-				\ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
+		\ filter(copy(v:oldfiles),
+		\        "v:val !~ 'fugitive:\\|NERD_tree\\|^/tmp/\\|.git/'"),
+		\ map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'))
 endfunction
 
 " TODO ctrl-t doesn't work with this command

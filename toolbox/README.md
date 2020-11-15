@@ -2,10 +2,9 @@
 
 Dependencies:
 
-* Rootless podman with CGroupsV2.
+* Rootless podman with CGroupsV2 set up.
 * `tusk` task runner (https://github.com/rliebz/tusk)
 * `podman-compose`
-* `fuse-overlayfs`
 
 Build the toolbox:
 

@@ -27,6 +27,8 @@ let g:clipboard = {
 
 map Y "+y<CR>
 
+let g:shfmt_opt="-ci"
+
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
 
 " use omni completion provided by lsp, seems to work by itself

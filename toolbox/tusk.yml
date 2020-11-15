@@ -26,6 +26,7 @@ tasks:
           --build-arg user=${user}
           --build-arg group=${group}
           --build-arg neovim_commit=${neovim_commit}
+          build
           neovim
           rust
       - task:

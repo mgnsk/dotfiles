@@ -18,6 +18,14 @@ function! fns#Format()
 	endif
 endfunction
 
+function fns#ShowDocs()
+	if (index(['vim','help'], &filetype) >= 0)
+		execute 'h '.expand('<cword>')
+	else
+		lua vim.lsp.buf.hover()
+	endif
+endfunction
+
 set scrolloff=999
 function! fns#CursorLockToggle()
 	if &scrolloff

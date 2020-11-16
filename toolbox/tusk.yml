@@ -13,46 +13,44 @@ options:
     default: 35325ddac04b1b59b7982797021cdaabdabc87fb
 
 tasks:
-  build:
+  build-all:
     usage: Build all images.
     run:
+      - command: echo tere
+      - task:
+          name: build
+          args:
+            - ""
+
+  build:
+    usage: Build a single image.
+    args:
+      image:
+        usage: The image to build.
+    options:
+      pwd:
+        private: true
+        default:
+          command: pwd
+    run:
+      - when:
+          not-exists: build
+        command: |
+          mkdir build
+          source $HOME/.bash_aliases
+          cd $HOME
+          config archive --format tar.gz -o ${pwd}/build/dotfiles.tar.gz `git stash create`
       - command: >
           podman-compose
           -p toolbox
           build
-          --pull
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
           --build-arg neovim_commit=${neovim_commit}
-          build
-          neovim
-          rust
-      - task:
-          name: build-toolbox
-      - command: podman image prune -f
-    finally:
-      - command: rm -rf dotfiles
-
-  build-toolbox:
-    usage: Build the toolbox image.
-    description: Before building, copies fresh dotfiles from $HOME.
-    run:
-      - command: rm -rf dotfiles
-      - command: mkdir dotfiles
-      - command: bash -c "set -eo pipefail; cd $HOME; git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME ls-files | tar Tc - | tar Cx $HOME/toolbox/dotfiles"
-      - command: >
-          podman-compose
-          -p toolbox
-          build
-          --pull
-          --build-arg user=${user}
-          --build-arg group=${group}
-          toolbox
-      - command: podman image prune -f
-    finally:
-      - command: rm -rf dotfiles
+          ${image}
+      #- command: podman image prune -f
 
   bash:
     usage: Run a bash shell as the container UID in user namespace while mounting a shifted view of the filesystem.
@@ -68,6 +66,10 @@ tasks:
         private: true
         default:
           command: realpath ${workspace}
+      hostname:
+        private: true
+        default:
+          command: basename ${workspace}
       starttime:
         private: true
         default:
@@ -84,6 +86,7 @@ tasks:
             tmp: ${tmp}
       - set-environment:
           WORKSPACE_ROOT: ${tmp}/merged
+          WORKSPACE_HOSTNAME: ${hostname}
       - command: podman-compose -p toolbox run --rm --service-ports toolbox /bin/bash
     finally:
       - task:
@@ -101,9 +104,14 @@ tasks:
         private: yes
         default:
           command: realpath ${workspace}
+      hostname:
+        private: true
+        default:
+          command: basename ${workspace}
     run:
       - set-environment:
           WORKSPACE_ROOT: ${tmp}
+          WORKSPACE_HOSTNAME: ${hostname}
       - command: podman-compose -p toolbox run --rm --service-ports --user root toolbox /bin/bash
 
   clean:

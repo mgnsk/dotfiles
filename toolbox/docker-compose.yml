@@ -53,7 +53,7 @@ services:
       - "cargo-data:/homedir/.cargo"
       - "local-bin:/homedir/.local/bin"
       - "local-lib:/homedir/.local/lib"
-      - "bash-history:/homedir/.bash_history"
+      - "hist:/homedir/.hist"
     hostname: ${WORKSPACE_HOSTNAME}
     ports:
       # parcel
@@ -64,10 +64,7 @@ services:
 volumes:
   tmp:
   cache:
-  bash-history:
   nvim-data:
-  coc-clangd-data:
-  coc-phpls-data:
   direnv-data:
   tmux-resurrect:
   composer-global:
@@ -76,3 +73,4 @@ volumes:
   cargo-data:
   local-bin:
   local-lib:
+  hist:

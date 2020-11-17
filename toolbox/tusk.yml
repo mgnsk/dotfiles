@@ -13,13 +13,13 @@ options:
     default: ce70edb80e965c90fadafea72d758b4d2d531077
   buildtool:
     private: true
-    default: docker
-      #command: |
-        #if ! command -v podman &>/dev/null; then
-          #echo docker
-        #else
-          #echo podman
-        #fi
+    default:
+      command: |
+        if ! command -v podman &>/dev/null; then
+          echo docker
+        else
+          echo podman
+        fi
 
 tasks:
   build-all:
@@ -40,18 +40,14 @@ tasks:
         private: true
         default:
           command: echo $(pwd)/build
-      home:
-        private: true
-        default:
-          command: dirname $(pwd)
     run:
       - when:
           - not-exists: build
       - command: |
           set -e
           mkdir -p ${tmp}/dotfiles
-          . ${home}/.bash_aliases
-          cd ${home}
+          source $HOME/.bash_aliases
+          cd $HOME
           config ls-files | tar Tc - | tar Cx ${tmp}/dotfiles
       - command: >
           ${buildtool}-compose

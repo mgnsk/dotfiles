@@ -6,5 +6,5 @@ jobs:
     steps:
       - name: Build the images
         uses: actions/checkout@v2
-      - run: curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
-      - run: tusk build-all
+      - run: curl -sL https://git.io/tusk | bash -s -- -b . latest
+      - run: ./tusk build-all

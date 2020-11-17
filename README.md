@@ -1,5 +1,3 @@
-![example workflow name](https://github.com/mgnsk/dotfiles/workflows/build/badge.svg)
-
 # Installation
 
 Warning: overwrites the user's files.

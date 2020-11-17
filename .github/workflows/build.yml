@@ -7,4 +7,5 @@ jobs:
       - name: Build the images
         uses: actions/checkout@v2
       - run: curl -sL https://git.io/tusk | bash -s -- -b . latest
-      - run: cd toolbox && ../tusk build-all
+      - run: cd toolbox && ../tusk
+      #- run: cd toolbox && ../tusk build-all

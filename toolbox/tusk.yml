@@ -46,7 +46,7 @@ tasks:
       - command: |
           set -e
           mkdir -p ${tmp}/dotfiles
-          source $HOME/.bash_aliases
+          . $HOME/.bash_aliases
           cd $HOME
           config ls-files | tar Tc - | tar Cx ${tmp}/dotfiles
       - command: >

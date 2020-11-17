@@ -13,13 +13,13 @@ options:
     default: ce70edb80e965c90fadafea72d758b4d2d531077
   buildtool:
     private: true
-    default:
-      command: |
-        if ! command -v podman &>/dev/null; then
-          echo docker
-        else
-          echo podman
-        fi
+    default: docker
+      #command: |
+        #if ! command -v podman &>/dev/null; then
+          #echo docker
+        #else
+          #echo podman
+        #fi
 
 tasks:
   build-all:

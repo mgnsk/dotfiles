@@ -11,6 +11,15 @@ options:
   neovim_commit:
     private: true
     default: ce70edb80e965c90fadafea72d758b4d2d531077
+  buildtool:
+    private: true
+    default:
+      command: |
+        if ! command -v podman &>/dev/null; then
+          echo docker
+        else
+          echo podman
+        fi
 
 tasks:
   build-all:
@@ -41,7 +50,7 @@ tasks:
           cd $HOME
           config ls-files | tar Tc - | tar Cx ${tmp}/dotfiles
       - command: >
-          podman-compose
+          ${buildtool}-compose
           -p toolbox
           build
           --build-arg uid=${uid}
@@ -50,7 +59,7 @@ tasks:
           --build-arg group=${group}
           --build-arg neovim_commit=${neovim_commit}
           ${image}
-          && podman image prune -f
+          && ${buildtool} image prune -f
 
   bash:
     usage: Run a bash shell as the container UID in user namespace while mounting a shifted view of the filesystem.

@@ -1,0 +1,10 @@
+name: build
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the images
+      - run: curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
+      - run: tusk build-all

@@ -40,14 +40,18 @@ tasks:
         private: true
         default:
           command: echo $(pwd)/build
+      home:
+        private: true
+        default:
+          command: dirname $(pwd)
     run:
       - when:
           - not-exists: build
       - command: |
           set -e
           mkdir -p ${tmp}/dotfiles
-          . $HOME/.bash_aliases
-          cd $HOME
+          . ${home}/.bash_aliases
+          cd ${home}
           config ls-files | tar Tc - | tar Cx ${tmp}/dotfiles
       - command: >
           ${buildtool}-compose

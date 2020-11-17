@@ -33,10 +33,10 @@ RUN dnf install --setopt=install_weak_deps=False -y \
 	brotli \
 	&& dnf clean all
 
+COPY --chown=${user}:${group} /dotfiles /homedir
 COPY --from=toolbox_neovim /neovim /homedir/neovim
 COPY --from=toolbox_rust --chown=${user}:${group} /cargo.tar.gz /homedir/cargo.tar.gz
 COPY --from=toolbox_rust --chown=${user}:${group} /rustup.tar.gz /homedir/rustup.tar.gz
-ADD --chown=${user}:${group} /dotfiles /homedir
 
 USER ${user}
 
@@ -60,8 +60,7 @@ RUN mkdir -p .cargo .rustup \
 	~/go \
 	~/.cargo \
 	~/.local/bin \
-	~/.local/lib \
-	&& touch ~/.bash_history
+	~/.local/lib
 
 WORKDIR /workspace
 

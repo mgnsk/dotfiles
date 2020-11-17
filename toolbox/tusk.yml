@@ -105,6 +105,7 @@ tasks:
       - command: find ${workspace} -newermt "${starttime}" \( -type c -or \( -type f -and -name ".wh..wh..opq" \) \) -delete
 
   root:
+    usage: Run a root shell in the container.
     args:
       workspace:
         usage: The workspace directory to run in.

@@ -15,6 +15,16 @@ function _G.copy(content)
 end
 LUA
 
+lua <<LUA
+require'nvim-treesitter.configs'.setup {
+ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+highlight = {
+enable = true,              -- false will disable the whole extension
+--  disable = { "c", "rust" },  -- list of language that will be disabled
+},
+}
+LUA
+
 let g:clipboard = {
 	\ 'name': 'myClipboard',
 	\     'copy': {
@@ -108,7 +118,8 @@ set shortmess+=c
 set lazyredraw
 
 set termguicolors
-colorscheme sonokai
+"colorscheme sonokai
+colorscheme base16-default-dark
 set t_ut=
 
 " Show syn hi groups under cursor.

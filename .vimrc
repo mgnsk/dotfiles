@@ -118,8 +118,7 @@ set shortmess+=c
 set lazyredraw
 
 set termguicolors
-"colorscheme sonokai
-colorscheme base16-default-dark
+colorscheme codedark
 set t_ut=
 
 " Show syn hi groups under cursor.

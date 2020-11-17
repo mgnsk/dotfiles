@@ -14,7 +14,12 @@ options:
   buildtool:
     private: true
     default:
-      command: if ! command -v podman &>/dev/null; then echo docker; else echo podman; fi
+      command: |
+        if ! command -v podman &>/dev/null; then
+          echo docker
+        else
+          echo podman
+        fi
 
 tasks:
   build-all:
@@ -44,6 +49,8 @@ tasks:
           source $HOME/.bash_aliases
           cd $HOME
           config ls-files | tar Tc - | tar Cx ${tmp}/dotfiles
+      - command: echo test
+      - command: exit 1
       - command: >
           ${buildtool}-compose
           -p toolbox

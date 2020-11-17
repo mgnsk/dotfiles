@@ -36,7 +36,7 @@ RUN dnf install --setopt=install_weak_deps=False -y \
 COPY --from=toolbox_neovim /neovim /homedir/neovim
 COPY --from=toolbox_rust --chown=${user}:${group} /cargo.tar.gz /homedir/cargo.tar.gz
 COPY --from=toolbox_rust --chown=${user}:${group} /rustup.tar.gz /homedir/rustup.tar.gz
-ADD --chown=${user}:${group} /dotfiles.tar.gz /homedir
+ADD --chown=${user}:${group} /dotfiles /homedir
 
 USER ${user}
 

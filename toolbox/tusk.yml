@@ -25,10 +25,10 @@ tasks:
   build-all:
     usage: Build all images.
     run:
-    - task:
-        name: build
-        args:
-        - ""
+      - task:
+          name: build
+          args:
+            - ""
 
   build:
     usage: Build a single image.
@@ -41,8 +41,8 @@ tasks:
         default:
           command: echo $(pwd)/build
     run:
-    - when:
-      - not-exists: build
+      - when:
+          - not-exists: build
       - command: |
           set -e
           mkdir -p ${tmp}/dotfiles
@@ -84,25 +84,25 @@ tasks:
         default:
           command: date
     run:
-    - command: |
-        if [ "$(pwd)" == "${upperdir}" ]; then echo "invalid workspace: ${upperdir}"; exit 1; fi
-    - task:
-        name: _mount
-        options:
-          uid: ${uid}
-          gid: ${gid}
-          upperdir: ${upperdir}
-          tmp: ${tmp}
-    - set-environment:
-        WORKSPACE_ROOT: ${tmp}/merged
-        WORKSPACE_HOSTNAME: ${hostname}
-    - command: podman-compose -p toolbox run --rm --service-ports toolbox /bin/bash
+      - command: |
+          if [ "$(pwd)" == "${upperdir}" ]; then echo "invalid workspace: ${upperdir}"; exit 1; fi
+      - task:
+          name: _mount
+          options:
+            uid: ${uid}
+            gid: ${gid}
+            upperdir: ${upperdir}
+            tmp: ${tmp}
+      - set-environment:
+          WORKSPACE_ROOT: ${tmp}/merged
+          WORKSPACE_HOSTNAME: ${hostname}
+      - command: podman-compose -p toolbox run --rm --service-ports toolbox /bin/bash
     finally:
-    - task:
-        name: _unmount
-        options:
-          tmp: ${tmp}
-    - command: find ${workspace} -newermt "${starttime}" \( -type c -or \( -type f -and -name ".wh..wh..opq" \) \) -delete
+      - task:
+          name: _unmount
+          options:
+            tmp: ${tmp}
+      - command: find ${workspace} -newermt "${starttime}" \( -type c -or \( -type f -and -name ".wh..wh..opq" \) \) -delete
 
   root:
     args:
@@ -118,21 +118,21 @@ tasks:
         default:
           command: basename ${workspace}
     run:
-    - set-environment:
-        WORKSPACE_ROOT: ${tmp}
-        WORKSPACE_HOSTNAME: ${hostname}
-    - command: podman-compose -p toolbox run --rm --service-ports --user root toolbox /bin/bash
+      - set-environment:
+          WORKSPACE_ROOT: ${tmp}
+          WORKSPACE_HOSTNAME: ${hostname}
+      - command: podman-compose -p toolbox run --rm --service-ports --user root toolbox /bin/bash
 
   clean:
     usage: Remove pod and volumes.
     run:
-    - command: podman pod kill toolbox || true
-    - command: podman pod rm toolbox || true
-    - command: for v in $(podman volume ls | awk 'NR>1 {print $2}' | grep "^toolbox"); do podman volume rm $v; done
-    - task:
-        name: _unmount
-        options:
-          tmp: .fuse-*
+      - command: podman pod kill toolbox || true
+      - command: podman pod rm toolbox || true
+      - command: for v in $(podman volume ls | awk 'NR>1 {print $2}' | grep "^toolbox"); do podman volume rm $v; done
+      - task:
+          name: _unmount
+          options:
+            tmp: .fuse-*
 
   _mount:
     include: cmd/mount.yml

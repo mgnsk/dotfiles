@@ -14,12 +14,7 @@ options:
   buildtool:
     private: true
     default:
-      command: |
-        if ! command -v podman &>/dev/null; then
-          echo docker
-        else
-          echo podman
-        fi
+      command: if ! command -v podman &>/dev/null; then echo docker; else echo podman; fi
 
 tasks:
   build-all:

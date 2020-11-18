@@ -16,5 +16,4 @@ if test ! -d ~/.config/nvim; then
 fi
 
 nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
-
-nvim --headless -c 'TSInstall all' -c 'qa'
+nvim --headless -u ~/.vim/plugins.vim -c 'TSInstallSync all' -c 'qa'

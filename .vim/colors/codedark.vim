@@ -194,10 +194,10 @@ call <sid>hi('Define', s:cdPink, {}, 'none', {})
 call <sid>hi('Macro', s:cdPink, {}, 'none', {})
 call <sid>hi('PreCondit', s:cdPink, {}, 'none', {})
 
-call <sid>hi('Type', s:cdBlue, {}, 'none', {})
+call <sid>hi('Type', s:cdBlueGreen, {}, 'none', {})
 call <sid>hi('StorageClass', s:cdBlue, {}, 'none', {})
 call <sid>hi('Structure', s:cdBlue, {}, 'none', {})
-call <sid>hi('Typedef', s:cdBlue, {}, 'none', {})
+call <sid>hi('Typedef', s:cdBlueGreen, {}, 'none', {})
 
 call <sid>hi('Special', s:cdYellowOrange, {}, 'none', {})
 call <sid>hi('SpecialChar', s:cdFront, {}, 'none', {})
@@ -219,3 +219,9 @@ call <sid>hi('SpellBad', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
 call <sid>hi('SpellCap', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
 call <sid>hi('SpellRare', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
 call <sid>hi('SpellLocal', s:cdRed, s:cdBack, 'undercurl', s:cdRed)
+
+" GitGutter highlighting
+call <sid>hi("GitGutterAdd",     s:cdGreen, s:cdBack, '', '')
+call <sid>hi("GitGutterChange",  s:cdOrange, s:cdBack, '', '')
+call <sid>hi("GitGutterDelete",  s:cdRed, s:cdBack, '', '')
+call <sid>hi("GitGutterChangeDelete",  s:cdViolet, s:cdBack, '', '')

@@ -12,6 +12,12 @@ endfunction
 
 command AutoformatToggle :call AutoformatToggle()
 
+function! fns#Indent()
+	if s:autoformat_enabled
+		execute('normal gg=G``')
+	endif
+endfunction
+
 function! fns#Format()
 	if s:autoformat_enabled
 		execute('Neoformat')

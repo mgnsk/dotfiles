@@ -44,23 +44,27 @@ ENV USER=${user}
 
 WORKDIR /homedir
 
-RUN mkdir -p .cargo .rustup \
-	&& tar -zxf cargo.tar.gz -C . \
-	&& tar -zxf rustup.tar.gz -C . \
-	&& rm -rf cargo.tar.gz rustup.tar.gz \
-	&& bash ~/setup.sh \
-	&& rm -rf ~/.cache \
-	&& mkdir -p \
-	~/.cache \
-	~/.local/share/nvim \
-	~/.local/share/direnv \
-	~/.tmux/resurrect \
-	~/.composer \
-	~/.npm-global \
-	~/go \
-	~/.cargo \
-	~/.local/bin \
-	~/.local/lib
+RUN bash -c $'\
+set -e\n\
+mkdir -p .cargo .rustup\n\
+tar -zxf cargo.tar.gz -C .\n\
+tar -zxf rustup.tar.gz -C .\n\
+rm -rf cargo.tar.gz rustup.tar.gz\n\
+source .env\n\
+bash setup.sh\n\
+go clean -modcache\n\
+rm -rf .cache\n\
+mkdir -p \
+.cache \
+.local/share/nvim \
+.local/share/direnv \
+.tmux/resurrect \
+.composer \
+.npm-global \
+go \
+.cargo \
+.local/bin \
+.local/lib'
 
 WORKDIR /workspace
 

@@ -13,4 +13,6 @@ import (
 	_ "golang.org/x/tools/cmd/goimports"
 	_ "golang.org/x/tools/cmd/guru"
 	_ "golang.org/x/tools/gopls"
+	_ "mvdan.cc/gofumpt"
+	_ "mvdan.cc/gofumpt/gofumports"
 )

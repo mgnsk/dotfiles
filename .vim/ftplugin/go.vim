@@ -1,13 +1,18 @@
 let s:formatter = 'goimports'
 
+let s:current = 0
+
+let s:formatters = ['gofmt', 'goimports', 'gofumpt', 'gofumports']
+
+let g:neoformat_enabled_go = ['goimports']
+
 function! GoFormatToggle()
-	if s:formatter == 'goimports'
-		let s:formatter = 'gofmt'
-	else
-		let s:formatter = 'goimports'
-	endif
-	let g:neoformat_enabled_go = [s:formatter]
-	echo 'Go formatter set to ' . s:formatter
+	let s:current += 1
+
+	let selected = s:formatters[s:current%len(s:formatters)]
+
+	let g:neoformat_enabled_go = [selected]
+	echo 'Go formatter set to ' . selected
 endfunction
 
 command GoFormatToggle :call GoFormatToggle()

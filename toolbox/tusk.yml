@@ -8,9 +8,6 @@ options:
     default: user
   group:
     default: user
-  neovim_commit:
-    private: true
-    default: 97ffa158aa9ae6c80a48b3ceea91270f0a179743
   buildtool:
     private: true
     default:
@@ -22,19 +19,8 @@ options:
         fi
 
 tasks:
-  build-all:
-    usage: Build all images.
-    run:
-      - task:
-          name: build
-          args:
-            - ""
-
   build:
-    usage: Build a single image.
-    args:
-      image:
-        usage: The image to build.
+    usage: Build the toolbox image.
     options:
       tmp:
         private: true
@@ -57,8 +43,6 @@ tasks:
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
-          --build-arg neovim_commit=${neovim_commit}
-          ${image}
           && ${buildtool} image prune -f
 
   bash:

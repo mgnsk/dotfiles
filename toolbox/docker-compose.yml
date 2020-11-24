@@ -10,15 +10,6 @@ services:
         - user
         - group
 
-  neovim:
-    depends_on:
-      - build
-    build:
-      context: images/neovim
-      args:
-        - user
-        - neovim_commit
-
   rust:
     depends_on:
       - build
@@ -29,7 +20,6 @@ services:
 
   toolbox:
     depends_on:
-      - neovim
       - rust
     build:
       context: build

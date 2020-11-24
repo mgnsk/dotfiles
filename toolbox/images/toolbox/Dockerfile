@@ -34,7 +34,6 @@ RUN dnf install --setopt=install_weak_deps=False -y \
 	&& dnf clean all
 
 COPY --chown=${user}:${group} /dotfiles /homedir
-COPY --from=toolbox_neovim /neovim /homedir/neovim
 COPY --from=toolbox_rust --chown=${user}:${group} /cargo.tar.gz /homedir/cargo.tar.gz
 COPY --from=toolbox_rust --chown=${user}:${group} /rustup.tar.gz /homedir/rustup.tar.gz
 
@@ -53,6 +52,7 @@ rm -rf cargo.tar.gz rustup.tar.gz\n\
 source .env\n\
 bash setup.sh\n\
 go clean -modcache\n\
+rm -rf neovim_src\n\
 rm -rf .cache\n\
 mkdir -p \
 .cache \

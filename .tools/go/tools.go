@@ -10,6 +10,7 @@ import (
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/rliebz/tusk"
 	_ "github.com/uber/prototool/cmd/prototool"
+	_ "golang.org/x/tools/cmd/godoc"
 	_ "golang.org/x/tools/cmd/goimports"
 	_ "golang.org/x/tools/cmd/guru"
 	_ "golang.org/x/tools/gopls"

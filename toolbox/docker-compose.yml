@@ -46,9 +46,12 @@ services:
       - "hist:/homedir/.hist"
     hostname: ${WORKSPACE_HOSTNAME}
     ports:
+      # godoc
+      - 6060
       # parcel
       - 1234
       - 5000
+      # static HMR port for parcel
       - 33969
 
 volumes:

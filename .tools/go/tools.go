@@ -16,4 +16,5 @@ import (
 	_ "golang.org/x/tools/gopls"
 	_ "mvdan.cc/gofumpt"
 	_ "mvdan.cc/gofumpt/gofumports"
+	_ "mvdan.cc/sh/v3/cmd/shfmt"
 )

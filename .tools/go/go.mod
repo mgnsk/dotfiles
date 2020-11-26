@@ -9,4 +9,5 @@ require (
 	github.com/rliebz/tusk v0.6.1 // indirect
 	github.com/uber/prototool v1.10.0 // indirect
 	golang.org/x/tools/gopls v0.5.3 // indirect
+	mvdan.cc/sh/v3 v3.2.0 // indirect
 )

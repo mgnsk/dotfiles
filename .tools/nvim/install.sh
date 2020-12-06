@@ -2,7 +2,7 @@
 
 set -e
 
-neovim_commit=ea3aaa020fee3265e972aaff15f38959d76d875e
+neovim_commit=31787a91dcb1dc4b346129d22d0f44eb17a1f392
 
 wget https://github.com/neovim/neovim/archive/${neovim_commit}.zip
 unzip -q ${neovim_commit}.zip

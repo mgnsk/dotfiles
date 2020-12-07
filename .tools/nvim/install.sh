@@ -17,5 +17,5 @@ nvim --version
 nvim --headless -c 'PaqInstall' -c 'qa'
 nvim --headless -c 'TSInstallSync all' -c 'qa'
 
-#nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
-#nvim --headless -u ~/.vim/plugins.vim -c 'TSInstallSync all' -c 'qa'
+##nvim --headless -u ~/.vim/plugins.vim -S ~/.vim/plugin.lock -c 'qa'
+##nvim --headless -u ~/.vim/plugins.vim -c 'TSInstallSync all' -c 'qa'

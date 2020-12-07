@@ -20,8 +20,7 @@ paq "svermeulen/vimpeccable"
 require "nvim-treesitter.configs".setup {
     ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
     highlight = {
-        enable = true -- false will disable the whole extension
-        --  disable = { "c", "rust" },  -- list of language that will be disabled
+        enable = true
     }
 }
 
@@ -39,6 +38,7 @@ vim.g.fzf_action = {
     ["ctrl-v"] = "vsplit"
 }
 vim.g.fzf_buffers_jump = 1
+vim.g.gitgutter_sign_columns_always = 1
 
 function _G.dump(...)
     local objects = vim.tbl_map(vim.inspect, {...})
@@ -46,7 +46,6 @@ function _G.dump(...)
 end
 
 function _G.osc52(content)
-    print("yanking")
     local w = assert(io.open("/dev/tty", "w"))
     assert(w:write(string.format("\x1b]52;c;%s\x1b", require("base64").encode(content))))
     assert(w:close())
@@ -55,30 +54,29 @@ end
 vim.o.completeopt = "menuone,noinsert,noselect"
 vim.o.lazyredraw = true
 vim.o.termguicolors = true
---vim.o.nofoldenable = true
+vim.cmd("set nofoldenable")
 vim.o.hidden = true
---vim.o.nobackup = true
+vim.cmd("set nobackup")
 vim.o.backupcopy = "yes"
 vim.o.writebackup = true
 vim.o.swapfile = true
 vim.o.cmdheight = 2
 vim.o.updatetime = 1000
 vim.o.timeoutlen = 500
-vim.o.signcolumn = "yes"
+vim.o.signcolumn = "yes:1"
 vim.o.splitbelow = true
 vim.o.splitright = true
-vim.o.number = true
 vim.o.encoding = "UTF-8"
-vim.o.tabstop = 4
-vim.o.softtabstop = 4
-vim.o.shiftwidth = 4
---vim.o.noexpandtab = true
---vim.o.nocompatible = true
 vim.o.autoindent = true
 vim.o.smartindent = true
 vim.o.pastetoggle = "<F2>"
+vim.cmd("set noshowcmd")
+vim.cmd("set noruler")
+vim.cmd("set number")
+
 --vim.o.noshowcmd = true
 --vim.o.noruler = true
+
 vim.o.laststatus = 2
 vim.o.path = vim.o.path .. "**"
 vim.o.runtimepath = vim.o.runtimepath .. ",~/.fzf"
@@ -92,7 +90,7 @@ vim.cmd("set tabline=%!MyTabLine()")
 
 local vimp = require "vimp"
 
---vimp.nnoremap("Y", "+y<CR>")
+vimp.nnoremap("Y", [["+y<CR>]])
 vimp.inoremap("jj", "<Esc>")
 vimp.tnoremap("<Esc>", [[<C-\><C-n>]])
 vimp.nnoremap("<Esc><Esc>", ":nohlsearch<CR>")

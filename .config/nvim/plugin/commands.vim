@@ -1,5 +1,3 @@
-echo "WTF"
-
 let g:clipboard = {
 	\ 'name': 'myClipboard',
 	\     'copy': {
@@ -10,7 +8,22 @@ let g:clipboard = {
 	\     },
 	\ }
 
-map Y "+y<CR>
+set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+set noexpandtab
+set nocompatible
+"set lazyredraw
+
+" Show syn hi groups under cursor.
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+" Use persistent history.
+if !isdirectory($VIM_UNDO_DIR)
+	call mkdir($VIM_UNDO_DIR)
+endif
+set undodir=$VIM_UNDO_DIR
+set undofile
 
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
 
@@ -38,74 +51,11 @@ let g:fzf_colors =
 	\ 'spinner': ['fg', 'Label'],
 	\ 'header':  ['fg', 'Comment'] }
 
-" Set completeopt to have a better completion experience
-
-" Avoid showing message extra message when using completion
-"set shortmess+=c
-
-"set lazyredraw
-
-"set termguicolors
-"set t_ut=
-
-" Show syn hi groups under cursor.
-map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-
-
-
-" Use persistent history.
-if !isdirectory($VIM_UNDO_DIR)
-	call mkdir($VIM_UNDO_DIR)
-endif
-set undodir=$VIM_UNDO_DIR
-set undofile
-
-
-
-
-let s:branch = ''
-
-function! Branch()
-	return s:branch
-endfunction
-
-function! GitBranch()
-endfunction
-
-function! UpdateBranch()
-	let s:branch = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-endfunction
-
-" TODO currently using a slow timer instead of autocmd CursorHold
-" every time 'system' is called there's a cursor flicker.
-call timer_start(10000, { tid -> execute('call UpdateBranch()') }, {'repeat': -1})
-
-set statusline=
-set statusline+=%#lv15c#
-set statusline+=\ %{Branch()}
-set statusline+=%#LineNr#
-set statusline+=\ %m
-set statusline+=\ %f
-set statusline+=%=
-set statusline+=%#LineNr#
-set statusline+=\ %y
-set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
-set statusline+=\[%{&fileformat}\]
-set statusline+=\ %{fns#FileSize()}
-set statusline+=\ %p%%
-set statusline+=\ %l:%c
-set statusline+=\ 
-
-
-
 " Rg uses ripgrep.
 command! -bang -nargs=* Rg
 	\ call fzf#vim#grep(
 	\   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
 	\   fzf#vim#with_preview(), <bang>0)
-
 
 command! -bang -nargs=? -complete=dir Files
 	\ call fzf#vim#files(<q-args>, {'options': ['--layout=reverse', '--info=inline', '--preview', '~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}']}, <bang>0)

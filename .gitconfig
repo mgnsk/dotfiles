@@ -11,3 +11,7 @@
 	cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
 [merge]
 	tool = nvim
+[user]
+	signingkey = A991D5498D19B649
+[commit]
+	gpgSign = true

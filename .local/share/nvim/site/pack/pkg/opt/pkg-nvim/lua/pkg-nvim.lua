@@ -1,8 +1,6 @@
 local PATH = vim.fn.stdpath("data") .. "/site/pack/pkg/start/"
 local GITHUB = "https://github.com/"
 local REPO_RE = "^[%w-]+/([%w-_.]+)$"
-
-local uv = vim.loop
 local packages = {}
 
 local function install_pkg(url, dir)

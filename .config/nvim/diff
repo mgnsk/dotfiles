@@ -1,0 +1,120 @@
+diff --git a/.config/nvim/init.lua b/.config/nvim/init.lua
+index 2505cba..ab7207e 100644
+--- a/.config/nvim/init.lua
++++ b/.config/nvim/init.lua
+@@ -1,11 +1,13 @@
+-require("plugins")
++vim.cmd 'packadd plugins'
+ 
+-require "nvim-treesitter.configs".setup {
+-    ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+-    highlight = {
+-        enable = true
+-    }
+-}
++local pkg = require'plugins'.pkg
++
++--require "nvim-treesitter.configs".setup {
++--    ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
++--    highlight = {
++--        enable = true
++--    }
++--}
+ 
+ vim.g.mapleader = ","
+ vim.g.shfmt_opt = "-ci"
+diff --git a/.config/nvim/lua/plugins.lua b/.config/nvim/lua/plugins.lua
+index 8b1a051..3961ae3 100644
+--- a/.config/nvim/lua/plugins.lua
++++ b/.config/nvim/lua/plugins.lua
+@@ -1,34 +1,29 @@
+-vim.cmd [[packadd packer.nvim]]
++local PATH    = vim.fn.stdpath('data') .. '/site/pack/pkg/'
++local GITHUB  = 'https://github.com/'
+ 
+-return require("packer").startup(
+-    function()
+-        -- Packer can manage itself as an optional plugin
+-        use {"wbthomason/packer.nvim", opt = true}
++local uv = vim.loop
++local packages = {}
+ 
+-        use "preservim/nerdcommenter"
+-        use "neovim/nvim-lspconfig"
+-        use "nvim-lua/completion-nvim"
+-        use "nvim-treesitter/nvim-treesitter"
+-        use "sheerun/vim-polyglot"
+-        use "junegunn/fzf.vim"
+-        use "airblade/vim-gitgutter"
+-        use {
+-            "arp242/gopher.vim",
+-            ft = {"go"}
+-        }
+-        use {
+-            "sebdah/vim-delve",
+-            ft = {"go"}
+-        }
++local function install_pkg(url, dir)
++	local file = io.open(string.format("git clone --depth 1 %s %s", url, dir))
++	local output = file:read('*all')
++	file:close()
++	print(output)
++end
+ 
+-        use "Townk/vim-autoclose"
+-        use "neomake/neomake"
+-        use "tpope/vim-fugitive"
+-        use "sbdchd/neoformat"
+-        use {
+-            "rbtnn/vim-vimscript_indentexpr",
+-            ft = {"vim"}
+-        }
+-        use "svermeulen/vimpeccable"
++local function map_pkgs(fn)
++    for name, args in pairs(packages) do
++        fn(args.url, PATH .. name)
+     end
+-)
++end
++
++local function pkg(name)
++    packages[name] = {
++        url    = GITHUB .. name .. '.git',
++    }
++end
++
++return {
++    install = function() map_pkgs(install_pkg) end,
++    pkg     = pkg
++}
+diff --git a/.config/nvim/plugin/commands.vim b/.config/nvim/plugin/commands.vim
+index 5a10f35..d5af915 100644
+--- a/.config/nvim/plugin/commands.vim
++++ b/.config/nvim/plugin/commands.vim
+@@ -26,11 +26,12 @@ endif
+ set undodir=$VIM_UNDO_DIR
+ set undofile
+ 
++command! PlugInstall lua require'plugins'.install()
++
+ command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
+ 
+ autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc
+ autocmd TermOpen term://* startinsert
+-autocmd BufWritePost plugins.lua PackerCompile
+ 
+ "nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+ "nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+diff --git a/.tools/nvim/install.sh b/.tools/nvim/install.sh
+index 07c5b36..5d7df6a 100755
+--- a/.tools/nvim/install.sh
++++ b/.tools/nvim/install.sh
+@@ -14,7 +14,5 @@ cd ..
+ rm -rf neovim-${neovim_commit}
+ 
+ nvim --version
+-
+-git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/opt/packer.nvim
+-nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'PackerSync' -c 'qa'
++nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'PlugInstall' -c 'qa'
+ nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'TSInstallSync all' -c 'qa'

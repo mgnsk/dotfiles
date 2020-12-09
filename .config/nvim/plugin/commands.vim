@@ -12,6 +12,7 @@ set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
 set noexpandtab
 set nocompatible
 "set lazyredraw
+"
 
 " Show syn hi groups under cursor.
 map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
@@ -27,7 +28,6 @@ set undofile
 
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
 
-" use omni completion provided by lsp, seems to work by itself
 autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc
 autocmd TermOpen term://* startinsert
 

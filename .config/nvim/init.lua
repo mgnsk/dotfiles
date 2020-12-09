@@ -1,22 +1,5 @@
-vim.cmd "packadd paq-nvim"
-local paq = require "paq-nvim".paq
-
-paq "preservim/nerdcommenter"
-paq "neovim/nvim-lspconfig"
-paq "nvim-lua/completion-nvim"
-paq "nvim-treesitter/nvim-treesitter"
-paq "sheerun/vim-polyglot"
-paq "junegunn/fzf.vim"
-paq "airblade/vim-gitgutter"
-paq "arp242/gopher.vim"
-paq "sebdah/vim-delve"
-paq "Townk/vim-autoclose"
-paq "neomake/neomake"
-paq "tpope/vim-fugitive"
-paq "sbdchd/neoformat"
-paq "rbtnn/vim-vimscript_indentexpr"
-paq "svermeulen/vimpeccable"
-
+vim.cmd "packadd pkg-nvim"
+require "plugins"
 require "nvim-treesitter.configs".setup {
     ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
     highlight = {
@@ -90,7 +73,7 @@ vim.cmd("set tabline=%!MyTabLine()")
 
 local vimp = require "vimp"
 
-vimp.nnoremap("Y", [["+y<CR>]])
+vimp.vnoremap("Y", [["+y<CR>]])
 vimp.inoremap("jj", "<Esc>")
 vimp.tnoremap("<Esc>", [[<C-\><C-n>]])
 vimp.nnoremap("<Esc><Esc>", ":nohlsearch<CR>")

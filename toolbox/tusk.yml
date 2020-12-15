@@ -120,7 +120,7 @@ tasks:
             tmp: .fuse-*
 
   _mount:
-    include: cmd/mount.yml
+    include: tasks/mount.yml
 
   _unmount:
-    include: cmd/unmount.yml
+    include: tasks/unmount.yml

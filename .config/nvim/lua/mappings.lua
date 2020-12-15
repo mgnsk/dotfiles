@@ -69,7 +69,7 @@ vimp.nnoremap(
     {"silent"},
     "K",
     function()
-        --vim.call("fns#ShowDocs")
+        vim.call("fns#ShowDocs")
     end
 )
 vimp.nnoremap({"silent"}, "gD", vim.lsp.buf.implementation)

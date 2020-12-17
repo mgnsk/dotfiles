@@ -15,9 +15,15 @@ endfunction
 " every time 'system' is called there's a cursor flicker.
 call timer_start(10000, { tid -> execute('call UpdateBranch()') }, {'repeat': -1})
 
+function! GitStatus()
+	let [a,m,r] = GitGutterGetHunkSummary()
+	return printf('+%d ~%d -%d', a, m, r)
+endfunction
+
 set statusline=
-set statusline+=%#lv15c#
+set statusline+=%#LineNr#
 set statusline+=\ %{Branch()}
+set statusline+=\ %{GitStatus()}
 set statusline+=%#LineNr#
 set statusline+=\ %m
 set statusline+=\ %f

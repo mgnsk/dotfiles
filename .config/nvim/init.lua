@@ -10,7 +10,8 @@ require "nvim-treesitter.configs".setup {
 
 vim.o.completeopt = "menuone,noinsert,noselect"
 vim.o.lazyredraw = true
-vim.o.termguicolors = true
+vim.cmd("set termguicolors")
+-- TODO check what else only works with vim.cmd
 vim.cmd("set nofoldenable")
 vim.o.hidden = true
 vim.cmd("set nobackup")
@@ -40,6 +41,8 @@ vim.cmd("filetype indent on")
 vim.cmd("syntax on")
 vim.cmd("colorscheme codedark")
 vim.cmd("set tabline=%!MyTabLine()")
+
+require "colorizer".setup()
 
 vim.g.shfmt_opt = "-ci"
 vim.g.neomake_open_list = 2

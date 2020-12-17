@@ -5,7 +5,14 @@ vim.g.mapleader = ","
 vimp.vnoremap("Y", [["+y<CR>]])
 vimp.inoremap("jj", "<Esc>")
 vimp.tnoremap("jj", [[<C-\><C-n>]])
-vimp.nnoremap("qq", ":bd!<CR>")
+
+vimp.nnoremap(
+    "qq",
+    function()
+        vim.call("fns#BD")
+    end
+)
+
 vimp.nnoremap("<C-h>", "<C-w>h")
 vimp.nnoremap("<C-j>", "<C-w>j")
 vimp.nnoremap("<C-k>", "<C-w>k")

@@ -10,8 +10,4 @@ fi
 echo "### Installing rust tools"
 rustup component add rustfmt rls rust-analysis rust-src clippy
 
-git clone https://github.com/I60R/page.git ~/page
-cd ~/page
-cargo install --path .
-
-rm -rf ~/.cargo/registry ~/page
+rm -rf ~/.cargo/registry

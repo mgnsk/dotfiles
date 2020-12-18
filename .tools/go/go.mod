@@ -8,6 +8,6 @@ require (
 	github.com/golangci/golangci-lint v1.33.0 // indirect
 	github.com/rliebz/tusk v0.6.1 // indirect
 	github.com/uber/prototool v1.10.0 // indirect
-	golang.org/x/tools/gopls v0.6.0 // indirect
+	golang.org/x/tools/gopls v0.6.1 // indirect
 	mvdan.cc/sh/v3 v3.2.1 // indirect
 )

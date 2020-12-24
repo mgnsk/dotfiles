@@ -7,7 +7,7 @@
 [diff]
 	tool = nvim
 [mergetool "nvim"]
-	cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
+	cmd = NVIM_LSP_DISABLED=1 nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
 [merge]
 	tool = nvim
 [commit]

@@ -1,6 +1,13 @@
 vim.cmd "packadd pkg-nvim"
+
+vim.g.mapleader = ","
+
 require "mappings"
-require "lsp"
+
+if not os.getenv("NVIM_LSP_DISABLED") then
+    require "lsp"
+end
+
 require "nvim-treesitter.configs".setup {
     ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
     highlight = {

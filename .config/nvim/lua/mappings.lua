@@ -1,7 +1,5 @@
 local vimp = require "vimp"
 
-vim.g.mapleader = ","
-
 vimp.vnoremap("Y", [["+y<CR>]])
 vimp.inoremap("jj", "<Esc>")
 vimp.tnoremap("jj", [[<C-\><C-n>]])
@@ -66,20 +64,3 @@ vimp.nnoremap("<leader>0", ":tablast<CR>")
 
 vimp.inoremap({"expr"}, "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
 vimp.inoremap({"expr"}, "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
-
-vimp.nnoremap({"silent"}, "<space>a", vim.lsp.diagnostic.set_loclist)
-vimp.nnoremap({"silent"}, "<space>j", vim.lsp.diagnostic.goto_next)
-vimp.nnoremap({"silent"}, "<space>k", vim.lsp.diagnostic.goto_prev)
-vimp.nnoremap({"silent"}, "gd", vim.lsp.buf.definition)
-vimp.nnoremap({"silent"}, "<leader>rn", vim.lsp.buf.rename)
-vimp.nnoremap(
-    {"silent"},
-    "K",
-    function()
-        vim.call("fns#ShowDocs")
-    end
-)
-vimp.nnoremap({"silent"}, "gD", vim.lsp.buf.implementation)
-vimp.nnoremap({"silent"}, "gr", vim.lsp.buf.references)
-vimp.nnoremap({"silent"}, "g0", vim.lsp.buf.document_symbol)
-vimp.nnoremap({"silent"}, "gW", vim.lsp.buf.workspace_symbol)

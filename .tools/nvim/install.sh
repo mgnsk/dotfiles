@@ -2,13 +2,13 @@
 
 set -e
 
-neovim_commit=7afd4526f2ee018ef611f91bfe1b0cb8ed2fc4c6
+neovim_commit=48caf1df8581a9a9da9072f901411b918333952d
 
 wget https://github.com/neovim/neovim/archive/${neovim_commit}.zip
 unzip -q ${neovim_commit}.zip
 rm ${neovim_commit}.zip
 cd neovim-${neovim_commit}
-make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=$HOME/.neovim -DCMAKE_BUILD_TYPE=Release"
+make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=$HOME/.neovim -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 make install
 cd ..
 rm -rf neovim-${neovim_commit}

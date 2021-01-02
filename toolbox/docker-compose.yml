@@ -1,34 +1,15 @@
 ---
 version: "3.4"
 services:
-  build:
-    build:
-      context: images/build
-      args:
-        - uid
-        - gid
-        - user
-        - group
-
-  rust:
-    depends_on:
-      - build
-    build:
-      context: images/rust
-      args:
-        - user
-
   toolbox:
-    depends_on:
-      - rust
     build:
       context: build
       dockerfile: ../images/toolbox/Dockerfile
       args:
         - user
         - group
-    # cap_drop:
-    # - ALL
+    cap_drop:
+     - ALL
     mem_limit: 2g
     volumes:
       - "${WORKSPACE_ROOT}:/workspace"
@@ -37,7 +18,6 @@ services:
       - "nvim-data:/homedir/.local/share/nvim"
       - "direnv-data:/homedir/.local/share/direnv"
       - "tmux-resurrect:/homedir/.tmux/resurrect"
-      - "composer-global:/homedir/.composer"
       - "npm-global:/homedir/.npm-global"
       - "go-global:/homedir/go"
       - "cargo-data:/homedir/.cargo"
@@ -47,12 +27,12 @@ services:
     hostname: ${WORKSPACE_HOSTNAME}
     ports:
       # godoc
-      - 6060
+      - "6060:6060"
       # parcel
-      - 1234
-      - 5000
+      - "1234:1234"
+      - "5000:5000"
       # static HMR port for parcel
-      - 33969
+      - "33969:33969"
 
 volumes:
   tmp:

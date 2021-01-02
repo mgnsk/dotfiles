@@ -1,9 +1,19 @@
-FROM toolbox_build
+FROM fedora:33
 
+ARG uid
+ARG gid
 ARG user
 ARG group
 
-RUN dnf install --setopt=install_weak_deps=False -y \
+RUN dnf upgrade -y \
+	&& dnf groupinstall -y "C Development Tools and Libraries" \
+	&& dnf install --setopt=install_weak_deps=False -y \
+	git \
+	cmake \
+	ninja-build \
+	unzip \
+	gettext \
+	wget \
 	bind-utils \
 	diffutils \
 	tmux \
@@ -31,38 +41,36 @@ RUN dnf install --setopt=install_weak_deps=False -y \
 	ctags \
 	gzip \
 	brotli \
-	&& dnf clean all
+	&& dnf clean all \
+	&& groupadd -g ${gid} ${group} \
+	&& useradd \
+	--home-dir /homedir \
+	-g ${group} \
+	--uid ${uid} \
+	${user} \
+	&& rm -rf /root \
+	&& ln -s /homedir /root
 
-COPY --chown=${user}:${group} /dotfiles /homedir
-COPY --from=toolbox_rust --chown=${user}:${group} /cargo.tar.gz /homedir/cargo.tar.gz
-COPY --from=toolbox_rust --chown=${user}:${group} /rustup.tar.gz /homedir/rustup.tar.gz
+COPY --chown=${uid}:${gid} /dotfiles /homedir
 
 USER ${user}
 
-ENV USER=${user}
+#ENV USER=${user}
 
 WORKDIR /homedir
 
-RUN bash -c $'\
+RUN bash -c "set -euo pipefail; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y" \
+	&& bash -c $'\
 set -e\n\
-mkdir -p .cargo .rustup\n\
-tar -zxf cargo.tar.gz -C .\n\
-tar -zxf rustup.tar.gz -C .\n\
-rm -rf cargo.tar.gz rustup.tar.gz\n\
 source .env\n\
 bash setup.sh\n\
 go clean -modcache\n\
-rm -rf neovim_src\n\
 rm -rf .cache\n\
 mkdir -p \
 .cache \
-.local/share/nvim \
 .local/share/direnv \
 .tmux/resurrect \
-.composer \
 .npm-global \
-go \
-.cargo \
 .local/bin \
 .local/lib'
 

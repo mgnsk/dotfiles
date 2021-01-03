@@ -52,10 +52,9 @@ RUN dnf upgrade -y \
 	&& ln -s /homedir /root
 
 COPY --chown=${uid}:${gid} /dotfiles /homedir
+COPY /dotfiles/toolbox/entrypoint.sh /entrypoint.sh
 
 USER ${user}
-
-#ENV USER=${user}
 
 WORKDIR /homedir
 
@@ -76,4 +75,4 @@ mkdir -p \
 
 WORKDIR /workspace
 
-ENTRYPOINT ["/homedir/toolbox/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

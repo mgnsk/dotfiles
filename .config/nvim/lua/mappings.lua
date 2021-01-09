@@ -19,8 +19,6 @@ vimp.tnoremap("<Esc>", [[<C-\><C-n>]])
 vimp.nnoremap("<Esc><Esc>", ":nohlsearch<CR>")
 
 vimp.nnoremap("<leader>.", ":")
-vimp.nnoremap("<leader>-", ":Commands<CR>")
-vimp.nnoremap("<leader>/", ":Commands<CR>")
 vimp.nnoremap("<leader>,", ":let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR>")
 vimp.nnoremap("tt", ":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>")
 vimp.nnoremap("<leader>v", ":vnew<CR>")
@@ -29,10 +27,21 @@ vimp.nnoremap("<leader>t", ":tabnew<CR>")
 vimp.nnoremap("<leader>e", ":Tex<CR>")
 vimp.nnoremap("<leader>j", ":bnext<CR>")
 vimp.nnoremap("<leader>k", ":bprev<CR>")
-vimp.nnoremap("<leader>b", ":Buffers<CR>")
 vimp.nnoremap("<leader>u", "gg=G``")
-vimp.nnoremap("<leader>g", ":Rg<CR>")
-vimp.nnoremap("<leader>o", ":FZF<CR>")
+
+local telescope = require("telescope.builtin")
+vimp.nnoremap("<leader>-", telescope.commands)
+vimp.nnoremap("<leader>/", telescope.commands)
+vimp.nnoremap("<leader>b", telescope.buffers)
+vimp.nnoremap("<leader>g", telescope.live_grep)
+vimp.nnoremap("<leader>o", telescope.find_files)
+vimp.nnoremap("<leader>h", telescope.help_tags)
+vimp.nnoremap("<leader>T", telescope.tags)
+vimp.nnoremap("<leader>f", telescope.current_buffer_fuzzy_find)
+vimp.nnoremap("<leader>F", telescope.lsp_document_symbols)
+vimp.nnoremap("<leader>G", telescope.git_bcommits)
+vimp.nnoremap("<leader>S", telescope.treesitter)
+
 vimp.nnoremap(
     "<leader>l",
     function()
@@ -41,7 +50,6 @@ vimp.nnoremap(
 )
 vimp.nnoremap("<leader>K", "<C-w>K<CR>")
 vimp.nnoremap("<leader>H", "<C-w>H<CR>")
-vimp.nnoremap("<leader>T", ":Tags<CR>")
 
 vimp.nnoremap(
     "<leader>nt",

@@ -8,4 +8,4 @@ linters:
     - depguard
     - gochecknoinits
     - gochecknoglobals
-
+    - exhaustivestruct

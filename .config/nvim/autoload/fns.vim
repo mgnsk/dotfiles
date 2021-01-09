@@ -20,7 +20,7 @@ endfunction
 
 function! fns#Format()
 	if s:autoformat_enabled
-		exe "normal! gggqG\<C-o>\<C-o>"
+		exe 'FormatWrite'
 	endif
 endfunction
 

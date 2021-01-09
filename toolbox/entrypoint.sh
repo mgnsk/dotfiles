@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eou pipefail
 
-earlyoom &> /dev/null &
+earlyoom &>/dev/null &
 
 exec "$@"

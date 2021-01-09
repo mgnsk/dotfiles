@@ -1,9 +1,8 @@
 vim.cmd "packadd pkg-nvim"
 
 vim.g.mapleader = ","
-
 require "mappings"
-
+require "formatter"
 if not os.getenv("NVIM_LSP_DISABLED") then
     require "lsp"
 end
@@ -15,6 +14,17 @@ require "nvim-treesitter.configs".setup {
     }
 }
 
+vim.call("neomake#configure#automake", "w")
+
+local undodir = os.getenv("VIM_UNDO_DIR")
+if not vim.call("isdirectory", undodir) then
+    vim.call("mkdir", undodir)
+end
+vim.o.undodir = undodir
+vim.cmd("set undofile")
+vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab")
+vim.cmd("set noexpandtab")
+vim.cmd("set nocompatible")
 vim.o.completeopt = "menuone,noinsert,noselect"
 vim.o.lazyredraw = true
 vim.cmd("set termguicolors")
@@ -51,7 +61,6 @@ vim.cmd("set tabline=%!MyTabLine()")
 
 require "colorizer".setup()
 
-vim.g.shfmt_opt = "-ci"
 vim.g.neomake_open_list = 2
 -- Open fies in new tab.
 vim.g.netrw_browse_split = 3

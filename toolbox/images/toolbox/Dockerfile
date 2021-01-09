@@ -41,6 +41,9 @@ RUN dnf upgrade -y \
 	ctags \
 	gzip \
 	brotli \
+	fd-find \
+	bat \
+	fzf \
 	&& dnf clean all \
 	&& groupadd -g ${gid} ${group} \
 	&& useradd \

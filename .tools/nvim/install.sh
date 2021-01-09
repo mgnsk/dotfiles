@@ -15,4 +15,4 @@ rm -rf neovim-${neovim_commit}
 
 nvim --version
 nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'PkgInstall' -c 'qa'
-nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'TSInstallSync all' -c 'qa'
+nvim --headless -c 'TSInstallSync all' -c 'qa'

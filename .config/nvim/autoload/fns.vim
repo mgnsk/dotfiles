@@ -20,7 +20,7 @@ endfunction
 
 function! fns#Format()
 	if s:autoformat_enabled
-		execute('Neoformat')
+		exe 'FormatWrite'
 	endif
 endfunction
 

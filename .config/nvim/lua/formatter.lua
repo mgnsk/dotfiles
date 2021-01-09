@@ -91,6 +91,15 @@ require "format".setup {
             }
         }
     },
+    sql = {
+        {
+            cmd = {
+                function(file)
+                    return string.format("~/.tools/js/sql_format.mjs %s", file, file)
+                end
+            }
+        }
+    },
     yaml = {
         {
             cmd = {
@@ -111,7 +120,7 @@ vim.api.nvim_exec(
     [[
 augroup FormatAutogroup
   autocmd!
-  autocmd BufWritePost *.css,*.scss,*.vert,*.tesc,*.tese,*.geom,*.frag,*.comp,*.glsl,*go,*.html,*.json,*.js,*.md,*.ts,*.lua,*.proto,*.rs,*.sh,*.yml,*.yaml call fns#Format()
+  autocmd BufWritePost *.css,*.scss,*.vert,*.tesc,*.tese,*.geom,*.frag,*.comp,*.glsl,*go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.rs,*.sh,*.sql,*.yml,*.yaml call fns#Format()
 augroup END
 ]],
     true

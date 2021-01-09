@@ -16,6 +16,15 @@ require "nvim-treesitter.configs".setup {
 
 vim.call("neomake#configure#automake", "w")
 
+local undodir = os.getenv("VIM_UNDO_DIR")
+if not vim.call("isdirectory", undodir) then
+    vim.call("mkdir", undodir)
+end
+vim.o.undodir = undodir
+vim.cmd("set undofile")
+vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab")
+vim.cmd("set noexpandtab")
+vim.cmd("set nocompatible")
 vim.o.completeopt = "menuone,noinsert,noselect"
 vim.o.lazyredraw = true
 vim.cmd("set termguicolors")
@@ -41,6 +50,7 @@ vim.cmd("set noruler")
 vim.cmd("set number")
 vim.o.laststatus = 2
 vim.o.path = vim.o.path .. "**"
+vim.o.runtimepath = vim.o.runtimepath .. ",~/.fzf"
 vim.o.wildmenu = true
 vim.o.shell = "/bin/bash"
 vim.cmd("filetype plugin on")
@@ -57,6 +67,12 @@ vim.g.netrw_browse_split = 3
 -- Tree view.
 vim.g.netrw_liststyle = 3
 
+vim.g.fzf_action = {
+    ["ctrl-t"] = "GotoOrOpen tab",
+    ["ctrl-s"] = "split",
+    ["ctrl-v"] = "vsplit"
+}
+vim.g.fzf_buffers_jump = 1
 vim.g.gitgutter_sign_columns_always = 1
 
 function _G.osc52(content)

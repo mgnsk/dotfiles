@@ -4,6 +4,7 @@
     "main": "index.js",
     "license": "MIT",
     "devDependencies": {
+        "@sqltools/formatter": "^1.2.2",
         "@typescript-eslint/eslint-plugin": "^4.2.0",
         "@typescript-eslint/parser": "^4.2.0",
         "bash-language-server": "^1.17.0",
@@ -14,7 +15,6 @@
         "lua-fmt": "^2.6.0",
         "markdownlint-cli": "^0.24.0",
         "prettier": "^2.2.1",
-        "sql-formatter-cli": "^2.3.3",
         "stylelint": "^13.7.2",
         "stylelint-config-standard": "^20.0.0",
         "stylelint-scss": "^3.18.0",

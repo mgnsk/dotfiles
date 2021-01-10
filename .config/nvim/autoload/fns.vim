@@ -1,11 +1,9 @@
-let s:autoformat_enabled = 1
-
 function! AutoformatToggle()
-	if s:autoformat_enabled == 1
-		let s:autoformat_enabled = 0
+	if g:autoformat_enabled == 1
+		let g:autoformat_enabled = 0
 		echo 'Autoformat disabled'
 	else
-		let s:autoformat_enabled = 1
+		let g:autoformat_enabled = 1
 		echo 'Autoformat enabled'
 	endif
 endfunction
@@ -13,13 +11,13 @@ endfunction
 command AutoformatToggle :call AutoformatToggle()
 
 function! fns#Indent()
-	if s:autoformat_enabled
+	if g:autoformat_enabled
 		execute('normal gg=G``')
 	endif
 endfunction
 
 function! fns#Format()
-	if s:autoformat_enabled
+	if g:autoformat_enabled
 		exe 'FormatWrite'
 	endif
 endfunction

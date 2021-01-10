@@ -5,7 +5,9 @@ vim.g.mapleader = ","
 require "mappings"
 require "formatter"
 require "osc52"
-if not os.getenv("NVIM_LSP_DISABLED") then
+
+if not os.getenv("NVIM_DIFF") then
+    vim.g.autoformat_enabled = true
     require "lsp"
 end
 

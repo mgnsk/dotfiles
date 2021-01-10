@@ -24,4 +24,12 @@ options:
     default: ${tmp}/merged
 run:
   - command: mkdir -p ${lowerdir} ${workdir} ${merged}
-  - command: podman unshare fuse-overlayfs -o uidmapping=0:${uid}:1,gidmapping=0:${gid}:1,lowerdir=${lowerdir},upperdir=${upperdir},workdir=${workdir},${flags} ${merged}
+  - command: >
+      podman unshare fuse-overlayfs
+      -o squash_to_uid=${uid}
+      -o squash_to_gid=${gid}
+      -o lowerdir=${lowerdir}
+      -o upperdir=${upperdir}
+      -o workdir=${workdir}
+      -o ${flags}
+      ${merged}

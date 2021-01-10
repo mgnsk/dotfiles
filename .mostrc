@@ -1,0 +1,6 @@
+setkey bob "g"
+setkey eob "G"
+setkey page_down "d"
+setkey page_up "u"
+setkey down "j"
+setkey up "k"

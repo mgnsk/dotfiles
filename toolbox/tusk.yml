@@ -39,11 +39,11 @@ tasks:
           ${buildtool}-compose
           -p toolbox
           build
+          --pull
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
-          && ${buildtool} image prune -f
 
   bash:
     usage: Run a bash shell as the container UID in user namespace while mounting a shifted view of the filesystem.
@@ -95,7 +95,7 @@ tasks:
         usage: The workspace directory to run in.
     options:
       tmp:
-        private: yes
+        private: true
         default:
           command: realpath ${workspace}
       hostname:
@@ -108,8 +108,8 @@ tasks:
           WORKSPACE_HOSTNAME: ${hostname}
       - command: podman-compose -p toolbox run --rm --service-ports --user root toolbox /bin/bash
 
-  clean:
-    usage: Remove pod and volumes.
+  reset:
+    usage: Kill and remove pod, volumes and fuse mounts.
     run:
       - command: podman pod kill toolbox || true
       - command: podman pod rm toolbox || true
@@ -119,10 +119,24 @@ tasks:
           options:
             tmp: .fuse-*
 
-  distclean:
+  devclean:
+    usage: Reset and clear dotfiles build cache.
     run:
-      - task: clean
+      - task: reset
       - command: rm -rf build
+
+  distclean:
+    usage: Clean and remove image cache.
+    run:
+      - task: devclean
+      - command: ${buildtool} image prune -f
+
+  destroy:
+    usage: Completely remove the container image.
+    run:
+      - task: distclean
+    finally:
+      - command: ${buildtool} rmi toolbox_toolbox
 
   _mount:
     include: tasks/mount.yml

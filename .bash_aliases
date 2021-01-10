@@ -3,6 +3,8 @@ alias l='ls -la'
 alias ltr='ls -latr'
 alias ..='cd ..'
 alias ...='cd ../..'
+alias grep='grep --color=auto'
+alias ip='ip -color=auto'
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 config config status.showUntrackedFiles no
 

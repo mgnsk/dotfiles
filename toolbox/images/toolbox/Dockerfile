@@ -1,56 +1,52 @@
-FROM fedora:33
+FROM archlinux:base-devel
 
 ARG uid
 ARG gid
 ARG user
 ARG group
 
-RUN dnf upgrade -y \
-	&& dnf groupinstall -y "C Development Tools and Libraries" \
-	&& dnf install --setopt=install_weak_deps=False -y \
+RUN pacman -Syu --noconfirm \
+	&& pacman -S --noconfirm --needed \
 	git \
 	cmake \
-	ninja-build \
+	ninja \
 	unzip \
-	gettext \
 	wget \
-	bind-utils \
-	diffutils \
+	bind \
 	tmux \
 	bash-completion \
-	procps \
 	earlyoom \
 	tree \
-	ShellCheck \
+	shellcheck \
 	tidy \
 	rubygems \
-	ruby-devel \
-	perl \
 	ansible \
 	python-pip \
-	python-devel \
-	clang-tools-extra \
+	clang \
 	npm \
-	lua-devel \
 	luarocks \
 	go \
 	ripgrep \
 	most \
-	direnv \
-	hadolint \
 	ctags \
-	gzip \
 	brotli \
-	fd-find \
+	fd \
 	bat \
 	fzf \
-	&& dnf clean all \
-	&& groupadd -g ${gid} ${group} \
+	rustup \
+	sccache \
+	parallel \
+	moreutils \
+	&& bash -c "yes | pacman -Scc"
+
+RUN groupadd -g ${gid} ${group} \
 	&& useradd \
 	--home-dir /homedir \
 	-g ${group} \
 	--uid ${uid} \
 	${user} \
+	&& passwd -d ${user} \
+	&& echo "${user} ALL=(ALL) NOPASSWD: ALL" >>/etc/sudoers.d/01-user \
 	&& rm -rf /root \
 	&& ln -s /homedir /root
 
@@ -59,22 +55,8 @@ COPY /dotfiles/toolbox/entrypoint.sh /entrypoint.sh
 
 USER ${user}
 
-WORKDIR /homedir
-
-RUN bash -c "set -euo pipefail; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y" \
-	&& bash -c $'\
-set -e\n\
-source .env\n\
-bash setup.sh\n\
-go clean -modcache\n\
-rm -rf .cache\n\
-mkdir -p \
-.cache \
-.local/share/direnv \
-.tmux/resurrect \
-.npm-global \
-.local/bin \
-.local/lib'
+RUN bash /homedir/setup.sh \
+	&& sudo rm /etc/sudoers.d/01-user
 
 WORKDIR /workspace
 

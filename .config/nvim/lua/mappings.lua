@@ -37,6 +37,7 @@ vimp.nnoremap("<leader>o", ":FZF<CR>")
 vimp.nnoremap("<leader>T", ":Tags<CR>")
 vimp.nnoremap("<leader>F", ":DocumentSymbols<CR>")
 vimp.nnoremap("<leader>G", ":BCommits<CR>")
+vimp.nnoremap("<leader>B", ":Gblame<CR>")
 
 vimp.nnoremap(
     "<leader>l",

@@ -28,6 +28,13 @@ require "format".setup {
             }
         }
     },
+    dockerfile = {
+        {
+            cmd = {
+                "dockerfile_format"
+            }
+        }
+    },
     go = {
         {
             cmd = {
@@ -120,7 +127,7 @@ vim.api.nvim_exec(
     [[
 augroup FormatAutogroup
   autocmd!
-  autocmd BufWritePost *.css,*.scss,*.vert,*.tesc,*.tese,*.geom,*.frag,*.comp,*.glsl,*go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.rs,*.sh,*.sql,*.yml,*.yaml call fns#Format()
+  autocmd BufWritePost *.css,*.scss,*.vert,*.tesc,*.tese,*.geom,*.frag,*.comp,*.glsl,*Dockerfile,*go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.rs,*.sh,*.sql,*.yml,*.yaml call fns#Format()
 augroup END
 ]],
     true

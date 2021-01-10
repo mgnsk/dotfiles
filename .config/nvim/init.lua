@@ -1,4 +1,5 @@
 vim.cmd "packadd pkg-nvim"
+vim.cmd "source /usr/share/vim/vimfiles/plugin/fzf.vim"
 
 vim.g.mapleader = ","
 require "mappings"
@@ -50,7 +51,7 @@ vim.cmd("set noruler")
 vim.cmd("set number")
 vim.o.laststatus = 2
 vim.o.path = vim.o.path .. "**"
-vim.o.runtimepath = vim.o.runtimepath .. ",~/.fzf"
+vim.o.runtimepath = vim.o.runtimepath .. ",/usr/share/vim/vimfiles/plugin"
 vim.o.wildmenu = true
 vim.o.shell = "/bin/bash"
 vim.cmd("filetype plugin on")

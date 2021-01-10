@@ -10,7 +10,7 @@ services:
         - group
     cap_drop:
       - ALL
-    mem_limit: 2g
+    mem_limit: 1g
     volumes:
       - "${WORKSPACE_ROOT}:/workspace"
       - "tmp:/tmp"
@@ -40,7 +40,6 @@ volumes:
   nvim-data:
   direnv-data:
   tmux-resurrect:
-  composer-global:
   npm-global:
   go-global:
   cargo-data:

@@ -16,4 +16,5 @@ PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]'
 PS1+="\[\e[31m\]\`nonzero_return\`\[\e[m\]"
 PS1+='\$ '
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+source /usr/share/fzf/key-bindings.bash
+source /usr/share/fzf/completion.bash

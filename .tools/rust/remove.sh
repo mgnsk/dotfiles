@@ -2,4 +2,4 @@
 
 set -e
 
-rm -rf ~/.cargo ~/.rustup
+rm -rf ~/.cargo/registry ~/.rustup

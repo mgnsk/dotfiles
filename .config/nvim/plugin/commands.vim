@@ -1,13 +1,3 @@
-let g:clipboard = {
-	\ 'name': 'myClipboard',
-	\     'copy': {
-	\         '+': {lines, regtype -> v:lua.osc52(join(lines, "\n"))},
-	\     },
-	\     'paste': {
-	\         '+': '',
-	\     },
-	\ }
-
 " Show syn hi groups under cursor.
 map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
@@ -29,3 +19,5 @@ endfunction
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 command! -nargs=+ GotoOrOpen call fns#GotoOrOpen(<f-args>)
+
+autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()

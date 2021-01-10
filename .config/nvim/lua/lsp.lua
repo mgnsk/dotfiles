@@ -29,33 +29,34 @@ local location_callback = function(_, method, result)
     api.nvim_command(buf .. "bd")
 end
 
-callbacks["textDocument/declaration"] = location_callback
-callbacks["textDocument/definition"] = location_callback
-callbacks["textDocument/typeDefinition"] = location_callback
-callbacks["textDocument/implementation"] = location_callback
-
-local attach = function(client)
+local on_attach = function(client)
     require "completion".on_attach(client)
 end
 
 local lsp = require "lspconfig"
 
-lsp.gopls.setup {on_attach = attach}
-lsp.clangd.setup {on_attach = attach}
-lsp.jsonls.setup {on_attach = attach}
-lsp.intelephense.setup {on_attach = attach}
-lsp.rls.setup {on_attach = attach}
-lsp.tsserver.setup {on_attach = attach}
-lsp.vimls.setup {on_attach = attach}
-lsp.yamlls.setup {on_attach = attach}
-lsp.html.setup {on_attach = attach}
-lsp.cssls.setup {on_attach = attach}
-lsp.bashls.setup {on_attach = attach}
+lsp.gopls.setup {on_attach = on_attach}
+lsp.clangd.setup {on_attach = on_attach}
+lsp.jsonls.setup {on_attach = on_attach}
+lsp.intelephense.setup {on_attach = on_attach}
+lsp.rust_analyzer.setup {on_attach = on_attach}
+lsp.tsserver.setup {on_attach = on_attach}
+lsp.vimls.setup {on_attach = on_attach}
+lsp.yamlls.setup {on_attach = on_attach}
+lsp.html.setup {on_attach = on_attach}
+lsp.cssls.setup {on_attach = on_attach}
+lsp.bashls.setup {on_attach = on_attach}
+
+callbacks["textDocument/declaration"] = location_callback
+callbacks["textDocument/definition"] = location_callback
+callbacks["textDocument/typeDefinition"] = location_callback
+callbacks["textDocument/implementation"] = location_callback
 
 vimp.nnoremap({"silent"}, "<space>a", vim.lsp.diagnostic.set_loclist)
 vimp.nnoremap({"silent"}, "<space>j", vim.lsp.diagnostic.goto_next)
 vimp.nnoremap({"silent"}, "<space>k", vim.lsp.diagnostic.goto_prev)
 vimp.nnoremap({"silent"}, "gd", vim.lsp.buf.definition)
+vimp.nnoremap({"silent"}, "ga", vim.lsp.buf.code_action)
 vimp.nnoremap({"silent"}, "<leader>rn", vim.lsp.buf.rename)
 vimp.nnoremap(
     {"silent"},

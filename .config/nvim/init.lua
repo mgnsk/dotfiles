@@ -4,6 +4,7 @@ vim.cmd "source /usr/share/vim/vimfiles/plugin/fzf.vim"
 vim.g.mapleader = ","
 require "mappings"
 require "formatter"
+require "osc52"
 if not os.getenv("NVIM_LSP_DISABLED") then
     require "lsp"
 end
@@ -54,9 +55,8 @@ vim.o.path = vim.o.path .. "**"
 vim.o.runtimepath = vim.o.runtimepath .. ",/usr/share/vim/vimfiles/plugin"
 vim.o.wildmenu = true
 vim.o.shell = "/bin/bash"
-vim.cmd("filetype plugin on")
-vim.cmd("filetype indent on")
 vim.cmd("syntax on")
+vim.cmd("filetype plugin indent on")
 vim.cmd("colorscheme codedark")
 vim.cmd("set tabline=%!MyTabLine()")
 
@@ -75,9 +75,3 @@ vim.g.fzf_action = {
 }
 vim.g.fzf_buffers_jump = 1
 vim.g.gitgutter_sign_columns_always = 1
-
-function _G.osc52(content)
-    local w = assert(io.open("/dev/tty", "w"))
-    assert(w:write(string.format("\x1b]52;c;%s\x1b", require("base64").encode(content))))
-    assert(w:close())
-end

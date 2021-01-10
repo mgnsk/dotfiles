@@ -4,8 +4,8 @@ set -euo pipefail
 
 echo "### Installing rust tools"
 
-rustup default stable
+rustup default nightly
 rustc -V
-rustup component add rustfmt rls rust-analysis rust-src clippy
+rustup component add rustfmt rust-src clippy
 
 rm -rf ~/.cargo/registry

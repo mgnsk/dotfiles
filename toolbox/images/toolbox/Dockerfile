@@ -37,6 +37,7 @@ RUN pacman -Syu --noconfirm \
 	sccache \
 	parallel \
 	moreutils \
+	rust-analyzer \
 	&& bash -c "yes | pacman -Scc"
 
 RUN groupadd -g ${gid} ${group} \

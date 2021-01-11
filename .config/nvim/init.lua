@@ -2,14 +2,17 @@ vim.cmd "packadd pkg-nvim"
 vim.cmd "source /usr/share/vim/vimfiles/plugin/fzf.vim"
 
 vim.g.mapleader = ","
-require "mappings"
-require "formatter"
-require "osc52"
+vim.g.autoformat_enabled = false
 
 if not os.getenv("NVIM_DIFF") then
     vim.g.autoformat_enabled = true
+    vim.call("neomake#configure#automake", "w")
     require "lsp"
 end
+
+require "mappings"
+require "formatter"
+require "osc52"
 
 require "nvim-treesitter.configs".setup {
     ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -17,8 +20,6 @@ require "nvim-treesitter.configs".setup {
         enable = true
     }
 }
-
-vim.call("neomake#configure#automake", "w")
 
 local undodir = os.getenv("VIM_UNDO_DIR")
 if not vim.call("isdirectory", undodir) then

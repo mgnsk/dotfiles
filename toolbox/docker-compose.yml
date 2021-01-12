@@ -25,6 +25,8 @@ services:
       - "local-lib:/homedir/.local/lib"
       - "hist:/homedir/.hist"
     hostname: ${WORKSPACE_HOSTNAME}
+    environment:
+      - "TERM=${TERM}"
     ports:
       # godoc
       - "6060:6060"

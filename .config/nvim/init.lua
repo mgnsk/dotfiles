@@ -66,7 +66,7 @@ vim.cmd("set tabline=%!MyTabLine()")
 require "colorizer".setup()
 
 vim.g.neomake_open_list = 2
--- Open fies in new tab.
+-- Open files in new tab.
 vim.g.netrw_browse_split = 3
 -- Tree view.
 vim.g.netrw_liststyle = 3

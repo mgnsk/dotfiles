@@ -101,9 +101,7 @@ require "format".setup {
     sql = {
         {
             cmd = {
-                function(file)
-                    return string.format("~/.tools/js/sql_format.mjs %s", file, file)
-                end
+                "~/.tools/js/sql_format.mjs"
             }
         }
     },

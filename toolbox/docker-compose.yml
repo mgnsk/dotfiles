@@ -5,9 +5,6 @@ services:
     build:
       context: build
       dockerfile: ../images/toolbox/Dockerfile
-      args:
-        - user
-        - group
     cap_drop:
       - ALL
     mem_limit: 1g

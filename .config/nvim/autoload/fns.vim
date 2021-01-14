@@ -18,7 +18,7 @@ endfunction
 
 function! fns#Format()
 	if g:autoformat_enabled
-		exe 'FormatWrite'
+		FormatWrite
 	endif
 endfunction
 

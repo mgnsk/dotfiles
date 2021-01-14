@@ -3,7 +3,6 @@ map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans
 	\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
-command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
 
 autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc
 autocmd TermOpen term://* startinsert
@@ -19,5 +18,3 @@ endfunction
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 command! -nargs=+ GotoOrOpen call fns#GotoOrOpen(<f-args>)
-
-autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()

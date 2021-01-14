@@ -11,3 +11,8 @@ linters:
     - gochecknoglobals
     - exhaustivestruct
     - gomnd
+    - forbidigo
+    - errorlint
+    - wrapcheck
+    - goerr113
+    - paralleltest

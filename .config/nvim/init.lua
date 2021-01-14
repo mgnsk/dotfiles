@@ -1,5 +1,4 @@
 vim.cmd "packadd pkg-nvim"
-vim.cmd "source /usr/share/vim/vimfiles/plugin/fzf.vim"
 
 vim.g.mapleader = ","
 vim.g.autoformat_enabled = false
@@ -16,9 +15,9 @@ require "osc52"
 
 require "nvim-treesitter.configs".setup {
     ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-    highlight = {
-        enable = true
-    }
+    highlight = {enable = true}
+    --incremental_selection = {enable = true},
+    --textobjects = {enable = true}
 }
 
 local undodir = os.getenv("VIM_UNDO_DIR")

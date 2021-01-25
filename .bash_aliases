@@ -5,6 +5,7 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias grep='grep --color=auto'
 alias ip='ip -color=auto'
+alias gs='git status'
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 config config status.showUntrackedFiles no
 
@@ -35,4 +36,10 @@ mergesquashn() {
 
 pick() {
 	grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:-
+}
+
+gocov() {
+    go test -v -coverprofile=coverage.out ./...
+    go tool cover -func=coverage.out
+    go tool cover -html=coverage.out
 }

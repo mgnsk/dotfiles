@@ -14,7 +14,7 @@ require "formatter"
 require "osc52"
 
 require "nvim-treesitter.configs".setup {
-    ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+    --ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
     highlight = {enable = true}
     --incremental_selection = {enable = true},
     --textobjects = {enable = true}
@@ -30,16 +30,15 @@ vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab")
 vim.cmd("set noexpandtab")
 vim.cmd("set nocompatible")
 vim.o.completeopt = "menuone,noinsert,noselect"
-vim.o.lazyredraw = true
 vim.cmd("set termguicolors")
--- TODO check what else only works with vim.cmd
+---- TODO check what else only works with vim.cmd
 vim.cmd("set nofoldenable")
 vim.o.hidden = true
 vim.cmd("set nobackup")
 vim.o.backupcopy = "yes"
 vim.o.writebackup = true
 vim.o.swapfile = true
-vim.o.cmdheight = 2
+--vim.o.cmdheight = 2
 vim.o.updatetime = 1000
 vim.o.timeoutlen = 500
 vim.cmd("set signcolumn=yes")
@@ -49,18 +48,21 @@ vim.o.encoding = "UTF-8"
 vim.o.autoindent = true
 vim.o.smartindent = true
 vim.o.pastetoggle = "<F2>"
-vim.cmd("set noshowcmd")
-vim.cmd("set noruler")
+-- These 2 settings cause a flicker in alacritty tmux.
+--vim.cmd("set noshowcmd")
+--vim.o.lazyredraw = true
 vim.cmd("set number")
 vim.o.laststatus = 2
 vim.o.path = vim.o.path .. "**"
-vim.o.runtimepath = vim.o.runtimepath .. ",/usr/share/vim/vimfiles/plugin"
+--vim.o.runtimepath = vim.o.runtimepath .. ",/usr/share/vim/vimfiles/plugin"
 vim.o.wildmenu = true
 vim.o.shell = "/bin/bash"
 vim.cmd("syntax on")
 vim.cmd("filetype plugin indent on")
 vim.cmd("colorscheme codedark")
 vim.cmd("set tabline=%!MyTabLine()")
+-- TODO what does this do?
+--vim.cmd("set noruler")
 
 require "colorizer".setup()
 

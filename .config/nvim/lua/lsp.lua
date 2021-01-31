@@ -29,23 +29,19 @@ local location_callback = function(_, method, result)
     api.nvim_command(buf .. "bd")
 end
 
-local on_attach = function(client)
-    require "completion".on_attach(client)
-end
-
 local lsp = require "lspconfig"
 
-lsp.gopls.setup {on_attach = on_attach}
-lsp.clangd.setup {on_attach = on_attach}
-lsp.jsonls.setup {on_attach = on_attach}
-lsp.intelephense.setup {on_attach = on_attach}
-lsp.rust_analyzer.setup {on_attach = on_attach}
-lsp.tsserver.setup {on_attach = on_attach}
-lsp.vimls.setup {on_attach = on_attach}
-lsp.yamlls.setup {on_attach = on_attach}
-lsp.html.setup {on_attach = on_attach}
-lsp.cssls.setup {on_attach = on_attach}
-lsp.bashls.setup {on_attach = on_attach}
+lsp.gopls.setup {}
+lsp.clangd.setup {}
+lsp.jsonls.setup {}
+lsp.intelephense.setup {}
+lsp.rust_analyzer.setup {}
+lsp.tsserver.setup {}
+lsp.vimls.setup {}
+lsp.yamlls.setup {}
+lsp.html.setup {}
+lsp.cssls.setup {}
+lsp.bashls.setup {}
 
 callbacks["textDocument/declaration"] = location_callback
 callbacks["textDocument/definition"] = location_callback

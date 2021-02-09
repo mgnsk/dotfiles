@@ -18,3 +18,4 @@ PS1+='\$ '
 
 source /usr/share/fzf/key-bindings.bash
 source /usr/share/fzf/completion.bash
+source "$HOME/.local/share/tusk/tusk-completion.bash"

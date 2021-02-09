@@ -9,6 +9,7 @@ import (
 	_ "github.com/golang/mock/mockgen"
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/mgechev/revive"
+	_ "github.com/ofabry/go-callvis"
 	_ "github.com/rliebz/tusk"
 	_ "github.com/uber/prototool/cmd/prototool"
 	_ "golang.org/x/tools/cmd/godoc"

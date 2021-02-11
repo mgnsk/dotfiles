@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -eu
+
+while true
+do 
+	clear
+	curl wttr.in/Tallinn?format=v2
+    sleep 300
+done

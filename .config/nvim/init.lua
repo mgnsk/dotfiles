@@ -40,7 +40,7 @@ vim.o.writebackup = true
 vim.o.swapfile = true
 --vim.o.cmdheight = 2
 vim.o.updatetime = 1000
-vim.o.timeoutlen = 500
+vim.o.timeoutlen = 200
 vim.cmd("set signcolumn=yes")
 vim.o.splitbelow = true
 vim.o.splitright = true
@@ -93,4 +93,5 @@ vim.g.completion_auto_change_source = 1
 
 vim.api.nvim_exec([[
 autocmd BufEnter * lua require'completion'.on_attach()
+    :set number relativenumber
 ]], true)

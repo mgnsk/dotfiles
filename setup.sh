@@ -20,15 +20,6 @@ function pkgbuild {
 		neovim-git
 }
 
-function ensure_dirs {
-	mkdir -p \
-		~/.local/share/direnv \
-		~/.tmux/resurrect \
-		~/.npm-global \
-		~/.local/bin \
-		~/.local/lib
-}
-
 function do_install {
 	cd "$(dirname "$1")"
 	echo "### Installing: $1"
@@ -49,8 +40,18 @@ function cleanup {
 	mkdir ~/.cache
 }
 
+function ensure_dirs {
+	mkdir -p \
+		~/.cache \
+		~/.local/share/direnv \
+		~/.tmux/resurrect \
+		~/.npm-global \
+		~/.local/bin \
+		~/.local/lib
+}
+
 install_paru
 pkgbuild
-ensure_dirs
 install_tools
 cleanup
+ensure_dirs

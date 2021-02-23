@@ -47,6 +47,14 @@ callbacks["textDocument/declaration"] = location_callback
 callbacks["textDocument/definition"] = location_callback
 callbacks["textDocument/typeDefinition"] = location_callback
 callbacks["textDocument/implementation"] = location_callback
+--callbacks["textDocument/publishDiagnostics"] =
+--vim.lsp.with(
+--vim.lsp.diagnostic.on_publish_diagnostics,
+--{
+---- delay update diagnostics
+--update_in_insert = false
+--}
+--)
 
 vimp.nnoremap({"silent"}, "<space>a", vim.lsp.diagnostic.set_loclist)
 vimp.nnoremap({"silent"}, "<space>j", vim.lsp.diagnostic.goto_next)

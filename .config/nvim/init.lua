@@ -11,6 +11,7 @@ end
 
 require "mappings"
 require "formatter"
+require "autocomplete"
 require "osc52"
 
 require "nvim-treesitter.configs".setup {
@@ -79,19 +80,3 @@ vim.g.fzf_action = {
 }
 vim.g.fzf_buffers_jump = 1
 vim.g.gitgutter_sign_columns_always = 1
-
-vim.g.completion_chain_complete_list = {
-    default = {
-        {complete_items = {"lsp"}},
-        {complete_items = {"buffers"}},
-        {complete_items = {"ts"}}, -- treesitter source
-        {mode = {"<c-p>"}},
-        {mode = {"<c-n>"}}
-    }
-}
-vim.g.completion_auto_change_source = 1
-
-vim.api.nvim_exec([[
-autocmd BufEnter * lua require'completion'.on_attach()
-    :set number relativenumber
-]], true)

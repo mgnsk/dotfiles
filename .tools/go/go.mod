@@ -10,7 +10,7 @@ require (
 	github.com/ofabry/go-callvis v0.6.1 // indirect
 	github.com/rliebz/tusk v0.6.1 // indirect
 	github.com/uber/prototool v1.10.0 // indirect
-	golang.org/x/tools/gopls v0.6.5 // indirect
+	golang.org/x/tools/gopls v0.6.6 // indirect
 	mvdan.cc/gofumpt v0.1.0 // indirect
 	mvdan.cc/sh/v3 v3.2.2 // indirect
 )

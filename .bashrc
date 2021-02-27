@@ -1,9 +1,11 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
-[[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
-[[ -f ~/.env ]] && . ~/.env
+. ~/.bash_aliases
+. ~/.env
 
 . "$HOME/.local/share/lscolors.sh"
+
+if [ -x "$(command -v fish)" ] && [ -z "$BASH_EXECUTION_STRING" ]; then exec fish; fi
 
 eval "$(direnv hook bash)"
 

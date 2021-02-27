@@ -57,7 +57,7 @@ vim.o.laststatus = 2
 vim.o.path = vim.o.path .. "**"
 --vim.o.runtimepath = vim.o.runtimepath .. ",/usr/share/vim/vimfiles/plugin"
 vim.o.wildmenu = true
-vim.o.shell = "/bin/bash"
+vim.o.shell = os.getenv("SHELL")
 vim.cmd("syntax on")
 vim.cmd("filetype plugin indent on")
 vim.cmd("colorscheme codedark")

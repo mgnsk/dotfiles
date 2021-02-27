@@ -15,6 +15,7 @@ RUN pacman -Syu --noconfirm \
 	bind \
 	tmux \
 	bash-completion \
+	fish \
 	earlyoom \
 	tree \
 	shellcheck \

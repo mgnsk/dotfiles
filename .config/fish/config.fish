@@ -7,7 +7,7 @@ set -gx PATH "$HOME/.bin:$PATH"
 set -gx PATH "$HOME/.luarocks/bin:$PATH"
 set -gx PATH "$HOME/.gem/ruby/2.7.0/bin:$PATH"
 set -gx PATH "/usr/local/bin:$PATH"
-#set -gx PATH $(printf "%s" "$PATH" | awk -v RS=':' '!a[$1]++ { if (NR > 1) printf RS; printf $1 }')
+set -gx PATH (printf "%s" "$PATH" | awk -v RS=':' '!a[$1]++ { if (NR > 1) printf RS; printf $1 }')
 
 set -gx SHELL "/usr/bin/fish"
 

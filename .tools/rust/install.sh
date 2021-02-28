@@ -7,5 +7,3 @@ echo "### Installing rust tools"
 rustup default nightly
 rustc -V
 rustup component add rustfmt rust-src clippy
-
-rm -rf ~/.cargo/registry

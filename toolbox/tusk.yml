@@ -8,6 +8,10 @@ options:
     default: user
   group:
     default: user
+  build-dir:
+    private: true
+    default:
+      command: echo $(pwd)/build
   buildtool:
     private: true
     default:
@@ -19,34 +23,39 @@ options:
         fi
 
 tasks:
-  build:
-    usage: Build the toolbox image.
-    options:
-      tmp:
-        private: true
-        default:
-          command: echo $(pwd)/build
+  build-base:
+    usage: Build the toolbox-base image.
     run:
-      - when:
-          - not-exists: build
-      - command: |
-          set -e
-          mkdir -p ${tmp}/dotfiles
-          source $HOME/.bash_aliases
-          cd $HOME
-          config ls-files | tar Tc - | tar Cx ${tmp}/dotfiles
       - command: >
           ${buildtool}-compose
           -p toolbox
           build
-          --pull
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
+          toolbox-base
 
-  bash:
-    usage: Run a bash shell as the container UID in user namespace while mounting a shifted view of the filesystem.
+  build:
+    usage: Build the toolbox image.
+    options:
+    run:
+      - when:
+          - not-exists: build
+      - command: mkdir -p ${build-dir}/dotfiles
+      - command: fish -c "cd $HOME; config ls-files | tar Tc - | tar Cx ${build-dir}/dotfiles"
+      - command: >
+          ${buildtool}-compose
+          -p toolbox
+          build
+          --build-arg uid=${uid}
+          --build-arg gid=${gid}
+          --build-arg user=${user}
+          --build-arg group=${group}
+          toolbox
+
+  shell:
+    usage: Run a shell as the container UID in user namespace while mounting a shifted view of the filesystem.
     args:
       workspace:
         usage: The workspace directory to run in.
@@ -88,7 +97,7 @@ tasks:
             tmp: ${tmp}
       - command: find ${workspace} -newermt "${starttime}" \( -type c -or \( -type f -and -name ".wh..wh..opq" \) \) -delete
 
-  root:
+  root_shell:
     usage: Run a root shell in the container.
     args:
       workspace:

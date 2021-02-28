@@ -89,7 +89,7 @@ tasks:
       - set-environment:
           WORKSPACE_ROOT: ${tmp}/merged
           WORKSPACE_HOSTNAME: ${hostname}
-      - command: podman-compose -p toolbox run --rm --service-ports toolbox /bin/bash
+      - command: podman-compose -p toolbox run --rm --service-ports toolbox /usr/bin/fish
     finally:
       - task:
           name: _unmount

@@ -8,10 +8,10 @@ Dependencies:
 
 Build the toolbox:
 
-`$ tusk build`
+`$ tusk build-base && tusk build`
 
 Create and run a workspace:
 
 `$ mkdir workspaces/project1`
 
-`$ tusk bash workspaces/project1`
+`$ tusk shell workspaces/project1`

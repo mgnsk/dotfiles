@@ -15,22 +15,38 @@ RUN groupadd -g ${gid} ${group} \
 	&& passwd -d ${user} \
 	&& echo "${user} ALL=(ALL) NOPASSWD: ALL" >>/etc/sudoers.d/01-user
 
-COPY --chown=${uid}:${gid} /dotfiles /home/${user}
-COPY /dotfiles/toolbox/entrypoint.sh /entrypoint.sh
-
 USER ${user}
 
-RUN bash /home/${user}/setup.sh \
+RUN git clone https://aur.archlinux.org/paru-bin.git /tmp/paru \
+	&& cd /tmp/paru \
+	&& makepkg -si --noconfirm \
+	&& paru -S --noconfirm --needed \
+	fish-fzf-git \
+	direnv \
+	hadolint-bin \
+	neovim-git \
 	&& paru -c --noconfirm \
 	&& bash -c "yes | paru -Scc" \
-	&& sudo rm /etc/sudoers.d/01-user \
-	&& bash /home/${user}/install_tools.sh \
+	&& sudo rm -rf /tmp \
+	&& sudo install -d -m 0777 /tmp \
+	&& sudo rm /etc/sudoers.d/01-user
+
+COPY --chown=${uid}:${gid} /dotfiles /home/${user}
+COPY /dotfiles/toolbox/entrypoint.fish /entrypoint.fish
+
+RUN bash ~/install_tools.sh \
 	&& go clean -modcache \
 	&& rm -rf \
-	/home/${user}/.cache \
-	/home/${user}/.cargo/registry \
-	&& mkdir /home/${user}/.cache
+	~/.cache \
+	~/.cargo/registry \
+	&& mkdir -p \
+	~/.cache \
+	~/.local/share/direnv \
+	~/.tmux/resurrect \
+	~/.npm-global \
+	~/.local/bin \
+	~/.local/lib
 
 WORKDIR /workspace
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.fish"]

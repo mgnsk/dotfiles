@@ -1,8 +1,4 @@
-local api = vim.api
-local util = vim.lsp.util
-local log = vim.lsp.log
 local vimp = require "vimp"
-
 local lsp = require "lspconfig"
 
 lsp.gopls.setup {}

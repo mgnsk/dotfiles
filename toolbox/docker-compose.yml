@@ -1,10 +1,19 @@
 ---
 version: "3.4"
 services:
+  toolbox-base:
+    build:
+      context: build
+      dockerfile: ../images/toolbox-base/Dockerfile
+    environment:
+      - "TERM=${TERM}"
+
   toolbox:
     build:
       context: build
       dockerfile: ../images/toolbox/Dockerfile
+    depends_on:
+      - toolbox-base
     cap_drop:
       - ALL
     mem_limit: 1g
@@ -20,7 +29,6 @@ services:
       - "cargo-data:/homedir/.cargo"
       - "local-bin:/homedir/.local/bin"
       - "local-lib:/homedir/.local/lib"
-      - "hist:/homedir/.hist"
     hostname: ${WORKSPACE_HOSTNAME}
     environment:
       - "TERM=${TERM}"
@@ -44,4 +52,3 @@ volumes:
   cargo-data:
   local-bin:
   local-lib:
-  hist:

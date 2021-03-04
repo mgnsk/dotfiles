@@ -1,9 +1,7 @@
 FROM archlinux:base-devel
 
 RUN pacman -Syu --noconfirm \
-	&& bash -c "yes | pacman -Scc"
-
-RUN pacman -S --noconfirm --needed \
+	&& pacman -S --noconfirm --needed \
 	git \
 	unzip \
 	wget \
@@ -19,9 +17,6 @@ RUN pacman -S --noconfirm --needed \
 	fzf \
 	parallel \
 	moreutils \
-	&& bash -c "yes | pacman -Scc"
-
-RUN pacman -S --noconfirm --needed \
 	cmake \
 	ninja \
 	earlyoom \

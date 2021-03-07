@@ -20,8 +20,8 @@ services:
       context: build
       dockerfile: ../images/toolbox/Dockerfile
     # This also drops sudo in the container.
-    #cap_drop:
-      #- ALL
+    cap_drop:
+      - ALL
     mem_limit: 1g
     volumes:
       - "${WORKSPACE_ROOT}:/workspace"

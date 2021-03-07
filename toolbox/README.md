@@ -10,7 +10,6 @@ Dependencies:
 
 Build the toolbox:
 
-TODO
 `$ tusk build-all`
 
 Create and run a workspace:

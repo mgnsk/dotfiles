@@ -1,0 +1,43 @@
+---
+tasks:
+  create-user-volumes:
+    usage: Ensure all volumes for user exist.
+    options:
+      prefix:
+        required: true
+      uid:
+        required: true
+      gid:
+        required: true
+    run:
+      - command: |
+          yq '.volumes | keys[]' "${TOOLBOX_ROOT}/docker-compose.yml" | tr -d '"' | sed -e 's/^/${prefix}_/' | xargs -n1 tusk ensure-volume --uid=${uid} --gid=${gid}
+
+  ensure-volume:
+    usage: Ensure the volume exists and user has write permissions.
+    args:
+      name:
+        usage: Volume name.
+    options:
+      uid:
+        required: true
+      gid:
+        required: true
+    run:
+      - when:
+          command: |
+            ! podman volume inspect ${name}
+        command: tusk create-volume --name=${name} --uid=${uid} --gid=${gid}
+      - command: podman unshare setfacl -Rm u:${uid}:rwX $(podman volume inspect --format "{{.Mountpoint}}" ${name})
+      - command: podman unshare setfacl -Rdm u:${uid}:rwX $(podman volume inspect --format "{{.Mountpoint}}" ${name})
+
+  create-volume:
+    options:
+      name:
+        required: true
+      uid:
+        required: true
+      gid:
+        required: true
+    run:
+      - command: podman volume create ${name}

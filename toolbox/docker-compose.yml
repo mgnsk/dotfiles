@@ -3,8 +3,15 @@ version: "3.4"
 services:
   toolbox-base:
     build:
-      context: build
-      dockerfile: ../images/toolbox-base/Dockerfile
+      context: images/toolbox-base
+      dockerfile: Dockerfile
+    environment:
+      - "TERM=${TERM}"
+
+  toolbox-aur:
+    build:
+      context: images/toolbox-aur
+      dockerfile: Dockerfile
     environment:
       - "TERM=${TERM}"
 
@@ -12,23 +19,22 @@ services:
     build:
       context: build
       dockerfile: ../images/toolbox/Dockerfile
-    depends_on:
-      - toolbox-base
+    # This also drops sudo in the container.
     cap_drop:
       - ALL
     mem_limit: 1g
     volumes:
       - "${WORKSPACE_ROOT}:/workspace"
-      - "tmp:/tmp"
-      - "cache:/homedir/.cache"
-      - "nvim-data:/homedir/.local/share/nvim"
-      - "direnv-data:/homedir/.local/share/direnv"
-      - "tmux-resurrect:/homedir/.tmux/resurrect"
-      - "npm-global:/homedir/.npm-global"
-      - "go-global:/homedir/go"
-      - "cargo-data:/homedir/.cargo"
-      - "local-bin:/homedir/.local/bin"
-      - "local-lib:/homedir/.local/lib"
+      #- "tmp:/tmp"
+      - "cache:/home/${WORKSPACE_USER}/.cache"
+      - "nvim-data:/home/${WORKSPACE_USER}/.local/share/nvim"
+      - "direnv-data:/home/${WORKSPACE_USER}/.local/share/direnv"
+      - "tmux-resurrect:/home/${WORKSPACE_USER}/.tmux/resurrect"
+      - "npm-global:/home/${WORKSPACE_USER}/.npm-global"
+      - "go-global:/home/${WORKSPACE_USER}/go"
+      - "cargo-data:/home/${WORKSPACE_USER}/.cargo"
+      - "local-bin:/home/${WORKSPACE_USER}/.local/bin"
+      - "local-lib:/home/${WORKSPACE_USER}/.local/lib"
     hostname: ${WORKSPACE_HOSTNAME}
     environment:
       - "TERM=${TERM}"
@@ -42,7 +48,7 @@ services:
       - "33969:33969"
 
 volumes:
-  tmp:
+  #tmp:
   cache:
   nvim-data:
   direnv-data:

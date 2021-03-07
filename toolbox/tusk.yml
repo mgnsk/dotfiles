@@ -23,27 +23,21 @@ options:
         fi
 
 tasks:
-  build-base:
-    usage: Build the toolbox-base image.
-    run:
-      - command: >
-          ${buildtool}-compose
-          -p toolbox
-          build
-          --build-arg uid=${uid}
-          --build-arg gid=${gid}
-          --build-arg user=${user}
-          --build-arg group=${group}
-          toolbox-base
-
-  build:
-    usage: Build the toolbox image.
-    options:
+  build-image:
+    usage: Build an image.
+    args:
+      image:
+        usage: The image name
+        values:
+          - toolbox-base
+          - toolbox-aur
+          - toolbox
     run:
       - when:
           - not-exists: build
-      - command: mkdir -p ${build-dir}/dotfiles
-      - command: fish -c "cd $HOME; config ls-files | tar Tc - | tar Cx ${build-dir}/dotfiles"
+          - command: mkdir -p ${build-dir}/dotfiles
+            # Requires the `config` alias from fish.
+          - command: fish -c "cd $HOME; config ls-files | tar Tc - | tar Cx ${build-dir}/dotfiles"
       - command: >
           ${buildtool}-compose
           -p toolbox
@@ -52,10 +46,26 @@ tasks:
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
-          toolbox
+          ${image}
+
+  build-all:
+    usage: Build all images.
+    run:
+      - task:
+          name: build-image
+          args:
+            - toolbox-base
+      - task:
+          name: build-image
+          args:
+            - toolbox-aur
+      - task:
+          name: build-image
+          args:
+            - toolbox
 
   shell:
-    usage: Run a shell as the container UID in user namespace while mounting a shifted view of the filesystem.
+    usage: Run a shell as user in the workspace with a shifted view of the filesystem.
     args:
       workspace:
         usage: The workspace directory to run in.
@@ -63,7 +73,7 @@ tasks:
       tmp:
         private: true
         default:
-          command: bash -c "echo $(pwd)/.fuse-$(cat /proc/sys/kernel/random/uuid | cut -c-8)"
+          command: bash -c 'echo $(pwd)/.fuse-$(cat /proc/sys/kernel/random/uuid | cut -c-8)'
       upperdir:
         private: true
         default:
@@ -86,36 +96,18 @@ tasks:
             gid: ${gid}
             upperdir: ${upperdir}
             tmp: ${tmp}
+      - command: tusk -f ./tasks/tusk.yml create-user-volumes --prefix=toolbox --uid=${uid} --gid=${gid}
       - set-environment:
           WORKSPACE_ROOT: ${tmp}/merged
           WORKSPACE_HOSTNAME: ${hostname}
-      - command: podman-compose -p toolbox run --rm --service-ports toolbox /bin/bash
+          WORKSPACE_USER: ${user}
+      - command: podman-compose -p toolbox run --rm --service-ports toolbox /usr/bin/fish
     finally:
       - task:
           name: _unmount
           options:
             tmp: ${tmp}
       - command: find ${workspace} -newermt "${starttime}" \( -type c -or \( -type f -and -name ".wh..wh..opq" \) \) -delete
-
-  root_shell:
-    usage: Run a root shell in the container.
-    args:
-      workspace:
-        usage: The workspace directory to run in.
-    options:
-      tmp:
-        private: true
-        default:
-          command: realpath ${workspace}
-      hostname:
-        private: true
-        default:
-          command: basename ${workspace}
-    run:
-      - set-environment:
-          WORKSPACE_ROOT: ${tmp}
-          WORKSPACE_HOSTNAME: ${hostname}
-      - command: podman-compose -p toolbox run --rm --service-ports --user root toolbox /bin/bash
 
   reset:
     usage: Kill and remove pod, volumes and fuse mounts.
@@ -128,24 +120,26 @@ tasks:
           options:
             tmp: .fuse-*
 
-  devclean:
+  clean:
     usage: Reset and clear dotfiles build cache.
     run:
       - task: reset
       - command: rm -rf build
 
-  distclean:
+  buildclean:
     usage: Clean and remove image cache.
     run:
-      - task: devclean
+      - task: clean
       - command: ${buildtool} image prune -f
 
   destroy:
     usage: Completely remove the container image.
     run:
-      - task: distclean
+      - task: buildclean
     finally:
-      - command: ${buildtool} rmi toolbox_toolbox
+      - command: ${buildtool} rmi toolbox_toolbox-base || true
+      - command: ${buildtool} rmi toolbox_toolbox-aur || true
+      - command: ${buildtool} rmi toolbox_toolbox || true
 
   _mount:
     include: tasks/mount.yml

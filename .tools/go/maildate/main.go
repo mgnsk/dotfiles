@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"log"
+	"mime/quotedprintable"
 	"net/mail"
 	"os"
 	"time"
@@ -24,7 +27,15 @@ func main() {
 		return false
 	})
 
-	if err := part.Encode(os.Stdout); err != nil {
+	var b bytes.Buffer
+	if err := part.Encode(&b); err != nil {
+		log.Fatal(err)
+	}
+
+	m := bytes.ReplaceAll(b.Bytes(), []byte("\r\n"), []byte("\n"))
+	// unbreak the quoted linebreaks.
+	r := quotedprintable.NewReader(bytes.NewReader(m))
+	if _, err := io.Copy(os.Stdout, r); err != nil {
 		log.Fatal(err)
 	}
 }

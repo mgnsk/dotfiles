@@ -171,7 +171,6 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
 	status_command i3status
-
 }
 
 input * {
@@ -182,16 +181,13 @@ input * {
 focus_follows_mouse no
 
 # AUTOSTART
-exec --no-startup-id "redshift -m wayland"
-exec --no-startup-id "lxsession"
-#exec --no-startup-id "bash ~/start_jack.sh"
-
-exec --no-startup-id "mako"
-
-exec --no-startup-id swayidle -w \
+exec_always "redshift -m wayland"
+exec_always "lxsession"
+exec_always "mako"
+exec_always swayidle -w \
                 timeout 600 'swaylock -f -c 000000' \
                 timeout 1200 'swaymsg "output * dpms off"' \
                      resume 'swaymsg "output * dpms on"' \
                 before-sleep 'swaylock -f -c 000000'
 
-exec --no-startup-id "python ~/.tools/python/fader.py"
+exec_always "python ~/.tools/python/fader.py"

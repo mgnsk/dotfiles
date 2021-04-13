@@ -60,7 +60,7 @@ vim.o.wildmenu = true
 vim.o.shell = os.getenv("SHELL")
 vim.cmd("syntax on")
 vim.cmd("filetype plugin indent on")
-vim.cmd("colorscheme codedark")
+vim.cmd("colorscheme codedarker")
 vim.cmd("set tabline=%!MyTabLine()")
 -- TODO what does this do?
 --vim.cmd("set noruler")

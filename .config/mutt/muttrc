@@ -1,6 +1,0 @@
-source ~/.config/mutt/accounts/accountrc
-set new_mail_command="notify-send 'New Email' '%n new messages, %u unread.' &"
-set display_filter="maildate"
-set text_flowed
-set sort=threads	# sorting the mails in threads
-set sort_aux=reverse-date	# sorting the threads

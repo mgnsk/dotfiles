@@ -1,15 +1,24 @@
-vim.g.completion_chain_complete_list = {
-    default = {
-        {complete_items = {"lsp"}},
-        {complete_items = {"buffers"}},
-        {complete_items = {"ts"}}, -- treesitter source
-        {mode = {"<c-p>"}},
-        {mode = {"<c-n>"}}
+vim.o.completeopt = "menuone,noselect"
+
+require "compe".setup {
+    enabled = true,
+    autocomplete = true,
+    debug = false,
+    min_length = 1,
+    preselect = "disable",
+    throttle_time = 80,
+    source_timeout = 200,
+    incomplete_delay = 400,
+    max_abbr_width = 100,
+    max_kind_width = 100,
+    max_menu_width = 100,
+    documentation = true,
+    source = {
+        path = true,
+        buffer = true,
+        calc = true,
+        nvim_lsp = true,
+        nvim_lua = true,
+        vsnip = true
     }
 }
-vim.g.completion_auto_change_source = 1
-
-vim.api.nvim_exec([[
-autocmd BufEnter * lua require'completion'.on_attach()
-    :set number relativenumber
-]], true)

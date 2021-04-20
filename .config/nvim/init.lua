@@ -30,7 +30,6 @@ vim.cmd("set undofile")
 vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab")
 vim.cmd("set noexpandtab")
 vim.cmd("set nocompatible")
-vim.o.completeopt = "menuone,noinsert,noselect"
 vim.cmd("set termguicolors")
 ---- TODO check what else only works with vim.cmd
 vim.cmd("set nofoldenable")

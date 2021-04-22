@@ -1,5 +1,3 @@
-vim.cmd "packadd pkg-nvim"
-
 vim.g.mapleader = ","
 vim.g.autoformat_enabled = false
 

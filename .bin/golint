@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-revive "$@"
+if [ -f "$PWD/revive.toml" ]; then
+	revive -config "$PWD/revive.toml" "$@"
+else
+	revive "$@"
+fi

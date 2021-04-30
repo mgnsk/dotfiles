@@ -5,12 +5,32 @@ local log = vim.lsp.log
 local vimp = require "vimp"
 local lsp = require "lspconfig"
 
-lsp.gopls.setup {}
-lsp.clangd.setup {}
+lsp.gopls.setup {
+    on_attach = function(client, bufnr)
+        require "lsp_signature".on_attach()
+    end
+}
+lsp.clangd.setup {
+    on_attach = function(client, bufnr)
+        require "lsp_signature".on_attach()
+    end
+}
 lsp.jsonls.setup {}
-lsp.intelephense.setup {}
-lsp.rust_analyzer.setup {}
-lsp.tsserver.setup {}
+lsp.intelephense.setup {
+    on_attach = function(client, bufnr)
+        require "lsp_signature".on_attach()
+    end
+}
+lsp.rust_analyzer.setup {
+    on_attach = function(client, bufnr)
+        require "lsp_signature".on_attach()
+    end
+}
+lsp.tsserver.setup {
+    on_attach = function(client, bufnr)
+        require "lsp_signature".on_attach()
+    end
+}
 lsp.vimls.setup {}
 lsp.yamlls.setup {}
 lsp.html.setup {}

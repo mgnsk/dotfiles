@@ -1,6 +1,5 @@
 #!/bin/sh
 
-eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
-export SSH_AUTH_SOCK
-dbus-update-activation-environment --systemd DISPLAY
+export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+
 exec sway

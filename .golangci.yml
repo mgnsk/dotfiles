@@ -17,3 +17,7 @@ linters:
     - goerr113
     - paralleltest
     - predeclared
+    - maligned
+    - scopelint
+    - interfacer
+    - golint

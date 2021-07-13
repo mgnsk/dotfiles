@@ -1,6 +1,13 @@
 vim.g.mapleader = ","
 vim.g.autoformat_enabled = false
 
+require("kommentary.config").configure_language(
+    "default",
+    {
+        prefer_single_line_comments = true
+    }
+)
+
 if not os.getenv("NVIM_DIFF") then
     vim.g.autoformat_enabled = true
     vim.call("neomake#configure#automake", "w")
@@ -8,7 +15,7 @@ if not os.getenv("NVIM_DIFF") then
 end
 
 require "mappings"
-require "formatter"
+require "formatting"
 require "autocomplete"
 require "osc52"
 

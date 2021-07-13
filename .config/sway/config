@@ -182,7 +182,7 @@ input * {
 focus_follows_mouse no
 
 # AUTOSTART
-exec "redshift -m wayland"
+exec "clight-gui"
 exec "lxsession"
 exec "lxpolkit"
 exec "dbus-update-activation-environment --systemd DISPLAY"

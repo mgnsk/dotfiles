@@ -1,7 +1,7 @@
 vim.cmd "packadd pkg-nvim"
 local pkg = require "pkg-nvim".pkg
 
-pkg "preservim/nerdcommenter"
+pkg "b3nj5m1n/kommentary"
 pkg "neovim/nvim-lspconfig"
 pkg "nvim-treesitter/nvim-treesitter"
 pkg "hrsh7th/nvim-compe"

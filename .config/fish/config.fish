@@ -31,8 +31,6 @@ set -gx LIBRARY_PATH "$HOME/.local/lib"
 
 set -gx ANSIBLE_NOCOWS 1
 
-set -gx DOCKER_HOST "unix://$XDG_RUNTIME_DIR/docker.sock"
-
 set -gx GPG_TTY (tty)
 
 if type -q direnv

@@ -1,3 +1,3 @@
 function gsw
-    git switch (git branch --all | fzf | tr -d '[:space:]')
+    git switch (git for-each-ref --sort='-committerdate' --format='%(refname:short)' refs/heads | fzf)
 end

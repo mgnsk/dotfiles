@@ -175,8 +175,7 @@ bar {
 
 input * {
 	xkb_layout us,ee
-	#xkb_options caps:escape,grp:win_space_toggle
-	xkb_options grp:win_space_toggle
+	xkb_options ctrl:nocaps,grp:win_space_toggle
 }
 
 focus_follows_mouse no

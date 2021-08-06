@@ -1,123 +1,36 @@
-require "format".setup {
-    ["*"] = {
-        {
-            cmd = {
-                -- remove trailing whitespace
-                "sed -i 's/[ \t]*$//'"
+local function f(cmd, ...)
+    local args = {...}
+    return {
+        function()
+            return {
+                exe = cmd,
+                args = args,
+                stdin = false
             }
-        }
-    },
-    css = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
-    },
-    scss = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
-    },
-    glsl = {
-        {
-            cmd = {
-                "clang-format -i"
-            }
-        }
-    },
-    dockerfile = {
-        {
-            cmd = {
-                "dockerfile_format"
-            }
-        }
-    },
-    go = {
-        {
-            cmd = {
-                "gofumports -w"
-            }
-        }
-    },
-    html = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
-    },
-    json = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
-    },
-    javascript = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
-    },
-    typescript = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
-    },
-    lua = {
-        {
-            cmd = {
-                "luafmt -w replace"
-            }
-        }
-    },
-    proto = {
-        {
-            cmd = {
-                "clang-format -i"
-            }
-        }
-    },
-    rust = {
-        {
-            cmd = {
-                "rustfmt"
-            }
-        }
-    },
-    sh = {
-        {
-            cmd = {
-                "shfmt -w"
-            }
-        }
-    },
-    sql = {
-        {
-            cmd = {
-                "~/.tools/js/sql_format.mjs"
-            }
-        }
-    },
-    yaml = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
-    },
-    markdown = {
-        {
-            cmd = {
-                "prettier -w"
-            }
-        }
+        end
+    }
+end
+
+require "formatter".setup {
+    filetype = {
+        -- TODO not supported yet
+        -- ["*"] = f("sed -i 's/[ \t]*$//'"), -- remove trailing whitespace
+        css = f("prettier", "-w"),
+        scss = f("prettier", "-w"),
+        yaml = f("prettier", "-w"),
+        markdown = f("prettier", "-w"),
+        html = f("prettier", "-w"),
+        json = f("prettier", "-w"),
+        javascript = f("prettier", "-w"),
+        typescript = f("prettier", "-w"),
+        glsl = f("clang-format", "-i"),
+        proto = f("clang-format", "-i"),
+        dockerfile = f("dockerfile_format"),
+        go = f("goimports", "-w"),
+        lua = f("luafmt", "-w", "replace"),
+        rust = f("rustfmt"),
+        sh = f("shfmt", "-w"),
+        sql = f("~/.tools/js/sql_format.mjs")
     }
 }
 

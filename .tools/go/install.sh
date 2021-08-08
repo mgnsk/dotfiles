@@ -16,6 +16,7 @@ go install golang.org/x/tools/gopls@latest
 go install mvdan.cc/gofumpt@latest
 go install mvdan.cc/gofumpt/gofumports@latest
 go install mvdan.cc/sh/v3/cmd/shfmt@latest
+go install github.com/mattn/efm-langserver@latest
 
 cd maildate
 go install .

@@ -1,27 +1,3 @@
-function! AutoformatToggle()
-	if g:autoformat_enabled == 1
-		let g:autoformat_enabled = 0
-		echo 'Autoformat disabled'
-	else
-		let g:autoformat_enabled = 1
-		echo 'Autoformat enabled'
-	endif
-endfunction
-
-command AutoformatToggle :call AutoformatToggle()
-
-function! fns#Indent()
-	if g:autoformat_enabled
-		execute('normal gg=G``')
-	endif
-endfunction
-
-function! fns#Format()
-	if g:autoformat_enabled
-		FormatWrite
-	endif
-endfunction
-
 function fns#ShowDocs()
 	if (index(['vim','help'], &filetype) >= 0)
 		execute 'h '.expand('<cword>')

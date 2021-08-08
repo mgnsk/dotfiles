@@ -20,6 +20,6 @@
     "stylelint-scss": "^3.18.0",
     "typescript": "^4.0.3",
     "typescript-language-server": "^0.4.0",
-    "vim-language-server": "^2.1.0"
+    "vscode-langservers-extracted": "^2.4.0"
   }
 }

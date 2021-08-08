@@ -11,11 +11,11 @@ require("kommentary.config").configure_language(
 if not os.getenv("NVIM_DIFF") then
     vim.g.autoformat_enabled = true
     vim.call("neomake#configure#automake", "w")
-    require "lsp"
+    require "lsp/lsp"
+    require "lsp/efm"
 end
 
 require "mappings"
-require "formatting"
 require "autocomplete"
 require "osc52"
 

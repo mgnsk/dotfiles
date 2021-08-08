@@ -5,38 +5,24 @@ local log = vim.lsp.log
 local vimp = require "vimp"
 local lsp = require "lspconfig"
 
-lsp.gopls.setup {
-    on_attach = function(client, bufnr)
-        require "lsp_signature".on_attach()
-    end
-}
-lsp.clangd.setup {
-    on_attach = function(client, bufnr)
-        require "lsp_signature".on_attach()
-    end
-}
+local function on_attach(client, bufnr)
+    -- Disable each language server's own formatting capabilities,
+    -- we're using efm-langserver to do the formatting instead.
+    client.resolved_capabilities.document_formatting = false
+    require "lsp_signature".on_attach()
+end
+
+lsp.gopls.setup {on_attach = on_attach}
+lsp.clangd.setup {on_attach = on_attach}
+lsp.intelephense.setup {on_attach = on_attach}
+lsp.rust_analyzer.setup {on_attach = on_attach}
+lsp.tsserver.setup {on_attach = on_attach}
 lsp.jsonls.setup {}
-lsp.intelephense.setup {
-    on_attach = function(client, bufnr)
-        require "lsp_signature".on_attach()
-    end
-}
-lsp.rust_analyzer.setup {
-    on_attach = function(client, bufnr)
-        require "lsp_signature".on_attach()
-    end
-}
-lsp.tsserver.setup {
-    on_attach = function(client, bufnr)
-        require "lsp_signature".on_attach()
-    end
-}
-lsp.vimls.setup {}
-lsp.yamlls.setup {}
 lsp.html.setup {}
 lsp.cssls.setup {}
 lsp.bashls.setup {}
 
+-- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, method, result)
     if result == nil or vim.tbl_isempty(result) then
         local _ = log.info() and log.info(method, "No location found")

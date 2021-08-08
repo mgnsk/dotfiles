@@ -1,3 +1,5 @@
+Dotfiles method based on https://www.atlassian.com/git/tutorials/dotfiles
+
 # Installation
 
 Warning: overwrites the user's files.

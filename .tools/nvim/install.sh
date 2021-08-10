@@ -2,11 +2,15 @@
 
 set -e
 
+yay -S --noconfirm neovim-git
+
 git clone --recurse-submodules https://github.com/tlaplus-community/tree-sitter-tlaplus.git ~/.tools/nvim/tree-sitter-tlaplus
 cd ~/.tools/nvim/tree-sitter-tlaplus
 npm install
 
 nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'PkgInstall' -c 'qa'
+
+nvim --headless -c "TSUninstall all" -c "qa"
 
 function ts_install {
 	nvim --headless -c "TSInstallSync $1" -c "qa"

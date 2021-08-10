@@ -19,18 +19,15 @@ local luafmt = require "lsp/efm/luafmt"
 local prettier = require "lsp/efm/prettier"
 local clang = require "lsp/efm/clang-format"
 local goimports = require "lsp/efm/goimports"
-local sed = require "lsp/efm/sed"
 local rustfmt = require "lsp/efm/rustfmt"
 local shfmt = require "lsp/efm/shfmt"
 local dockerfilefmt = require "lsp/efm/dockerfile-fmt"
 local sqlfmt = require "lsp/efm/sqlfmt"
 
 local languages = {
-    -- TODO why doesn't work?
-    -- ["="] = {sed},
     lua = {luafmt},
     go = {goimports},
-    oss = {prettier},
+    css = {prettier},
     scss = {prettier},
     yaml = {prettier},
     markdown = {prettier},
@@ -45,6 +42,13 @@ local languages = {
     dockerfile = {dockerfilefmt},
     sql = {sqlfmt}
 }
+
+-- Remove trailing whitespace and newlines.
+vim.api.nvim_command [[augroup TrimTrailingWhiteSpace]]
+vim.api.nvim_command [[au!]]
+vim.api.nvim_command [[au BufWritePre * %s/\s\+$//e]]
+vim.api.nvim_command [[au BufWritePre * %s/\n\+\%$//e]]
+vim.api.nvim_command [[augroup END]]
 
 -- efm is a generic language server used for diff-based formatting
 require "lspconfig".efm.setup {

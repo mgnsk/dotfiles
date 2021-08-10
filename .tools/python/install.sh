@@ -2,7 +2,7 @@
 
 set -e
 
-pip3 install --no-cache-dir \
+pip3 install --upgrade --no-cache-dir \
 	yamllint \
 	ansible-lint \
 	vim-vint \

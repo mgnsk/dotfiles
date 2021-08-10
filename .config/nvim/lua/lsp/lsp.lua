@@ -17,10 +17,9 @@ lsp.clangd.setup {on_attach = on_attach}
 lsp.intelephense.setup {on_attach = on_attach}
 lsp.rust_analyzer.setup {on_attach = on_attach}
 lsp.tsserver.setup {on_attach = on_attach}
-lsp.jsonls.setup {}
-lsp.html.setup {}
-lsp.cssls.setup {}
-lsp.bashls.setup {}
+lsp.html.setup {on_attach = on_attach}
+lsp.cssls.setup {on_attach = on_attach}
+lsp.bashls.setup {on_attach = on_attach}
 
 -- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, method, result)

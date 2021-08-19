@@ -14,7 +14,7 @@ vimp.nnoremap(
 vimp.nnoremap("<C-h>", "<C-w>h")
 vimp.nnoremap("<C-j>", "<C-w>j")
 vimp.nnoremap("<C-k>", "<C-w>k")
-vimp.nnoremap("<C-l>", "<C-w>l")
+vimp.nnoremap({"override"}, "<C-l>", "<C-w>l")
 vimp.tnoremap("<Esc>", [[<C-\><C-n>]])
 vimp.nnoremap("<Esc><Esc>", ":nohlsearch<CR>")
 

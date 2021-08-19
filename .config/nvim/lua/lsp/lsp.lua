@@ -6,8 +6,6 @@ local vimp = require "vimp"
 local lsp = require "lspconfig"
 
 local function on_attach(client, bufnr)
-    -- Disable each language server's own formatting capabilities,
-    -- we're using efm-langserver to do the formatting instead.
     client.resolved_capabilities.document_formatting = false
     require "lsp_signature".on_attach()
 end

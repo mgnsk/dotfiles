@@ -12,7 +12,7 @@ if not os.getenv("NVIM_DIFF") then
     vim.g.autoformat_enabled = true
     vim.call("neomake#configure#automake", "w")
     require "lsp/lsp"
-    require "lsp/efm"
+    require "formatting"
 end
 
 require "mappings"

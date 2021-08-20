@@ -2,10 +2,15 @@
 
 set -e
 
-yay -S --noconfirm neovim-git
+tladir="$HOME/.tools/nvim/tree-sitter-tlaplus"
 
-git clone --recurse-submodules https://github.com/tlaplus-community/tree-sitter-tlaplus.git ~/.tools/nvim/tree-sitter-tlaplus
-cd ~/.tools/nvim/tree-sitter-tlaplus
+if test ! -d "$tladir"; then
+	git clone --recurse-submodules https://github.com/tlaplus-community/tree-sitter-tlaplus.git "$tladir"
+else
+	echo "Skip pulling tree-sitter-tlaplus"
+fi
+
+cd "$tladir"
 npm install
 
 nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'PkgInstall' -c 'qa'

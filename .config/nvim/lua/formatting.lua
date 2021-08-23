@@ -27,8 +27,6 @@ end
 
 require "formatter".setup {
     filetype = {
-        -- TODO not supported yet
-        -- ["*"] = f("sed -i 's/[ \t]*$//'"), -- remove trailing whitespace
         css = f("prettier", "-w"),
         scss = f("prettier", "-w"),
         markdown = f("prettier", "-w"),
@@ -58,7 +56,7 @@ vim.api.nvim_exec(
     [[
 augroup FormatAutogroup
   autocmd!
-  autocmd BufWritePost *.css,*.scss,*.glsl,*Dockerfile,*go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.rs,*.sh,*.sql call v:lua.doformat()
+  autocmd BufWritePost *.css,*.scss,*.glsl,*Dockerfile,*.go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.rs,*.sh,*.sql call v:lua.doformat()
 augroup END
 ]],
     true

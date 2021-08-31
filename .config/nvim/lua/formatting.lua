@@ -37,7 +37,7 @@ require "formatter".setup {
         glsl = f("clang-format", "-i"),
         proto = f("clang-format", "-i"),
         dockerfile = f("dockerfile_format"),
-        go = f("goimports", "-w"),
+        go = f("gofumports", "-w"),
         lua = f("luafmt", "-w", "replace"),
         rust = f("rustfmt"),
         sh = f("shfmt", "-w"),

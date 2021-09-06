@@ -2,8 +2,6 @@
 
 set -e
 
-yay -S --noconfirm neovim-git
-
 function do_install {
 	set -e
 	cd "$(dirname "$1")"

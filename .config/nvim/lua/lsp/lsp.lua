@@ -20,9 +20,9 @@ lsp.cssls.setup {on_attach = on_attach}
 lsp.bashls.setup {on_attach = on_attach}
 
 -- location_callback opens all LSP gotos in a new tab
-local location_callback = function(_, method, result)
+local location_callback = function(_, result, ctx)
     if result == nil or vim.tbl_isempty(result) then
-        local _ = log.info() and log.info(method, "No location found")
+        local _ = log.info() and log.info(ctx["method"], "No location found")
         return nil
     end
 

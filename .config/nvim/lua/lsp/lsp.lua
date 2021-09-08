@@ -11,7 +11,6 @@ local function on_attach(client, bufnr)
 end
 
 lsp.gopls.setup {on_attach = on_attach}
-lsp.clangd.setup {on_attach = on_attach}
 lsp.intelephense.setup {on_attach = on_attach}
 lsp.rust_analyzer.setup {on_attach = on_attach}
 lsp.tsserver.setup {on_attach = on_attach}

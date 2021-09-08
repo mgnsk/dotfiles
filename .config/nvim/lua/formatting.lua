@@ -36,6 +36,7 @@ require "formatter".setup {
         typescript = f("prettier", "-w"),
         glsl = f("clang-format", "-i"),
         proto = f("clang-format", "-i"),
+        c = f("clang-format", "-i"),
         dockerfile = f("dockerfile_format"),
         go = f("gofumports", "-w"),
         lua = f("luafmt", "-w", "replace"),
@@ -56,7 +57,7 @@ vim.api.nvim_exec(
     [[
 augroup FormatAutogroup
   autocmd!
-  autocmd BufWritePost *.css,*.scss,*.glsl,*Dockerfile,*.go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.rs,*.sh,*.sql call v:lua.doformat()
+  autocmd BufWritePost *.css,*.scss,*.glsl,*Dockerfile,*.go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.c,*.rs,*.sh,*.sql call v:lua.doformat()
 augroup END
 ]],
     true

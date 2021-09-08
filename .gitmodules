@@ -1,0 +1,3 @@
+[submodule ".tools/nvim/tree-sitter-tlaplus"]
+	path = .tools/nvim/tree-sitter-tlaplus
+	url = https://github.com/tlaplus-community/tree-sitter-tlaplus.git

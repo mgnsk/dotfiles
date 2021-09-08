@@ -4,12 +4,6 @@ set -e
 
 tladir="$HOME/.tools/nvim/tree-sitter-tlaplus"
 
-if test ! -d "$tladir"; then
-	git clone --recurse-submodules https://github.com/tlaplus-community/tree-sitter-tlaplus.git "$tladir"
-else
-	echo "Skip pulling tree-sitter-tlaplus"
-fi
-
 cd "$tladir"
 npm install
 

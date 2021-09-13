@@ -13,6 +13,7 @@ pkg "nvim-lua/lsp_extensions.nvim"
 pkg "neovim/nvim-lspconfig"
 pkg "ray-x/lsp_signature.nvim"
 pkg "gfanto/fzf-lsp.nvim"
+pkg "liuchengxu/vista.vim"
 
 pkg "hrsh7th/nvim-cmp"
 pkg "hrsh7th/cmp-buffer"

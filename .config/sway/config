@@ -47,9 +47,7 @@ font pango:monospace 8
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 
-set $do-entering-mouse-mode seat - hide_cursor 0
-
-bindsym $mod+m mode "mouse-mode" ; exec $do-entering-mouse-mode
+bindsym $mod+m mode "mouse-mode"
 
 mode "mouse-mode" {
 	set $key d

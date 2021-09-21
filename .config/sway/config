@@ -47,6 +47,23 @@ font pango:monospace 8
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 
+set $do-entering-mouse-mode seat - hide_cursor 0
+
+bindsym $mod+m mode "mouse-mode" ; exec $do-entering-mouse-mode
+
+mode "mouse-mode" {
+	set $key d
+	set $press seat - cursor press BTN_LEFT; bindsym $key $$release
+	set $release seat - cursor release BTN_LEFT; bindsym $key $$press
+	bindsym {
+		h seat - cursor move -10 0
+		j seat - cursor move 0 10
+		k seat - cursor move 0 -10
+		l seat - cursor move 10 0
+		$key $press
+		Escape    mode "default"
+	}
+}
 
 # start a terminal
 bindsym $mod+Return exec alacritty
@@ -58,16 +75,20 @@ bindsym $mod+Shift+q kill
 bindsym $mod+d exec j4-dmenu-desktop
 
 # change focus
-bindsym $mod+h focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+l focus right
+bindsym {
+	$mod+h focus left
+	$mod+j focus down
+	$mod+k focus up
+	$mod+l focus right
+}
 
 # move focused window
-bindsym $mod+Shift+h move left
-bindsym $mod+Shift+j move down
-bindsym $mod+Shift+k move up
-bindsym $mod+Shift+l move right
+bindsym {
+	$mod+Shift+h move left
+	$mod+Shift+j move down
+	$mod+Shift+k move up
+	$mod+Shift+l move right
+}
 
 # split in horizontal orientation
 bindsym $mod+s split h
@@ -100,52 +121,60 @@ bindsym $mod+Control+h workspace prev
 bindsym $mod+Control+l workspace next
 
 # switch to workspace
-bindsym $mod+1 workspace 1
-bindsym $mod+2 workspace 2
-bindsym $mod+3 workspace 3
-bindsym $mod+4 workspace 4
-bindsym $mod+5 workspace 5
-bindsym $mod+6 workspace 6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 10
+bindsym {
+	$mod+1 workspace 1
+	$mod+2 workspace 2
+	$mod+3 workspace 3
+	$mod+4 workspace 4
+	$mod+5 workspace 5
+	$mod+6 workspace 6
+	$mod+7 workspace 7
+	$mod+8 workspace 8
+	$mod+9 workspace 9
+	$mod+0 workspace 10
+}
 
 # workspaces from 11-20
-bindsym $mod+Control+1 workspace 11
-bindsym $mod+Control+2 workspace 12
-bindsym $mod+Control+3 workspace 13
-bindsym $mod+Control+4 workspace 14
-bindsym $mod+Control+5 workspace 15
-bindsym $mod+Control+6 workspace 16
-bindsym $mod+Control+7 workspace 17
-bindsym $mod+Control+8 workspace 18
-bindsym $mod+Control+9 workspace 19
-bindsym $mod+Control+0 workspace 20
+bindsym {
+	$mod+Control+1 workspace 11
+	$mod+Control+2 workspace 12
+	$mod+Control+3 workspace 13
+	$mod+Control+4 workspace 14
+	$mod+Control+5 workspace 15
+	$mod+Control+6 workspace 16
+	$mod+Control+7 workspace 17
+	$mod+Control+8 workspace 18
+	$mod+Control+9 workspace 19
+	$mod+Control+0 workspace 20
+}
 
 # move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace 1
-bindsym $mod+Shift+2 move container to workspace 2
-bindsym $mod+Shift+3 move container to workspace 3
-bindsym $mod+Shift+4 move container to workspace 4
-bindsym $mod+Shift+5 move container to workspace 5
-bindsym $mod+Shift+6 move container to workspace 6
-bindsym $mod+Shift+7 move container to workspace 7
-bindsym $mod+Shift+8 move container to workspace 8
-bindsym $mod+Shift+9 move container to workspace 9
-bindsym $mod+Shift+0 move container to workspace 10
+bindsym {
+	$mod+Shift+1 move container to workspace 1
+	$mod+Shift+2 move container to workspace 2
+	$mod+Shift+3 move container to workspace 3
+	$mod+Shift+4 move container to workspace 4
+	$mod+Shift+5 move container to workspace 5
+	$mod+Shift+6 move container to workspace 6
+	$mod+Shift+7 move container to workspace 7
+	$mod+Shift+8 move container to workspace 8
+	$mod+Shift+9 move container to workspace 9
+	$mod+Shift+0 move container to workspace 10
+}
 
 # move focused container to workspace
-bindsym $mod+Control+Shift+1 move container to workspace 11
-bindsym $mod+Control+Shift+2 move container to workspace 12
-bindsym $mod+Control+Shift+3 move container to workspace 13
-bindsym $mod+Control+Shift+4 move container to workspace 14
-bindsym $mod+Control+Shift+5 move container to workspace 15
-bindsym $mod+Control+Shift+6 move container to workspace 16
-bindsym $mod+Control+Shift+7 move container to workspace 17
-bindsym $mod+Control+Shift+8 move container to workspace 18
-bindsym $mod+Control+Shift+9 move container to workspace 19
-bindsym $mod+Control+Shift+0 move container to workspace 20
+bindsym {
+	$mod+Control+Shift+1 move container to workspace 11
+	$mod+Control+Shift+2 move container to workspace 12
+	$mod+Control+Shift+3 move container to workspace 13
+	$mod+Control+Shift+4 move container to workspace 14
+	$mod+Control+Shift+5 move container to workspace 15
+	$mod+Control+Shift+6 move container to workspace 16
+	$mod+Control+Shift+7 move container to workspace 17
+	$mod+Control+Shift+8 move container to workspace 18
+	$mod+Control+Shift+9 move container to workspace 19
+	$mod+Control+Shift+0 move container to workspace 20
+}
 
 # Reload the config file.
 bindsym $mod+Shift+c reload

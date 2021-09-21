@@ -62,10 +62,6 @@ vimp.nnoremap({"silent"}, "gr", vim.lsp.buf.references)
 vimp.nnoremap({"silent"}, "g0", vim.lsp.buf.document_symbol)
 vimp.nnoremap({"silent"}, "gW", vim.lsp.buf.workspace_symbol)
 
-vim.api.nvim_exec(
-    [[
+vim.api.nvim_exec([[
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
-autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
-]],
-    true
-)
+]], true)

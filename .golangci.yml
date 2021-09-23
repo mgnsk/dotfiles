@@ -1,0 +1,34 @@
+---
+linters:
+  enable-all: true
+  disable:
+    - wsl
+    - testpackage
+    - nlreturn
+    - gomodguard
+    - depguard
+    - gochecknoinits
+    - gochecknoglobals
+    - exhaustivestruct
+    - gomnd
+    - forbidigo
+    - errorlint
+    - wrapcheck
+    - goerr113
+    - paralleltest
+    - predeclared
+    - scopelint
+    - interfacer
+    - golint
+    - gofumpt
+    - lll
+    - forcetypeassert
+    - nestif
+    - tagliatelle
+    - promlinter
+    - funlen
+    - gocognit
+    - exhaustive
+    - cyclop
+    - gocyclo
+    - errname

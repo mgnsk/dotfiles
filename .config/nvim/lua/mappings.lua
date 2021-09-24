@@ -41,6 +41,7 @@ vimp.nnoremap("<leader>F", ":WorkspaceSymbols<CR>")
 vimp.nnoremap("<leader>G", ":BCommits<CR>")
 vimp.nnoremap("<leader>B", ":Gblame<CR>")
 vimp.nnoremap("<leader>W", ":Gw!<CR>")
+vimp.nnoremap("<leader>V", ":Vista<CR>")
 
 vimp.nnoremap(
     "<leader>l",

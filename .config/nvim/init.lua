@@ -19,14 +19,16 @@ require "mappings"
 require "autocomplete"
 require "osc52"
 
-require "treesitter/tlaplus"
-
 require "nvim-treesitter.configs".setup {
     --ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
     highlight = {enable = true}
     --incremental_selection = {enable = true},
     --textobjects = {enable = true}
 }
+
+vim.api.nvim_exec([[
+au BufRead,BufNewFile *.tla set filetype=tla
+]], true)
 
 local undodir = os.getenv("VIM_UNDO_DIR")
 if not vim.call("isdirectory", undodir) then

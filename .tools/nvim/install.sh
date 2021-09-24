@@ -2,11 +2,6 @@
 
 set -e
 
-tladir="$HOME/.tools/nvim/tree-sitter-tlaplus"
-
-cd "$tladir"
-npm install
-
 nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'PkgInstall' -c 'qa'
 
 nvim --headless -c "TSUninstall all" -c "qa"

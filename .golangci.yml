@@ -32,3 +32,8 @@ linters:
     - cyclop
     - gocyclo
     - errname
+    - maligned
+
+linters-settings:
+  govet:
+    enable-all: true

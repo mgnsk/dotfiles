@@ -13,7 +13,7 @@ let data = fs.readFileSync(file, "utf8");
 
 let result = sqlFormatter.format(data, {
   language: "sql",
-  indent: "  ",
+  indent: "    ",
   linesBetweenQueries: 2,
 });
 

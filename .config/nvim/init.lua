@@ -73,6 +73,7 @@ vim.cmd("set tabline=%!MyTabLine()")
 -- TODO what does this do?
 --vim.cmd("set noruler")
 
+vim.cmd("set list")
 vim.cmd("set lcs+=space:·")
 
 -- Use the `default_options` as the second parameter, which uses

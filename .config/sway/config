@@ -208,10 +208,10 @@ input * {
 focus_follows_mouse no
 
 # AUTOSTART
-exec "clight-gui"
 exec "lxsession"
 exec "lxpolkit"
 exec "dbus-update-activation-environment --systemd DISPLAY"
+exec "gammastep-indicator"
 exec "mako"
 exec swayidle -w \
                 timeout 600 'swaylock -f -c 000000' \

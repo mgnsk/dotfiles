@@ -17,6 +17,19 @@ lsp.tsserver.setup {on_attach = on_attach}
 lsp.html.setup {on_attach = on_attach}
 lsp.cssls.setup {on_attach = on_attach}
 lsp.bashls.setup {on_attach = on_attach}
+lsp.yamlls.setup {
+    on_attach = on_attach,
+    settings = {
+        yaml = {
+            schemas = {
+                ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.yaml"] = {
+                    "openapi3.yml",
+                    "openapi3.yaml"
+                }
+            }
+        }
+    }
+}
 
 -- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, result, ctx)

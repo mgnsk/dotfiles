@@ -2,6 +2,4 @@
 
 set -e
 
-npm config set prefix "$HOME/.npm-global"
-
-npm ci
+yarn install --frozen-lockfile

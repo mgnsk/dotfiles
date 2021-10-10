@@ -5,7 +5,7 @@ local packages = {}
 
 local function install_pkg(url, dir)
     local file
-    if vim.fn.filereadable(dir) then
+    if vim.fn.isdirectory(dir) ~= 0 then
         file = io.popen(string.format("cd %s; git pull", dir))
     else
         file = io.popen(string.format("git clone %s %s", url, dir))

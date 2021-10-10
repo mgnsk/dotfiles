@@ -4,7 +4,12 @@ local REPO_RE = "^[%w-]+/([%w-_.]+)$"
 local packages = {}
 
 local function install_pkg(url, dir)
-    local file = io.popen(string.format("git clone --depth 1 %s %s", url, dir))
+    local file
+    if vim.fn.filereadable(dir) then
+        file = io.popen(string.format("cd %s; git pull", dir))
+    else
+        file = io.popen(string.format("git clone %s %s", url, dir))
+    end
     local output = file:read("*all")
     file:close()
     print(output)

@@ -4,7 +4,6 @@ map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans
 	\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 
-autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc
 autocmd TermOpen term://* startinsert
 
 function! RipgrepFzf(query, fullscreen)

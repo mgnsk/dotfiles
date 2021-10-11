@@ -25,9 +25,9 @@ set -gx PAGER "most"
 set -gx MANPAGER "nvim +Man!"
 
 set -gx FZF_DEFAULT_OPTS "--layout=reverse"
-set -gx FZF_DEFAULT_COMMAND "fd --type f --no-ignore"
+set -gx FZF_DEFAULT_COMMAND "fd --type f --no-ignore --hidden --exclude '.git'"
 set -gx FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
-set -gx FZF_ALT_C_COMMAND "fd --type d --no-ignore"
+set -gx FZF_ALT_C_COMMAND "fd --type d --no-ignore --hidden --exclude '.git'"
 
 set -gx LIBRARY_PATH "$HOME/.local/lib"
 

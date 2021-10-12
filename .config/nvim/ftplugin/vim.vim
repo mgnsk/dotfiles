@@ -1,1 +1,1 @@
-autocmd BufWritePre *.vim,.vimrc silent call fns#Indent()
+autocmd BufWritePre *.vim,.vimrc normal gg=G``

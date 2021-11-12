@@ -4,7 +4,6 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@sqltools/formatter": "^1.2.2",
     "bash-language-server": "^1.17.0",
     "dockerfile-utils": "^0.1.1",
     "eslint": "^7.9.0",

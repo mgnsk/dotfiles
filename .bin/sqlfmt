@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -euo pipefail
+
+pg_format --type-case 0 -o "$1" "$1"

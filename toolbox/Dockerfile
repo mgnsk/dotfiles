@@ -50,7 +50,9 @@ RUN groupadd -g ${gid} ${group} \
 	-g ${group} \
 	--uid ${uid} \
 	${user} \
-	&& passwd -d ${user}
+	&& passwd -d ${user} \
+	&& echo "%wheel      ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/01-user \
+	&& gpasswd -a ${user} wheel
 
 USER ${user}
 
@@ -65,13 +67,12 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	&& yay -c --noconfirm \
 	&& bash -c "yes | yay -Scc" \
 	&& cd \
-	&& rm -rf ~/.cache
+	&& rm -rf ~/.cache \
+	&& sudo gpasswd -d ${user} wheel
 
 RUN git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles https://github.com/mgnsk/dotfiles.git /home/${user}/dotfiles-tmp \
 	&& rm -r ~/dotfiles-tmp \
-	&& alias config="/usr/bin/git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user}" \
-	&& config config status.showUntrackedFiles no \
-	&& config reset --hard origin/master \
+	&& git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} reset --hard origin/master \
 	&& bash ~/install_tools.sh \
 	&& go clean -modcache \
 	&& ~/.npm-global/bin/yarn cache clean --all \

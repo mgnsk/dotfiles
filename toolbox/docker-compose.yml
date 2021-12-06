@@ -20,6 +20,8 @@ services:
     # hostname: ${WORKSPACE_HOSTNAME}
     environment:
       - "TERM=${TERM}"
+    stdin_open: true
+    tty: true
     ports:
       # godoc
       - "6060:6060"

@@ -2,6 +2,6 @@
 
 set -e
 
-npm install -g yarn
+NPM_CONFIG_PREFIX="$HOME/.npm-global" npm install -g yarn
 
 yarn install --frozen-lockfile

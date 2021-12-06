@@ -1,4 +1,0 @@
-parse the yamlquery docker-compose.yml
-extract the volumes then foreach volume call podman unshare podman volume create with -o=uid,
-
-run this before starting up

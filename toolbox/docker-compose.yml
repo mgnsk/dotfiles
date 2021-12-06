@@ -1,51 +1,28 @@
 ---
 version: "3.4"
 services:
-  toolbox-base:
-    build:
-      context: images/toolbox-base
-      dockerfile: Dockerfile
-    environment:
-      - "TERM=${TERM}"
-
-  toolbox-aur:
-    build:
-      context: images/toolbox-aur
-      dockerfile: Dockerfile
-    environment:
-      - "TERM=${TERM}"
-
   toolbox:
     build:
-      context: build
-      dockerfile: ../images/toolbox/Dockerfile
-    # This also drops sudo in the container.
-    cap_drop:
-      - ALL
-    mem_limit: 1g
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - "${WORKSPACE_ROOT}:/workspace"
+      - "./workspaces:/workspaces"
       #- "tmp:/tmp"
-      - "cache:/home/${WORKSPACE_USER}/.cache"
-      - "nvim-data:/home/${WORKSPACE_USER}/.local/share/nvim"
-      - "direnv-data:/home/${WORKSPACE_USER}/.local/share/direnv"
-      - "tmux-resurrect:/home/${WORKSPACE_USER}/.tmux/resurrect"
-      - "npm-global:/home/${WORKSPACE_USER}/.npm-global"
-      - "go-global:/home/${WORKSPACE_USER}/go"
-      - "cargo-data:/home/${WORKSPACE_USER}/.cargo"
-      - "local-bin:/home/${WORKSPACE_USER}/.local/bin"
-      - "local-lib:/home/${WORKSPACE_USER}/.local/lib"
-    hostname: ${WORKSPACE_HOSTNAME}
+      - "cache:/home/${USER}/.cache"
+      - "nvim-data:/home/${USER}/.local/share/nvim"
+      - "direnv-data:/home/${USER}/.local/share/direnv"
+      - "tmux-resurrect:/home/${USER}/.tmux/resurrect"
+      - "npm-global:/home/${USER}/.npm-global"
+      - "go-global:/home/${USER}/go"
+      - "cargo-data:/home/${USER}/.cargo"
+      - "local-bin:/home/${USER}/.local/bin"
+      - "local-lib:/home/${USER}/.local/lib"
+    # hostname: ${WORKSPACE_HOSTNAME}
     environment:
       - "TERM=${TERM}"
     ports:
       # godoc
       - "6060:6060"
-      # parcel
-      - "1234:1234"
-      - "5000:5000"
-      # static HMR port for parcel
-      - "33969:33969"
 
 volumes:
   #tmp:

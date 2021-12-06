@@ -1,148 +1,40 @@
 ---
 options:
   uid:
-    default: 3000
+    default:
+      command: id -u
   gid:
-    default: 3000
+    default:
+      command: id -g
   user:
-    default: user
+    default:
+      command: id -u -n
   group:
-    default: user
-  build-dir:
-    private: true
     default:
-      command: echo $(pwd)/build
-  buildtool:
-    private: true
-    default:
-      command: |
-        if ! command -v podman &>/dev/null; then
-          echo docker
-        else
-          echo podman
-        fi
+      command: id -g -n
 
 tasks:
-  build-image:
-    usage: Build an image.
-    args:
-      image:
-        usage: The image name
-        values:
-          - toolbox-base
-          - toolbox-aur
-          - toolbox
+  build:
+    usage: Build the toolbox.
     run:
-      - when:
-          - not-exists: build
-          - command: mkdir -p ${build-dir}/dotfiles
-            # Requires the `config` alias from fish.
-          - command: fish -c "cd $HOME; config ls-files | tar Tc - | tar Cx ${build-dir}/dotfiles"
       - command: >
-          ${buildtool}-compose
+          docker-compose
           -p toolbox
           build
+          --pull
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
-          ${image}
-
-  build-all:
-    usage: Build all images.
-    run:
-      - task:
-          name: build-image
-          args:
-            - toolbox-base
-      - task:
-          name: build-image
-          args:
-            - toolbox-aur
-      - task:
-          name: build-image
-          args:
-            - toolbox
+      - command: docker image prune -f
 
   shell:
-    usage: Run a shell as user in the workspace with a shifted view of the filesystem.
-    args:
-      workspace:
-        usage: The workspace directory to run in.
-    options:
-      tmp:
-        private: true
-        default:
-          command: bash -c 'echo $(pwd)/.fuse-$(cat /proc/sys/kernel/random/uuid | cut -c-8)'
-      upperdir:
-        private: true
-        default:
-          command: realpath ${workspace}
-      hostname:
-        private: true
-        default:
-          command: basename ${workspace}
-      starttime:
-        private: true
-        default:
-          command: date
+    usage: Run a user shell in the toolbox.
     run:
-      - command: |
-          if [ "$(pwd)" == "${upperdir}" ]; then echo "invalid workspace: ${upperdir}"; exit 1; fi
-      - task:
-          name: _mount
-          options:
-            uid: ${uid}
-            gid: ${gid}
-            upperdir: ${upperdir}
-            tmp: ${tmp}
-      - command: tusk -f ./tasks/tusk.yml create-user-volumes --prefix=toolbox --uid=${uid} --gid=${gid}
-      - set-environment:
-          WORKSPACE_ROOT: ${tmp}/merged
-          WORKSPACE_HOSTNAME: ${hostname}
-          WORKSPACE_USER: ${user}
-      - command: podman-compose -p toolbox run --rm --service-ports toolbox /usr/bin/fish
-    finally:
-      - task:
-          name: _unmount
-          options:
-            tmp: ${tmp}
-      - command: find ${workspace} -newermt "${starttime}" \( -type c -or \( -type f -and -name ".wh..wh..opq" \) \) -delete
+      - command: docker-compose -p toolbox up -d toolbox
+      - command: docker-compose -p toolbox exec toolbox /usr/bin/fish
 
-  reset:
-    usage: Kill and remove pod, volumes and fuse mounts.
+  down:
+    usage: Stop the toolbox.
     run:
-      - command: podman pod kill toolbox || true
-      - command: podman pod rm toolbox || true
-      - command: for v in $(podman volume ls | awk 'NR>1 {print $2}' | grep "^toolbox"); do podman volume rm $v; done
-      - task:
-          name: _unmount
-          options:
-            tmp: .fuse-*
-
-  clean:
-    usage: Reset and clear dotfiles build cache.
-    run:
-      - task: reset
-      - command: rm -rf build
-
-  buildclean:
-    usage: Clean and remove image cache.
-    run:
-      - task: clean
-      - command: ${buildtool} image prune -f
-
-  destroy:
-    usage: Completely remove the container image.
-    run:
-      - task: buildclean
-    finally:
-      - command: ${buildtool} rmi toolbox_toolbox-base || true
-      - command: ${buildtool} rmi toolbox_toolbox-aur || true
-      - command: ${buildtool} rmi toolbox_toolbox || true
-
-  _mount:
-    include: tasks/mount.yml
-
-  _unmount:
-    include: tasks/unmount.yml
+      - command: docker-compose -p toolbox down --remove-orphans -v

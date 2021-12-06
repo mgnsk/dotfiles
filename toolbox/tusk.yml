@@ -31,10 +31,15 @@ tasks:
   shell:
     usage: Run a user shell in the toolbox.
     run:
-      - command: docker-compose -p toolbox up -d toolbox
+      - command: docker-compose -p toolbox up -d --no-recreate toolbox
       - command: docker-compose -p toolbox exec toolbox /usr/bin/fish
 
   down:
     usage: Stop the toolbox.
+    run:
+      - command: docker-compose -p toolbox down --remove-orphans
+
+  clean:
+    usage: Stop the toolbox and remove columes.
     run:
       - command: docker-compose -p toolbox down --remove-orphans -v

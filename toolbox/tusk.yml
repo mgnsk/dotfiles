@@ -12,34 +12,61 @@ options:
   group:
     default:
       command: id -g -n
+  local:
+    default: /home/${user}/.local/share/toolbox-fuse
 
 tasks:
   build:
     usage: Build the toolbox.
     run:
       - command: >
-          docker-compose
-          -p toolbox
+          podman
           build
-          --pull
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
-      - command: docker image prune -f
+          -t toolbox
+          toolbox
 
-  shell:
-    usage: Run a user shell in the toolbox.
+  up:
+    usage: Start the toolbox.
     run:
-      - command: docker-compose -p toolbox up -d --no-recreate toolbox
-      - command: docker-compose -p toolbox exec toolbox /usr/bin/fish
+      - command: mkdir ${local} workspaces_mount
+      - command: mkdir -p ${local}/lowerdir ${local}/workdir
+      - command: >
+          podman
+          unshare
+          fuse-overlayfs
+          -o uidmapping=0:${uid}:1
+          -o gidmapping=0:${gid}:1
+          -o lowerdir=${local}/lowerdir
+          -o upperdir=workspaces
+          -o workdir=${local}/workdir
+          -o noxattrs=1,fsync=0,threaded=0
+          workspaces_mount
+      - set-environment:
+          TPL_GLOB: toolbox.yml
+      - command: templatetool toolbox.yml --Term ${TERM} --User ${user} | podman play kube -
 
   down:
     usage: Stop the toolbox.
     run:
-      - command: docker-compose -p toolbox down --remove-orphans
+      - command: podman pod rm -f toolbox_pod || true
+      - command: podman unshare fusermount3 -u workspaces_mount || true
+      - command: rm -rf workspaces_mount ${local}
 
   clean:
-    usage: Stop the toolbox and remove columes.
+    usage: Stop the toolbox and remove volumes.
     run:
-      - command: docker-compose -p toolbox down --remove-orphans -v
+      - task: down
+      - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
+
+  shell:
+    usage: Enter the toolbox.
+    options:
+      ctr-id:
+        default:
+          command: podman container list --filter ancestor=localhost/toolbox --format "{{.ID}}"
+    run:
+      - command: podman exec -it ${ctr-id} fish

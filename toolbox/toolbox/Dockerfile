@@ -64,6 +64,7 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	direnv \
 	hadolint-bin \
 	neovim-git \
+	pgformatter-git \
 	&& yay -c --noconfirm \
 	&& bash -c "yes | yay -Scc" \
 	&& cd \

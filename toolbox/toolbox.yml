@@ -1,0 +1,90 @@
+piVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: toolbox
+  name: toolbox_pod
+spec:
+  containers:
+    - image: toolbox
+      name: toolbox
+      ports:
+        - containerPort: 6060
+          hostPort: 6060
+          protocol: TCP
+      env:
+        - name: TERM
+          value: {{.Term}}
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        privileged: false
+        seLinuxOptions:
+          type: spc_t
+      tty: true
+      stdin: true
+      workingDir: /workspaces
+      volumeMounts:
+        - name: toolbox-workspaces
+          mountPath: /workspaces
+        - name: toolbox-cache
+          mountPath: "/home/{{.User}}/.cache"
+        - name: toolbox-nvim-data
+          mountPath: "/home/{{.User}}/.local/share/nvim"
+        - name: toolbox-direnv-data
+          mountPath: "/home/{{.User}}/.local/share/direnv"
+        - name: toolbox-tmux-resurrect
+          mountPath: "/home/{{.User}}/.tmux/resurrect"
+        - name: toolbox-npm-global
+          mountPath: "/home/{{.User}}/.npm-global"
+        - name: toolbox-go-global
+          mountPath: "/home/{{.User}}/go"
+        - name: toolbox-cargo-data
+          mountPath: "/home/{{.User}}/.cargo"
+        - name: toolbox-local-bin
+          mountPath: "/home/{{.User}}/.local-bin"
+        - name: toolbox-local-lib
+          mountPath: "/home/{{.User}}/.local-lib"
+  restartPolicy: Never
+  volumes:
+    - name: toolbox-workspaces
+      hostPath:
+        path: "./workspaces_mount"
+        type: Directory
+
+    - name: toolbox-cache
+      persistentVolumeClaim:
+        claimName: toolbox-cache
+
+    - name: toolbox-nvim-data
+      persistentVolumeClaim:
+        claimName: toolbox-nvim-data
+
+    - name: toolbox-direnv-data
+      persistentVolumeClaim:
+        claimName: toolbox-direnv-data
+
+    - name: toolbox-tmux-resurrect
+      persistentVolumeClaim:
+        claimName: toolbox-tmux-resurrect
+
+    - name: toolbox-npm-global
+      persistentVolumeClaim:
+        claimName: toolbox-npm-global
+
+    - name: toolbox-go-global
+      persistentVolumeClaim:
+        claimName: toolbox-go-global
+
+    - name: toolbox-cargo-data
+      persistentVolumeClaim:
+        claimName: toolbox-cargo-data
+
+    - name: toolbox-local-bin
+      persistentVolumeClaim:
+        claimName: toolbox-local-bin
+
+    - name: toolbox-local-lib
+      persistentVolumeClaim:
+        claimName: toolbox-local-lib
+status: {}

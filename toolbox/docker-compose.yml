@@ -3,11 +3,10 @@ version: "3.4"
 services:
   toolbox:
     build:
-      context: .
+      context: toolbox
       dockerfile: Dockerfile
     volumes:
       - "./workspaces:/workspaces"
-      #- "tmp:/tmp"
       - "cache:/home/${USER}/.cache"
       - "nvim-data:/home/${USER}/.local/share/nvim"
       - "direnv-data:/home/${USER}/.local/share/direnv"
@@ -17,7 +16,6 @@ services:
       - "cargo-data:/home/${USER}/.cargo"
       - "local-bin:/home/${USER}/.local/bin"
       - "local-lib:/home/${USER}/.local/lib"
-    # hostname: ${WORKSPACE_HOSTNAME}
     environment:
       - "TERM=${TERM}"
     stdin_open: true
@@ -27,7 +25,6 @@ services:
       - "6060:6060"
 
 volumes:
-  #tmp:
   cache:
   nvim-data:
   direnv-data:

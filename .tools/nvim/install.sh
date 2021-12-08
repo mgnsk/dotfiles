@@ -4,8 +4,6 @@ set -e
 
 nvim --headless -u ~/.config/nvim/lua/plugins.lua -c 'PkgInstall' -c 'qa'
 
-nvim --headless -c "TSUninstall all" -c "qa"
-
 function ts_install {
 	nvim --headless -c "TSInstallSync $1" -c "qa"
 }

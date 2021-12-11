@@ -8,10 +8,10 @@ spec:
   containers:
     - image: toolbox
       name: toolbox
-      ports:
-        - containerPort: 6060
-          hostPort: 6060
-          protocol: TCP
+      # ports:
+      #   - containerPort: 6060
+      #     hostPort: 6060
+      #     protocol: TCP
       env:
         - name: TERM
           value: {{.Term}}
@@ -28,28 +28,28 @@ spec:
         - name: toolbox-workspaces
           mountPath: /workspaces
         - name: toolbox-cache
-          mountPath: "/home/{{.User}}/.cache"
+          mountPath: "/{{.Home}}/.cache"
         - name: toolbox-nvim-data
-          mountPath: "/home/{{.User}}/.local/share/nvim"
+          mountPath: "/{{.Home}}/.local/share/nvim"
         - name: toolbox-direnv-data
-          mountPath: "/home/{{.User}}/.local/share/direnv"
+          mountPath: "/{{.Home}}/.local/share/direnv"
         - name: toolbox-tmux-resurrect
-          mountPath: "/home/{{.User}}/.tmux/resurrect"
+          mountPath: "/{{.Home}}/.tmux/resurrect"
         - name: toolbox-npm-global
-          mountPath: "/home/{{.User}}/.npm-global"
+          mountPath: "/{{.Home}}/.npm-global"
         - name: toolbox-go-global
-          mountPath: "/home/{{.User}}/go"
+          mountPath: "/{{.Home}}/go"
         - name: toolbox-cargo-data
-          mountPath: "/home/{{.User}}/.cargo"
+          mountPath: "/{{.Home}}/.cargo"
         - name: toolbox-local-bin
-          mountPath: "/home/{{.User}}/.local-bin"
+          mountPath: "/{{.Home}}/.local-bin"
         - name: toolbox-local-lib
-          mountPath: "/home/{{.User}}/.local-lib"
+          mountPath: "/{{.Home}}/.local-lib"
   restartPolicy: Never
   volumes:
     - name: toolbox-workspaces
       hostPath:
-        path: "./workspaces_mount"
+        path: "{{.WorkspacesHostPath}}"
         type: Directory
 
     - name: toolbox-cache

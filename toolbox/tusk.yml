@@ -12,8 +12,9 @@ options:
   group:
     default:
       command: id -g -n
-  local:
-    default: /home/${user}/.local/share/toolbox-fuse
+  tmp:
+    default:
+      command: echo $PWD/.tmp
 
 tasks:
   build:
@@ -26,35 +27,43 @@ tasks:
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
+          --build-arg cachebust=$(date +%s)
           -t toolbox
           toolbox
+      - command: podman image prune -f
 
   up:
     usage: Start the toolbox.
     run:
-      - command: mkdir ${local} workspaces_mount
-      - command: mkdir -p ${local}/lowerdir ${local}/workdir
+      - command: mkdir ${tmp}
+      - command: mkdir -p ${tmp}/lowerdir ${tmp}/workdir ${tmp}/workspaces
       - command: >
           podman
           unshare
           fuse-overlayfs
           -o uidmapping=0:${uid}:1
           -o gidmapping=0:${gid}:1
-          -o lowerdir=${local}/lowerdir
+          -o lowerdir=${tmp}/lowerdir
           -o upperdir=workspaces
-          -o workdir=${local}/workdir
+          -o workdir=${tmp}/workdir
           -o noxattrs=1,fsync=0,threaded=0
-          workspaces_mount
+          ${tmp}/workspaces
       - set-environment:
           TPL_GLOB: toolbox.yml
-      - command: templatetool toolbox.yml --Term ${TERM} --User ${user} | podman play kube -
+      - command: >
+          templatetool
+          toolbox.yml
+          --Term ${TERM}
+          --Home /home/${user}
+          --WorkspacesHostPath ${tmp}/workspaces
+          | podman play kube -
 
   down:
     usage: Stop the toolbox.
     run:
       - command: podman pod rm -f toolbox_pod || true
-      - command: podman unshare fusermount3 -u workspaces_mount || true
-      - command: rm -rf workspaces_mount ${local}
+      - command: podman unshare fusermount3 -u ${tmp}/workspaces || true
+      - command: rm -rf ${tmp}
 
   clean:
     usage: Stop the toolbox and remove volumes.

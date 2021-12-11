@@ -9,6 +9,7 @@ RUN pacman -Syy \
 	unzip \
 	wget \
 	tmux \
+	vim \
 	bash-completion \
 	fish \
 	tree \
@@ -35,7 +36,6 @@ RUN pacman -Syy \
 	brotli \
 	rustup \
 	sccache \
-	rust-analyzer \
 	&& bash -c "yes | pacman -Scc"
 
 ARG uid
@@ -71,6 +71,7 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	&& rm -rf ~/.cache \
 	&& sudo gpasswd -d ${user} wheel
 
+ARG cachebust=1
 RUN git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles https://github.com/mgnsk/dotfiles.git /home/${user}/dotfiles-tmp \
 	&& rm -r ~/dotfiles-tmp \
 	&& git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} reset --hard origin/master \

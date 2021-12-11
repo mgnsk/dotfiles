@@ -22,7 +22,7 @@ services:
     tty: true
     ports:
       # godoc
-      - "6060:6060"
+      # - "6060:6060"
 
 volumes:
   cache:

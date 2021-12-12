@@ -2,6 +2,7 @@ vim.cmd "packadd pkg-nvim"
 local pkg = require "pkg-nvim".pkg
 
 pkg "b3nj5m1n/kommentary"
+pkg "junegunn/fzf"
 pkg "junegunn/fzf.vim"
 pkg "airblade/vim-gitgutter"
 pkg "sebdah/vim-delve"

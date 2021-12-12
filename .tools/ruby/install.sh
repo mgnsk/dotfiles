@@ -2,4 +2,4 @@
 
 set -e
 
-gem install sqlint
+gem install --user-install sqlint

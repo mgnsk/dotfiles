@@ -20,7 +20,7 @@ services:
       - "TERM=${TERM}"
     stdin_open: true
     tty: true
-    ports:
+    # ports:
       # godoc
       # - "6060:6060"
 

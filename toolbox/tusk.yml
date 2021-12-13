@@ -17,7 +17,21 @@ options:
       command: echo $PWD/.tmp
 
 tasks:
-  build:
+  docker.build:
+    usage: Build the toolbox.
+    run:
+      - command: >
+          docker-compose
+          -p toolbox
+          build
+          --build-arg uid=${uid}
+          --build-arg gid=${gid}
+          --build-arg user=${user}
+          --build-arg group=${group}
+          --build-arg cachebust=$(date +%s)
+      - command: docker image prune -f
+
+  podman.build:
     usage: Build the toolbox.
     run:
       - command: >
@@ -32,7 +46,12 @@ tasks:
           toolbox
       - command: podman image prune -f
 
-  up:
+  docker.up:
+    usage: Start the toolbox.
+    run:
+      - command: docker-compose -p toolbox up -d
+
+  podman.up:
     usage: Start the toolbox.
     run:
       - command: mkdir ${tmp}
@@ -58,20 +77,34 @@ tasks:
           --WorkspacesHostPath ${tmp}/workspaces
           | podman play kube -
 
-  down:
+  docker.down:
     usage: Stop the toolbox.
     run:
+      - command: docker-compose -p toolbox down
+
+  podman.down:
+    usage: Stop the toolbox.
+    run:
+      - command: podman pod stop toolbox_pod || true
       - command: podman pod rm -f toolbox_pod || true
       - command: podman unshare fusermount3 -u ${tmp}/workspaces || true
       - command: rm -rf ${tmp}
 
-  clean:
+  docker.clean:
     usage: Stop the toolbox and remove volumes.
     run:
-      - task: down
-      - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
+      - command: docker-compose -p toolbox down -v
 
-  shell:
+  podman.clean:
+    usage: Stop the toolbox and remove volumes.
+    run:
+      - task: podman.down
+      - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
+  docker.shell:
+    run:
+      - command: docker-compose -p toolbox exec toolbox fish
+
+  podman.shell:
     usage: Enter the toolbox.
     options:
       ctr-id:

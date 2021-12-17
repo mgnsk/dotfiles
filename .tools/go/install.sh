@@ -12,7 +12,6 @@ go install golang.org/x/tools/cmd/godoc@latest
 go install golang.org/x/tools/cmd/goimports@latest
 go install golang.org/x/tools/cmd/guru@latest
 go install golang.org/x/tools/gopls@latest
-go install mvdan.cc/gofumpt@latest
 go install mvdan.cc/sh/v3/cmd/shfmt@latest
 go install github.com/mgnsk/templatetool@latest
 

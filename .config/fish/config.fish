@@ -1,3 +1,4 @@
+set -gx PATH "$HOME/bin:$PATH"
 set -gx PATH "$HOME/.local/bin:$PATH"
 set -gx PATH "$HOME/.npm-global/bin:$PATH"
 set -gx PATH "$HOME/.tools/js/node_modules/.bin:$PATH"
@@ -20,8 +21,8 @@ set -gx GOPATH "$HOME/go"
 
 set -gx VIM_UNDO_DIR "$HOME/.local/share/nvim/undo"
 
-set -gx EDITOR "/usr/bin/nvim"
-set -gx VISUAL "/usr/bin/nvim"
+set -gx EDITOR "nvim"
+set -gx VISUAL "nvim"
 set -gx PAGER "most"
 set -gx MANPAGER "nvim +Man!"
 

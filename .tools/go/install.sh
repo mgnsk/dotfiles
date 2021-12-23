@@ -15,5 +15,5 @@ go install golang.org/x/tools/gopls@latest
 go install mvdan.cc/sh/v3/cmd/shfmt@latest
 go install github.com/mgnsk/templatetool@latest
 
-cd maildate
-go install .
+cd tools
+go install ./...

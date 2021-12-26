@@ -11,4 +11,4 @@ function do_install {
 
 export -f do_install
 
-find ~/.tools/*/install.sh -maxdepth 1 -print0 | parallel -k -u --halt-on-error 2 -0 -j"$(nproc)" do_install {}
+find ~/.tools/*/install.sh -maxdepth 1 -exec bash -c 'do_install "$0"' {} \;

@@ -13,6 +13,7 @@ if not os.getenv("NVIM_DIFF") then
     vim.call("neomake#configure#automake", "w")
     require "lsp"
     require "formatting"
+    require "nonexisting"
 end
 
 require "mappings"

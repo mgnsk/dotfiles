@@ -48,7 +48,9 @@ pkg_install "rbtnn/vim-vimscript_indentexpr"
 pkg_install "Townk/vim-autoclose"
 
 function ts_install {
-	nvim --headless -c "TSUpdateSync $1" -c "qa"
+	cmd="nvim --headless -c 'TSUpdateSync $1' -c 'qa'"
+	# Simulate a pty.
+	socat - EXEC:"$cmd",pty,setsid,ctty
 	printf "\n"
 }
 

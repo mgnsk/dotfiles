@@ -47,8 +47,12 @@ pkg_install "mhartington/formatter.nvim"
 pkg_install "rbtnn/vim-vimscript_indentexpr"
 pkg_install "Townk/vim-autoclose"
 
+function faketty() {
+	script -qefc "$(printf "%q " "$@")"
+}
+
 function ts_install {
-	nvim --headless -c "TSUpdateSync $1" -c "qa"
+	faketty vim --headless -c "TSUpdateSync $1" -c "qa"
 	printf "\n"
 }
 

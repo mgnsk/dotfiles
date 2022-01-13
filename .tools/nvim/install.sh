@@ -52,7 +52,7 @@ function faketty() {
 }
 
 function ts_install {
-	faketty vim --headless -c "TSUpdateSync $1" -c "qa"
+	faketty nvim --headless -c "TSUpdateSync $1" -c "qa"
 	printf "\n"
 }
 

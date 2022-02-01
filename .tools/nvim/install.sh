@@ -18,7 +18,6 @@ function pkg_install {
 }
 
 pkg_install "nvim-treesitter/nvim-treesitter"
-pkg_install "sheerun/vim-polyglot"
 pkg_install "rktjmp/lush.nvim"
 pkg_install "norcalli/nvim-colorizer.lua"
 
@@ -64,6 +63,7 @@ ts_install html
 ts_install json
 ts_install css
 ts_install typescript
+ts_install tsx
 ts_install toml
 ts_install elm
 ts_install yaml

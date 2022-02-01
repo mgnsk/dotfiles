@@ -119,7 +119,8 @@ return lush(
             GitGutterAdd {fg = cdGreen},
             GitGutterChange {fg = cdOrange},
             GitGutterDelete {fg = cdRed},
-            GitGutterChangeDelete {fg = cdViolet}
+            GitGutterChangeDelete {fg = cdViolet},
+            TSNamespace {fg = cdFront}
         }
     end
 )

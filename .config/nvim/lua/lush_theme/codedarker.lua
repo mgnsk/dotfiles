@@ -2,7 +2,7 @@ local lush = require("lush")
 local hsl = lush.hsl
 
 local cdFront = hsl("#D4D4D4")
-local cdBack = hsl("#161616")
+local cdBack = hsl("#101010")
 local cdLeftDark = hsl("#252526")
 local cdLeftMid = hsl("#373737")
 local cdLeftLight = hsl("#3F3F46")

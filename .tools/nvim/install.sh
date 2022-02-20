@@ -69,5 +69,6 @@ ts_install elm
 ts_install yaml
 ts_install regex
 ts_install tlaplus
+ts_install beancount
 
 rm -rf ~/.local/share/nvim/*.tar.gz

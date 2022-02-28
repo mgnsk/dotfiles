@@ -1,3 +1,7 @@
+if status --is-interactive && test -d /usr/share/fzf/shell
+    source /usr/share/fzf/shell/key-bindings.fish
+end
+
 set -gx PATH "$HOME/bin:$PATH"
 set -gx PATH "$HOME/.local/bin:$PATH"
 set -gx PATH "$HOME/.npm-global/bin:$PATH"

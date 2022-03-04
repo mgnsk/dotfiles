@@ -8,6 +8,7 @@ local lsp = require "lspconfig"
 local function on_attach(client, bufnr)
     client.resolved_capabilities.document_formatting = false
     require "lsp_signature".on_attach()
+    require "illuminate".on_attach(client)
 end
 
 lsp.gopls.setup {on_attach = on_attach}
@@ -75,6 +76,30 @@ vimp.nnoremap({"silent"}, "gr", vim.lsp.buf.references)
 vimp.nnoremap({"silent"}, "g0", vim.lsp.buf.document_symbol)
 vimp.nnoremap({"silent"}, "gW", vim.lsp.buf.workspace_symbol)
 
+vimp.nnoremap(
+    {"silent"},
+    "gn",
+    function()
+        require "illuminate".next_reference {wrap = true}
+    end
+)
+
+vimp.nnoremap(
+    {"silent"},
+    "gp",
+    function()
+        require "illuminate".next_reference {reverse = true, wrap = true}
+    end
+)
+
 vim.api.nvim_exec([[
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
 ]], true)
+
+vim.api.nvim_command [[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]]
+vim.api.nvim_command [[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]]
+vim.api.nvim_command [[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]]
+
+vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
+vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
+vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]

@@ -18,6 +18,7 @@ function pkg_install {
 }
 
 pkg_install "nvim-treesitter/nvim-treesitter"
+pkg_install "nvim-treesitter/playground"
 pkg_install "rktjmp/lush.nvim"
 pkg_install "norcalli/nvim-colorizer.lua"
 
@@ -35,6 +36,7 @@ pkg_install "neovim/nvim-lspconfig"
 pkg_install "ray-x/lsp_signature.nvim"
 pkg_install "gfanto/fzf-lsp.nvim"
 pkg_install "liuchengxu/vista.vim"
+pkg_install "RRethy/vim-illuminate"
 
 pkg_install "hrsh7th/nvim-cmp"
 pkg_install "hrsh7th/cmp-buffer"
@@ -64,11 +66,18 @@ ts_install json
 ts_install css
 ts_install typescript
 ts_install tsx
+ts_install svelte
+ts_install vue
 ts_install toml
 ts_install elm
 ts_install yaml
 ts_install regex
 ts_install tlaplus
 ts_install beancount
+ts_install ledger
+ts_install comment
+ts_install make
+ts_install regex
+ts_install vim
 
 rm -rf ~/.local/share/nvim/*.tar.gz

@@ -99,3 +99,5 @@ vim.g.fzf_action = {
 }
 vim.g.fzf_buffers_jump = 1
 vim.g.gitgutter_sign_columns_always = 1
+
+vim.g.Illuminate_delay = 500

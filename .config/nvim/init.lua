@@ -56,9 +56,8 @@ vim.o.encoding = "UTF-8"
 vim.o.autoindent = true
 vim.o.smartindent = true
 vim.o.pastetoggle = "<F2>"
--- These 2 settings cause a flicker in alacritty tmux.
---vim.cmd("set noshowcmd")
---vim.o.lazyredraw = true
+vim.cmd("set noshowcmd")
+vim.o.lazyredraw = true
 vim.cmd("set number")
 vim.o.laststatus = 2
 vim.o.path = vim.o.path .. "**"

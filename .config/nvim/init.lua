@@ -13,10 +13,10 @@ if not os.getenv("NVIM_DIFF") then
     vim.call("neomake#configure#automake", "w")
     require "lsp"
     require "formatting"
+    require "autocomplete"
 end
 
 require "mappings"
-require "autocomplete"
 require "osc52"
 
 require "nvim-treesitter.configs".setup {
@@ -100,3 +100,5 @@ vim.g.fzf_buffers_jump = 1
 vim.g.gitgutter_sign_columns_always = 1
 
 vim.g.Illuminate_delay = 500
+
+vim.api.nvim_command [[ set t_ut= ]]

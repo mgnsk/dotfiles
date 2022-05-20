@@ -18,7 +18,7 @@ function pkg_install {
 }
 
 pkg_install "nvim-treesitter/nvim-treesitter"
-pkg_install "nvim-treesitter/playground"
+# pkg_install "nvim-treesitter/playground"
 pkg_install "rktjmp/lush.nvim"
 pkg_install "norcalli/nvim-colorizer.lua"
 
@@ -49,7 +49,7 @@ pkg_install "rbtnn/vim-vimscript_indentexpr"
 pkg_install "Townk/vim-autoclose"
 
 function ts_install {
-	nvim --headless -c "TSUpdateSync $1" -c "qa"
+	nvim -u NORC --headless -c "TSUpdateSync $1" -c "qa"
 	printf "\n"
 }
 

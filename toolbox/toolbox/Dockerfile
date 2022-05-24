@@ -1,9 +1,6 @@
 FROM archlinux:base-devel
 
-RUN pacman -Syy \
-	&& pacman -S --noconfirm --needed reflector \
-	&& reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist \
-	&& pacman -Syu --noconfirm \
+RUN pacman -Syyu --noconfirm \
 	&& pacman -S --noconfirm --needed \
 	git \
 	unzip \
@@ -18,6 +15,7 @@ RUN pacman -Syy \
 	fd \
 	bat \
 	fzf \
+	skim \
 	parallel \
 	moreutils \
 	cmake \
@@ -26,7 +24,6 @@ RUN pacman -Syy \
 	shellcheck \
 	tidy \
 	rubygems \
-	ansible \
 	python-pip \
 	clang \
 	npm \
@@ -43,7 +40,11 @@ ARG gid
 ARG user
 ARG group
 
-RUN groupadd -g ${gid} ${group} \
+RUN if grep -q "${group}:" /etc/group; then \
+	groupmod -o -g ${gid} ${group}; \
+	else \
+	groupadd -f -g ${gid} ${group}; \
+	fi \
 	&& useradd \
 	-m \
 	-s /usr/bin/fish \

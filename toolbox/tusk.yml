@@ -93,13 +93,14 @@ tasks:
   docker.clean:
     usage: Stop the toolbox and remove volumes.
     run:
-      - command: docker-compose -p toolbox down -v
+      - command: docker-compose -p toolbox down -v --remove-orphans
 
   podman.clean:
     usage: Stop the toolbox and remove volumes.
     run:
       - task: podman.down
       - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
+
   docker.shell:
     run:
       - command: docker-compose -p toolbox exec toolbox fish

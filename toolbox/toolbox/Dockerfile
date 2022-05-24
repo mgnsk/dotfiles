@@ -11,7 +11,6 @@ RUN pacman -Syyu --noconfirm \
 	fish \
 	tree \
 	ripgrep \
-	most \
 	fd \
 	bat \
 	fzf \

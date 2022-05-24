@@ -28,7 +28,7 @@ set -gx VIM_UNDO_DIR "$HOME/.local/share/nvim/undo"
 
 set -gx EDITOR "nvim"
 set -gx VISUAL "nvim"
-set -gx PAGER "most"
+set -gx PAGER "less -R"
 set -gx MANPAGER "nvim +Man!"
 
 set -gx FZF_DEFAULT_OPTS "--layout=reverse"

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -e
+
+function getComments {
+	gh pr view --json comments "$1" | jq -r '.comments[] | select(.body != "") | [.createdAt, .author.login, .body] | @tsv'
+	# TODO: review comments not supported yet: https://github.com/cli/cli/issues/359
+	# gh pr view --json reviews "$1" | jq -r '.reviews[] | select(.body != "") | [.submittedAt, .author.login, .body] | @tsv'
+}
+
+export -f getComments
+
+repoName=$(gh repo view --json nameWithOwner --template "{{.nameWithOwner}}")
+
+sk \
+	--ansi \
+	-ic "gh search prs --repo '${repoName}' --sort updated --match comments \"{}\" | tail -n +1" \
+	--preview="bash -c 'getComments {2}' | rg  --colors=match:fg:blue --color=always --passthru {cq}"

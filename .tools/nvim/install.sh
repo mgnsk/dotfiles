@@ -18,7 +18,7 @@ function pkg_install {
 }
 
 pkg_install "nvim-treesitter/nvim-treesitter"
-# pkg_install "nvim-treesitter/playground"
+pkg_install "nvim-treesitter/playground"
 pkg_install "rktjmp/lush.nvim"
 pkg_install "norcalli/nvim-colorizer.lua"
 

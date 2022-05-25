@@ -12,6 +12,7 @@ set -gx PATH "$HOME/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin:$PAT
 set -gx PATH "$HOME/.bin:$PATH"
 set -gx PATH "$HOME/.luarocks/bin:$PATH"
 set -gx PATH "$HOME/.gem/ruby/3.0.0/bin:$PATH"
+set -gx PATH "$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 set -gx PATH "/usr/local/bin:$PATH"
 set -gx PATH "/usr/local/go/bin:$PATH"
 set -gx PATH "$HOME/toolbox/workspaces/go/bin:$PATH"

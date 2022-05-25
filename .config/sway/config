@@ -213,6 +213,7 @@ exec "lxpolkit"
 exec "dbus-update-activation-environment --systemd DISPLAY"
 exec "gammastep-indicator"
 exec "mako"
+exec "thunar --daemon"
 exec swayidle -w \
                 timeout 600 'swaylock -f -c 000000' \
                 timeout 1200 'swaymsg "output * dpms off"' \

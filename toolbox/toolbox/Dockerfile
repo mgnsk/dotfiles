@@ -15,6 +15,7 @@ RUN pacman -Syyu --noconfirm \
 	bat \
 	fzf \
 	skim \
+	the_silver_searcher \
 	parallel \
 	moreutils \
 	cmake \

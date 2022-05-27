@@ -4,7 +4,6 @@ end
 
 set -gx PATH "$HOME/bin:$PATH"
 set -gx PATH "$HOME/.local/bin:$PATH"
-set -gx PATH "$HOME/.npm-global/bin:$PATH"
 set -gx PATH "$HOME/.tools/js/node_modules/.bin:$PATH"
 set -gx PATH "$HOME/go/bin:$PATH"
 set -gx PATH "$HOME/.cargo/bin:$PATH"
@@ -19,8 +18,6 @@ set -gx PATH "$HOME/toolbox/workspaces/go/bin:$PATH"
 set -gx PATH (printf "%s" "$PATH" | awk -v RS=':' '!a[$1]++ { if (NR > 1) printf RS; printf $1 }')
 
 set -gx SHELL "/usr/bin/fish"
-
-set -gx NPM_CONFIG_PREFIX "$HOME/.npm-global"
 
 set -gx GOFLAGS "-modcacherw"
 set -gx GOPATH "$HOME/go"

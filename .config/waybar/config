@@ -84,4 +84,8 @@
         },
         "on-click": "pavucontrol"
     },
+    "sway/workspaces": {
+        "disable-scroll-wraparound": true,
+        "enable-bar-scroll": true
+    }
 }

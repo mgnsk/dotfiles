@@ -27,6 +27,7 @@ RUN pacman -Syyu --noconfirm \
 	python-pip \
 	clang \
 	npm \
+	yarn \
 	luarocks \
 	go \
 	ctags \
@@ -78,7 +79,7 @@ RUN git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles ht
 	&& git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} reset --hard origin/master \
 	&& bash ~/install_tools.sh \
 	&& go clean -modcache \
-	&& ~/.npm-global/bin/yarn cache clean --all \
+	&& yarn cache clean --all \
 	&& npm cache clean --force \
 	&& rm -rf \
 	/tmp/* \
@@ -88,7 +89,6 @@ RUN git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles ht
 	~/.cache \
 	~/.local/share/direnv \
 	~/.tmux/resurrect \
-	~/.npm-global \
 	~/.local/bin \
 	~/.local/lib
 

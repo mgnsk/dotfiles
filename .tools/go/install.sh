@@ -7,7 +7,7 @@ go install -v github.com/golang/mock/mockgen@latest
 go install -v github.com/mgechev/revive@latest
 go install -v github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 go install -v github.com/rliebz/tusk@latest
-go install -v github.com/uber/prototool/cmd/prototool@latest
+go install -v github.com/bufbuild/buf/cmd/buf@latest
 go install -v golang.org/x/tools/cmd/godoc@latest
 go install -v golang.org/x/tools/cmd/goimports@latest
 go install -v golang.org/x/tools/cmd/guru@latest

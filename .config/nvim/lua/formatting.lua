@@ -35,7 +35,7 @@ require "formatter".setup {
         javascript = f("prettier", "-w"),
         typescript = f("prettier", "-w"),
         glsl = f("clang-format", "-i"),
-        proto = f("clang-format", "-i"),
+        proto = f("buf", "format", "-w"),
         c = f("clang-format", "-i"),
         dockerfile = f("dockerfile_format"),
         go = f("goimports", "-w"),

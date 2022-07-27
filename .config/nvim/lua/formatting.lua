@@ -1,6 +1,8 @@
+local util = require "formatter.util"
+
 local autoformat_enabled = true
 
-function autoformat_toggle()
+_G.autoformat_toggle = function()
     autoformat_enabled = not autoformat_enabled
 end
 
@@ -16,10 +18,14 @@ local function f(cmd, ...)
     local args = {...}
     return {
         function()
+            local _, basename =
+                string.match(util.escape_path(util.get_current_buffer_file_path()), "^(.-)[\\/]?([^\\/]*)$")
             return {
                 exe = cmd,
                 args = args,
-                stdin = false
+                stdin = false,
+                -- Formatter mushes the original file suffix.
+                tempfile_postfix = basename
             }
         end
     }

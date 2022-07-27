@@ -48,7 +48,7 @@ require "formatter".setup {
         lua = f("luafmt", "-w", "replace"),
         rust = f("rustfmt"),
         sh = f("shfmt", "-w"),
-        sql = f("sqlfmt")
+        sql = f("node", "~/.tools/js/sql_format.mjs")
     }
 }
 

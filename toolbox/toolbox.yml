@@ -15,7 +15,7 @@ spec:
       #     protocol: TCP
       env:
         - name: TERM
-          value: {{.Term}}
+          value: ${TERM}
       resources: {}
       securityContext:
         allowPrivilegeEscalation: false
@@ -29,24 +29,24 @@ spec:
         - name: toolbox-workspaces
           mountPath: /workspaces
         - name: toolbox-cache
-          mountPath: "/{{.Home}}/.cache"
+          mountPath: "${USER_HOME}/.cache"
         - name: toolbox-nvim-data
-          mountPath: "/{{.Home}}/.local/share/nvim"
+          mountPath: "${USER_HOME}/.local/share/nvim"
         - name: toolbox-direnv-data
-          mountPath: "/{{.Home}}/.local/share/direnv"
+          mountPath: "${USER_HOME}/.local/share/direnv"
         - name: toolbox-go-global
-          mountPath: "/{{.Home}}/go"
+          mountPath: "${USER_HOME}/go"
         - name: toolbox-cargo-data
-          mountPath: "/{{.Home}}/.cargo"
+          mountPath: "${USER_HOME}/.cargo"
         - name: toolbox-local-bin
-          mountPath: "/{{.Home}}/.local-bin"
+          mountPath: "${USER_HOME}/.local-bin"
         - name: toolbox-local-lib
-          mountPath: "/{{.Home}}/.local-lib"
+          mountPath: "${USER_HOME}/.local-lib"
   restartPolicy: Never
   volumes:
     - name: toolbox-workspaces
       hostPath:
-        path: "{{.WorkspacesHostPath}}"
+        path: "${WORKSPACE_HOST_PATH}"
         type: Directory
 
     - name: toolbox-cache

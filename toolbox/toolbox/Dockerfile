@@ -23,12 +23,12 @@ RUN pacman -Syyu --noconfirm \
 	earlyoom \
 	shellcheck \
 	tidy \
-	rubygems \
 	python-pip \
 	clang \
 	npm \
-	luarocks \
 	go \
+	gopls \
+	go-tools \
 	ctags \
 	brotli \
 	rustup \
@@ -37,6 +37,21 @@ RUN pacman -Syyu --noconfirm \
 	ansible-lint \
 	vint \
 	direnv \
+	delve \
+	revive \
+	shfmt \
+	bash-language-server \
+	stylelint \
+	stylelint-config-standard \
+	typescript \
+	typescript-language-server \
+	yaml-language-server \
+	eslint \
+	luarocks \
+	luacheck \
+	lua-language-server \
+	stylua \
+	prettier \
 	&& bash -c "yes | pacman -Scc"
 
 ARG uid
@@ -68,6 +83,12 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	fish-fzf-git \
 	hadolint-bin \
 	neovim-git \
+	buf \
+	golangci-lint \
+	nodejs-markdownlint-cli \
+	nodejs-dockerfile-utils \
+	vscode-langservers-extracted \
+	ruby-sqlint \
 	&& yay -c --noconfirm \
 	&& bash -c "yes | yay -Scc" \
 	&& cd \

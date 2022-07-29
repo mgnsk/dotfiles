@@ -10,12 +10,11 @@ services:
       - "cache:/home/${USER}/.cache"
       - "nvim-data:/home/${USER}/.local/share/nvim"
       - "direnv-data:/home/${USER}/.local/share/direnv"
-      - "tmux-resurrect:/home/${USER}/.tmux/resurrect"
-      - "npm-global:/home/${USER}/.npm-global"
       - "go-global:/home/${USER}/go"
       - "cargo-data:/home/${USER}/.cargo"
       - "local-bin:/home/${USER}/.local/bin"
       - "local-lib:/home/${USER}/.local/lib"
+    hostname: toolbox
     environment:
       - "TERM=${TERM}"
     stdin_open: true

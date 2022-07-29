@@ -1,16 +1,12 @@
-local opts = {noremap = true, silent = true}
+local opts = { noremap = true, silent = true }
 
 vim.keymap.set("v", "Y", [["+y<CR>]], opts)
 vim.keymap.set("i", "jj", "<Esc>", opts)
 vim.keymap.set("t", "jj", [[<C-\><C-n>]], opts)
 
-vim.keymap.set(
-    "n",
-    "qq",
-    function()
-        vim.call("fns#BD")
-    end
-)
+vim.keymap.set("n", "qq", function()
+    vim.call("fns#BD")
+end)
 
 vim.keymap.set("n", "<C-h>", "<C-w>h")
 vim.keymap.set("n", "<C-j>", "<C-w>j")
@@ -44,30 +40,18 @@ vim.keymap.set("n", "<leader>B", ":Gblame<CR>")
 vim.keymap.set("n", "<leader>W", ":Gw!<CR>")
 vim.keymap.set("n", "<leader>V", ":Vista<CR>")
 
-vim.keymap.set(
-    "n",
-    "<leader>l",
-    function()
-        vim.call("fns#CursorLockToggle")
-    end
-)
+vim.keymap.set("n", "<leader>l", function()
+    vim.call("fns#CursorLockToggle")
+end)
 vim.keymap.set("n", "<leader>K", "<C-w>K<CR>")
 vim.keymap.set("n", "<leader>H", "<C-w>H<CR>")
 
-vim.keymap.set(
-    "n",
-    "<leader>nt",
-    function()
-        vim.call("fns#MoveToNextTab")
-    end
-)
-vim.keymap.set(
-    "n",
-    "<leader>nT",
-    function()
-        vim.call("fns#MoveToPrevTab")
-    end
-)
+vim.keymap.set("n", "<leader>nt", function()
+    vim.call("fns#MoveToNextTab")
+end)
+vim.keymap.set("n", "<leader>nT", function()
+    vim.call("fns#MoveToPrevTab")
+end)
 vim.keymap.set("n", "<leader>mt", ":tabm +1<CR>")
 vim.keymap.set("n", "<leader>mT", ":tabm -1<CR>")
 for i = 1, 9 do
@@ -84,33 +68,18 @@ vim.keymap.set("n", "<space>k", vim.diagnostic.goto_prev, opts)
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
 vim.keymap.set("n", "ga", vim.lsp.buf.code_action, opts)
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-vim.keymap.set(
-    "n",
-    "K",
-    function()
-        vim.call("fns#ShowDocs")
-    end,
-    opts
-)
+vim.keymap.set("n", "K", function()
+    vim.call("fns#ShowDocs")
+end, opts)
 vim.keymap.set("n", "gD", vim.lsp.buf.implementation, opts)
 vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
 vim.keymap.set("n", "g0", vim.lsp.buf.document_symbol, opts)
 vim.keymap.set("n", "gW", vim.lsp.buf.workspace_symbol, opts)
 
-vim.keymap.set(
-    "n",
-    "gn",
-    function()
-        require "illuminate".next_reference {wrap = true}
-    end,
-    opts
-)
+vim.keymap.set("n", "gn", function()
+    require("illuminate").next_reference({ wrap = true })
+end, opts)
 
-vim.keymap.set(
-    "n",
-    "gp",
-    function()
-        require "illuminate".next_reference {reverse = true, wrap = true}
-    end,
-    opts
-)
+vim.keymap.set("n", "gp", function()
+    require("illuminate").next_reference({ reverse = true, wrap = true })
+end, opts)

@@ -1,34 +1,34 @@
 vim.g.mapleader = ","
 vim.g.autoformat_enabled = false
 
-require("kommentary.config").configure_language(
-    "default",
-    {
-        prefer_single_line_comments = true
-    }
-)
+require("kommentary.config").configure_language("default", {
+    prefer_single_line_comments = true,
+})
 
 if not os.getenv("NVIM_DIFF") then
     vim.g.autoformat_enabled = true
     vim.call("neomake#configure#automake", "w")
-    require "lsp"
-    require "formatting"
-    require "autocomplete"
+    require("lsp")
+    require("formatting")
+    require("autocomplete")
 end
 
-require "mappings"
-require "osc52"
+require("mappings")
+require("osc52")
 
-require "nvim-treesitter.configs".setup {
+require("nvim-treesitter.configs").setup({
     --ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-    highlight = {enable = true}
+    highlight = { enable = true },
     --incremental_selection = {enable = true},
     --textobjects = {enable = true}
-}
+})
 
-vim.api.nvim_exec([[
+vim.api.nvim_exec(
+    [[
 au BufRead,BufNewFile *.tla set filetype=tla
-]], true)
+]],
+    true
+)
 
 local undodir = os.getenv("VIM_UNDO_DIR")
 if not vim.call("isdirectory", undodir) then
@@ -79,11 +79,11 @@ vim.cmd("set lcs+=space:·")
 -- Use the `default_options` as the second parameter, which uses
 -- `foreground` for every mode. This is the inverse of the previous
 -- setup configuration.
-require "colorizer".setup {
+require("colorizer").setup({
     "*", -- Highlight all files, but customize some others.
-    css = {rgb_fn = true}, -- Enable parsing rgb(...) functions in css.
-    html = {names = false} -- Disable parsing "names" like Blue or Gray
-}
+    css = { rgb_fn = true }, -- Enable parsing rgb(...) functions in css.
+    html = { names = false }, -- Disable parsing "names" like Blue or Gray
+})
 
 vim.g.neomake_open_list = 2
 -- Open files in new tab.
@@ -94,11 +94,11 @@ vim.g.netrw_liststyle = 3
 vim.g.fzf_action = {
     ["ctrl-t"] = "GotoOrOpen tab",
     ["ctrl-s"] = "split",
-    ["ctrl-v"] = "vsplit"
+    ["ctrl-v"] = "vsplit",
 }
 vim.g.fzf_buffers_jump = 1
 vim.g.gitgutter_sign_columns_always = 1
 
 vim.g.Illuminate_delay = 500
 
-vim.api.nvim_command [[ set t_ut= ]]
+vim.api.nvim_command([[ set t_ut= ]])

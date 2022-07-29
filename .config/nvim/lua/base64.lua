@@ -30,9 +30,9 @@ if not extract then
             return band(shr(v, from), shl(1, width) - 1)
         end
     elseif _G._VERSION >= "Lua 5.3" then
-        extract = load [[return function( v, from, width )
+        extract = load([[return function( v, from, width )
 			return ( v >> from ) & ((1 << width) - 1)
-		end]]()
+		end]])()
     else
         extract = function(v, from, width)
             local w = 0
@@ -51,7 +51,7 @@ end
 
 function base64.makeencoder(s62, s63, spad)
     local encoder = {}
-    for b64code, char in pairs {
+    for b64code, char in pairs({
         [0] = "A",
         "B",
         "C",
@@ -116,8 +116,8 @@ function base64.makeencoder(s62, s63, spad)
         "9",
         s62 or "+",
         s63 or "/",
-        spad or "="
-    } do
+        spad or "=",
+    }) do
         encoder[b64code] = char:byte()
     end
     return encoder
@@ -148,8 +148,7 @@ function base64.encode(str, encoder, usecaching)
         if usecaching then
             s = cache[v]
             if not s then
-                s =
-                    char(
+                s = char(
                     encoder[extract(v, 18, 6)],
                     encoder[extract(v, 12, 6)],
                     encoder[extract(v, 6, 6)],
@@ -158,8 +157,7 @@ function base64.encode(str, encoder, usecaching)
                 cache[v] = s
             end
         else
-            s =
-                char(
+            s = char(
                 encoder[extract(v, 18, 6)],
                 encoder[extract(v, 12, 6)],
                 encoder[extract(v, 6, 6)],

@@ -5,8 +5,7 @@ function _G.osc52(content)
 end
 
 -- https://github.com/neovim/neovim/issues/13436
-local clipboard =
-    [[
+local clipboard = [[
 let g:clipboard = {
     'name': 'myClipboard',
     'copy': {

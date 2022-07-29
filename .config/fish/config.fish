@@ -2,16 +2,12 @@ if status --is-interactive && test -d /usr/share/fzf/shell
     source /usr/share/fzf/shell/key-bindings.fish
 end
 
-set -gx PATH "$HOME/bin:$PATH"
 set -gx PATH "$HOME/.local/bin:$PATH"
-set -gx PATH "$HOME/.tools/js/node_modules/.bin:$PATH"
 set -gx PATH "$HOME/go/bin:$PATH"
 set -gx PATH "$HOME/.cargo/bin:$PATH"
 set -gx PATH "$HOME/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin:$PATH"
 set -gx PATH "$HOME/.bin:$PATH"
 set -gx PATH "$HOME/.luarocks/bin:$PATH"
-set -gx PATH "$HOME/.gem/ruby/3.0.0/bin:$PATH"
-set -gx PATH "$HOME/.local/share/gem/ruby/3.0.0/bin:$PATH"
 set -gx PATH "/usr/local/bin:$PATH"
 set -gx PATH "/usr/local/go/bin:$PATH"
 set -gx PATH "$HOME/toolbox/workspaces/go/bin:$PATH"

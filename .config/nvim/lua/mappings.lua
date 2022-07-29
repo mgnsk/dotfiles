@@ -1,75 +1,116 @@
-local vimp = require "vimp"
+local opts = {noremap = true, silent = true}
 
-vimp.vnoremap("Y", [["+y<CR>]])
-vimp.inoremap("jj", "<Esc>")
-vimp.tnoremap("jj", [[<C-\><C-n>]])
+vim.keymap.set("v", "Y", [["+y<CR>]], opts)
+vim.keymap.set("i", "jj", "<Esc>", opts)
+vim.keymap.set("t", "jj", [[<C-\><C-n>]], opts)
 
-vimp.nnoremap(
+vim.keymap.set(
+    "n",
     "qq",
     function()
         vim.call("fns#BD")
     end
 )
 
-vimp.nnoremap("<C-h>", "<C-w>h")
-vimp.nnoremap("<C-j>", "<C-w>j")
-vimp.nnoremap("<C-k>", "<C-w>k")
-vimp.nnoremap({"override"}, "<C-l>", "<C-w>l")
-vimp.tnoremap("<Esc>", [[<C-\><C-n>]])
-vimp.nnoremap("<Esc><Esc>", ":nohlsearch<CR>")
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]])
+vim.keymap.set("n", "<Esc><Esc>", ":nohlsearch<CR>")
 
-vimp.nnoremap("<leader>.", ":")
-vimp.nnoremap("<leader>,", ":let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR>")
-vimp.nnoremap("tt", ":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>")
-vimp.nnoremap("<leader>v", ":vnew<CR>")
-vimp.nnoremap("<leader>s", ":new<CR>")
-vimp.nnoremap("<leader>t", ":tabnew<CR>")
-vimp.nnoremap("<leader>e", ":Tex<CR>")
-vimp.nnoremap("<leader>j", ":bnext<CR>")
-vimp.nnoremap("<leader>k", ":bprev<CR>")
-vimp.nnoremap("<leader>u", "gg=G``")
+vim.keymap.set("n", "<leader>.", ":")
+vim.keymap.set("n", "<leader>,", ":let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR>")
+vim.keymap.set("n", "tt", ":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>")
+vim.keymap.set("n", "<leader>v", ":vnew<CR>")
+vim.keymap.set("n", "<leader>s", ":new<CR>")
+vim.keymap.set("n", "<leader>t", ":tabnew<CR>")
+vim.keymap.set("n", "<leader>e", ":Tex<CR>")
+vim.keymap.set("n", "<leader>j", ":bnext<CR>")
+vim.keymap.set("n", "<leader>k", ":bprev<CR>")
+vim.keymap.set("n", "<leader>u", "gg=G``")
 
-vimp.nnoremap("<leader>-", ":Commands<CR>")
-vimp.nnoremap("<leader>/", ":Commands<CR>")
-vimp.nnoremap("<leader>b", ":Buffers<CR>")
-vimp.nnoremap("<leader>g", ":RG<CR>")
-vimp.nnoremap("<leader>a", ":Ag<CR>")
-vimp.nnoremap("<leader>o", ":FZF<CR>")
-vimp.nnoremap("<leader>T", ":Tags<CR>")
-vimp.nnoremap("<leader>f", ":DocumentSymbols<CR>")
-vimp.nnoremap("<leader>F", ":WorkspaceSymbols<CR>")
-vimp.nnoremap("<leader>G", ":BCommits<CR>")
-vimp.nnoremap("<leader>B", ":Gblame<CR>")
-vimp.nnoremap("<leader>W", ":Gw!<CR>")
-vimp.nnoremap("<leader>V", ":Vista<CR>")
+vim.keymap.set("n", "<leader>-", ":Commands<CR>")
+vim.keymap.set("n", "<leader>/", ":Commands<CR>")
+vim.keymap.set("n", "<leader>b", ":Buffers<CR>")
+vim.keymap.set("n", "<leader>g", ":RG<CR>")
+vim.keymap.set("n", "<leader>a", ":Ag<CR>")
+vim.keymap.set("n", "<leader>o", ":FZF<CR>")
+vim.keymap.set("n", "<leader>T", ":Tags<CR>")
+vim.keymap.set("n", "<leader>f", ":DocumentSymbols<CR>")
+vim.keymap.set("n", "<leader>F", ":WorkspaceSymbols<CR>")
+vim.keymap.set("n", "<leader>G", ":BCommits<CR>")
+vim.keymap.set("n", "<leader>B", ":Gblame<CR>")
+vim.keymap.set("n", "<leader>W", ":Gw!<CR>")
+vim.keymap.set("n", "<leader>V", ":Vista<CR>")
 
-vimp.nnoremap(
+vim.keymap.set(
+    "n",
     "<leader>l",
     function()
         vim.call("fns#CursorLockToggle")
     end
 )
-vimp.nnoremap("<leader>K", "<C-w>K<CR>")
-vimp.nnoremap("<leader>H", "<C-w>H<CR>")
+vim.keymap.set("n", "<leader>K", "<C-w>K<CR>")
+vim.keymap.set("n", "<leader>H", "<C-w>H<CR>")
 
-vimp.nnoremap(
+vim.keymap.set(
+    "n",
     "<leader>nt",
     function()
         vim.call("fns#MoveToNextTab")
     end
 )
-vimp.nnoremap(
+vim.keymap.set(
+    "n",
     "<leader>nT",
     function()
         vim.call("fns#MoveToPrevTab")
     end
 )
-vimp.nnoremap("<leader>mt", ":tabm +1<CR>")
-vimp.nnoremap("<leader>mT", ":tabm -1<CR>")
+vim.keymap.set("n", "<leader>mt", ":tabm +1<CR>")
+vim.keymap.set("n", "<leader>mT", ":tabm -1<CR>")
 for i = 1, 9 do
-    vimp.nnoremap(string.format("<leader>%d", i), string.format("%dgt", i))
+    vim.keymap.set("n", string.format("<leader>%d", i), string.format("%dgt", i))
 end
-vimp.nnoremap("<leader>0", ":tablast<CR>")
+vim.keymap.set("n", "<leader>0", ":tablast<CR>")
 
-vimp.inoremap({"expr"}, "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
-vimp.inoremap({"expr"}, "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
+vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
+vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
+
+vim.keymap.set("n", "<space>a", vim.diagnostic.setloclist, opts)
+vim.keymap.set("n", "<space>j", vim.diagnostic.goto_next, opts)
+vim.keymap.set("n", "<space>k", vim.diagnostic.goto_prev, opts)
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+vim.keymap.set("n", "ga", vim.lsp.buf.code_action, opts)
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+vim.keymap.set(
+    "n",
+    "K",
+    function()
+        vim.call("fns#ShowDocs")
+    end,
+    opts
+)
+vim.keymap.set("n", "gD", vim.lsp.buf.implementation, opts)
+vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+vim.keymap.set("n", "g0", vim.lsp.buf.document_symbol, opts)
+vim.keymap.set("n", "gW", vim.lsp.buf.workspace_symbol, opts)
+
+vim.keymap.set(
+    "n",
+    "gn",
+    function()
+        require "illuminate".next_reference {wrap = true}
+    end,
+    opts
+)
+
+vim.keymap.set(
+    "n",
+    "gp",
+    function()
+        require "illuminate".next_reference {reverse = true, wrap = true}
+    end,
+    opts
+)

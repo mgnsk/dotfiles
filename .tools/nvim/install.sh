@@ -29,7 +29,6 @@ pkg_install "airblade/vim-gitgutter"
 pkg_install "sebdah/vim-delve"
 pkg_install "neomake/neomake"
 pkg_install "tpope/vim-fugitive"
-pkg_install "svermeulen/vimpeccable"
 
 pkg_install "nvim-lua/lsp_extensions.nvim"
 pkg_install "neovim/nvim-lspconfig"
@@ -66,18 +65,12 @@ ts_install json
 ts_install css
 ts_install typescript
 ts_install tsx
-ts_install svelte
-ts_install vue
 ts_install toml
-ts_install elm
 ts_install yaml
-ts_install regex
 ts_install tlaplus
 ts_install beancount
 ts_install ledger
-ts_install comment
 ts_install make
-ts_install regex
 ts_install vim
 
 rm -rf ~/.local/share/nvim/*.tar.gz

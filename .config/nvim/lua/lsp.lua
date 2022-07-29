@@ -1,9 +1,10 @@
 local api = vim.api
 local util = vim.lsp.util
 local handlers = vim.lsp.handlers
-local log = vim.lsp.log
-local vimp = require "vimp"
 local lsp = require "lspconfig"
+
+-- local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 local function on_attach(client, bufnr)
     client.server_capabilities.document_formatting = false
@@ -11,14 +12,15 @@ local function on_attach(client, bufnr)
     require "illuminate".on_attach(client)
 end
 
-lsp.gopls.setup {on_attach = on_attach}
-lsp.intelephense.setup {on_attach = on_attach}
-lsp.rust_analyzer.setup {on_attach = on_attach}
-lsp.tsserver.setup {on_attach = on_attach}
-lsp.html.setup {on_attach = on_attach}
-lsp.cssls.setup {on_attach = on_attach}
-lsp.bashls.setup {on_attach = on_attach}
+lsp.gopls.setup {capabilities = capabilities, on_attach = on_attach}
+lsp.intelephense.setup {capabilities = capabilities, on_attach = on_attach}
+lsp.rust_analyzer.setup {capabilities = capabilities, on_attach = on_attach}
+lsp.tsserver.setup {capabilities = capabilities, on_attach = on_attach}
+lsp.html.setup {capabilities = capabilities, on_attach = on_attach}
+lsp.cssls.setup {capabilities = capabilities, on_attach = on_attach}
+lsp.bashls.setup {capabilities = capabilities, on_attach = on_attach}
 lsp.yamlls.setup {
+    capabilities = capabilities,
     on_attach = on_attach,
     settings = {
         yaml = {
@@ -35,7 +37,7 @@ lsp.yamlls.setup {
 -- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, result, ctx)
     if result == nil or vim.tbl_isempty(result) then
-        local _ = log.info() and log.info(ctx["method"], "No location found")
+        local _ = vim.lsp.log.info() and vim.lsp.log.info(ctx["method"], "No location found")
         return nil
     end
 
@@ -57,40 +59,6 @@ handlers["textDocument/declaration"] = location_callback
 handlers["textDocument/definition"] = location_callback
 handlers["textDocument/typeDefinition"] = location_callback
 handlers["textDocument/implementation"] = location_callback
-
-vimp.nnoremap({"silent"}, "<space>a", vim.lsp.diagnostic.set_loclist)
-vimp.nnoremap({"silent"}, "<space>j", vim.lsp.diagnostic.goto_next)
-vimp.nnoremap({"silent"}, "<space>k", vim.lsp.diagnostic.goto_prev)
-vimp.nnoremap({"silent"}, "gd", vim.lsp.buf.definition)
-vimp.nnoremap({"silent"}, "ga", vim.lsp.buf.code_action)
-vimp.nnoremap({"silent"}, "<leader>rn", vim.lsp.buf.rename)
-vimp.nnoremap(
-    {"silent"},
-    "K",
-    function()
-        vim.call("fns#ShowDocs")
-    end
-)
-vimp.nnoremap({"silent"}, "gD", vim.lsp.buf.implementation)
-vimp.nnoremap({"silent"}, "gr", vim.lsp.buf.references)
-vimp.nnoremap({"silent"}, "g0", vim.lsp.buf.document_symbol)
-vimp.nnoremap({"silent"}, "gW", vim.lsp.buf.workspace_symbol)
-
-vimp.nnoremap(
-    {"silent"},
-    "gn",
-    function()
-        require "illuminate".next_reference {wrap = true}
-    end
-)
-
-vimp.nnoremap(
-    {"silent"},
-    "gp",
-    function()
-        require "illuminate".next_reference {reverse = true, wrap = true}
-    end
-)
 
 vim.api.nvim_exec([[
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())

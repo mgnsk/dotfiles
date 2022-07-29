@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-npx dockerfile-utils format "$1" | sponge "$1"
+dockerfile-utils format "$1" | sponge "$1"

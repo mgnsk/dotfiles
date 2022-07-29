@@ -1,25 +1,26 @@
 local api = vim.api
 local util = vim.lsp.util
 local handlers = vim.lsp.handlers
-local lsp = require "lspconfig"
+local lsp = require("lspconfig")
 
 -- local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 local function on_attach(client, bufnr)
     client.server_capabilities.document_formatting = false
-    require "lsp_signature".on_attach()
-    require "illuminate".on_attach(client)
+    require("lsp_signature").on_attach()
+    require("illuminate").on_attach(client)
 end
 
-lsp.gopls.setup {capabilities = capabilities, on_attach = on_attach}
-lsp.intelephense.setup {capabilities = capabilities, on_attach = on_attach}
-lsp.rust_analyzer.setup {capabilities = capabilities, on_attach = on_attach}
-lsp.tsserver.setup {capabilities = capabilities, on_attach = on_attach}
-lsp.html.setup {capabilities = capabilities, on_attach = on_attach}
-lsp.cssls.setup {capabilities = capabilities, on_attach = on_attach}
-lsp.bashls.setup {capabilities = capabilities, on_attach = on_attach}
-lsp.yamlls.setup {
+lsp.dockerls.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.intelephense.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.rust_analyzer.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.tsserver.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.cssls.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
+lsp.yamlls.setup({
     capabilities = capabilities,
     on_attach = on_attach,
     settings = {
@@ -27,12 +28,22 @@ lsp.yamlls.setup {
             schemas = {
                 ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.yaml"] = {
                     "openapi3.yml",
-                    "openapi3.yaml"
-                }
-            }
-        }
-    }
-}
+                    "openapi3.yaml",
+                },
+            },
+        },
+    },
+})
+lsp.sumneko_lua.setup({
+    settings = {
+        Lua = {
+            runtime = { version = "LuaJIT" },
+            diagnostics = { globals = { "vim" } },
+            workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+            telemetry = { enable = false },
+        },
+    },
+})
 
 -- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, result, ctx)
@@ -60,14 +71,18 @@ handlers["textDocument/definition"] = location_callback
 handlers["textDocument/typeDefinition"] = location_callback
 handlers["textDocument/implementation"] = location_callback
 
-vim.api.nvim_exec([[
+vim.api.nvim_exec(
+    [[
 command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
-]], true)
+]],
+    true
+)
 
-vim.api.nvim_command [[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]]
-vim.api.nvim_command [[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]]
-vim.api.nvim_command [[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]]
+-- TODO: if supported
+-- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
+-- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
+vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
 
-vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]
+vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
+vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
+vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])

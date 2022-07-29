@@ -1,4 +1,4 @@
-local util = require "formatter.util"
+local util = require("formatter.util")
 
 local autoformat_enabled = true
 
@@ -14,24 +14,31 @@ function _G.doformat()
     end
 end
 
+local function filepath()
+    return util.escape_path(util.get_current_buffer_file_path())
+end
+
+local function basename()
+    local _, name = string.match(filepath(), "^(.-)[\\/]?([^\\/]*)$")
+    return name
+end
+
 local function f(cmd, ...)
-    local args = {...}
+    local args = { ... }
     return {
         function()
-            local _, basename =
-                string.match(util.escape_path(util.get_current_buffer_file_path()), "^(.-)[\\/]?([^\\/]*)$")
             return {
                 exe = cmd,
                 args = args,
                 stdin = false,
                 -- Formatter mushes the original file suffix.
-                tempfile_postfix = basename
+                tempfile_postfix = basename(),
             }
-        end
+        end,
     }
 end
 
-require "formatter".setup {
+require("formatter").setup({
     filetype = {
         css = f("prettier", "-w"),
         scss = f("prettier", "-w"),
@@ -45,19 +52,19 @@ require "formatter".setup {
         c = f("clang-format", "-i"),
         dockerfile = f("dockerfile_format"),
         go = f("goimports", "-w"),
-        lua = f("luafmt", "-w", "replace"),
+        lua = f("stylua", "--indent-type", "Spaces", "--indent-width", "4"),
         rust = f("rustfmt"),
         sh = f("shfmt", "-w"),
-        sql = f("node", "~/.tools/js/sql_format.mjs")
-    }
-}
+        sql = f("pg_format", "-i"),
+    },
+})
 
 -- Remove trailing whitespace and newlines.
-vim.api.nvim_command [[augroup TrimTrailingWhiteSpace]]
-vim.api.nvim_command [[au!]]
-vim.api.nvim_command [[au BufWritePre * %s/\s\+$//e]]
-vim.api.nvim_command [[au BufWritePre * %s/\n\+\%$//e]]
-vim.api.nvim_command [[augroup END]]
+vim.api.nvim_command([[augroup TrimTrailingWhiteSpace]])
+vim.api.nvim_command([[au!]])
+vim.api.nvim_command([[au BufWritePre * %s/\s\+$//e]])
+vim.api.nvim_command([[au BufWritePre * %s/\n\+\%$//e]])
+vim.api.nvim_command([[augroup END]])
 
 vim.api.nvim_exec(
     [[

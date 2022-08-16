@@ -96,6 +96,7 @@ tasks:
       - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
 
   docker.shell:
+    usage: Enter the toolbox.
     run:
       - command: docker-compose -p toolbox exec toolbox fish
 

@@ -52,6 +52,7 @@ RUN pacman -Syyu --noconfirm \
 	lua-language-server \
 	stylua \
 	prettier \
+	neovim \
 	&& bash -c "yes | pacman -Scc"
 
 ARG uid
@@ -80,14 +81,14 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	&& cd ~/.cache/yay \
 	&& makepkg -si --noconfirm \
 	&& yay -S --noconfirm --needed \
-	fish-fzf-git \
+	fish-fzf \
 	hadolint-bin \
-	neovim-git \
 	buf \
 	golangci-lint \
 	nodejs-markdownlint-cli \
 	nodejs-dockerfile-utils \
 	vscode-langservers-extracted \
+	dockerfile-language-server \
 	ruby-sqlint \
 	&& yay -c --noconfirm \
 	&& bash -c "yes | yay -Scc" \

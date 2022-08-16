@@ -27,8 +27,6 @@ volumes:
   cache:
   nvim-data:
   direnv-data:
-  tmux-resurrect:
-  npm-global:
   go-global:
   cargo-data:
   local-bin:

@@ -55,7 +55,7 @@ require("formatter").setup({
         lua = f("stylua", "--indent-type", "Spaces", "--indent-width", "4"),
         rust = f("rustfmt"),
         sh = f("shfmt", "-w"),
-        sql = f("pg_format", "-i"),
+        sql = f("pg_format", "-i", "--type-case", "0"),
     },
 })
 

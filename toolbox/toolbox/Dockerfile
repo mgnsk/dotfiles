@@ -53,6 +53,7 @@ RUN pacman -Syyu --noconfirm \
 	stylua \
 	prettier \
 	neovim \
+	pgformatter \
 	&& bash -c "yes | pacman -Scc"
 
 ARG uid
@@ -111,7 +112,6 @@ RUN git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles ht
 	&& mkdir -p \
 	~/.cache \
 	~/.local/share/direnv \
-	~/.tmux/resurrect \
 	~/.local/bin \
 	~/.local/lib
 

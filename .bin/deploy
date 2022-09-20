@@ -1,5 +1,0 @@
-#!/bin/bash
-
-set -eu
-
-rsync -av --no-p --no-g --omit-dir-times --delete-after --delay-updates --progress "$1" "$2"

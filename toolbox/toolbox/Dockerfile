@@ -85,6 +85,8 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	fish-fzf \
 	hadolint-bin \
 	buf \
+	protoc-gen-go \
+	protoc-gen-go-grpc \
 	golangci-lint \
 	nodejs-markdownlint-cli \
 	nodejs-dockerfile-utils \

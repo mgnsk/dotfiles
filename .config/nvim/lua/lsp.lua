@@ -48,14 +48,14 @@ lsp.sumneko_lua.setup({
 -- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, result, ctx)
     if result == nil or vim.tbl_isempty(result) then
-        local _ = vim.lsp.log.info() and vim.lsp.log.info(ctx["method"], "No location found")
+        require("vim.lsp.log").info(ctx["method"], "No location found")
         return nil
     end
 
     api.nvim_command("tab split")
 
     if vim.tbl_islist(result) then
-        util.jump_to_location(result[1])
+        util.jump_to_location(result[1], "utf-8")
         if #result > 1 then
             util.set_qflist(util.locations_to_items(result))
             api.nvim_command("copen")

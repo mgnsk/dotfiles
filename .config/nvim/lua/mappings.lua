@@ -59,9 +59,6 @@ for i = 1, 9 do
 end
 vim.keymap.set("n", "<leader>0", ":tablast<CR>")
 
-vim.keymap.set("i", "<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
-vim.keymap.set("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
-
 vim.keymap.set("n", "<space>a", vim.diagnostic.setloclist, opts)
 vim.keymap.set("n", "<space>j", vim.diagnostic.goto_next, opts)
 vim.keymap.set("n", "<space>k", vim.diagnostic.goto_prev, opts)

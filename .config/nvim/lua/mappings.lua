@@ -1,6 +1,14 @@
 local opts = { noremap = true, silent = true }
 local fzf = require("fzf-lua")
 
+fzf.setup({
+    winopts = {
+        preview = {
+            delay = 0,
+        },
+    },
+})
+
 vim.keymap.set("v", "Y", [["+y<CR>]], opts)
 vim.keymap.set("i", "jj", "<Esc>", opts)
 vim.keymap.set("t", "jj", [[<C-\><C-n>]], opts)
@@ -30,8 +38,12 @@ vim.keymap.set("n", "<leader>u", "gg=G``")
 vim.keymap.set("n", "<leader>p", fzf.builtin)
 vim.keymap.set("n", "<leader>/", fzf.commands)
 vim.keymap.set("n", "<leader>b", fzf.buffers)
-vim.keymap.set("n", "<leader>g", fzf.live_grep_native)
-vim.keymap.set("n", "<leader>a", ":Ag<CR>")
+-- Grep a single pattern.
+vim.keymap.set("n", "<leader>g", fzf.live_grep)
+-- Grep all words separately, including filename.
+vim.keymap.set("n", "<leader>a", function()
+    fzf.grep_project({ fzf_opts = { ["--nth"] = false } })
+end)
 vim.keymap.set("n", "<leader>o", fzf.files)
 vim.keymap.set("n", "<leader>T", fzf.tags)
 vim.keymap.set("n", "<leader>f", fzf.lsp_document_symbols)

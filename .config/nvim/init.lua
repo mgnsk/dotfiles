@@ -91,14 +91,26 @@ vim.g.netrw_browse_split = 3
 -- Tree view.
 vim.g.netrw_liststyle = 3
 
-vim.g.fzf_action = {
-    ["ctrl-t"] = "GotoOrOpen tab",
-    ["ctrl-s"] = "split",
-    ["ctrl-v"] = "vsplit",
-}
-vim.g.fzf_buffers_jump = 1
 vim.g.gitgutter_sign_columns_always = 1
 
-vim.g.Illuminate_delay = 500
+-- vim.g.Illuminate_delay = 500
 
 vim.api.nvim_command([[ set t_ut= ]])
+
+local numberToggle = vim.api.nvim_create_augroup("numbertoggle", { clear = false })
+vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave" }, {
+    group = numberToggle,
+    callback = function()
+        vim.o.relativenumber = true
+    end,
+})
+vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter" }, {
+    group = numberToggle,
+    callback = function()
+        vim.o.relativenumber = false
+    end,
+})
+
+vim.api.nvim_create_autocmd("TermOpen", {
+    command = [[ startinsert ]],
+})

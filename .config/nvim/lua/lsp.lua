@@ -9,7 +9,7 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 local function on_attach(client, bufnr)
     client.server_capabilities.document_formatting = false
     require("lsp_signature").on_attach()
-    require("illuminate").on_attach(client)
+    -- require("illuminate").on_attach(client)
 end
 
 lsp.dockerls.setup({ capabilities = capabilities, on_attach = on_attach })

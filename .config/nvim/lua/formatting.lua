@@ -8,7 +8,7 @@ end
 
 vim.cmd("command AutoformatToggle lua autoformat_toggle()")
 
-function _G.doformat()
+local function doformat()
     if autoformat_enabled then
         vim.cmd("FormatWrite")
     end
@@ -59,19 +59,21 @@ require("formatter").setup({
     },
 })
 
--- Remove trailing whitespace and newlines.
-vim.api.nvim_command([[augroup TrimTrailingWhiteSpace]])
-vim.api.nvim_command([[au!]])
-vim.api.nvim_command([[au BufWritePre * %s/\s\+$//e]])
-vim.api.nvim_command([[au BufWritePre * %s/\n\+\%$//e]])
-vim.api.nvim_command([[augroup END]])
+local auTrim = vim.api.nvim_create_augroup("TrimTrailingWhiteSpace", { clear = false })
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = auTrim,
+    pattern = "*",
+    command = [[%s/\s\+$//e]],
+})
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = auTrim,
+    pattern = "*",
+    command = [[%s/\n\+\%$//e]],
+})
 
-vim.api.nvim_exec(
-    [[
-augroup FormatAutogroup
-  autocmd!
-  autocmd BufWritePost *.css,*.scss,*.glsl,*Dockerfile,*.go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.c,*.rs,*.sh,*.sql call v:lua.doformat()
-augroup END
-]],
-    true
-)
+local auFormat = vim.api.nvim_create_augroup("FormatAutogroup", { clear = false })
+vim.api.nvim_create_autocmd("BufWritePost", {
+    group = auFormat,
+    pattern = "*.css,*.scss,*.glsl,*Dockerfile,*.go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.c,*.rs,*.sh,*.sql",
+    callback = doformat,
+})

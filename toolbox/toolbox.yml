@@ -8,6 +8,7 @@ metadata:
 spec:
   containers:
     - image: toolbox
+      imagePullPolicy: always
       name: toolbox
       # ports:
       #   - containerPort: 6060
@@ -29,24 +30,22 @@ spec:
         - name: toolbox-workspaces
           mountPath: /workspaces
         - name: toolbox-cache
-          mountPath: "${USER_HOME}/.cache"
+          mountPath: "${HOME}/.cache"
         - name: toolbox-nvim-data
-          mountPath: "${USER_HOME}/.local/share/nvim"
-        - name: toolbox-direnv-data
-          mountPath: "${USER_HOME}/.local/share/direnv"
-        - name: toolbox-go-global
-          mountPath: "${USER_HOME}/go"
+          mountPath: "${HOME}/.local/share/nvim"
+        - name: toolbox-go-data
+          mountPath: "${HOME}/go"
         - name: toolbox-cargo-data
-          mountPath: "${USER_HOME}/.cargo"
+          mountPath: "${HOME}/.cargo"
         - name: toolbox-local-bin
-          mountPath: "${USER_HOME}/.local-bin"
+          mountPath: "${HOME}/.local/bin"
         - name: toolbox-local-lib
-          mountPath: "${USER_HOME}/.local-lib"
+          mountPath: "${HOME}/.local/lib"
   restartPolicy: Never
   volumes:
     - name: toolbox-workspaces
       hostPath:
-        path: "${WORKSPACE_HOST_PATH}"
+        path: "${WORKSPACES_HOST_PATH}"
         type: Directory
 
     - name: toolbox-cache
@@ -57,13 +56,9 @@ spec:
       persistentVolumeClaim:
         claimName: toolbox-nvim-data
 
-    - name: toolbox-direnv-data
+    - name: toolbox-go-data
       persistentVolumeClaim:
-        claimName: toolbox-direnv-data
-
-    - name: toolbox-go-global
-      persistentVolumeClaim:
-        claimName: toolbox-go-global
+        claimName: toolbox-go-data
 
     - name: toolbox-cargo-data
       persistentVolumeClaim:

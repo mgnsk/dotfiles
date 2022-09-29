@@ -7,13 +7,12 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "./workspaces:/workspaces"
-      - "cache:/home/${USER}/.cache"
-      - "nvim-data:/home/${USER}/.local/share/nvim"
-      - "direnv-data:/home/${USER}/.local/share/direnv"
-      - "go-global:/home/${USER}/go"
-      - "cargo-data:/home/${USER}/.cargo"
-      - "local-bin:/home/${USER}/.local/bin"
-      - "local-lib:/home/${USER}/.local/lib"
+      - "cache:${HOME}/.cache"
+      - "nvim-data:${HOME}/.local/share/nvim"
+      - "go-data:${HOME}/go"
+      - "cargo-data:${HOME}/.cargo"
+      - "local-bin:${HOME}/.local/bin"
+      - "local-lib:${HOME}/.local/lib"
     hostname: toolbox
     environment:
       - "TERM=${TERM}"
@@ -26,8 +25,7 @@ services:
 volumes:
   cache:
   nvim-data:
-  direnv-data:
-  go-global:
+  go-data:
   cargo-data:
   local-bin:
   local-lib:

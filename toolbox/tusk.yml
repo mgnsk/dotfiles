@@ -24,6 +24,7 @@ tasks:
           docker-compose
           -p toolbox
           build
+          --pull
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}
@@ -67,8 +68,7 @@ tasks:
           -o noxattrs=1,fsync=0,threaded=0
           ${tmp}/workspaces
       - set-environment:
-          USER_HOME: /home/${user}
-          WORKSPACE_HOST_PATH: ${tmp}/workspaces
+          WORKSPACES_HOST_PATH: ${tmp}/workspaces
       - command: cat toolbox.yml | envsubst | podman play kube -
 
   docker.down:

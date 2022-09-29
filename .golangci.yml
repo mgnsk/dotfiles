@@ -26,6 +26,7 @@ linters:
     - gomodguard
     - ifshort
     - interfacer
+    - ireturn
     - lll
     - makezero
     - maligned

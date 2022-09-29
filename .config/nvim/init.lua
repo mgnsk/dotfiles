@@ -1,6 +1,10 @@
 vim.g.mapleader = ","
 vim.g.autoformat_enabled = false
 
+require("illuminate").configure({
+    delay = 500,
+})
+
 require("kommentary.config").configure_language("default", {
     prefer_single_line_comments = true,
 })
@@ -92,8 +96,6 @@ vim.g.netrw_browse_split = 3
 vim.g.netrw_liststyle = 3
 
 vim.g.gitgutter_sign_columns_always = 1
-
--- vim.g.Illuminate_delay = 500
 
 vim.api.nvim_command([[ set t_ut= ]])
 

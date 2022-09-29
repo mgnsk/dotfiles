@@ -1,37 +1,49 @@
 ---
 linters:
-  enable:
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
+  enable-all: true
+  disable:
+    - containedctx
+    - cyclop
+    - deadcode
+    - depguard
+    - dupl
+    - errname
+    - exhaustive
+    - exhaustivestruct
+    - exhaustruct
+    - forbidigo
+    - funlen
+    - forcetypeassert
+    - gci
+    - gochecknoglobals
+    - gochecknoinits
+    - goerr113
+    - gofmt
+    - gofumpt
+    - goheader
+    - goimports
+    - golint
+    - gomodguard
+    - ifshort
+    - interfacer
+    - lll
+    - makezero
+    - maligned
+    - nlreturn
+    - nolintlint
+    - nonamedreturns
+    - nosnakecase
+    - paralleltest
+    - promlinter
+    - revive
+    - scopelint
     - structcheck
     - varcheck
-    - bidichk
-    - bodyclose
-    - dogsled
-    - dupl
-    - durationcheck
-    - exportloopref
-    - gocritic
-    - godot
-    - gomnd
-    - gomoddirectives
-    - goprintffuncname
-    - gosec
-    - misspell
-    - nilerr
-    - nilnil
-    - noctx
-    - prealloc
-    - predeclared
-    - promlinter
-    - rowserrcheck
-    - sqlclosecheck
-    - tparallel
-    - unconvert
-    - unparam
-    - wastedassign
+    - varnamelen
+    - whitespace
+    - wrapcheck
+    - wsl
+
 linters-settings:
   govet:
     enable-all: true

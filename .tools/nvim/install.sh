@@ -45,6 +45,8 @@ pkg_install "mhartington/formatter.nvim"
 pkg_install "rbtnn/vim-vimscript_indentexpr"
 pkg_install "Townk/vim-autoclose"
 
+pkg_install "ellisonleao/glow.nvim"
+
 function ts_install {
 	nvim -u NORC --headless -c "TSUpdateSync $1" -c "qa"
 	printf "\n"

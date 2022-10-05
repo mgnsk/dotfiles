@@ -7,6 +7,9 @@ fzf.setup({
             delay = 0,
         },
     },
+    grep = {
+        rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden",
+    },
 })
 
 vim.keymap.set("v", "Y", [["+y<CR>]], opts)
@@ -60,22 +63,16 @@ end)
 vim.keymap.set("n", "<leader>K", "<C-w>K<CR>")
 vim.keymap.set("n", "<leader>H", "<C-w>H<CR>")
 
-vim.keymap.set("n", "<leader>nt", function()
-    vim.call("fns#MoveToNextTab")
-end)
-vim.keymap.set("n", "<leader>nT", function()
-    vim.call("fns#MoveToPrevTab")
-end)
 vim.keymap.set("n", "<leader>mt", ":tabm +1<CR>")
 vim.keymap.set("n", "<leader>mT", ":tabm -1<CR>")
+
 for i = 1, 9 do
     vim.keymap.set("n", string.format("<leader>%d", i), string.format("%dgt", i))
 end
 vim.keymap.set("n", "<leader>0", ":tablast<CR>")
 
-vim.keymap.set("n", "<space>a", vim.diagnostic.setloclist, opts)
-vim.keymap.set("n", "<space>j", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", "<space>k", vim.diagnostic.goto_prev, opts)
+vim.keymap.set("n", "gj", vim.diagnostic.goto_next, opts)
+vim.keymap.set("n", "gk", vim.diagnostic.goto_prev, opts)
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
 vim.keymap.set("n", "ga", vim.lsp.buf.code_action, opts)
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
@@ -84,8 +81,6 @@ vim.keymap.set("n", "K", function()
 end, opts)
 vim.keymap.set("n", "gD", vim.lsp.buf.implementation, opts)
 vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-vim.keymap.set("n", "g0", vim.lsp.buf.document_symbol, opts)
-vim.keymap.set("n", "gW", vim.lsp.buf.workspace_symbol, opts)
 
 vim.keymap.set("n", "gn", function()
     require("illuminate").goto_next_reference(false)

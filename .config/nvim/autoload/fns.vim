@@ -29,50 +29,6 @@ function! fns#FileSize()
     return printf(format, size, unit)
 endfunction
 
-function fns#MoveToPrevTab()
-    "there is only one window
-    if tabpagenr('$') == 1 && winnr('$') == 1
-        return
-    endif
-    "preparing new window
-    let l:tab_nr = tabpagenr('$')
-    let l:cur_buf = bufnr('%')
-    if tabpagenr() != 1
-        close!
-        if l:tab_nr == tabpagenr('$')
-            tabprev
-        endif
-        sp
-    else
-        close!
-        exe "0tabnew"
-    endif
-    "opening current buffer in new window
-    exe "b".l:cur_buf
-endfunction
-
-function fns#MoveToNextTab()
-    "there is only one window
-    if tabpagenr('$') == 1 && winnr('$') == 1
-        return
-    endif
-    "preparing new window
-    let l:tab_nr = tabpagenr('$')
-    let l:cur_buf = bufnr('%')
-    if tabpagenr() < tab_nr
-        close!
-        if l:tab_nr == tabpagenr('$')
-            tabnext
-        endif
-        sp
-    else
-        close!
-        tabnew
-    endif
-    "opening current buffer in new window
-    exe "b".l:cur_buf
-endfunction
-
 function MyTabLine()
     let s = '' " complete tabline goes here
     " loop through each tab page

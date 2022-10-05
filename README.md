@@ -38,20 +38,20 @@ $ config reset --hard origin/master
 | Shortcut |                                              Action |
 | -------- | --------------------------------------------------: |
 | qq       |                                         kill buffer |
-| C-h      |                                   Move to left pane |
-| C-j      |                                  Move to lower pane |
-| C-k      |                                  Move to upper pane |
-| C-l      |                                  Move to right pane |
-| ,.       |                                        Command mode |
-| ,,       |                    Open a new terminal to the right |
-| tt       |                             Open a new terminal tab |
-| ,v       |                                      Split to right |
-| ,s       |                                     Split to bottom |
-| ,t       |                                      Open a new tab |
-| ,e       |                    Open a file browser in a new tab |
-| ,j       |                           Switch to the next buffer |
-| ,k       |                       Switch to the previous buffer |
-| ,u       |                                     Indent the file |
+| C-h      |                                   move to left pane |
+| C-j      |                                  move to lower pane |
+| C-k      |                                  move to upper pane |
+| C-l      |                                  move to right pane |
+| ,.       |                                        command mode |
+| ,,       |                    open a new terminal to the right |
+| tt       |                             open a new terminal tab |
+| ,v       |                                      split to right |
+| ,s       |                                     split to bottom |
+| ,t       |                                      open a new tab |
+| ,e       |                    open a file browser in a new tab |
+| ,j       |                           switch to the next buffer |
+| ,k       |                       switch to the previous buffer |
+| ,u       |                                     indent the file |
 | ,p       |                                         fzf builtin |
 | ,/       |                                        fzf commands |
 | ,b       |                                         fzf buffers |
@@ -68,6 +68,8 @@ $ config reset --hard origin/master
 | ,l       |                                  toggle cursor lock |
 | ,K       |                              align panes vertically |
 | ,H       |                            align panes horizontally |
+| ,mt      |                                   move tab to right |
+| ,mT      |                                    move tab to left |
 | ,[1-9]   |                                       switch to tab |
 | ,0       |                                  switch to last tab |
 | gj       |                             move to next diagnostic |

@@ -15,16 +15,13 @@ RUN pacman -Syyu --noconfirm \
 	bat \
 	fzf \
 	skim \
-	the_silver_searcher \
 	parallel \
 	moreutils \
 	cmake \
-	ninja \
 	earlyoom \
 	shellcheck \
 	tidy \
 	python-pip \
-	clang \
 	npm \
 	go \
 	gopls \
@@ -113,7 +110,7 @@ RUN git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles ht
 	~/.cargo/registry \
 	&& mkdir -p \
 	~/.cache \
-	~/.local/share/direnv \
+	~/.cargo \
 	~/.local/bin \
 	~/.local/lib
 

@@ -79,8 +79,8 @@ tasks:
   podman.down:
     usage: Stop the toolbox.
     run:
-      - command: podman pod stop toolbox_pod || true
-      - command: podman pod rm -f toolbox_pod || true
+      - command: podman pod stop toolbox || true
+      - command: podman pod rm -f toolbox || true
       - command: podman unshare fusermount3 -u ${tmp}/workspaces || true
       - command: rm -rf ${tmp}
 

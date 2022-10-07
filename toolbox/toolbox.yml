@@ -4,11 +4,10 @@ kind: Pod
 metadata:
   labels:
     app: toolbox
-  name: toolbox_pod
+  name: toolbox
 spec:
   containers:
     - image: toolbox
-      imagePullPolicy: always
       name: toolbox
       # ports:
       #   - containerPort: 6060

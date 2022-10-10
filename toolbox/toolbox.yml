@@ -44,7 +44,7 @@ spec:
   volumes:
     - name: toolbox-workspaces
       hostPath:
-        path: "${WORKSPACES_HOST_PATH}"
+        path: "./workspaces"
         type: Directory
 
     - name: toolbox-cache

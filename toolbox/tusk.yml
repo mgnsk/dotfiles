@@ -12,9 +12,6 @@ options:
   group:
     default:
       command: id -g -n
-  tmp:
-    default:
-      command: echo $PWD/.tmp
 
 tasks:
   build:
@@ -35,30 +32,13 @@ tasks:
   up:
     usage: Start the toolbox.
     run:
-      - command: mkdir -p ${tmp}/lowerdir ${tmp}/workdir ${tmp}/workspaces
-      # TODO: is id mapping already supported?
-      - command: >
-          podman
-          unshare
-          fuse-overlayfs
-          -o uidmapping=0:${uid}:1
-          -o gidmapping=0:${gid}:1
-          -o lowerdir=${tmp}/lowerdir
-          -o upperdir=workspaces
-          -o workdir=${tmp}/workdir
-          -o noxattrs=1,fsync=0,threaded=0
-          ${tmp}/workspaces
-      - set-environment:
-          WORKSPACES_HOST_PATH: ${tmp}/workspaces
-      - command: cat toolbox.yml | envsubst | podman play kube -
+      - command: cat toolbox.yml | envsubst | podman play kube --userns=keep-id -
 
   down:
     usage: Stop the toolbox.
     run:
       - command: podman pod stop toolbox || true
       - command: podman pod rm -f toolbox || true
-      - command: podman unshare fusermount3 -u ${tmp}/workspaces || true
-      - command: rm -rf ${tmp}
 
   clean:
     usage: Stop the toolbox and remove volumes.

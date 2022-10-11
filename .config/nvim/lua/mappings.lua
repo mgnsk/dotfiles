@@ -38,6 +38,7 @@ vim.keymap.set("n", "<leader>j", ":bnext<CR>")
 vim.keymap.set("n", "<leader>k", ":bprev<CR>")
 vim.keymap.set("n", "<leader>u", "gg=G``")
 
+vim.keymap.set("n", "<leader>c", require("neoclip.fzf"))
 vim.keymap.set("n", "<leader>p", fzf.builtin)
 vim.keymap.set("n", "<leader>/", fzf.commands)
 vim.keymap.set("n", "<leader>b", fzf.buffers)

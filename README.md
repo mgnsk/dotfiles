@@ -52,6 +52,7 @@ $ config reset --hard origin/master
 | ,j       |                           switch to the next buffer |
 | ,k       |                       switch to the previous buffer |
 | ,u       |                                     indent the file |
+| ,c       |                                           clipboard |
 | ,p       |                                         fzf builtin |
 | ,/       |                                        fzf commands |
 | ,b       |                                         fzf buffers |

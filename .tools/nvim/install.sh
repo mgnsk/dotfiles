@@ -28,6 +28,7 @@ pkg_install "airblade/vim-gitgutter"
 pkg_install "sebdah/vim-delve"
 pkg_install "neomake/neomake"
 pkg_install "tpope/vim-fugitive"
+pkg_install "AckslD/nvim-neoclip.lua"
 
 pkg_install "nvim-lua/lsp_extensions.nvim"
 pkg_install "neovim/nvim-lspconfig"

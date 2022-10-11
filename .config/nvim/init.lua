@@ -17,6 +17,7 @@ if not os.getenv("NVIM_DIFF") then
     require("autocomplete")
 end
 
+require("neoclip").setup()
 require("mappings")
 require("osc52")
 

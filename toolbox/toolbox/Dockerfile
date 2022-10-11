@@ -7,7 +7,6 @@ RUN pacman -Syyu --noconfirm \
 	wget \
 	tmux \
 	vim \
-	bash-completion \
 	fish \
 	tree \
 	ripgrep \
@@ -17,19 +16,15 @@ RUN pacman -Syyu --noconfirm \
 	skim \
 	parallel \
 	moreutils \
-	cmake \
 	earlyoom \
 	shellcheck \
 	tidy \
-	python-pip \
 	npm \
 	go \
 	gopls \
 	go-tools \
-	ctags \
 	brotli \
 	rustup \
-	sccache \
 	yamllint \
 	ansible-lint \
 	vint \

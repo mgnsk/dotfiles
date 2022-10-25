@@ -46,6 +46,7 @@ RUN pacman -Syyu --noconfirm \
 	prettier \
 	neovim \
 	pgformatter \
+	rtmidi \
 	&& bash -c "yes | pacman -Scc"
 
 ARG uid
@@ -92,11 +93,9 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	&& sudo gpasswd -d ${user} wheel \
 	&& sudo rm /etc/sudoers.d/01-user
 
-ARG cachebust=1
-RUN git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles https://github.com/mgnsk/dotfiles.git /home/${user}/dotfiles-tmp \
-	&& rm -r ~/dotfiles-tmp \
-	&& git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} reset --hard origin/master \
-	&& bash ~/install_tools.sh \
+ADD /dotfiles.tar.gz /home/${user}/
+
+RUN bash ~/install_tools.sh \
 	&& go clean -modcache \
 	&& npm cache clean --force \
 	&& rm -rf \

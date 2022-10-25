@@ -12,11 +12,16 @@ options:
   group:
     default:
       command: id -g -n
+  home:
+    environment: HOME
 
 tasks:
   build:
     usage: Build the toolbox.
     run:
+      - command:
+          dir: ${home}
+          exec: git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files | tar Tczf - $HOME/toolbox/dotfiles.tar.gz
       - command: >
           podman
           build
@@ -26,8 +31,7 @@ tasks:
           --build-arg group=${group}
           --build-arg cachebust=$(date +%s)
           -t toolbox
-          toolbox
-      - command: podman image prune -f
+          .
 
   up:
     usage: Start the toolbox.

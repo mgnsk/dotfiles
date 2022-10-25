@@ -19,9 +19,11 @@ tasks:
   build:
     usage: Build the toolbox.
     run:
+      - command: rm -rf $HOME/toolbox/dotfiles
+      - command: mkdir -p $HOME/toolbox/dotfiles
       - command:
           dir: ${home}
-          exec: git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files | tar Tczf - $HOME/toolbox/dotfiles.tar.gz
+          exec: git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files | tar Tc - | tar Cx $HOME/toolbox/dotfiles
       - command: >
           podman
           build
@@ -29,7 +31,6 @@ tasks:
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
-          --build-arg cachebust=$(date +%s)
           -t toolbox
           .
 

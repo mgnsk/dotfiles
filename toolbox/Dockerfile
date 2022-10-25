@@ -93,7 +93,7 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	&& sudo gpasswd -d ${user} wheel \
 	&& sudo rm /etc/sudoers.d/01-user
 
-ADD /dotfiles.tar.gz /home/${user}/
+COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 
 RUN bash ~/install_tools.sh \
 	&& go clean -modcache \

@@ -10,7 +10,7 @@ vim.cmd("command AutoformatToggle lua autoformat_toggle()")
 
 local function doformat()
     if autoformat_enabled then
-        vim.cmd("FormatWrite")
+        vim.cmd("FormatWriteLock")
     end
 end
 

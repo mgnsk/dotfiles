@@ -42,8 +42,7 @@ tasks:
   down:
     usage: Stop the toolbox.
     run:
-      - command: podman pod stop toolbox || true
-      - command: podman pod rm -f toolbox || true
+      - command: cat toolbox.yml | envsubst | podman play kube --down - || true
 
   clean:
     usage: Stop the toolbox and remove volumes.
@@ -51,8 +50,8 @@ tasks:
       - task: down
       - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
 
-  shell:
-    usage: Enter the toolbox.
+  sh:
+    usage: Enter the toolbox shell.
     options:
       ctr-id:
         default:

@@ -41,7 +41,6 @@ if not vim.call("isdirectory", undodir) then
 end
 vim.o.undodir = undodir
 vim.cmd("set undofile")
-vim.cmd("set noexpandtab")
 vim.cmd("set nocompatible")
 vim.cmd("set termguicolors")
 ---- TODO check what else only works with vim.cmd
@@ -71,7 +70,7 @@ vim.o.wildmenu = true
 vim.o.shell = os.getenv("SHELL")
 vim.cmd("syntax on")
 vim.cmd("filetype plugin indent on")
-vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 expandtab")
+vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab")
 vim.cmd("colorscheme codedarker")
 vim.cmd("set tabline=%!MyTabLine()")
 -- TODO what does this do?

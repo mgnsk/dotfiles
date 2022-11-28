@@ -27,6 +27,7 @@ tasks:
       - command: >
           podman
           build
+          --pull
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}

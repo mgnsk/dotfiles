@@ -37,7 +37,6 @@ RUN pacman -Syyu --noconfirm \
 	stylelint-config-standard \
 	typescript \
 	typescript-language-server \
-	yaml-language-server \
 	eslint \
 	luarocks \
 	luacheck \

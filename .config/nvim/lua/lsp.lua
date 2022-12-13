@@ -20,20 +20,6 @@ lsp.tsserver.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.cssls.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
-lsp.yamlls.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-    settings = {
-        yaml = {
-            schemas = {
-                ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.yaml"] = {
-                    "openapi3.yml",
-                    "openapi3.yaml",
-                },
-            },
-        },
-    },
-})
 lsp.sumneko_lua.setup({
     settings = {
         Lua = {

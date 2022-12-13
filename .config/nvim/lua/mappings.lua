@@ -8,7 +8,7 @@ fzf.setup({
         },
     },
     grep = {
-        rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden",
+        rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",
     },
 })
 

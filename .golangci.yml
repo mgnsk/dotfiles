@@ -37,6 +37,7 @@ linters:
     - paralleltest
     - promlinter
     - revive
+    - rowserrcheck
     - scopelint
     - structcheck
     - varcheck

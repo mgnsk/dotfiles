@@ -10,6 +10,9 @@ spec:
     - image: toolbox
       name: toolbox
       # ports:
+      #   - containerPort: 8000
+      #     hostPort: 8000
+      #     protocol: TCP
       #   - containerPort: 6060
       #     hostPort: 6060
       #     protocol: TCP

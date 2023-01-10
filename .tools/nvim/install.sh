@@ -25,12 +25,11 @@ pkg_install "norcalli/nvim-colorizer.lua"
 pkg_install "b3nj5m1n/kommentary"
 pkg_install "ibhagwan/fzf-lua"
 pkg_install "airblade/vim-gitgutter"
-pkg_install "sebdah/vim-delve"
 pkg_install "neomake/neomake"
 pkg_install "tpope/vim-fugitive"
 pkg_install "AckslD/nvim-neoclip.lua"
 
-pkg_install "nvim-lua/lsp_extensions.nvim"
+pkg_install "nvim-lua/lsp_extensions.nvim" # TODO: archived
 pkg_install "neovim/nvim-lspconfig"
 pkg_install "ray-x/lsp_signature.nvim"
 pkg_install "liuchengxu/vista.vim"
@@ -43,8 +42,7 @@ pkg_install "hrsh7th/cmp-nvim-lua"
 pkg_install "hrsh7th/cmp-path"
 
 pkg_install "mhartington/formatter.nvim"
-pkg_install "rbtnn/vim-vimscript_indentexpr"
-pkg_install "Townk/vim-autoclose"
+pkg_install "Townk/vim-autoclose" # TODO: check out alternatives
 
 pkg_install "ellisonleao/glow.nvim"
 

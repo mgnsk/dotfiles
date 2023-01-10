@@ -21,16 +21,12 @@ RUN pacman -Syyu --noconfirm \
 	tidy \
 	npm \
 	go \
-	gopls \
-	go-tools \
 	brotli \
 	rustup \
 	yamllint \
 	ansible-lint \
 	vint \
 	direnv \
-	delve \
-	revive \
 	shfmt \
 	bash-language-server \
 	stylelint \
@@ -76,10 +72,6 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	&& yay -S --noconfirm --needed \
 	fish-fzf \
 	hadolint-bin \
-	buf \
-	protoc-gen-go \
-	protoc-gen-go-grpc \
-	golangci-lint \
 	nodejs-markdownlint-cli \
 	nodejs-dockerfile-utils \
 	vscode-langservers-extracted \

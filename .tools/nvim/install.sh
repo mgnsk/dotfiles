@@ -41,7 +41,6 @@ pkg_install "hrsh7th/cmp-nvim-lsp"
 pkg_install "hrsh7th/cmp-nvim-lua"
 pkg_install "hrsh7th/cmp-path"
 
-pkg_install "mhartington/formatter.nvim"
 pkg_install "Townk/vim-autoclose" # TODO: check out alternatives
 
 pkg_install "ellisonleao/glow.nvim"

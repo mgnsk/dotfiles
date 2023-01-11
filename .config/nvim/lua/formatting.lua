@@ -1,5 +1,3 @@
-local util = require("formatter.util")
-
 local autoformat_enabled = true
 
 _G.autoformat_toggle = function()
@@ -7,57 +5,6 @@ _G.autoformat_toggle = function()
 end
 
 vim.cmd("command AutoformatToggle lua autoformat_toggle()")
-
-local function doformat()
-    if autoformat_enabled then
-        vim.cmd("FormatWrite")
-    end
-end
-
-local function filepath()
-    return util.escape_path(util.get_current_buffer_file_path())
-end
-
-local function basename()
-    local _, name = string.match(filepath(), "^(.-)[\\/]?([^\\/]*)$")
-    return name
-end
-
-local function f(cmd, ...)
-    local args = { ... }
-    return {
-        function()
-            return {
-                exe = cmd,
-                args = args,
-                stdin = false,
-                -- Formatter mushes the original file suffix.
-                tempfile_postfix = basename(),
-            }
-        end,
-    }
-end
-
-require("formatter").setup({
-    filetype = {
-        css = f("prettier", "-w"),
-        scss = f("prettier", "-w"),
-        markdown = f("prettier", "-w"),
-        html = f("prettier", "-w"),
-        json = f("prettier", "-w"),
-        javascript = f("prettier", "-w"),
-        typescript = f("prettier", "-w"),
-        -- glsl = f("clang-format", "-i"),
-        proto = f("buf", "format", "-w"),
-        -- c = f("clang-format", "-i"),
-        dockerfile = f("dockerfile_format"),
-        go = f("goimports", "-w"),
-        lua = f("stylua", "--indent-type", "Spaces", "--indent-width", "4"),
-        rust = f("rustfmt"),
-        sh = f("shfmt", "-w"),
-        sql = f("pg_format", "-i", "--type-case", "0"),
-    },
-})
 
 local auTrim = vim.api.nvim_create_augroup("TrimTrailingWhiteSpace", { clear = false })
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -71,9 +18,80 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     command = [[%s/\n\+\%$//e]],
 })
 
+local function f(cmd, ...)
+    local args = { ... }
+    return function()
+        if not autoformat_enabled then
+            return
+        end
+
+        local bufname = vim.fn.fnameescape(vim.api.nvim_buf_get_name(0))
+        local command = string.format("%s %s %s 2>&1", cmd, table.concat(args, " "), bufname)
+
+        local f = assert(io.popen(command, "r"))
+        local output = assert(f:read("*a"))
+        local rc = { f:close() }
+
+        if rc[3] ~= 0 then
+            vim.notify(output, vim.log.levels.ERROR, { title = "Formatter" })
+        end
+
+        vim.cmd([[silent! edit]])
+    end
+end
+
 local auFormat = vim.api.nvim_create_augroup("FormatAutogroup", { clear = false })
-vim.api.nvim_create_autocmd("BufWritePost", {
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     group = auFormat,
-    pattern = "*.css,*.scss,*.glsl,*Dockerfile,*.go,*.html,*.json,*.js,*.mjs,*.md,*.ts,*.lua,*.proto,*.c,*.rs,*.sh,*.sql",
-    callback = doformat,
+    pattern = { "*.css", "*.less", "*.scss", "*.md", "*.html", "*.json", "*.js", "*.ts" },
+    callback = f("prettier", "-w"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*.lua" },
+    callback = f("stylua", "--indent-type", "Spaces", "--indent-width", "4"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*.c", "*.glsl" },
+    callback = f("clang-format", "-i"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*.proto" },
+    callback = f("buf", "format", "-w"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*Dockerfile" },
+    callback = f("dockerfile_format"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*.go" },
+    callback = f("goimports", "-w"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*.rs" },
+    callback = f("rustfmt"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*.sh" },
+    callback = f("shfmt", "-w"),
+})
+
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = auFormat,
+    pattern = { "*.sql" },
+    callback = f("pg_format", "-i", "--type-case", "0"),
 })

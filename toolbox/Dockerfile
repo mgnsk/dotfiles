@@ -27,18 +27,9 @@ RUN pacman -Syyu --noconfirm \
 	ansible-lint \
 	vint \
 	direnv \
-	shfmt \
-	bash-language-server \
-	stylelint \
-	stylelint-config-standard \
-	typescript \
-	typescript-language-server \
-	eslint \
 	luarocks \
 	luacheck \
 	lua-language-server \
-	stylua \
-	prettier \
 	neovim \
 	pgformatter \
 	rtmidi \
@@ -72,10 +63,6 @@ RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
 	&& yay -S --noconfirm --needed \
 	fish-fzf \
 	hadolint-bin \
-	nodejs-markdownlint-cli \
-	nodejs-dockerfile-utils \
-	vscode-langservers-extracted \
-	dockerfile-language-server \
 	ruby-sqlint \
 	&& yay -c --noconfirm \
 	&& bash -c "yes | yay -Scc" \

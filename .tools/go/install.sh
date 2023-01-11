@@ -13,6 +13,7 @@ go install -v github.com/golang/protobuf/protoc-gen-go@latest
 go install -v google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 go install -v github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 go install -v github.com/bufbuild/buf/cmd/buf@latest
+go install -v mvdan.cc/sh/v3/cmd/shfmt@latest
 
 cd tools
 go install -v ./...

@@ -73,7 +73,6 @@ vim.cmd("syntax on")
 vim.cmd("filetype plugin indent on")
 vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab")
 vim.cmd("colorscheme codedarker")
-vim.cmd("set tabline=%!MyTabLine()")
 -- TODO what does this do?
 --vim.cmd("set noruler")
 

@@ -6,15 +6,6 @@ function fns#ShowDocs()
     endif
 endfunction
 
-set scrolloff=999
-function! fns#CursorLockToggle()
-    if &scrolloff
-        setlocal scrolloff=0
-    else
-        setlocal scrolloff=999
-    endif
-endfunction
-
 function! fns#FileSize()
     " Blatantly assuming we won't ever edit files larger than 1024GB.
     let units = ['B', 'KB', 'MB', 'GB']

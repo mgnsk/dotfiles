@@ -68,6 +68,7 @@ vim.o.path = vim.o.path .. "**"
 --vim.o.runtimepath = vim.o.runtimepath .. ",/usr/share/vim/vimfiles/plugin"
 vim.o.wildmenu = true
 vim.o.shell = os.getenv("SHELL")
+vim.o.scrolloff = 999
 vim.cmd("syntax on")
 vim.cmd("filetype plugin indent on")
 vim.cmd("set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab")
@@ -99,15 +100,12 @@ vim.g.gitgutter_sign_columns_always = 1
 
 vim.api.nvim_command([[ set t_ut= ]])
 
-local numberToggle = vim.api.nvim_create_augroup("numbertoggle", { clear = false })
 vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave" }, {
-    group = numberToggle,
     callback = function()
         vim.o.relativenumber = true
     end,
 })
 vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter" }, {
-    group = numberToggle,
     callback = function()
         vim.o.relativenumber = false
     end,

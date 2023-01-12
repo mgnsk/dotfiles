@@ -29,11 +29,11 @@ pkg_install "neomake/neomake"
 pkg_install "tpope/vim-fugitive"
 pkg_install "AckslD/nvim-neoclip.lua"
 
-pkg_install "nvim-lua/lsp_extensions.nvim" # TODO: archived
 pkg_install "neovim/nvim-lspconfig"
 pkg_install "ray-x/lsp_signature.nvim"
 pkg_install "liuchengxu/vista.vim"
 pkg_install "RRethy/vim-illuminate"
+pkg_install "simrat39/rust-tools.nvim"
 
 pkg_install "hrsh7th/nvim-cmp"
 pkg_install "hrsh7th/cmp-buffer"

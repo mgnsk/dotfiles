@@ -59,8 +59,13 @@ vim.keymap.set("n", "<leader>W", ":Gw!<CR>")
 vim.keymap.set("n", "<leader>V", ":Vista<CR>")
 
 vim.keymap.set("n", "<leader>l", function()
-    vim.call("fns#CursorLockToggle")
+    if vim.wo.scrolloff > 0 then
+        vim.wo.scrolloff = 0
+    else
+        vim.wo.scrolloff = 999
+    end
 end)
+
 vim.keymap.set("n", "<leader>K", "<C-w>K<CR>")
 vim.keymap.set("n", "<leader>H", "<C-w>H<CR>")
 

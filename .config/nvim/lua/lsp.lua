@@ -12,10 +12,17 @@ local function on_attach(client, bufnr)
     require("illuminate").on_attach(client)
 end
 
+local rt = require("rust-tools")
+rt.setup({
+    server = {
+        capabilities = capabilities,
+        on_attach = on_attach,
+    },
+})
+
 lsp.dockerls.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.intelephense.setup({ capabilities = capabilities, on_attach = on_attach })
-lsp.rust_analyzer.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.tsserver.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.cssls.setup({ capabilities = capabilities, on_attach = on_attach })
@@ -23,6 +30,9 @@ lsp.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.sumneko_lua.setup({
     settings = {
         Lua = {
+            completion = {
+                enable = true,
+            },
             runtime = { version = "LuaJIT" },
             diagnostics = { globals = { "vim" } },
             workspace = { library = vim.api.nvim_get_runtime_file("", true) },

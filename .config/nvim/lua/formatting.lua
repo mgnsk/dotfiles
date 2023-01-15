@@ -4,7 +4,7 @@ _G.autoformat_toggle = function()
     autoformat_enabled = not autoformat_enabled
 end
 
-vim.cmd("command AutoformatToggle lua autoformat_toggle()")
+vim.api.nvim_create_user_command("AutoformatToggle", autoformat_toggle, {})
 
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*",

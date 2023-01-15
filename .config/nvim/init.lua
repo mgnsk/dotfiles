@@ -28,13 +28,6 @@ require("nvim-treesitter.configs").setup({
     --textobjects = {enable = true}
 })
 
-vim.api.nvim_exec(
-    [[
-au BufRead,BufNewFile *.tla set filetype=tla
-]],
-    true
-)
-
 local undodir = os.getenv("VIM_UNDO_DIR")
 if not vim.call("isdirectory", undodir) then
     vim.call("mkdir", undodir)

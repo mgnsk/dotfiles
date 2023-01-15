@@ -67,13 +67,6 @@ handlers["textDocument/definition"] = location_callback
 handlers["textDocument/typeDefinition"] = location_callback
 handlers["textDocument/implementation"] = location_callback
 
-vim.api.nvim_exec(
-    [[
-command LspStop lua vim.lsp.stop_client(vim.lsp.get_active_clients())
-]],
-    true
-)
-
 -- TODO: if supported
 -- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
 -- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])

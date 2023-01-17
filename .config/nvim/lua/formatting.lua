@@ -25,11 +25,9 @@ local function f(cmd, ...)
         local bufname = vim.fn.fnameescape(vim.api.nvim_buf_get_name(0))
         local command = string.format("%s %s %s 2>&1", cmd, table.concat(args, " "), bufname)
 
-        local f = assert(io.popen(command, "r"))
-        local output = assert(f:read("*a"))
-        local rc = { f:close() }
+        local output = vim.fn.system(command)
 
-        if rc[3] ~= 0 then
+        if vim.v.shell_error ~= 0 then
             vim.notify(output, vim.log.levels.ERROR, { title = "Formatter" })
         end
 

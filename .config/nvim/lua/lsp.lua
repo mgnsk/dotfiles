@@ -1,6 +1,10 @@
 local api = vim.api
 local util = vim.lsp.util
 local handlers = vim.lsp.handlers
+
+-- IMPORTANT: make sure to setup neodev BEFORE lspconfig
+require("neodev").setup({})
+
 local lsp = require("lspconfig")
 
 -- local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -30,12 +34,14 @@ lsp.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
 lsp.sumneko_lua.setup({
     settings = {
         Lua = {
+            workspace = {
+                checkThirdParty = false,
+            },
             completion = {
                 enable = true,
             },
             runtime = { version = "LuaJIT" },
             diagnostics = { globals = { "vim" } },
-            workspace = { library = vim.api.nvim_get_runtime_file("", true) },
             telemetry = { enable = false },
         },
     },

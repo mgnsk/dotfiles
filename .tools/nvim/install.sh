@@ -34,6 +34,7 @@ pkg_install "ray-x/lsp_signature.nvim"
 pkg_install "liuchengxu/vista.vim"
 pkg_install "RRethy/vim-illuminate"
 pkg_install "simrat39/rust-tools.nvim"
+pkg_install "folke/neodev.nvim"
 
 pkg_install "hrsh7th/nvim-cmp"
 pkg_install "hrsh7th/cmp-buffer"

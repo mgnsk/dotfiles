@@ -17,7 +17,13 @@ vim.keymap.set("i", "jj", "<Esc>", opts)
 vim.keymap.set("t", "jj", [[<C-\><C-n>]], opts)
 
 vim.keymap.set("n", "qq", function()
-    vim.call("fns#BD")
+    local buf_count = #(vim.fn.getbufinfo({ buflisted = 1 }))
+
+    if vim.fn.expand("%") == "" and buf_count == 1 then
+        vim.cmd("q!")
+    else
+        vim.cmd("bd!")
+    end
 end)
 
 vim.keymap.set("n", "<C-h>", "<C-w>h")

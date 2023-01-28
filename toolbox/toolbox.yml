@@ -33,16 +33,12 @@ spec:
           mountPath: /workspaces
         - name: toolbox-cache
           mountPath: "${HOME}/.cache"
-        - name: toolbox-nvim-data
-          mountPath: "${HOME}/.local/share/nvim"
-        - name: toolbox-go-data
-          mountPath: "${HOME}/go"
         - name: toolbox-cargo-data
           mountPath: "${HOME}/.cargo"
-        - name: toolbox-local-bin
-          mountPath: "${HOME}/.local/bin"
-        - name: toolbox-local-lib
-          mountPath: "${HOME}/.local/lib"
+        - name: toolbox-local
+          mountPath: "${HOME}/.local"
+        - name: toolbox-go-data
+          mountPath: "${HOME}/go"
   restartPolicy: Never
   volumes:
     - name: toolbox-workspaces
@@ -54,23 +50,16 @@ spec:
       persistentVolumeClaim:
         claimName: toolbox-cache
 
-    - name: toolbox-nvim-data
+    - name: toolbox-cargo-data
       persistentVolumeClaim:
-        claimName: toolbox-nvim-data
+        claimName: toolbox-cargo-data
+
+    - name: toolbox-local
+      persistentVolumeClaim:
+        claimName: toolbox-local
 
     - name: toolbox-go-data
       persistentVolumeClaim:
         claimName: toolbox-go-data
 
-    - name: toolbox-cargo-data
-      persistentVolumeClaim:
-        claimName: toolbox-cargo-data
-
-    - name: toolbox-local-bin
-      persistentVolumeClaim:
-        claimName: toolbox-local-bin
-
-    - name: toolbox-local-lib
-      persistentVolumeClaim:
-        claimName: toolbox-local-lib
 status: {}

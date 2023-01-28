@@ -57,15 +57,9 @@ RUN if grep -q "${group}:" /etc/group; then \
 
 USER ${user}
 
-RUN git clone https://aur.archlinux.org/yay.git ~/.cache/yay \
-	&& cd ~/.cache/yay \
-	&& makepkg -si --noconfirm \
-	&& yay -S --noconfirm --needed \
-	fish-fzf \
-	hadolint-bin \
-	ruby-sqlint \
-	&& yay -c --noconfirm \
-	&& bash -c "yes | yay -Scc" \
+RUN mkdir -p ~/.cache && cd ~/.cache \
+	&& for pkg in fish-fzf hadolint-bin ruby-google-protobuf ruby-pg-query ruby-sqlint; do \
+	git clone "https://aur.archlinux.org/$pkg.git" "$pkg" && cd "$pkg" && makepkg -si --syncdeps --noconfirm; done \
 	&& cd \
 	&& rm -rf ~/.cache \
 	&& sudo gpasswd -d ${user} wheel \
@@ -83,7 +77,7 @@ RUN bash ~/install_tools.sh \
 	&& mkdir -p \
 	~/.cache \
 	~/.cargo \
-	~/.local/bin \
-	~/.local/lib
+	~/.local \
+	~/go
 
 WORKDIR /workspaces

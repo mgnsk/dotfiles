@@ -1,16 +1,6 @@
 local opts = { noremap = true, silent = true }
-local fzf = require("fzf-lua")
 
-fzf.setup({
-    winopts = {
-        preview = {
-            delay = 0,
-        },
-    },
-    grep = {
-        rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",
-    },
-})
+vim.g.mapleader = ","
 
 vim.keymap.set("v", "Y", [["+y<CR>]], opts)
 vim.keymap.set("i", "jj", "<Esc>", opts)
@@ -30,6 +20,7 @@ vim.keymap.set("n", "<C-h>", "<C-w>h")
 vim.keymap.set("n", "<C-j>", "<C-w>j")
 vim.keymap.set("n", "<C-k>", "<C-w>k")
 vim.keymap.set("n", "<C-l>", "<C-w>l")
+
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]])
 vim.keymap.set("n", "<Esc><Esc>", ":nohlsearch<CR>")
 
@@ -45,24 +36,24 @@ vim.keymap.set("n", "<leader>k", ":bprev<CR>")
 vim.keymap.set("n", "<leader>u", "gg=G``")
 
 vim.keymap.set("n", "<leader>c", require("neoclip.fzf"))
-vim.keymap.set("n", "<leader>p", fzf.builtin)
-vim.keymap.set("n", "<leader>/", fzf.commands)
-vim.keymap.set("n", "<leader>b", fzf.buffers)
+vim.keymap.set("n", "<leader>p", require("fzf-lua").builtin)
+vim.keymap.set("n", "<leader>/", require("fzf-lua").commands)
+vim.keymap.set("n", "<leader>b", require("fzf-lua").buffers)
 -- Grep a single pattern.
-vim.keymap.set("n", "<leader>g", fzf.live_grep)
+vim.keymap.set("n", "<leader>g", require("fzf-lua").live_grep)
 -- Grep all words separately, including filename.
 vim.keymap.set("n", "<leader>a", function()
-    fzf.grep_project({ fzf_opts = { ["--nth"] = false } })
+    require("fzf-lua").grep_project({ fzf_opts = { ["--nth"] = false } })
 end)
-vim.keymap.set("n", "<leader>o", fzf.files)
-vim.keymap.set("n", "<leader>T", fzf.tags)
-vim.keymap.set("n", "<leader>f", fzf.lsp_document_symbols)
-vim.keymap.set("n", "<leader>F", fzf.lsp_live_workspace_symbols)
-vim.keymap.set("n", "<leader>G", fzf.git_bcommits)
+vim.keymap.set("n", "<leader>o", require("fzf-lua").files)
+vim.keymap.set("n", "<leader>T", require("fzf-lua").tags)
+vim.keymap.set("n", "<leader>f", require("fzf-lua").lsp_document_symbols)
+vim.keymap.set("n", "<leader>F", require("fzf-lua").lsp_live_workspace_symbols)
+vim.keymap.set("n", "<leader>G", require("fzf-lua").git_bcommits)
 
 vim.keymap.set("n", "<leader>B", ":Gblame<CR>")
 vim.keymap.set("n", "<leader>W", ":Gw!<CR>")
-vim.keymap.set("n", "<leader>V", ":Vista<CR>")
+vim.keymap.set("n", "<leader>V", ":SymbolsOutline<CR>")
 
 vim.keymap.set("n", "<leader>l", function()
     if vim.wo.scrolloff > 0 then

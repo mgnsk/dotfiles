@@ -29,6 +29,19 @@ local location_callback = function(_, result, ctx)
     end
 end
 
+vim.lsp.handlers["textDocument/declaration"] = location_callback
+vim.lsp.handlers["textDocument/definition"] = location_callback
+vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
+vim.lsp.handlers["textDocument/implementation"] = location_callback
+
+-- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
+-- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
+-- vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
+
+vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
+vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
+vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])
+
 require("lazy").setup({
     {
         "nvim-treesitter/nvim-treesitter",
@@ -103,6 +116,9 @@ require("lazy").setup({
     },
     {
         "b3nj5m1n/kommentary",
+        -- init = function()
+        --     vim.g.kommentary_create_default_mappings = false
+        -- end,
         config = function()
             require("kommentary.config").configure_language("default", {
                 prefer_single_line_comments = true,
@@ -111,9 +127,6 @@ require("lazy").setup({
     },
     {
         "ibhagwan/fzf-lua",
-        cond = function()
-            return not os.getenv("NVIM_DIFF")
-        end,
         lazy = true,
         config = function()
             require("fzf-lua").setup({
@@ -145,7 +158,7 @@ require("lazy").setup({
         cond = function()
             return not os.getenv("NVIM_DIFF")
         end,
-        event = "BufWritePost",
+        event = "InsertEnter",
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
@@ -166,7 +179,6 @@ require("lazy").setup({
     "Townk/vim-autoclose", -- TODO: check out alternatives
     {
         "neovim/nvim-lspconfig",
-        event = "InsertEnter",
         cond = function()
             return not os.getenv("NVIM_DIFF")
         end,
@@ -215,35 +227,11 @@ require("lazy").setup({
                     },
                 },
             })
-
-            vim.lsp.handlers["textDocument/declaration"] = location_callback
-            vim.lsp.handlers["textDocument/definition"] = location_callback
-            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
-            vim.lsp.handlers["textDocument/implementation"] = location_callback
-
-            -- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
-            -- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
-            -- vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
-
-            vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
-            vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
-            vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])
         end,
-    },
-    {
-        "ellisonleao/glow.nvim",
-        ft = "markdown",
     },
     {
         "simrat39/rust-tools.nvim",
-        event = "InsertEnter",
         ft = "rust",
-        cond = function()
-            return not os.getenv("NVIM_DIFF")
-        end,
-        dependencies = {
-            "neovim/nvim-lspconfig",
-        },
         config = function()
             require("rust-tools").setup({
                 server = {
@@ -251,6 +239,13 @@ require("lazy").setup({
                     on_attach = on_attach,
                 },
             })
+        end,
+    },
+    {
+        "ellisonleao/glow.nvim",
+        ft = "markdown",
+        config = function()
+            require("glow").setup({})
         end,
     },
     {
@@ -286,5 +281,9 @@ require("lazy").setup({
                 },
             })
         end,
+    },
+    {
+        "mgnsk/table_gen.lua",
+        lazy = true,
     },
 })

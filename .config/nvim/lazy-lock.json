@@ -20,6 +20,7 @@
   "rust-tools.nvim": { "branch": "master", "commit": "b297167d9e01accc9b9afe872ce91e791df2dde0" },
   "symbols-outline.nvim": { "branch": "master", "commit": "512791925d57a61c545bc303356e8a8f7869763c" },
   "sync-format.nvim": { "branch": "main", "commit": "ea58721c5fddcd49ff028654abb40e01c07fb088" },
+  "table_gen.lua": { "branch": "master", "commit": "329a22cf136b64bda0a01ba9016d0f52d61309c8" },
   "vim-autoclose": { "branch": "master", "commit": "a9a3b7384657bc1f60a963fd6c08c63fc48d61c3" },
   "vim-fugitive": { "branch": "master", "commit": "2febbe1f00be04f16daa6464cb39214a8566ec4b" },
   "vim-gitgutter": { "branch": "master", "commit": "00df1089b6267f47c7c0f13536789feb9db1e65b" },

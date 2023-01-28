@@ -155,7 +155,12 @@ vim.api.nvim_create_user_command("GenerateKeymapDocs", function()
                     and string.len(m.desc) > 0
                     and m.desc ~= "Nvim builtin"
                 then
-                    table.insert(rows, { m.mode, m.lhs, m.rhs, m.desc })
+                    table.insert(rows, {
+                        string.format("`%s`", m.mode),
+                        string.format("`%s`", m.lhs),
+                        m.rhs and string.format("`%s`", m.rhs) or "",
+                        m.desc,
+                    })
                 end
             end
         end

@@ -22,11 +22,28 @@ function _G.file_size()
     return string.format(format, size, unit)
 end
 
+function _G.git_status_line()
+    local head = vim.call("FugitiveHead")
+    if not head or head == "" then
+        return ""
+    end
+
+    local s = { head }
+    local g = vim.call("GitGutterGetHunkSummary")
+
+    for i, symbol in ipairs({ "+", "~", "-" }) do
+        if g[i] > 0 then
+            table.insert(s, string.format("%s%d", symbol, g[i]))
+        end
+    end
+
+    return table.concat(s, " ")
+end
+
 local function status_line()
     return table.concat({
         "%#LineNr#",
-        "%{FugitiveStatusline()}",
-        " %{get(b:,'gitsigns_status','')}",
+        "%{v:lua.git_status_line()}",
         "%#LineNr#",
         " %m",
         " %f",

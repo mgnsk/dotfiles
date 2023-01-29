@@ -49,7 +49,7 @@
 | `n`  | `<M-n>`      |                                                                           | Move to next reference                                 |
 | `n`  | `<M-p>`      |                                                                           | Move to previous reference                             |
 | `n`  | `K`          |                                                                           | Hover documentation                                    |
-| `v`  | `Y`          | ``` "+y<CR> ```                                                           | Yank to system clipboard                               |
+| `v`  | `Y`          | ``` "+y<CR> ```                                                           | Big yank (system clipboard)                            |
 | `n`  | `gD`         |                                                                           | Show implementations                                   |
 | `n`  | `ga`         |                                                                           | Code action                                            |
 | `n`  | `gc`         | ``` <Plug>kommentary_motion_default ```                                   | Toggle comment                                         |

@@ -29,19 +29,6 @@ local location_callback = function(_, result, ctx)
     end
 end
 
-vim.lsp.handlers["textDocument/declaration"] = location_callback
-vim.lsp.handlers["textDocument/definition"] = location_callback
-vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
-vim.lsp.handlers["textDocument/implementation"] = location_callback
-
--- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
--- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
--- vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
-
-vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
-vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
-vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])
-
 require("lazy").setup({
     {
         "nvim-treesitter/nvim-treesitter",
@@ -116,9 +103,6 @@ require("lazy").setup({
     },
     {
         "b3nj5m1n/kommentary",
-        -- init = function()
-        --     vim.g.kommentary_create_default_mappings = false
-        -- end,
         config = function()
             require("kommentary.config").configure_language("default", {
                 prefer_single_line_comments = true,
@@ -142,33 +126,28 @@ require("lazy").setup({
         end,
     },
     {
-        "lewis6991/gitsigns.nvim",
+        "AckslD/nvim-neoclip.lua",
+        lazy = true,
+        dependencies = {
+            "ibhagwan/fzf-lua",
+        },
         config = function()
-            require("gitsigns").setup({
-                signs = {
-                    add = { text = "+" },
-                    change = { text = "~" },
-                    delete = { text = "-" },
-                    topdelete = { text = "-" },
-                    changedelete = { text = "~" },
-                    untracked = { text = "┆" },
-                },
-                update_debounce = 1000,
-            })
+            require("neoclip").setup()
         end,
     },
+    "airblade/vim-gitgutter",
     {
         "tpope/vim-fugitive",
-        cond = function()
+        enabled = function()
             return not os.getenv("NVIM_DIFF")
         end,
     },
     {
         "neomake/neomake",
-        cond = function()
+        event = "InsertEnter",
+        enabled = function()
             return not os.getenv("NVIM_DIFF")
         end,
-        event = "InsertEnter",
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
@@ -178,15 +157,9 @@ require("lazy").setup({
         end,
     },
     {
-        "AckslD/nvim-neoclip.lua",
-        cond = function()
-            return not os.getenv("NVIM_DIFF")
-        end,
-        config = function()
-            require("neoclip").setup()
-        end,
+        "Townk/vim-autoclose", -- TODO: check out alternatives
+        event = "InsertEnter",
     },
-    "Townk/vim-autoclose", -- TODO: check out alternatives
     {
         "RRethy/vim-illuminate",
         config = function()
@@ -197,7 +170,8 @@ require("lazy").setup({
     },
     {
         "neovim/nvim-lspconfig",
-        cond = function()
+        event = "InsertEnter",
+        enabled = function()
             return not os.getenv("NVIM_DIFF")
         end,
         dependencies = {
@@ -237,11 +211,30 @@ require("lazy").setup({
                     },
                 },
             })
+
+            vim.lsp.handlers["textDocument/declaration"] = location_callback
+            vim.lsp.handlers["textDocument/definition"] = location_callback
+            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
+            vim.lsp.handlers["textDocument/implementation"] = location_callback
+
+            -- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
+            -- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
+            -- vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
+
+            vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
+            vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
+            vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])
         end,
     },
     {
         "simrat39/rust-tools.nvim",
         ft = "rust",
+        enabled = function()
+            return not os.getenv("NVIM_DIFF")
+        end,
+        dependencies = {
+            "neovim/nvim-lspconfig",
+        },
         config = function()
             require("rust-tools").setup({
                 server = {

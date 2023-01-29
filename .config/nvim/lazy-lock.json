@@ -4,6 +4,7 @@
   "cmp-nvim-lua": { "branch": "main", "commit": "f3491638d123cfd2c8048aefaf66d246ff250ca6" },
   "cmp-path": { "branch": "main", "commit": "91ff86cd9c29299a64f968ebb45846c485725f23" },
   "fzf-lua": { "branch": "main", "commit": "292de730ebbd3834e87f864c8c4115dc1035db37" },
+  "gitsigns.nvim": { "branch": "main", "commit": "0d4fe37ba5285171f3729da955955205f3fa945b" },
   "glow.nvim": { "branch": "main", "commit": "77b5cb1235c3a7d9be9d8cf6e0454d2528414911" },
   "kommentary": { "branch": "main", "commit": "3a80117148c6798972bb69414423311ab151d368" },
   "lazy.nvim": { "branch": "main", "commit": "15fe46a728b7473d4cae368838bbc1c79c3a3f48" },
@@ -23,6 +24,5 @@
   "table_gen.lua": { "branch": "master", "commit": "329a22cf136b64bda0a01ba9016d0f52d61309c8" },
   "vim-autoclose": { "branch": "master", "commit": "a9a3b7384657bc1f60a963fd6c08c63fc48d61c3" },
   "vim-fugitive": { "branch": "master", "commit": "2febbe1f00be04f16daa6464cb39214a8566ec4b" },
-  "vim-gitgutter": { "branch": "master", "commit": "00df1089b6267f47c7c0f13536789feb9db1e65b" },
   "vim-illuminate": { "branch": "master", "commit": "4e1d43cdc39e35f495c7b39a78a349b4d5badad0" }
 }

@@ -20,8 +20,6 @@ set -gx SHELL "/usr/bin/fish"
 set -gx GOFLAGS "-modcacherw"
 set -gx GOPATH "$HOME/go"
 
-set -gx VIM_UNDO_DIR "$HOME/.local/share/nvim/undo"
-
 set -gx EDITOR "nvim"
 set -gx VISUAL "nvim"
 set -gx PAGER "less -R"

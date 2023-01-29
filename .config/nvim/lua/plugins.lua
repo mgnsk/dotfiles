@@ -142,9 +142,19 @@ require("lazy").setup({
         end,
     },
     {
-        "airblade/vim-gitgutter",
-        cond = function()
-            return not os.getenv("NVIM_DIFF")
+        "lewis6991/gitsigns.nvim",
+        config = function()
+            require("gitsigns").setup({
+                signs = {
+                    add = { text = "+" },
+                    change = { text = "~" },
+                    delete = { text = "-" },
+                    topdelete = { text = "-" },
+                    changedelete = { text = "~" },
+                    untracked = { text = "┆" },
+                },
+                update_debounce = 1000,
+            })
         end,
     },
     {
@@ -178,6 +188,14 @@ require("lazy").setup({
     },
     "Townk/vim-autoclose", -- TODO: check out alternatives
     {
+        "RRethy/vim-illuminate",
+        config = function()
+            require("illuminate").configure({
+                delay = 500,
+            })
+        end,
+    },
+    {
         "neovim/nvim-lspconfig",
         cond = function()
             return not os.getenv("NVIM_DIFF")
@@ -193,14 +211,6 @@ require("lazy").setup({
             {
                 "folke/neodev.nvim",
                 ft = "lua",
-            },
-            {
-                "RRethy/vim-illuminate",
-                config = function()
-                    require("illuminate").configure({
-                        delay = 500,
-                    })
-                end,
             },
         },
         config = function()

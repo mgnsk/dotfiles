@@ -1,50 +1,9 @@
 ---
 linters:
-  enable-all: true
-  disable:
-    - containedctx
-    - cyclop
-    - deadcode
-    - depguard
-    - dupl
-    - errname
-    - exhaustive
-    - exhaustivestruct
-    - exhaustruct
-    - forbidigo
-    - funlen
-    - forcetypeassert
-    - gci
-    - gochecknoglobals
-    - gochecknoinits
-    - goerr113
-    - gofmt
-    - gofumpt
-    - goheader
-    - goimports
-    - golint
-    - gomodguard
-    - ifshort
-    - interfacer
-    - ireturn
-    - lll
-    - makezero
-    - maligned
-    - nlreturn
-    - nolintlint
-    - nonamedreturns
-    - nosnakecase
-    - paralleltest
-    - promlinter
-    - revive
-    - rowserrcheck
-    - scopelint
-    - structcheck
-    - varcheck
-    - varnamelen
-    - whitespace
-    - wrapcheck
-    - wsl
+  presets:
+  - bugs
+  - unused
+  - performance
 
 linters-settings:
   govet:

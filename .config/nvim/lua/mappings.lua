@@ -1,14 +1,18 @@
-local opts = { noremap = true, silent = true }
+local function set(mode, lhs, rhs, opts_overrides)
+    local opts = { noremap = true, silent = true }
+    opts = vim.tbl_extend("force", opts, opts_overrides or {})
+    vim.keymap.set(mode, lhs, rhs, opts)
+end
 
 vim.g.mapleader = ","
 
-vim.keymap.set("v", "Y", [["+y<CR>]], { desc = "Big yank (system clipboard)" })
-vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape from insert mode" })
-vim.keymap.set("t", "jj", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
-vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
-vim.keymap.set("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
+set("v", "Y", [["+y<CR>]], { desc = "Big yank (system clipboard)" })
+set("i", "jj", "<Esc>", { desc = "Escape from insert mode" })
+set("t", "jj", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
+set("t", "<Esc>", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
+set("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 
-vim.keymap.set("n", "qq", function()
+set("n", "qq", function()
     local buf_count = #(vim.fn.getbufinfo({ buflisted = 1 }))
 
     if vim.fn.expand("%") == "" and buf_count == 1 then
@@ -18,83 +22,78 @@ vim.keymap.set("n", "qq", function()
     end
 end, { desc = "Kill buffer" })
 
-vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Goto to left window" })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Goto bottom window" })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Goto upper window" })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Goto right window" })
+set("n", "<C-h>", "<C-w>h", { desc = "Goto to left window" })
+set("n", "<C-j>", "<C-w>j", { desc = "Goto bottom window" })
+set("n", "<C-k>", "<C-w>k", { desc = "Goto upper window" })
+set("n", "<C-l>", "<C-w>l", { desc = "Goto right window" })
 
-vim.keymap.set("n", "<leader>.", ":", { desc = "Command mode" })
-vim.keymap.set(
+set("n", "<leader>.", ":", { desc = "Command mode" })
+set(
     "n",
     "<leader>,",
     ":let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR>",
     { desc = "Open new terminal window to right" }
 )
-vim.keymap.set(
-    "n",
-    "tt",
-    ":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>",
-    { desc = "Open new terminal tab" }
-)
-vim.keymap.set("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
-vim.keymap.set("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
-vim.keymap.set("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
-vim.keymap.set("n", "<leader>e", ":Tex<CR>", { desc = "Open file browser in new tab" })
-vim.keymap.set("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
-vim.keymap.set("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
-vim.keymap.set("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
+set("n", "tt", ":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>", { desc = "Open new terminal tab" })
+set("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
+set("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
+set("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
+set("n", "<leader>e", ":Tex<CR>", { desc = "Open file browser in new tab" })
+set("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
+set("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
+set("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
 
-vim.keymap.set("n", "<leader>c", function()
+set("n", "<leader>c", function()
     return require("neoclip.fzf")
 end, { desc = "FZF clipboard" })
 
-vim.keymap.set("n", "<leader>p", function()
+set("n", "<leader>p", function()
     return require("fzf-lua").builtin()
 end, { desc = "FZF builtin" })
 
-vim.keymap.set("n", "<leader>/", function()
+set("n", "<leader>/", function()
     return require("fzf-lua").commands()
 end, { desc = "FZF commands" })
 
-vim.keymap.set("n", "<leader>b", function()
+set("n", "<leader>b", function()
     return require("fzf-lua").buffers()
 end, { desc = "FZF buffers" })
 
 -- Grep a single pattern.
-vim.keymap.set("n", "<leader>g", function()
+set("n", "<leader>g", function()
     return require("fzf-lua").live_grep()
 end, { desc = "FZF live_grep" })
 
 -- Grep all words separately, including filename.
-vim.keymap.set("n", "<leader>a", function()
+set("n", "<leader>a", function()
     return require("fzf-lua").grep_project({ fzf_opts = { ["--nth"] = false } })
 end, { desc = "FZF grep_project" })
 
-vim.keymap.set("n", "<leader>o", function()
+set("n", "<leader>o", function()
     return require("fzf-lua").files()
 end, { desc = "FZF files" })
 
-vim.keymap.set("n", "<leader>T", function()
+set("n", "<leader>T", function()
     return require("fzf-lua").tags()
 end, { desc = "FZF tags" })
 
-vim.keymap.set("n", "<leader>f", function()
+set("n", "<leader>f", function()
     return require("fzf-lua").lsp_document_symbols()
 end, { desc = "FZF lsp_document_symbols" })
 
-vim.keymap.set("n", "<leader>F", function()
+set("n", "<leader>F", function()
     return require("fzf-lua").lsp_live_workspace_symbols()
 end, { desc = "FZF lsp_live_workspace_symbols" })
 
-vim.keymap.set("n", "<leader>G", function()
+set("n", "<leader>G", function()
     return require("fzf-lua").git_bcommits()
 end, { desc = "FZF git_bcommits" })
 
--- vim.keymap.set("n", "<leader>B", ":Gblame<CR>", opts)
-vim.keymap.set("n", "<leader>W", ":Gw!<CR>", { desc = "Select the current buffer when resolving git conflicts" })
-vim.keymap.set("n", "<leader>V", ":SymbolsOutline<CR>", { desc = "Toggle LSP symbols outline tree" })
+-- set("n", "<leader>B", ":Gblame<CR>", opts)
+set("n", "<leader>W", ":Gw!<CR>", { desc = "Select the current buffer when resolving git conflicts" })
+set("n", "<leader>V", ":SymbolsOutline<CR>", { desc = "Toggle LSP symbols outline tree" })
 
-vim.keymap.set("n", "<leader>l", function()
+set("n", "<leader>l", function()
     if vim.wo.scrolloff > 0 then
         vim.wo.scrolloff = 0
     else
@@ -102,41 +101,36 @@ vim.keymap.set("n", "<leader>l", function()
     end
 end, { desc = "Toggle cursor lock" })
 
-vim.keymap.set("n", "<leader>K", "<C-w>K<CR>", { desc = "Align windows vertically" })
-vim.keymap.set("n", "<leader>H", "<C-w>H<CR>", { desc = "Align windows horizontally" })
+set("n", "<leader>K", "<C-w>K<CR>", { desc = "Align windows vertically" })
+set("n", "<leader>H", "<C-w>H<CR>", { desc = "Align windows horizontally" })
 
-vim.keymap.set("n", "<leader>mt", ":tabm +1<CR>", { desc = "Move tab to right" })
-vim.keymap.set("n", "<leader>mT", ":tabm -1<CR>", { desc = "Move tab to left" })
+set("n", "<leader>mt", ":tabm +1<CR>", { desc = "Move tab to right" })
+set("n", "<leader>mT", ":tabm -1<CR>", { desc = "Move tab to left" })
 
 for i = 1, 9 do
-    vim.keymap.set(
-        "n",
-        string.format("<leader>%d", i),
-        string.format("%dgt", i),
-        { desc = string.format("Goto %dth tab", i) }
-    )
+    set("n", string.format("<leader>%d", i), string.format("%dgt", i), { desc = string.format("Goto %dth tab", i) })
 end
-vim.keymap.set("n", "<leader>0", ":tablast<CR>", { desc = "Goto last tab" })
+set("n", "<leader>0", ":tablast<CR>", { desc = "Goto last tab" })
 
-vim.keymap.set("n", "gj", vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
-vim.keymap.set("n", "gk", vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic" })
-vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
-vim.keymap.set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
-vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-vim.keymap.set("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
-vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
+set("n", "gj", vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
+set("n", "gk", vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic" })
+set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
+set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
+set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
+set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
+set("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
+set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
 
-vim.keymap.set("n", "gn", function()
+set("n", "gn", function()
     return require("illuminate").goto_next_reference(false)
 end, { desc = "Goto next reference" })
 
-vim.keymap.set("n", "gp", function()
+set("n", "gp", function()
     return require("illuminate").goto_prev_reference(false)
 end, { desc = "Goto prev reference" })
 
-vim.api.nvim_set_keymap("n", "gc", "<Plug>kommentary_motion_default", { desc = "Toggle comment" })
-vim.api.nvim_set_keymap("v", "gc", "<Plug>kommentary_visual_default<C-c>", { desc = "Toggle comment" })
+set("n", "gc", "<Plug>kommentary_motion_default", { desc = "Toggle comment" })
+set("v", "gc", "<Plug>kommentary_visual_default<C-c>", { desc = "Toggle comment" })
 
 vim.api.nvim_create_user_command("GenerateKeymapDocs", function()
     local mappings = {}

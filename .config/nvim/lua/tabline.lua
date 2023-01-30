@@ -1,8 +1,8 @@
 function _G.tab_line()
     local tabline = {}
-    local tabs = vim.api.nvim_list_tabpages()
+    local tc = vim.fn.tabpagenr("$")
 
-    for _, t in ipairs(tabs) do
+    for t = 1, tc do
         -- set highlight
         if t == vim.fn.tabpagenr() then
             table.insert(tabline, "%#TabLineSel#")
@@ -13,21 +13,28 @@ function _G.tab_line()
         table.insert(tabline, string.format("%%%dT ", t))
         -- set page number string
         table.insert(tabline, string.format("%d ", t))
+
         -- get buffer names and statuses
         local n = {} -- temp string for buffer names while we loop and check buftype
         local m = 0 -- &modified counter
-        local bc = #(vim.fn.tabpagebuflist(t)) -- counter to avoid last ' '
+        local buflist = vim.fn.tabpagebuflist(t)
+        local bc = #buflist -- counter to avoid last ' '
 
         -- loop through each buffer in a tab
-        for _, b in ipairs(vim.fn.tabpagebuflist(t)) do
+        for _, b in ipairs(buflist) do
             -- buffer types: quickfix gets a [Q], help gets [H]{base fname}
             -- others get 1dir/2dir/3dir/fname shortened to 1/2/3/fname
-            if vim.fn.getbufvar(b, "&buftype") == "help" then
-                table.insert(n, "[H]" .. vim.fn.fnamemodify(vim.fn.bufname(b), ":t:s/.txt$//"))
-            elseif vim.fn.getbufvar(b, "&buftype") == "quickfix" then
+            local buftype = vim.fn.getbufvar(b, "&buftype")
+            local bufname = vim.fn.bufname(b)
+
+            if buftype == "help" then
+                table.insert(n, "[H]" .. vim.fn.fnamemodify(bufname, ":t:s/.txt$//"))
+            elseif buftype == "quickfix" then
                 table.insert(n, "[Q]")
+            elseif buftype == "terminal" then
+                table.insert(n, "[T]" .. vim.fn.pathshorten(vim.split(bufname, "//")[2]))
             else
-                local path = vim.fn.pathshorten(vim.fn.bufname(b))
+                local path = vim.fn.pathshorten(bufname)
                 if string.len(path) > 0 then
                     table.insert(n, path)
                 end

@@ -27,7 +27,7 @@ set("n", "<C-j>", "<C-w>j", { desc = "Goto bottom window" })
 set("n", "<C-k>", "<C-w>k", { desc = "Goto upper window" })
 set("n", "<C-l>", "<C-w>l", { desc = "Goto right window" })
 
-set("n", "<leader>.", ":", { desc = "Command mode" })
+set("n", "<leader>.", ":", { desc = "Command mode", silent = false })
 set(
     "n",
     "<leader>,",

@@ -1,14 +1,3 @@
-require("lazy_init")
-require("plugins")
-require("mappings")
-require("osc52")
-require("persistent_undo")
-require("ui")
-require("indent")
-require("autocommands")
-require("statusline")
-require("tabline")
-
 vim.o.encoding = "UTF-8"
 vim.o.pastetoggle = "<F2>"
 vim.o.path = vim.o.path .. "**"
@@ -21,3 +10,15 @@ vim.cmd("set t_ut=")
 -- Visible whitespace disabled by default.
 -- vim.cmd("set list")
 vim.cmd("set lcs+=space:·")
+
+require("persistent_undo")
+require("ui")
+require("indent")
+require("autocommands")
+require("osc52")
+require("mappings")
+require("tabline")
+require("statusline")
+
+require("lazy_init")
+require("plugins")

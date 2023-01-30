@@ -23,13 +23,17 @@ function _G.file_size()
 end
 
 function _G.git_status_line()
-    local head = vim.call("FugitiveHead")
-    if not head or head == "" then
+    local success, head = pcall(vim.fn["FugitiveHead"])
+    if not success or not head or head == "" then
+        return ""
+    end
+
+    local success, g = pcall(vim.fn["GitGutterGetHunkSummary"])
+    if not success or not g then
         return ""
     end
 
     local s = { head }
-    local g = vim.call("GitGutterGetHunkSummary")
 
     for i, symbol in ipairs({ "+", "~", "-" }) do
         if g[i] > 0 then

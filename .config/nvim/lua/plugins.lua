@@ -59,7 +59,7 @@ require("lazy").setup({
     },
     {
         "norcalli/nvim-colorizer.lua",
-        ft = { "html", "css", "less", "markdown" },
+        ft = { "lua", "html", "css", "less", "markdown" },
         config = function()
             local opts = {
                 RGB = true,
@@ -71,6 +71,7 @@ require("lazy").setup({
             }
             require("colorizer").setup({
                 "*",
+                lua = opts,
                 html = opts,
                 css = opts,
                 less = opts,
@@ -136,12 +137,7 @@ require("lazy").setup({
         end,
     },
     "airblade/vim-gitgutter",
-    {
-        "tpope/vim-fugitive",
-        enabled = function()
-            return not os.getenv("NVIM_DIFF")
-        end,
-    },
+    "tpope/vim-fugitive",
     {
         "neomake/neomake",
         event = "InsertEnter",

@@ -2,8 +2,7 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 local function on_attach(client, bufnr)
     client.server_capabilities.document_formatting = false
-    require("lsp_signature").on_attach()
-    require("illuminate").on_attach(client)
+    require("lsp_signature").on_attach({}, bufnr) -- Note: add in lsp client on-attach
 end
 
 -- location_callback opens all LSP gotos in a new tab
@@ -140,10 +139,10 @@ require("lazy").setup({
     "tpope/vim-fugitive",
     {
         "neomake/neomake",
-        event = "InsertEnter",
-        enabled = function()
-            return not os.getenv("NVIM_DIFF")
-        end,
+        -- event = "BufWritePost",
+        -- enabled = function()
+        --     return not os.getenv("NVIM_DIFF")
+        -- end,
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
@@ -157,32 +156,48 @@ require("lazy").setup({
         event = "InsertEnter",
     },
     {
-        "RRethy/vim-illuminate",
+        "ray-x/lsp_signature.nvim",
+        lazy = true,
+    },
+    {
+        "simrat39/symbols-outline.nvim",
+        cmd = "SymbolsOutline",
+        dependencies = {
+            "neovim/nvim-lspconfig",
+        },
         config = function()
-            require("illuminate").configure({
-                delay = 500,
-            })
+            require("symbols-outline").setup()
         end,
     },
     {
         "neovim/nvim-lspconfig",
-        event = "InsertEnter",
-        enabled = function()
-            return not os.getenv("NVIM_DIFF")
-        end,
+        -- event = "BufWritePost",
+        -- enabled = function()
+        --     return not os.getenv("NVIM_DIFF")
+        -- end,
         dependencies = {
-            "ray-x/lsp_signature.nvim",
-            {
-                "simrat39/symbols-outline.nvim",
-                config = function()
-                    require("symbols-outline").setup()
-                end,
-            },
             {
                 "folke/neodev.nvim",
                 ft = "lua",
+                config = function()
+                    require("neodev").setup({})
+                end,
             },
         },
+        init = function()
+            vim.lsp.handlers["textDocument/declaration"] = location_callback
+            vim.lsp.handlers["textDocument/definition"] = location_callback
+            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
+            vim.lsp.handlers["textDocument/implementation"] = location_callback
+
+            -- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
+            -- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
+            -- vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
+
+            vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
+            vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
+            vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])
+        end,
         config = function()
             local lsp = require("lspconfig")
             lsp.dockerls.setup({ capabilities = capabilities, on_attach = on_attach })
@@ -197,6 +212,7 @@ require("lazy").setup({
                     Lua = {
                         workspace = {
                             checkThirdParty = false,
+                            library = vim.api.nvim_get_runtime_file("", true),
                         },
                         completion = {
                             enable = true,
@@ -207,27 +223,14 @@ require("lazy").setup({
                     },
                 },
             })
-
-            vim.lsp.handlers["textDocument/declaration"] = location_callback
-            vim.lsp.handlers["textDocument/definition"] = location_callback
-            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
-            vim.lsp.handlers["textDocument/implementation"] = location_callback
-
-            -- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
-            -- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
-            -- vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
-
-            vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
-            vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
-            vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])
         end,
     },
     {
         "simrat39/rust-tools.nvim",
         ft = "rust",
-        enabled = function()
-            return not os.getenv("NVIM_DIFF")
-        end,
+        -- enabled = function()
+        --     return not os.getenv("NVIM_DIFF")
+        -- end,
         dependencies = {
             "neovim/nvim-lspconfig",
         },

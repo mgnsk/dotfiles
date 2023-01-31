@@ -15,7 +15,7 @@ set("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 set("n", "qq", function()
     local buf_count = #(vim.fn.getbufinfo({ buflisted = 1 }))
 
-    if vim.fn.expand("%") == "" and buf_count == 1 then
+    if buf_count == 1 then
         vim.cmd("q!")
     else
         vim.cmd("bd!")
@@ -120,14 +120,6 @@ set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
 set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
 set("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
 set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
-
-set("n", "gn", function()
-    return require("illuminate").goto_next_reference(false)
-end, { desc = "Goto next reference" })
-
-set("n", "gp", function()
-    return require("illuminate").goto_prev_reference(false)
-end, { desc = "Goto prev reference" })
 
 set("n", "gc", "<Plug>kommentary_motion_default", { desc = "Toggle comment" })
 set("v", "gc", "<Plug>kommentary_visual_default<C-c>", { desc = "Toggle comment" })

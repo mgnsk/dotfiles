@@ -12,7 +12,7 @@ vim.cmd("set t_ut=")
 vim.cmd("set lcs+=space:·")
 
 require("persistent_undo")
-require("ui")
+require("editor")
 require("indent")
 require("autocommands")
 require("osc52")

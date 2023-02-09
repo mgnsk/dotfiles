@@ -22,10 +22,10 @@ set("n", "qq", function()
     end
 end, { desc = "Kill buffer" })
 
-set("n", "<C-h>", "<C-w>h", { desc = "Goto to left window" })
-set("n", "<C-j>", "<C-w>j", { desc = "Goto bottom window" })
-set("n", "<C-k>", "<C-w>k", { desc = "Goto upper window" })
-set("n", "<C-l>", "<C-w>l", { desc = "Goto right window" })
+set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
+set("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
+set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
 set("n", "<leader>.", ":", { desc = "Command mode", silent = false })
 set(
@@ -42,10 +42,7 @@ set("n", "<leader>e", ":Tex<CR>", { desc = "Open file browser in new tab" })
 set("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
 set("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
 set("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
-
-set("n", "<leader>c", function()
-    return require("neoclip.fzf")
-end, { desc = "FZF clipboard" })
+set("n", "<leader>w", ":set wrap!<CR>", { desc = "Toggle word wrap" })
 
 set("n", "<leader>p", function()
     return require("fzf-lua").builtin()
@@ -89,9 +86,12 @@ set("n", "<leader>G", function()
     return require("fzf-lua").git_bcommits()
 end, { desc = "FZF git_bcommits" })
 
--- set("n", "<leader>B", ":Gblame<CR>", opts)
+set("n", "<leader>B", ":Git blame<CR>", { desc = "Git blame" })
 set("n", "<leader>W", ":Gw!<CR>", { desc = "Select the current buffer when resolving git conflicts" })
-set("n", "<leader>V", ":SymbolsOutline<CR>", { desc = "Toggle LSP symbols outline tree" })
+
+set("n", "<leader>V", function()
+    return require("symbols-outline").toggle_outline()
+end, { desc = "Toggle LSP symbols outline tree" })
 
 set("n", "<leader>l", function()
     if vim.wo.scrolloff > 0 then
@@ -121,47 +121,27 @@ set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
 set("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
 set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
 
-set("n", "gc", "<Plug>kommentary_motion_default", { desc = "Toggle comment" })
-set("v", "gc", "<Plug>kommentary_visual_default<C-c>", { desc = "Toggle comment" })
+local function escape_backticks(s)
+    local _, backtick_count = string.gsub(s, "`", "")
+    local ticks = string.rep("`", backtick_count + 1)
+    return string.format("%s %s %s", ticks, s, ticks)
+end
 
 vim.api.nvim_create_user_command("GenerateKeymapDocs", function()
-    local mappings = {}
-
-    -- Filter our own custom mappings.
-    for _, mode in ipairs({ "i", "t", "n", "v" }) do
-        for _, m in ipairs(vim.api.nvim_get_keymap(mode)) do
-            if type(m.desc) == "string" then
-                if
-                    -- Does not have <Plug> prefix.
-                    m.lhs:find("<Plug>", 1, true) ~= 1
-                    and m.mode ~= "x"
-                    and string.len(m.desc) > 0
-                    and m.desc ~= "Nvim builtin"
-                then
-                    table.insert(mappings, m)
-                end
-            end
-        end
-    end
-
-    -- Sort the mappings.
-    table.sort(mappings, function(m1, m2)
-        return m1.lhs < m2.lhs
-    end)
-
     -- Generate a table.
     local table_gen = require("table_gen")
     local headings = { "mode", "lhs", "rhs", "desc" }
     local rows = {}
 
-    for _, m in ipairs(mappings) do
-        table.insert(rows, {
-            string.format("`%s`", m.mode),
-            string.format("`%s`", m.lhs),
-            -- rhs may contain 2 backticks, escape with 3
-            m.rhs and string.format("``` %s ```", m.rhs) or "",
-            m.desc,
-        })
+    for _, m in ipairs(vim.api.nvim_get_keymap("")) do
+        if m.lhs:find("<Plug>", 1, true) ~= 1 then
+            table.insert(rows, {
+                string.format("`%s`", m.mode),
+                string.format("`%s`", m.lhs),
+                m.rhs and escape_backticks(m.rhs) or "",
+                m.desc,
+            })
+        end
     end
 
     local table_out = table_gen(rows, headings, {

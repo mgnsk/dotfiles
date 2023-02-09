@@ -17,41 +17,49 @@ local location_callback = function(_, result, ctx)
     vim.api.nvim_command("tab split")
 
     if vim.tbl_islist(result) then
-        util.jump_to_location(result[1], "utf-8")
+        util.jump_to_location(result[1], "utf-8", false)
         if #result > 1 then
-            util.set_qflist(util.locations_to_items(result))
+            vim.diagnostic.setqflist(util.locations_to_items(result, "utf-8"))
             vim.api.nvim_command("copen")
             vim.api.nvim_command("wincmd p")
         end
     else
-        util.jump_to_location(result)
+        util.jump_to_location(result, "utf-8", false)
     end
 end
 
 require("lazy").setup({
     {
         "nvim-treesitter/nvim-treesitter",
-        dependencies = {
-            "nvim-treesitter/playground",
-        },
-        lazy = false,
+        build = function()
+            vim.cmd("TSInstallSync all")
+        end,
         priority = 1000,
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
                 highlight = { enable = true },
                 --incremental_selection = {enable = true},
-                --textobjects = {enable = true}
+                -- textobjects = { enable = true },
+            })
+        end,
+    },
+    {
+        "RRethy/vim-illuminate",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+        },
+        config = function()
+            require("illuminate").configure({
+                providers = {
+                    "treesitter",
+                },
+                delay = vim.o.updatetime,
             })
         end,
     },
     {
         "rktjmp/lush.nvim",
-        lazy = false,
         priority = 1000,
-        dependencies = {
-            "nvim-treesitter/nvim-treesitter",
-        },
         config = function()
             vim.cmd("colorscheme codedarker")
         end,
@@ -98,15 +106,14 @@ require("lazy").setup({
                 rust = { "rustfmt" },
                 sh = { "shfmt", "-w" },
                 sql = { "pg_format", "-i", "--type-case", "0" },
+                php = { "php-cs-fixer", "fix" },
             })
         end,
     },
     {
-        "b3nj5m1n/kommentary",
+        "numToStr/Comment.nvim",
         config = function()
-            require("kommentary.config").configure_language("default", {
-                prefer_single_line_comments = true,
-            })
+            require("Comment").setup()
         end,
     },
     {
@@ -125,30 +132,17 @@ require("lazy").setup({
             })
         end,
     },
-    {
-        "AckslD/nvim-neoclip.lua",
-        lazy = true,
-        dependencies = {
-            "ibhagwan/fzf-lua",
-        },
-        config = function()
-            require("neoclip").setup()
-        end,
-    },
     "airblade/vim-gitgutter",
     "tpope/vim-fugitive",
     {
         "neomake/neomake",
-        -- event = "BufWritePost",
-        -- enabled = function()
-        --     return not os.getenv("NVIM_DIFF")
-        -- end,
+        enabled = not os.getenv("NVIM_DIFF"),
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
             vim.g.neomake_go_enabled_makers = { "go", "golangci_lint", "golint" }
             vim.g.neomake_c_enabled_makers = { "gcc" }
-            vim.call("neomake#configure#automake", "w")
+            vim.fn["neomake#configure#automake"]("w")
         end,
     },
     {
@@ -161,48 +155,46 @@ require("lazy").setup({
     },
     {
         "simrat39/symbols-outline.nvim",
-        cmd = "SymbolsOutline",
-        dependencies = {
-            "neovim/nvim-lspconfig",
-        },
+        lazy = true,
         config = function()
             require("symbols-outline").setup()
         end,
     },
     {
+        "williamboman/mason.nvim",
+        build = function()
+            local servers = {
+                "dockerfile-language-server",
+                "gopls",
+                "typescript-language-server",
+                "html-lsp",
+                "css-lsp",
+                "bash-language-server",
+                "lua-language-server",
+                "intelephense",
+            }
+            vim.cmd(string.format("MasonInstall %s", table.concat(servers, " ")))
+        end,
+        config = function()
+            require("mason").setup()
+        end,
+    },
+    {
         "neovim/nvim-lspconfig",
-        -- event = "BufWritePost",
-        -- enabled = function()
-        --     return not os.getenv("NVIM_DIFF")
-        -- end,
+        enabled = not os.getenv("NVIM_DIFF"),
         dependencies = {
+            "williamboman/mason.nvim",
             {
                 "folke/neodev.nvim",
-                ft = "lua",
                 config = function()
                     require("neodev").setup({})
                 end,
             },
         },
-        init = function()
-            vim.lsp.handlers["textDocument/declaration"] = location_callback
-            vim.lsp.handlers["textDocument/definition"] = location_callback
-            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
-            vim.lsp.handlers["textDocument/implementation"] = location_callback
-
-            -- vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
-            -- vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
-            -- vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
-
-            vim.api.nvim_command([[ hi def link LspReferenceText CursorLine ]])
-            vim.api.nvim_command([[ hi def link LspReferenceWrite CursorLine ]])
-            vim.api.nvim_command([[ hi def link LspReferenceRead CursorLine ]])
-        end,
         config = function()
             local lsp = require("lspconfig")
             lsp.dockerls.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
-            lsp.intelephense.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.tsserver.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.cssls.setup({ capabilities = capabilities, on_attach = on_attach })
@@ -223,14 +215,26 @@ require("lazy").setup({
                     },
                 },
             })
+            lsp.intelephense.setup({ capabilities = capabilities, on_attach = on_attach })
+
+            vim.lsp.handlers["textDocument/declaration"] = location_callback
+            vim.lsp.handlers["textDocument/definition"] = location_callback
+            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
+            vim.lsp.handlers["textDocument/implementation"] = location_callback
+            vim.lsp.handlers["textDocument/publishDiagnostics"] =
+                vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+                    update_in_insert = false,
+                })
+
+            -- vim.cmd([[ hi def link LspReferenceText CursorLine ]])
+            -- vim.cmd([[ hi def link LspReferenceWrite CursorLine ]])
+            -- vim.cmd([[ hi def link LspReferenceRead CursorLine ]])
         end,
     },
     {
         "simrat39/rust-tools.nvim",
         ft = "rust",
-        -- enabled = function()
-        --     return not os.getenv("NVIM_DIFF")
-        -- end,
+        enabled = not os.getenv("NVIM_DIFF"),
         dependencies = {
             "neovim/nvim-lspconfig",
         },
@@ -259,6 +263,7 @@ require("lazy").setup({
             "hrsh7th/cmp-nvim-lua",
             "hrsh7th/cmp-path",
         },
+        enabled = not os.getenv("NVIM_DIFF"),
         config = function()
             local cmp = require("cmp")
             cmp.setup({

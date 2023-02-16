@@ -142,6 +142,7 @@ require("lazy").setup({
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
             vim.g.neomake_go_enabled_makers = { "go", "golangci_lint", "golint" }
             vim.g.neomake_c_enabled_makers = { "gcc" }
+            vim.g.neomake_php_enabled_makers = { "php", "phpstan" }
             vim.fn["neomake#configure#automake"]("w")
         end,
     },
@@ -172,6 +173,10 @@ require("lazy").setup({
                 "bash-language-server",
                 "lua-language-server",
                 "intelephense",
+                "php-cs-fixer",
+                "phpstan",
+                "ansible-language-server",
+                "ansible-lint",
             }
             vim.cmd(string.format("MasonInstall %s", table.concat(servers, " ")))
         end,
@@ -199,7 +204,9 @@ require("lazy").setup({
             lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.cssls.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
-            lsp.sumneko_lua.setup({
+            lsp.lua_ls.setup({
+                capabilities = capabilities,
+                on_attach = on_attach,
                 settings = {
                     Lua = {
                         workspace = {
@@ -216,6 +223,20 @@ require("lazy").setup({
                 },
             })
             lsp.intelephense.setup({ capabilities = capabilities, on_attach = on_attach })
+            lsp.ansiblels.setup({
+                capabilities = capabilities,
+                on_attach = on_attach,
+                -- TODO: neomake ansiblelint broken, linting with ansiblels
+                -- settings = {
+                --     ansible = {
+                --         validation = {
+                --             lint = {
+                --                 enabled = false,
+                --             },
+                --         },
+                --     },
+                -- },
+            })
 
             vim.lsp.handlers["textDocument/declaration"] = location_callback
             vim.lsp.handlers["textDocument/definition"] = location_callback
@@ -293,4 +314,5 @@ require("lazy").setup({
         "mgnsk/table_gen.lua",
         lazy = true,
     },
+    "pearofducks/ansible-vim",
 })

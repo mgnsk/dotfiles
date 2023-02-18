@@ -167,9 +167,14 @@ require("lazy").setup({
             local servers = {
                 "dockerfile-language-server",
                 "gopls",
+                "revive",
+                "goimports",
+                "golangci-lint",
+                "buf",
                 "typescript-language-server",
                 "html-lsp",
                 "css-lsp",
+                "prettier",
                 "bash-language-server",
                 "lua-language-server",
                 "intelephense",
@@ -177,6 +182,13 @@ require("lazy").setup({
                 "phpstan",
                 "ansible-language-server",
                 "ansible-lint",
+                "yamllint",
+                "shellcheck",
+                "shfmt",
+                "luacheck",
+                "hadolint",
+                "stylua",
+                "markdownlint",
             }
             vim.cmd(string.format("MasonInstall %s", table.concat(servers, " ")))
         end,

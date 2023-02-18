@@ -1,5 +1,6 @@
 FROM archlinux:base-devel
 
+
 RUN pacman -Syyu --noconfirm \
 	&& pacman -S --noconfirm --needed \
 	git \
@@ -17,19 +18,13 @@ RUN pacman -Syyu --noconfirm \
 	parallel \
 	moreutils \
 	earlyoom \
-	shellcheck \
 	tidy \
 	npm \
 	go \
 	brotli \
 	rustup \
-	yamllint \
-	ansible-lint \
-	vint \
 	direnv \
 	luarocks \
-	luacheck \
-	lua-language-server \
 	neovim \
 	pgformatter \
 	rtmidi \
@@ -58,7 +53,7 @@ RUN if grep -q "${group}:" /etc/group; then \
 USER ${user}
 
 RUN mkdir -p ~/.cache && cd ~/.cache \
-	&& for pkg in fish-fzf hadolint-bin ruby-google-protobuf ruby-pg-query ruby-sqlint; do \
+	&& for pkg in fish-fzf ruby-google-protobuf ruby-pg-query ruby-sqlint; do \
 	git clone "https://aur.archlinux.org/$pkg.git" "$pkg" && cd "$pkg" && makepkg -si --syncdeps --noconfirm; done \
 	&& cd \
 	&& rm -rf ~/.cache \

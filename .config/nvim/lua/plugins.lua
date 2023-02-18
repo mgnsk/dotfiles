@@ -31,13 +31,11 @@ end
 require("lazy").setup({
     {
         "nvim-treesitter/nvim-treesitter",
-        build = function()
-            vim.cmd("TSInstallSync all")
-        end,
         priority = 1000,
         config = function()
             require("nvim-treesitter.configs").setup({
                 highlight = { enable = true },
+                auto_install = true,
                 --incremental_selection = {enable = true},
                 -- textobjects = { enable = true },
             })

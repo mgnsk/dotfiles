@@ -9,6 +9,7 @@
 | `n`  | `%`          | ` <Plug>(MatchitNormalForward) `                                      |                                                        |
 | `n`  | `&`          | ` :&&<CR> `                                                           | Nvim builtin                                           |
 | `x`  | `*`          | ` y/\V<C-R>"<CR> `                                                    | Nvim builtin                                           |
+| `n`  | `,S`         |                                                                       | Toggle spell check                                     |
 | `n`  | `,rn`        |                                                                       | Rename                                                 |
 | `n`  | `,0`         | ` :tablast<CR> `                                                      | Goto last tab                                          |
 | `n`  | `,9`         | ` 9gt `                                                               | Goto 9th tab                                           |

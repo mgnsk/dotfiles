@@ -121,6 +121,16 @@ set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
 set("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
 set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
 
+set("n", "<leader>S", function()
+    if vim.o.spell then
+        vim.o.spell = false
+        print("spell off")
+    else
+        vim.o.spell = true
+        print("spell on")
+    end
+end, { desc = "Toggle spell check" })
+
 local function escape_backticks(s)
     local _, backtick_count = string.gsub(s, "`", "")
     local ticks = string.rep("`", backtick_count + 1)

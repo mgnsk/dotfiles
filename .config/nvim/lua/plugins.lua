@@ -325,4 +325,5 @@ require("lazy").setup({
         lazy = true,
     },
     "pearofducks/ansible-vim",
+    "chaoren/vim-wordmotion",
 })

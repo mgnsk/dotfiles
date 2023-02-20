@@ -2,8 +2,6 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  labels:
-    app: toolbox
   name: toolbox
 spec:
   containers:
@@ -19,18 +17,15 @@ spec:
       env:
         - name: TERM
           value: ${TERM}
-      resources: {}
       securityContext:
         allowPrivilegeEscalation: false
         privileged: false
-        seLinuxOptions:
-          type: spc_t
       tty: true
       stdin: true
       workingDir: /workspaces
       volumeMounts:
         - name: toolbox-workspaces
-          mountPath: /workspaces
+          mountPath: /workspaces:Z
         - name: toolbox-cache
           mountPath: "${HOME}/.cache"
         - name: toolbox-cargo-data
@@ -61,5 +56,3 @@ spec:
     - name: toolbox-go-data
       persistentVolumeClaim:
         claimName: toolbox-go-data
-
-status: {}

@@ -101,9 +101,6 @@ set("n", "<leader>l", function()
     end
 end, { desc = "Toggle cursor lock" })
 
-set("n", "<leader>K", "<C-w>K<CR>", { desc = "Align windows vertically" })
-set("n", "<leader>H", "<C-w>H<CR>", { desc = "Align windows horizontally" })
-
 set("n", "<leader>mt", ":tabm +1<CR>", { desc = "Move tab to right" })
 set("n", "<leader>mT", ":tabm -1<CR>", { desc = "Move tab to left" })
 

@@ -23,8 +23,6 @@
 | `n`  | `,1`         | ` 1gt `                                                               | Goto 1th tab                                           |
 | `n`  | `,mT`        | ` :tabm -1<CR> `                                                      | Move tab to left                                       |
 | `n`  | `,mt`        | ` :tabm +1<CR> `                                                      | Move tab to right                                      |
-| `n`  | `,H`         | ` <C-W>H<CR> `                                                        | Align windows horizontally                             |
-| `n`  | `,K`         | ` <C-W>K<CR> `                                                        | Align windows vertically                               |
 | `n`  | `,l`         |                                                                       | Toggle cursor lock                                     |
 | `n`  | `,V`         |                                                                       | Toggle LSP symbols outline tree                        |
 | `n`  | `,W`         | ` :Gw!<CR> `                                                          | Select the current buffer when resolving git conflicts |

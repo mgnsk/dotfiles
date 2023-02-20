@@ -27,6 +27,7 @@
 | `n`  | `,V`         |                                                                       | Toggle LSP symbols outline tree                        |
 | `n`  | `,W`         | ` :Gw!<CR> `                                                          | Select the current buffer when resolving git conflicts |
 | `n`  | `,B`         | ` :Git blame<CR> `                                                    | Git blame                                              |
+| `n`  | `,H`         |                                                                       | FZF git_commits                                        |
 | `n`  | `,G`         |                                                                       | FZF git_bcommits                                       |
 | `n`  | `,F`         |                                                                       | FZF lsp_live_workspace_symbols                         |
 | `n`  | `,f`         |                                                                       | FZF lsp_document_symbols                               |

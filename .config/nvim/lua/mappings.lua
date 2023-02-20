@@ -86,6 +86,10 @@ set("n", "<leader>G", function()
     return require("fzf-lua").git_bcommits()
 end, { desc = "FZF git_bcommits" })
 
+set("n", "<leader>H", function()
+    return require("fzf-lua").git_commits()
+end, { desc = "FZF git_commits" })
+
 set("n", "<leader>B", ":Git blame<CR>", { desc = "Git blame" })
 set("n", "<leader>W", ":Gw!<CR>", { desc = "Select the current buffer when resolving git conflicts" })
 

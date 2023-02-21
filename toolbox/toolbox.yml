@@ -26,40 +26,52 @@ spec:
       volumeMounts:
         - name: toolbox-workspaces
           mountPath: /workspaces:Z
-        - name: toolbox-cache
-          mountPath: "${HOME}/.cache"
+
         - name: toolbox-cargo-data
           mountPath: "${HOME}/.cargo"
-        - name: toolbox-local
-          mountPath: "${HOME}/.local"
+
         - name: toolbox-go-data
           mountPath: "${HOME}/go"
+
+        - name: toolbox-cache
+          mountPath: "${HOME}/.cache"
+
+        - name: toolbox-nvim-share
+          mountPath: "${HOME}/.local/share/nvim"
+
+        - name: toolbox-nvim-state
+          mountPath: "${HOME}/.local/state/nvim"
+
         - name: tmp
           mountPath: /tmp
+
   restartPolicy: Never
   volumes:
     - name: toolbox-workspaces
       hostPath:
-        path: "./workspaces"
+        path: "${HOME}/toolbox/workspaces"
         type: Directory
-
-    - name: toolbox-cache
-      persistentVolumeClaim:
-        claimName: toolbox-cache
 
     - name: toolbox-cargo-data
       persistentVolumeClaim:
         claimName: toolbox-cargo-data
 
-    - name: toolbox-local
-      persistentVolumeClaim:
-        claimName: toolbox-local
-
     - name: toolbox-go-data
       persistentVolumeClaim:
         claimName: toolbox-go-data
 
+    - name: toolbox-cache
+      emptyDir:
+        medium: Memory
+
+    - name: toolbox-nvim-share
+      emptyDir:
+        medium: Memory
+
+    - name: toolbox-nvim-state
+      emptyDir:
+        medium: Memory
+
     - name: tmp
       emptyDir:
         medium: Memory
-        sizeLimit: 1Gi

@@ -34,6 +34,8 @@ spec:
           mountPath: "${HOME}/.local"
         - name: toolbox-go-data
           mountPath: "${HOME}/go"
+        - name: tmp
+          mountPath: /tmp
   restartPolicy: Never
   volumes:
     - name: toolbox-workspaces
@@ -56,3 +58,8 @@ spec:
     - name: toolbox-go-data
       persistentVolumeClaim:
         claimName: toolbox-go-data
+
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 1Gi

@@ -14,6 +14,7 @@ vim.o.laststatus = 2
 vim.o.wildmenu = true
 vim.o.scrolloff = 999
 vim.o.wrap = false
+vim.o.inccommand = "split"
 -- Open files in new tab.
 vim.g.netrw_browse_split = 3
 -- Tree view.

@@ -33,16 +33,16 @@ spec:
         - name: toolbox-go-data
           mountPath: "${HOME}/go"
 
+        - name: toolbox-share
+          mountPath: "${HOME}/.local/share"
+
+        - name: toolbox-state
+          mountPath: "${HOME}/.local/state"
+
         - name: toolbox-cache
           mountPath: "${HOME}/.cache"
 
-        - name: toolbox-nvim-share
-          mountPath: "${HOME}/.local/share/nvim"
-
-        - name: toolbox-nvim-state
-          mountPath: "${HOME}/.local/state/nvim"
-
-        - name: tmp
+        - name: toolbox-tmp
           mountPath: /tmp
 
   restartPolicy: Never
@@ -60,18 +60,18 @@ spec:
       persistentVolumeClaim:
         claimName: toolbox-go-data
 
+    - name: toolbox-share
+      persistentVolumeClaim:
+        claimName: toolbox-share
+
+    - name: toolbox-state
+      emptyDir:
+        medium: Memory
+
     - name: toolbox-cache
       emptyDir:
         medium: Memory
 
-    - name: toolbox-nvim-share
-      emptyDir:
-        medium: Memory
-
-    - name: toolbox-nvim-state
-      emptyDir:
-        medium: Memory
-
-    - name: tmp
+    - name: toolbox-tmp
       emptyDir:
         medium: Memory

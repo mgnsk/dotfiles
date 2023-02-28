@@ -7,7 +7,6 @@ RUN pacman -Syyu --noconfirm \
 	unzip \
 	wget \
 	tmux \
-	vim \
 	fish \
 	tree \
 	ripgrep \
@@ -21,11 +20,10 @@ RUN pacman -Syyu --noconfirm \
 	tidy \
 	npm \
 	go \
+	python \
 	brotli \
-	rustup \
 	direnv \
 	luarocks \
-	neovim \
 	pgformatter \
 	rtmidi \
 	&& bash -c "yes | pacman -Scc"
@@ -52,9 +50,15 @@ RUN if grep -q "${group}:" /etc/group; then \
 
 USER ${user}
 
-RUN mkdir -p ~/.cache && cd ~/.cache \
-	&& for pkg in fish-fzf ruby-google-protobuf ruby-pg-query ruby-sqlint; do \
-	git clone "https://aur.archlinux.org/$pkg.git" "$pkg" && cd "$pkg" && makepkg -si --syncdeps --noconfirm; done \
+RUN for pkg in \
+	fish-fzf \
+	neovim-git \
+	; do \
+	mkdir -p "/home/${user}/.cache/$pkg" \
+	&& cd "/home/${user}/.cache/$pkg" \
+	&& git clone "https://aur.archlinux.org/$pkg.git" . \
+	&& makepkg -si --syncdeps --noconfirm \
+	; done \
 	&& cd \
 	&& rm -rf ~/.cache \
 	&& sudo gpasswd -d ${user} wheel \

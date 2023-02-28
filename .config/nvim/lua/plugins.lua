@@ -99,7 +99,6 @@ require("lazy").setup({
                 c = { "clang-format", "-i" },
                 glsl = { "clang-format", "-i" },
                 proto = { "buf", "format", "-w" },
-                dockerfile = { "dockerfile_format" },
                 go = { "goimports", "-w" },
                 rust = { "rustfmt" },
                 sh = { "shfmt", "-w" },

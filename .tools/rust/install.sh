@@ -6,5 +6,6 @@ echo "### Installing rust tools"
 
 # install toolchain
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
+source "$HOME/.cargo/env"
 rustup default nightly
 rustup component add rustfmt rust-src clippy rust-analyzer-preview

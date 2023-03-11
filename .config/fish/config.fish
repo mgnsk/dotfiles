@@ -8,7 +8,9 @@ set -gx PATH "$HOME/.cargo/bin:$PATH"
 set -gx PATH "$HOME/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin:$PATH"
 set -gx PATH "$HOME/.bin:$PATH"
 set -gx PATH "$HOME/.luarocks/bin:$PATH"
-set -gx PATH "$HOME/.tools/js/node_modules/.bin:$PATH"
+
+# tools
+set -gx PATH "$HOME/.tools/vendor/bin:$PATH"
 
 # gotip.
 set -gx PATH "$HOME/toolbox/workspaces/go/bin:$PATH"

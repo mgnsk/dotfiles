@@ -1,0 +1,11 @@
+{
+    "name": "mgnsk/tools",
+    "autoload": {
+        "psr-4": {
+            "Mgnsk\\Tools\\": "src/"
+        }
+    },
+    "require": {
+        "laravel/pint": "^1.6"
+    }
+}

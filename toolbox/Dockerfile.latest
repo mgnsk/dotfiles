@@ -1,0 +1,4 @@
+FROM toolbox:base
+
+RUN nvim --headless -c "Lazy! sync" -c "qa!" \
+	&& rm -rf ~/.cache

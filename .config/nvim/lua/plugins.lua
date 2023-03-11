@@ -14,18 +14,23 @@ local location_callback = function(_, result, ctx)
         return nil
     end
 
-    vim.api.nvim_command("tab split")
+    -- create a new tab and save bufnr
+    vim.api.nvim_command("tabnew")
+    local buf = vim.api.nvim_get_current_buf()
 
     if vim.tbl_islist(result) then
-        util.jump_to_location(result[1], "utf-8", false)
+        util.jump_to_location(result[1], "utf-8", true)
         if #result > 1 then
             vim.diagnostic.setqflist(util.locations_to_items(result, "utf-8"))
             vim.api.nvim_command("copen")
             vim.api.nvim_command("wincmd p")
         end
     else
-        util.jump_to_location(result, "utf-8", false)
+        util.jump_to_location(result, "utf-8", true)
     end
+
+    -- remove the empty buffer created with tabnew
+    vim.api.nvim_command(buf .. "bd")
 end
 
 require("lazy").setup({
@@ -64,7 +69,7 @@ require("lazy").setup({
     },
     {
         "norcalli/nvim-colorizer.lua",
-        ft = { "lua", "html", "css", "less", "markdown" },
+        ft = { "lua", "html", "css", "less" },
         config = function()
             local opts = {
                 RGB = true,
@@ -80,7 +85,6 @@ require("lazy").setup({
                 html = opts,
                 css = opts,
                 less = opts,
-                markdown = opts,
             })
         end,
     },
@@ -103,7 +107,7 @@ require("lazy").setup({
                 rust = { "rustfmt" },
                 sh = { "shfmt", "-w" },
                 sql = { "pg_format", "-i", "--type-case", "0" },
-                php = { "php-cs-fixer", "fix" },
+                php = { "pint" },
             })
         end,
     },
@@ -137,9 +141,8 @@ require("lazy").setup({
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
-            vim.g.neomake_go_enabled_makers = { "go", "golangci_lint", "golint" }
+            vim.g.neomake_go_enabled_makers = { "go", "golint", "govet" }
             vim.g.neomake_c_enabled_makers = { "gcc" }
-            vim.g.neomake_php_enabled_makers = { "php", "phpstan" }
             vim.fn["neomake#configure#automake"]("w")
         end,
     },
@@ -159,45 +162,9 @@ require("lazy").setup({
         end,
     },
     {
-        "williamboman/mason.nvim",
-        build = function()
-            local servers = {
-                "dockerfile-language-server",
-                "gopls",
-                "revive",
-                "goimports",
-                "golangci-lint",
-                "buf",
-                "typescript-language-server",
-                "html-lsp",
-                "css-lsp",
-                "prettier",
-                "bash-language-server",
-                "lua-language-server",
-                "intelephense",
-                "php-cs-fixer",
-                "phpstan",
-                "ansible-language-server",
-                "ansible-lint",
-                "yamllint",
-                "shellcheck",
-                "shfmt",
-                "luacheck",
-                "hadolint",
-                "stylua",
-                "markdownlint",
-            }
-            vim.cmd(string.format("MasonInstall %s", table.concat(servers, " ")))
-        end,
-        config = function()
-            require("mason").setup()
-        end,
-    },
-    {
         "neovim/nvim-lspconfig",
         enabled = not os.getenv("NVIM_DIFF"),
         dependencies = {
-            "williamboman/mason.nvim",
             {
                 "folke/neodev.nvim",
                 config = function()
@@ -207,7 +174,6 @@ require("lazy").setup({
         },
         config = function()
             local lsp = require("lspconfig")
-            lsp.dockerls.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.tsserver.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
@@ -231,7 +197,7 @@ require("lazy").setup({
                     },
                 },
             })
-            lsp.intelephense.setup({ capabilities = capabilities, on_attach = on_attach })
+            lsp.phpactor.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.ansiblels.setup({
                 capabilities = capabilities,
                 on_attach = on_attach,

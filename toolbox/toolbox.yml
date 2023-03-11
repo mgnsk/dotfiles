@@ -4,16 +4,10 @@ kind: Pod
 metadata:
   name: toolbox
 spec:
+  hostNetwork: true
   containers:
-    - image: toolbox
-      name: toolbox
-      # ports:
-      #   - containerPort: 8000
-      #     hostPort: 8000
-      #     protocol: TCP
-      #   - containerPort: 6060
-      #     hostPort: 6060
-      #     protocol: TCP
+    - image: toolbox:${toolbox_tag}
+      name: toolbox-${toolbox_tag}
       env:
         - name: TERM
           value: ${TERM}

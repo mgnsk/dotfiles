@@ -1,4 +1,6 @@
 ---
+interpreter: bash -eu -o pipefail -c
+
 options:
   uid:
     default:
@@ -14,48 +16,97 @@ options:
       command: id -g -n
   home:
     environment: HOME
+  build-tag:
+    default:
+      command: git --git-dir=${home}/.dotfiles --work-tree=${home} log -1 --pretty=%h
 
 tasks:
-  build:
-    usage: Build the toolbox.
+  _setup-dotfiles:
+    private: true
+    options:
+      tmp:
+        default:
+          command: mktemp -d
     run:
-      - command: rm -rf $HOME/toolbox/dotfiles
-      - command: mkdir -p $HOME/toolbox/dotfiles
       - command:
           dir: ${home}
-          exec: git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files | tar Tc - | tar Cx $HOME/toolbox/dotfiles
+          exec: git --git-dir=${home}/.dotfiles --work-tree=${home} ls-files | tar Tc - | tar Cx ${tmp}
+      - command: mkdir -p ${home}/toolbox/dotfiles
+      - command: rsync -av --size-only --no-perms --no-owner --no-group --omit-dir-times --delete-after --delay-updates --exclude=toolbox ${tmp}/ ${home}/toolbox/dotfiles
+    finally:
+      - command: rm -rf ${tmp}
+
+  _build:
+    private: true
+    args:
+      file:
+      tag:
+    options:
+      nproc:
+        default:
+          command: nproc
+    run:
       - command: >
           podman
           build
-          --pull
+          --jobs ${nproc}
           --build-arg uid=${uid}
           --build-arg gid=${gid}
           --build-arg user=${user}
           --build-arg group=${group}
-          -t toolbox
+          -t ${tag}
+          -f ${file}
           .
+
+  build:
+    usage: Build toolbox images.
+    args:
+      tag:
+        values:
+          - stable
+          - latest
+    run:
+      - task: _setup-dotfiles
+      - task: {name: _build, args: ["Dockerfile.base", "toolbox:base"]}
+      - task: {name: _build, args: ["Dockerfile.${tag}", "toolbox:${tag}"]}
 
   up:
     usage: Start the toolbox.
+    args:
+      tag:
+        values:
+          - stable
+          - latest
     run:
+      - set-environment:
+          toolbox_tag: ${tag}
       - command: cat toolbox.yml | envsubst | podman play kube --userns=keep-id -
 
   down:
     usage: Stop the toolbox.
     run:
+      - set-environment:
+          toolbox_tag: stable
+      - command: cat toolbox.yml | envsubst | podman play kube --down - || true
+      - set-environment:
+          toolbox_tag: latest
       - command: cat toolbox.yml | envsubst | podman play kube --down - || true
 
   clean:
     usage: Stop the toolbox and remove volumes.
     run:
-      - task: down
-      - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
+      - set-environment:
+          toolbox_tag: stable
+      - command: cat toolbox.yml | envsubst | podman play kube --down --force - || true
+      - set-environment:
+          toolbox_tag: latest
+      - command: cat toolbox.yml | envsubst | podman play kube --down --force - || true
 
   sh:
     usage: Enter the toolbox shell.
     options:
       ctr-id:
         default:
-          command: podman container list --filter ancestor=localhost/toolbox --format "{{.ID}}"
+          command: podman container list --filter ancestor=localhost/toolbox --latest --quiet
     run:
       - command: podman exec -it ${ctr-id} fish

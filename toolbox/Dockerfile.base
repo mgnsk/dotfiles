@@ -74,6 +74,7 @@ RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
 	vscode-html-languageserver \
 	vscode-css-languageserver \
 	npm \
+	eslint \
 	go \
 	gopls \
 	go-tools \

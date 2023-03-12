@@ -27,9 +27,6 @@ spec:
         - name: toolbox-go-data
           mountPath: "${HOME}/go"
 
-        - name: toolbox-share
-          mountPath: "${HOME}/.local/share"
-
         - name: toolbox-state
           mountPath: "${HOME}/.local/state"
 
@@ -53,10 +50,6 @@ spec:
     - name: toolbox-go-data
       persistentVolumeClaim:
         claimName: toolbox-go-data
-
-    - name: toolbox-share
-      persistentVolumeClaim:
-        claimName: toolbox-share
 
     - name: toolbox-state
       emptyDir:

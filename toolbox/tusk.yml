@@ -95,12 +95,9 @@ tasks:
   clean:
     usage: Stop the toolbox and remove volumes.
     run:
-      - set-environment:
-          toolbox_tag: stable
-      - command: cat toolbox.yml | envsubst | podman play kube --down --force - || true
-      - set-environment:
-          toolbox_tag: latest
-      - command: cat toolbox.yml | envsubst | podman play kube --down --force - || true
+      - task: down
+      - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
+
 
   sh:
     usage: Enter the toolbox shell.

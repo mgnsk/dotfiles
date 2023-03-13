@@ -16,9 +16,6 @@ options:
       command: id -g -n
   home:
     environment: HOME
-  build-tag:
-    default:
-      command: git --git-dir=${home}/.dotfiles --work-tree=${home} log -1 --pretty=%h
 
 tasks:
   _setup-dotfiles:
@@ -32,7 +29,18 @@ tasks:
           dir: ${home}
           exec: git --git-dir=${home}/.dotfiles --work-tree=${home} ls-files | tar Tc - | tar Cx ${tmp}
       - command: mkdir -p ${home}/toolbox/dotfiles
-      - command: rsync -av --size-only --no-perms --no-owner --no-group --omit-dir-times --delete-after --delay-updates --exclude=toolbox ${tmp}/ ${home}/toolbox/dotfiles
+      - command: >
+          rsync -av
+          --checksum
+          --no-perms
+          --no-owner
+          --no-group
+          --omit-dir-times
+          --delete-after
+          --delay-updates
+          --exclude=toolbox
+          ${tmp}/
+          ${home}/toolbox/dotfiles
     finally:
       - command: rm -rf ${tmp}
 
@@ -60,44 +68,25 @@ tasks:
 
   build:
     usage: Build toolbox images.
-    args:
-      tag:
-        values:
-          - stable
-          - latest
     run:
       - task: _setup-dotfiles
-      - task: {name: _build, args: ["Dockerfile.base", "toolbox:base"]}
-      - task: {name: _build, args: ["Dockerfile.${tag}", "toolbox:${tag}"]}
+      - task: {name: _build, args: ["Dockerfile", "toolbox:latest"]}
 
   up:
     usage: Start the toolbox.
-    args:
-      tag:
-        values:
-          - stable
-          - latest
     run:
-      - set-environment:
-          toolbox_tag: ${tag}
       - command: cat toolbox.yml | envsubst | podman play kube --userns=keep-id -
 
   down:
     usage: Stop the toolbox.
     run:
-      - set-environment:
-          toolbox_tag: stable
-      - command: cat toolbox.yml | envsubst | podman play kube --down - || true
-      - set-environment:
-          toolbox_tag: latest
       - command: cat toolbox.yml | envsubst | podman play kube --down - || true
 
   clean:
     usage: Stop the toolbox and remove volumes.
     run:
-      - task: down
+      - command: cat toolbox.yml | envsubst | podman play kube --down --force - || true
       - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
-
 
   sh:
     usage: Enter the toolbox shell.

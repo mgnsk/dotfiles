@@ -20,5 +20,4 @@ require("mappings")
 require("tabline")
 require("statusline")
 
-require("lazy_init")
 require("plugins")

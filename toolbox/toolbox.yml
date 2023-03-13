@@ -6,8 +6,8 @@ metadata:
 spec:
   hostNetwork: true
   containers:
-    - image: toolbox:${toolbox_tag}
-      name: toolbox-${toolbox_tag}
+    - image: toolbox:latest
+      name: toolbox
       env:
         - name: TERM
           value: ${TERM}

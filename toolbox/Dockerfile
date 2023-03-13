@@ -108,10 +108,12 @@ RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
 	&& sudo rm /etc/sudoers.d/01-wheel \
 	&& rm -rf /home/${user}/.cache
 
-COPY --from=go-tools /go /home/${user}/go
-COPY --from=rust-tools /cargo /home/${user}/.cargo
+COPY --from=go-tools --chown=${uid}:${gid} /go /home/${user}/go
+COPY --from=rust-tools --chown=${uid}:${gid} /cargo /home/${user}/.cargo
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 
-RUN cd /home/${user}/.tools && ./install.sh
+ENV IS_CONTAINER "1"
+
+RUN cd /home/${user}/.tools && /home/${user}/go/bin/tusk install
 
 WORKDIR /workspaces

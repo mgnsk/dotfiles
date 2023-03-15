@@ -158,7 +158,8 @@ require("lazy").setup({
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
-            vim.g.neomake_go_enabled_makers = { "go", "golint", "govet" }
+            -- Note: golangci_lint is configured to run go_vet.
+            vim.g.neomake_go_enabled_makers = { "go", "golangci_lint", "golint" }
             vim.g.neomake_c_enabled_makers = { "gcc" }
             vim.fn["neomake#configure#automake"]("w")
         end,

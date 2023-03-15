@@ -101,6 +101,7 @@ RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
 	fish-fzf \
 	neovim-git \
 	buf-bin \
+	golangci-lint-bin \
 	hadolint-bin \
 	phpstan-bin \
 	phpactor \
@@ -114,6 +115,8 @@ COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 
 ENV IS_CONTAINER "1"
 
-RUN cd /home/${user}/.tools && /home/${user}/go/bin/tusk install
+RUN cd /home/${user}/.tools \
+	&& /home/${user}/go/bin/tusk install \
+	&& rm -rf /home/${user}/.local/state
 
 WORKDIR /workspaces

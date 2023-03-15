@@ -1,0 +1,10 @@
+---
+linters:
+  presets:
+  - bugs
+  - unused
+  - performance
+
+linters-settings:
+  govet:
+    enable-all: true

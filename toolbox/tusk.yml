@@ -2,22 +2,65 @@
 interpreter: bash -eu -o pipefail -c
 
 options:
-  uid:
-    default:
-      command: id -u
-  gid:
-    default:
-      command: id -g
-  user:
-    default:
-      command: id -u -n
-  group:
-    default:
-      command: id -g -n
-  home:
+  container-uid:
+    default: 3000
+  container-gid:
+    default: 3000
+  container-user:
+    default: dev
+  container-group:
+    default: dev
+  host-home:
     environment: HOME
 
 tasks:
+  build:
+    options:
+      nproc:
+        default:
+          command: nproc
+    usage: Build the toolbox image.
+    run:
+      - task: _setup-dotfiles
+      - command: >
+          podman build --jobs ${nproc}
+          --build-arg uid=${container-uid}
+          --build-arg gid=${container-gid}
+          --build-arg user=${container-user}
+          --build-arg group=${container-group}
+          -t toolbox:latest
+          -f Dockerfile
+          .
+
+  # TODO: https://github.com/containers/podman/issues/16541
+  run:
+    usage: Run the toolbox shell.
+    options:
+      host-term:
+        environment: TERM
+    run:
+      - command: podman volume create --ignore toolbox-go
+      - command: podman volume create --ignore toolbox-cargo
+      - command: >
+          podman run
+          --interactive
+          --tty
+          --rm
+          --pull=never
+          --env TERM=${host-term}
+          --hostname toolbox
+          --network host
+          --userns=keep-id:uid=${container-uid},gid=${container-gid}
+          --tmpfs /tmp:rw,exec,nosuid,nodev
+          --tmpfs /home/${container-user}/.local/state:rw,noexec,nosuid,nodev
+          --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev
+          --volume toolbox-go:/home/${container-user}/go
+          --volume toolbox-cargo:/home/${container-user}/cargo
+          --volume ${host-home}/toolbox/workspaces:/workspaces:Z
+          --workdir /workspaces
+          toolbox:latest
+          fish
+
   _setup-dotfiles:
     private: true
     options:
@@ -26,9 +69,9 @@ tasks:
           command: mktemp -d
     run:
       - command:
-          dir: ${home}
-          exec: git --git-dir=${home}/.dotfiles --work-tree=${home} ls-files | tar Tc - | tar Cx ${tmp}
-      - command: mkdir -p ${home}/toolbox/dotfiles
+          dir: ${host-home}
+          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${tmp}
+      - command: mkdir -p ${host-home}/toolbox/dotfiles
       - command: >
           rsync -av
           --checksum
@@ -40,59 +83,6 @@ tasks:
           --delay-updates
           --exclude=toolbox
           ${tmp}/
-          ${home}/toolbox/dotfiles
+          ${host-home}/toolbox/dotfiles
     finally:
       - command: rm -rf ${tmp}
-
-  _build:
-    private: true
-    args:
-      file:
-      tag:
-    options:
-      nproc:
-        default:
-          command: nproc
-    run:
-      - command: >
-          podman
-          build
-          --jobs ${nproc}
-          --build-arg uid=${uid}
-          --build-arg gid=${gid}
-          --build-arg user=${user}
-          --build-arg group=${group}
-          -t ${tag}
-          -f ${file}
-          .
-
-  build:
-    usage: Build toolbox images.
-    run:
-      - task: _setup-dotfiles
-      - task: {name: _build, args: ["Dockerfile", "toolbox:latest"]}
-
-  up:
-    usage: Start the toolbox.
-    run:
-      - command: cat toolbox.yml | envsubst | podman play kube --userns=keep-id -
-
-  down:
-    usage: Stop the toolbox.
-    run:
-      - command: cat toolbox.yml | envsubst | podman play kube --down - || true
-
-  clean:
-    usage: Stop the toolbox and remove volumes.
-    run:
-      - command: cat toolbox.yml | envsubst | podman play kube --down --force - || true
-      - command: for v in $(podman volume ls --quiet | grep "^toolbox"); do podman volume rm $v; done
-
-  sh:
-    usage: Enter the toolbox shell.
-    options:
-      ctr-id:
-        default:
-          command: podman container list --filter ancestor=localhost/toolbox --latest --quiet
-    run:
-      - command: podman exec -it ${ctr-id} fish

@@ -1,7 +1,9 @@
 FROM archlinux:base-devel AS toolbox-base
 
 RUN pacman -Syyu --noconfirm \
-	&& pacman -S --noconfirm --needed git \
+	&& pacman -S --noconfirm --needed \
+	git \
+	go \
 	&& bash -c "yes | pacman -Scc"
 
 
@@ -9,11 +11,8 @@ FROM toolbox-base AS go-tools
 
 ENV GOPATH /go
 
-RUN pacman -S --noconfirm --needed go \
-	&& bash -c "yes | pacman -Scc" \
-	&& go install -v github.com/rliebz/tusk@latest \
-	&& go install -v github.com/goccmack/gocc@latest \
-	&& go clean -modcache
+RUN go install -v github.com/rliebz/tusk@latest
+RUN go install -v github.com/goccmack/gocc@latest
 
 
 FROM toolbox-base AS rust-tools
@@ -23,38 +22,13 @@ ENV PATH=$PATH:/cargo/bin
 
 RUN bash -c "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y" \
 	&& rustup default nightly \
-	&& rustup component add rustfmt rust-src clippy rust-analyzer-preview \
-	&& rm -rf ~/.cargo/registry
+	&& rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
 
 FROM toolbox-base
 
-ARG uid
-ARG gid
-ARG user
-ARG group
-
-RUN if grep -q "${group}:" /etc/group; then \
-	groupmod -o -g ${gid} ${group}; \
-	else \
-	groupadd -f -g ${gid} ${group}; \
-	fi \
-	&& useradd \
-	-m \
-	-s /usr/bin/fish \
-	-g ${group} \
-	--uid ${uid} \
-	${user} \
-	&& passwd -d ${user} \
-	&& echo "%wheel      ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/01-wheel \
-	&& gpasswd -a ${user} wheel
-
-USER ${user}
-
-RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
-	&& cd ~/.cache/paru-bin \
-	&& makepkg --noconfirm --syncdeps --install --clean \
-	&& paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast \
+RUN pacman -S --noconfirm --needed \
+	git \
 	unzip \
 	wget \
 	tmux \
@@ -96,27 +70,56 @@ RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
 	ruby-mdl \
 	rtmidi \
 	php \
+	php-sqlite \
 	composer \
-	# AUR packages
-	fish-fzf \
-	neovim-git \
-	buf-bin \
-	golangci-lint-bin \
-	hadolint-bin \
-	phpstan-bin \
-	phpactor \
-	&& sudo gpasswd -d ${user} wheel \
-	&& sudo rm /etc/sudoers.d/01-wheel \
-	&& rm -rf /home/${user}/.cache
+	&& bash -c "yes | pacman -Scc"
 
-COPY --from=go-tools --chown=${uid}:${gid} /go /home/${user}/go
-COPY --from=rust-tools --chown=${uid}:${gid} /cargo /home/${user}/.cargo
+ARG uid
+ARG gid
+ARG user
+ARG group
+
+RUN if grep -q "${group}:" /etc/group; then \
+	groupmod -o -g ${gid} ${group}; \
+	else \
+	groupadd -f -g ${gid} ${group}; \
+	fi \
+	&& useradd \
+	-m \
+	-s /usr/bin/fish \
+	-g ${group} \
+	--uid ${uid} \
+	${user} \
+	&& passwd -d ${user} \
+	&& echo "%wheel      ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01-wheel \
+	&& gpasswd -a ${user} wheel
+
+COPY ./etc/php /etc/php
+
+USER ${user}
+
+RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
+	&& cd ~/.cache/paru-bin \
+	&& makepkg --noconfirm --syncdeps --install --clean
+
+RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast fish-fzf
+RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast neovim-git
+RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast buf-bin
+RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast golangci-lint-bin
+RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast hadolint-bin
+RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast phpstan
+RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast phpactor
+
+RUN sudo gpasswd -d ${user} wheel \
+	&& sudo rm /etc/sudoers.d/01-wheel
+
+COPY --from=go-tools --chown=${uid}:${gid} /go/bin /home/${user}/go/bin
+COPY --from=rust-tools --chown=${uid}:${gid} /cargo/bin /home/${user}/.cargo/bin
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 
 ENV IS_CONTAINER "1"
 
 RUN cd /home/${user}/.tools \
-	&& /home/${user}/go/bin/tusk install \
-	&& rm -rf /home/${user}/.local/state
+	&& /home/${user}/go/bin/tusk install
 
 WORKDIR /workspaces

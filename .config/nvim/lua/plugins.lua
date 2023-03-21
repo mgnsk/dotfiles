@@ -27,23 +27,18 @@ local location_callback = function(_, result, ctx)
         return nil
     end
 
-    -- create a new tab and save bufnr
     vim.api.nvim_command("tabnew")
-    local buf = vim.api.nvim_get_current_buf()
 
     if vim.tbl_islist(result) then
-        util.jump_to_location(result[1], "utf-8", true)
+        util.jump_to_location(result[1], "utf-8", false)
         if #result > 1 then
             vim.diagnostic.setqflist(util.locations_to_items(result, "utf-8"))
             vim.api.nvim_command("copen")
             vim.api.nvim_command("wincmd p")
         end
     else
-        util.jump_to_location(result, "utf-8", true)
+        util.jump_to_location(result, "utf-8", false)
     end
-
-    -- remove the empty buffer created with tabnew
-    vim.api.nvim_command(buf .. "bd")
 end
 
 require("lazy").setup({
@@ -310,20 +305,21 @@ require("lazy").setup({
     "pearofducks/ansible-vim",
     "chaoren/vim-wordmotion",
     {
-        "glacambre/firenvim",
-        -- Lazy load firenvim
-        -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
-        cond = not not vim.g.started_by_firenvim,
-        build = function()
-            require("lazy").load({ plugins = "firenvim", wait = true })
-            vim.fn["firenvim#install"](0)
-        end,
-        enabled = os.getenv("IS_CONTAINER") ~= "1",
+        "ojroques/nvim-osc52",
         config = function()
-            vim.api.nvim_create_autocmd({ "BufEnter" }, {
-                pattern = "github.com_*.txt",
-                command = "set filetype=markdown",
-            })
+            local function copy(lines, _)
+                require("osc52").copy(table.concat(lines, "\n"))
+            end
+
+            local function paste()
+                return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+            end
+
+            vim.g.clipboard = {
+                name = "osc52",
+                copy = { ["+"] = copy, ["*"] = copy },
+                paste = { ["+"] = paste, ["*"] = paste },
+            }
         end,
     },
 })

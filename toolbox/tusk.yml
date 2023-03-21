@@ -33,7 +33,7 @@ tasks:
           .
 
   # TODO: https://github.com/containers/podman/issues/16541
-  run:
+  sh:
     usage: Run the toolbox shell.
     options:
       host-term:

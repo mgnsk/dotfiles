@@ -14,14 +14,40 @@ options:
     environment: HOME
 
 tasks:
+  setup:
+    usage: Set up rootless podman for host machine.
+    run:
+      - command: sudo sysctl kernel.unprivileged_userns_clone=1
+      - command: sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $(id -un)
+      - command: podman system migrate
+      - command: podman run --rm hello-world
+
   build:
+    usage: Build the toolbox image.
     options:
       nproc:
         default:
           command: nproc
-    usage: Build the toolbox image.
+      tmp:
+        default:
+          command: mktemp -d
     run:
-      - task: _setup-dotfiles
+      - command:
+          dir: ${host-home}
+          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${tmp}
+      - command: mkdir -p ${host-home}/toolbox/dotfiles
+      - command: >
+          rsync -av
+          --checksum
+          --no-perms
+          --no-owner
+          --no-group
+          --omit-dir-times
+          --delete-after
+          --delay-updates
+          --exclude=toolbox
+          ${tmp}/
+          ${host-home}/toolbox/dotfiles
       - command: >
           podman build --jobs ${nproc}
           --build-arg uid=${container-uid}
@@ -31,6 +57,8 @@ tasks:
           -t toolbox:latest
           -f Dockerfile
           .
+    finally:
+      - command: rm -rf ${tmp}
 
   # TODO: https://github.com/containers/podman/issues/16541
   sh:
@@ -60,29 +88,3 @@ tasks:
           --workdir /workspaces
           toolbox:latest
           fish
-
-  _setup-dotfiles:
-    private: true
-    options:
-      tmp:
-        default:
-          command: mktemp -d
-    run:
-      - command:
-          dir: ${host-home}
-          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${tmp}
-      - command: mkdir -p ${host-home}/toolbox/dotfiles
-      - command: >
-          rsync -av
-          --checksum
-          --no-perms
-          --no-owner
-          --no-group
-          --omit-dir-times
-          --delete-after
-          --delay-updates
-          --exclude=toolbox
-          ${tmp}/
-          ${host-home}/toolbox/dotfiles
-    finally:
-      - command: rm -rf ${tmp}

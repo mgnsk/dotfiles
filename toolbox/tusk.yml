@@ -25,9 +25,6 @@ tasks:
   build:
     usage: Build the toolbox image.
     options:
-      nproc:
-        default:
-          command: nproc
       tmp:
         default:
           command: mktemp -d
@@ -49,7 +46,7 @@ tasks:
           ${tmp}/
           ${host-home}/toolbox/dotfiles
       - command: >
-          podman build --jobs ${nproc}
+          podman build --jobs=0
           --build-arg uid=${container-uid}
           --build-arg gid=${container-gid}
           --build-arg user=${container-user}

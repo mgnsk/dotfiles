@@ -239,7 +239,7 @@ output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
 for_window [app_id="foot"] opacity 0.97
 
-for_window [class=".*"] border pixel 1
+for_window [class=".*"] border none
 
 # AUTOSTART
 exec light -N 5

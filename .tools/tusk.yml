@@ -6,9 +6,4 @@ tasks:
     usage: Install tools.
     run:
       - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
-      - command: >
-          nvim --headless -u NORC
-          -c 'lua require("plugins")'
-          -c "Lazy! sync"
-          -c "qa!"
-      - command: rm -rf ~/.cache
+      - command: nvim --headless -u NORC -c 'lua require("plugins")' -c "Lazy! sync" -c "qa!"

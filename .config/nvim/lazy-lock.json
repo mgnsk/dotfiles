@@ -21,6 +21,7 @@
   "symbols-outline.nvim": { "branch": "master", "commit": "512791925d57a61c545bc303356e8a8f7869763c" },
   "sync-format.nvim": { "branch": "main", "commit": "ea58721c5fddcd49ff028654abb40e01c07fb088" },
   "table_gen.lua": { "branch": "master", "commit": "329a22cf136b64bda0a01ba9016d0f52d61309c8" },
+  "transparent.nvim": { "branch": "main", "commit": "2d8d650fc8a3b8da6a01031295547295eb473b7d" },
   "vim-autoclose": { "branch": "master", "commit": "a9a3b7384657bc1f60a963fd6c08c63fc48d61c3" },
   "vim-fugitive": { "branch": "master", "commit": "5b52a0f395065d6cb7b65a00a5e17eaf9ebd64d5" },
   "vim-gitgutter": { "branch": "master", "commit": "44dbd57dd19e8ec58b2a50c787c8ae7bb231c145" },

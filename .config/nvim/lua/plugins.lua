@@ -80,6 +80,13 @@ require("lazy").setup({
         end,
     },
     {
+        "xiyaowong/transparent.nvim",
+        config = function()
+            vim.g.transparent_enableda = true
+            require("transparent").setup({})
+        end,
+    },
+    {
         "norcalli/nvim-colorizer.lua",
         ft = { "lua", "html", "css", "less" },
         config = function()

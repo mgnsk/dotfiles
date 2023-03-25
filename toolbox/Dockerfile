@@ -94,7 +94,8 @@ RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --fail
 	golangci-lint-bin \
 	hadolint-bin \
 	phpstan \
-	phpactor
+	phpactor \
+	lscolors-git
 
 
 FROM toolbox-base AS go-tools

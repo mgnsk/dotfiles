@@ -71,7 +71,7 @@ bindsym $mod+Shift+q kill
 bindsym $mod+q kill
 
 #bindsym $mod+d exec wofi --show drun -i | xargs swaymsg exec --
-bindsym $mod+d exec j4-dmenu-desktop
+bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary
 
 # change focus
 bindsym {

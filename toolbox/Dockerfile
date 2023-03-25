@@ -6,9 +6,8 @@ ARG group=dev
 
 FROM archlinux:base-devel AS toolbox-base
 
-RUN pacman -Syyu --noconfirm
-
-RUN pacman -S --noconfirm --needed \
+RUN pacman -Syyu --noconfirm \
+	&& pacman -S --noconfirm --needed \
 	git \
 	unzip \
 	wget \
@@ -56,8 +55,8 @@ RUN pacman -S --noconfirm --needed \
 	rust \
 	rust-src \
 	rust-analyzer \
-	neovim
-	# && bash -c "yes | pacman -Scc"
+	neovim \
+	&& bash -c "yes | pacman -Scc"
 
 ARG uid
 ARG gid
@@ -86,7 +85,8 @@ FROM toolbox-base AS toolbox-aur
 
 RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
 	&& cd ~/.cache/paru-bin \
-	&& makepkg --noconfirm --syncdeps --install --clean
+	&& makepkg --noconfirm --syncdeps --install --clean \
+	&& rm -rf ~/.cache
 
 RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast \
 	fish-fzf \
@@ -95,7 +95,8 @@ RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --fail
 	hadolint-bin \
 	phpstan \
 	phpactor \
-	lscolors-git
+	lscolors-git \
+	&& rm -rf ~/.cache
 
 
 FROM toolbox-base AS go-tools
@@ -115,8 +116,9 @@ COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 WORKDIR /home/${user}/.tools
 
 RUN composer install --no-dev --no-cache --no-interaction --optimize-autoloader
-RUN nvim --headless -u NORC -c 'lua require("plugins")' -c "Lazy! sync" -c "qa!"
-
+RUN nvim --headless -u NORC -c 'lua require("plugins")' -c "Lazy! sync" -c "qa!" \
+	&& rm -rf ~/.cache ~/.local/state
+RUN fish -c "fish_update_completions"
 
 FROM toolbox-aur
 

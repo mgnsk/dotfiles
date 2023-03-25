@@ -77,7 +77,7 @@ tasks:
           --network host
           --userns=keep-id:uid=${container-uid},gid=${container-gid}
           --tmpfs /tmp:rw,exec,nosuid,nodev
-          --tmpfs /home/${container-user}/.local/state:rw,noexec,nosuid,nodev
+          --tmpfs /home/${container-user}/.local:rw,exec,nosuid,nodev
           --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev
           --volume toolbox-go:/home/${container-user}/go
           --volume toolbox-cargo:/home/${container-user}/cargo

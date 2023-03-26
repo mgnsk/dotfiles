@@ -70,8 +70,7 @@ bindsym $mod+Return exec foot
 bindsym $mod+Shift+q kill
 bindsym $mod+q kill
 
-#bindsym $mod+d exec wofi --show drun -i | xargs swaymsg exec --
-bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary
+bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='bemenu -i' --term='foot'
 
 # change focus
 bindsym {
@@ -246,7 +245,8 @@ exec light -N 5
 exec light -I
 exec "lxsession"
 exec "lxpolkit"
-exec "dbus-update-activation-environment --systemd DISPLAY"
+# TODO: why was this needed?
+# exec "dbus-update-activation-environment --systemd DISPLAY"
 # TODO: needed for fedora, test on arch
 exec /usr/libexec/geoclue-2.0/demos/agent
 exec "gammastep-indicator"

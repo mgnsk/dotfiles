@@ -28,6 +28,8 @@ set -gx ANSIBLE_NOCOWS 1
 
 set -gx GPG_TTY (tty)
 
+set -gx BEMENU_BACKEND wayland
+
 set -g fish_color_autosuggestion 585858
 set -g fish_color_command a1b56c
 set -g fish_color_comment f7ca88

@@ -120,6 +120,7 @@ RUN nvim --headless -u NORC -c 'lua require("plugins")' -c "Lazy! sync" -c "qa!"
 	&& rm -rf ~/.cache ~/.local/state
 RUN fish -c "fish_update_completions"
 
+
 FROM toolbox-aur
 
 ARG user

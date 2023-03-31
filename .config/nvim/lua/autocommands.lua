@@ -1,7 +1,3 @@
-vim.api.nvim_create_autocmd({ "CursorHold" }, {
-    callback = vim.diagnostic.open_float,
-})
-
 vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave" }, {
     callback = function()
         vim.o.relativenumber = true

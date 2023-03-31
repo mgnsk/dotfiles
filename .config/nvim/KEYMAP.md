@@ -49,6 +49,7 @@
 | `n`  | `,,`         | ` :let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR> ` | Open new terminal window to right                      |
 | `n`  | `,.`         | ` : `                                                                 | Command mode                                           |
 | `n`  | `K`          |                                                                       | Hover documentation                                    |
+| `n`  | `L`          |                                                                       | Hover diagnostic                                       |
 | `v`  | `Y`          | ` "+y<CR> `                                                           | Big yank (system clipboard)                            |
 | `n`  | `Y`          | ` y$ `                                                                | Nvim builtin                                           |
 | `o`  | `[%`         | ` <Plug>(MatchitOperationMultiBackward) `                             |                                                        |
@@ -58,11 +59,22 @@
 | `x`  | `]%`         | ` <Plug>(MatchitVisualMultiForward) `                                 |                                                        |
 | `n`  | `]%`         | ` <Plug>(MatchitNormalMultiForward) `                                 |                                                        |
 | `x`  | `a%`         | ` <Plug>(MatchitVisualTextObject) `                                   |                                                        |
+| `o`  | `aw`         | ` <Plug>WordMotion_aw `                                               |                                                        |
+| `x`  | `aw`         | ` <Plug>WordMotion_aw `                                               |                                                        |
+| `o`  | `b`          | ` <Plug>WordMotion_b `                                                |                                                        |
+| `x`  | `b`          | ` <Plug>WordMotion_b `                                                |                                                        |
+| `n`  | `b`          | ` <Plug>WordMotion_b `                                                |                                                        |
+| `o`  | `e`          | ` <Plug>WordMotion_e `                                                |                                                        |
+| `x`  | `e`          | ` <Plug>WordMotion_e `                                                |                                                        |
+| `n`  | `e`          | ` <Plug>WordMotion_e `                                                |                                                        |
 | `x`  | `gx`         | ` <Plug>NetrwBrowseXVis `                                             |                                                        |
 | `n`  | `gx`         | ` <Plug>NetrwBrowseX `                                                |                                                        |
 | `o`  | `g%`         | ` <Plug>(MatchitOperationBackward) `                                  |                                                        |
 | `x`  | `g%`         | ` <Plug>(MatchitVisualBackward) `                                     |                                                        |
 | `n`  | `g%`         | ` <Plug>(MatchitNormalBackward) `                                     |                                                        |
+| `o`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                        |
+| `x`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                        |
+| `n`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                        |
 | `n`  | `gcA`        |                                                                       | Comment insert end of line                             |
 | `n`  | `gcO`        |                                                                       | Comment insert above                                   |
 | `n`  | `gco`        |                                                                       | Comment insert below                                   |
@@ -78,8 +90,13 @@
 | `n`  | `gd`         |                                                                       | Goto definition                                        |
 | `n`  | `gk`         |                                                                       | Goto prev diagnostic                                   |
 | `n`  | `gj`         |                                                                       | Goto next diagnostic                                   |
+| `o`  | `iw`         | ` <Plug>WordMotion_iw `                                               |                                                        |
+| `x`  | `iw`         | ` <Plug>WordMotion_iw `                                               |                                                        |
 | `n`  | `qq`         |                                                                       | Kill buffer                                            |
 | `n`  | `tt`         | ` :let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR> ` | Open new terminal tab                                  |
+| `o`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                        |
+| `x`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                        |
+| `n`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                        |
 | `n`  | `y<C-G>`     | ` :<C-U>call setreg(v:register, fugitive#Object(@%))<CR> `            |                                                        |
 | `x`  | `<M-i>`      |                                                                       |                                                        |
 | `o`  | `<M-i>`      |                                                                       |                                                        |

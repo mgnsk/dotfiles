@@ -52,9 +52,7 @@ RUN pacman -Syyu --noconfirm \
 	php \
 	php-sqlite \
 	composer \
-	rust \
-	rust-src \
-	rust-analyzer \
+	rustup \
 	neovim \
 	&& bash -c "yes | pacman -Scc"
 
@@ -119,6 +117,8 @@ RUN composer install --no-dev --no-cache --no-interaction --optimize-autoloader
 RUN nvim --headless -u NORC -c 'lua require("plugins")' -c "Lazy! sync" -c "qa!" \
 	&& rm -rf ~/.cache ~/.local/state
 RUN fish -c "fish_update_completions"
+RUN rustup default nightly \
+	&& rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
 
 FROM toolbox-aur

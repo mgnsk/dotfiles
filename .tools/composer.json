@@ -6,6 +6,7 @@
         }
     },
     "require": {
-        "laravel/pint": "^1.6"
+        "laravel/pint": "^1.6",
+        "phpstan/phpstan": "^1.10"
     }
 }

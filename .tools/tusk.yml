@@ -5,14 +5,12 @@ tasks:
   install:
     usage: Install tools.
     run:
-      - task: _setup-rust
-      - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
-      - command: nvim --headless -u NORC -c 'lua require("plugins")' -c "Lazy! sync" -c "qa!"
-      - command: fish -c "fish_update_completions"
-      - command:
-
-  _setup-rust:
-    private: true
-    run:
       - command: rustup default nightly
       - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview
+      - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
+      - command: >
+          nvim --headless -u NORC
+          -c 'lua if not require("plugins") then os.exit(1) end'
+          -c 'lua local ok, result = pcall(vim.cmd, "Lazy! install"); if not ok then os.exit(1) end'
+          -c 'lua os.exit(0)'
+      # - command: fish -c "fish_update_completions"

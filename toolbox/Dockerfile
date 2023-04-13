@@ -91,7 +91,6 @@ RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --fail
 	buf-bin \
 	golangci-lint-bin \
 	hadolint-bin \
-	phpstan \
 	phpactor \
 	lscolors-git \
 	&& rm -rf ~/.cache
@@ -103,32 +102,42 @@ RUN go install -v github.com/rliebz/tusk@latest
 RUN go install -v github.com/goccmack/gocc@latest
 
 
-FROM toolbox-base AS dotfiles
+FROM toolbox-base AS rust-tools
+
+RUN rustup default nightly
+RUN rustup component add rustfmt rust-src clippy rust-analyzer-preview
+
+
+FROM toolbox-base AS php-tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools /home/${user}/.tools
+RUN composer -d /home/${user}/.tools install --no-dev --no-cache --no-interaction --optimize-autoloader
+
+
+FROM toolbox-base AS nvim-plugins
+
+COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
+RUN nvim --headless -u NORC \
+	-c 'lua if not require("plugins") then os.exit(1) end' \
+	-c 'lua local ok, result = pcall(vim.cmd, "Lazy! install"); if not ok then os.exit(1) end' \
+	-c 'lua os.exit(0)'
+
+
+FROM toolbox-aur
 
 ARG uid
 ARG gid
 ARG user
 
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
-
-WORKDIR /home/${user}/.tools
-
-RUN composer install --no-dev --no-cache --no-interaction --optimize-autoloader
-RUN nvim --headless -u NORC -c 'lua require("plugins")' -c "Lazy! sync" -c "qa!" \
-	&& rm -rf ~/.cache ~/.local/state
-RUN fish -c "fish_update_completions"
-RUN rustup default nightly \
-	&& rustup component add rustfmt rust-src clippy rust-analyzer-preview
-
-
-FROM toolbox-aur
-
-ARG user
-
-COPY --from=dotfiles /home/${user} /home/${user}
-COPY --from=go-tools /home/${user}/go/bin /home/${user}/go/bin
+RUN mkdir -p /home/${user}/go /home/${user}/.cargo
+COPY --from=go-tools --chown=${uid}:${gid} /home/${user}/go/bin /home/${user}/go/bin
+COPY --from=rust-tools /home/${user}/.rustup /home/${user}/.rustup
+COPY --from=php-tools /home/${user}/.tools/vendor /home/${user}/.tools/vendor
+COPY --from=nvim-plugins /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
 COPY ./etc/php /etc/php
 
+RUN fish -c "fish_update_completions"
 RUN sudo gpasswd -d ${user} wheel \
 	&& sudo rm /etc/sudoers.d/01-wheel
 

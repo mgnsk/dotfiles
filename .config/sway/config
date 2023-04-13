@@ -237,6 +237,7 @@ set $wallpapers_path $HOME/wallpapers
 output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
 for_window [app_id="foot"] opacity 0.97
+exec sway-fader --app_id="foot:0.7:0.97"
 
 for_window [class=".*"] border none
 
@@ -253,6 +254,7 @@ exec "gammastep-indicator"
 exec swaync
 exec "thunar --daemon"
 exec sway-audio-idle-inhibit
+exec nm-applet --indicator
 exec swayidle -w \
                 timeout 600 'swaylock -f -c 000000' \
                 timeout 1200 'swaymsg "output * dpms off"' \

@@ -66,4 +66,4 @@ The toolbox boots up in the `/workspaces` working directory which is bind mounte
 ## Technical notes
 
 The toolbox uses native overlay driver by default which has this problem: https://github.com/containers/podman/issues/16541
-Using the userspace `fuse-overlayfs` can avoid this has horrible performance during runtime.
+Using the userspace `fuse-overlayfs` can avoid this but has horrible performance during runtime.

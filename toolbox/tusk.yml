@@ -23,7 +23,32 @@ tasks:
       - command: podman run --rm hello-world
 
   build:
-    usage: Build the toolbox image.
+    usage: Build the production toolbox image.
+    options:
+      tmp:
+        default:
+          command: mktemp -d
+    run:
+      - when:
+          - exists: dotfiles
+          - command: git -C dotfiles pull
+      - when:
+          - not-exists: dotfiles
+          - command: git clone git@github.com:mgnsk/dotfiles.git dotfiles
+      - command: >
+          podman build --jobs=0
+          --build-arg uid=${container-uid}
+          --build-arg gid=${container-gid}
+          --build-arg user=${container-user}
+          --build-arg group=${container-group}
+          -t toolbox:latest
+          -f Dockerfile
+          .
+    finally:
+      - command: rm -rf ${tmp}
+
+  build-dev:
+    usage: Build the development toolbox image from host's dotfiles.
     options:
       tmp:
         default:

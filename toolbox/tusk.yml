@@ -106,7 +106,7 @@ tasks:
           --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev
           --volume toolbox-go:/home/${container-user}/go
           --volume toolbox-cargo:/home/${container-user}/.cargo
-          --volume ${host-home}/toolbox/workspaces:/workspaces:Z
+          --volume ./workspaces:/workspaces:Z
           --workdir /workspaces
           toolbox:latest
           fish

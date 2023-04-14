@@ -46,13 +46,41 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
         priority = 1000,
         build = function()
-            -- TODO: try to exit with code 1 on error
-            vim.cmd("TSInstallSync all")
+            local parsers = {
+                "bash",
+                "beancount",
+                "c",
+                "comment",
+                "cpp",
+                "css",
+                "dockerfile",
+                "glsl",
+                "go",
+                "html",
+                "javascript",
+                "lua",
+                "php",
+                "proto",
+                "python",
+                "rust",
+                "tlaplus",
+                "toml",
+                "twig",
+                "typescript",
+            }
+
+            for _, parser in ipairs(parsers) do
+                local ok, result = pcall(vim.cmd, string.format("TSInstallSync %s", parser))
+                if not ok then
+                    print(result)
+                    os.exit(1)
+                end
+            end
         end,
         config = function()
             require("nvim-treesitter.configs").setup({
                 highlight = { enable = true },
-                auto_install = true,
+                -- auto_install = true,
                 --incremental_selection = {enable = true},
                 -- textobjects = { enable = true },
             })
@@ -76,7 +104,9 @@ require("lazy").setup({
         "rktjmp/lush.nvim",
         priority = 1000,
         config = function()
-            vim.cmd("colorscheme codedarker")
+            if #(vim.api.nvim_list_uis()) > 0 then
+                vim.cmd("colorscheme codedarker")
+            end
         end,
     },
     {

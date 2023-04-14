@@ -109,6 +109,9 @@ RUN rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
 FROM toolbox-base AS php-tools
 
+ARG user
+
+RUN mkdir -p /home/${user}/.tools/vendor
 COPY /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
 COPY /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
 RUN composer -d /home/${user}/.tools install --no-dev --no-cache --no-interaction --optimize-autoloader
@@ -116,13 +119,16 @@ RUN composer -d /home/${user}/.tools install --no-dev --no-cache --no-interactio
 
 FROM toolbox-base AS nvim-plugins
 
+ARG uid
+ARG gid
 ARG user
 
 COPY /dotfiles/.config/nvim/lua/plugins.lua /home/${user}/.config/nvim/lua/plugins.lua
-COPY /dotfiles/.config/nvim/lazy-lock.json /home/${user}/.config/nvim/lazy-lock.json
+# TODO: can we keep the lockfile owned by root? https://github.com/folke/lazy.nvim/issues/727
+COPY --chown=${uid}:${gid} /dotfiles/.config/nvim/lazy-lock.json /home/${user}/.config/nvim/lazy-lock.json
 RUN nvim --headless -u NORC \
 	-c 'lua if not require("plugins") then os.exit(1) end' \
-	-c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then os.exit(1) end' \
+	-c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then print(result); os.exit(1) end' \
 	-c 'lua os.exit(0)'
 
 

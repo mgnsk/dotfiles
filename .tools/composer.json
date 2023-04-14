@@ -7,6 +7,7 @@
     },
     "require": {
         "laravel/pint": "^1.6",
-        "phpstan/phpstan": "^1.10"
+        "phpstan/phpstan": "^1.10",
+        "phpactor/phpactor": "^0.18.1"
     }
 }

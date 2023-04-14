@@ -91,7 +91,6 @@ RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --fail
 	buf-bin \
 	golangci-lint-bin \
 	hadolint-bin \
-	phpactor \
 	lscolors-git \
 	&& rm -rf ~/.cache
 
@@ -110,16 +109,20 @@ RUN rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
 FROM toolbox-base AS php-tools
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools /home/${user}/.tools
+COPY /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
+COPY /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
 RUN composer -d /home/${user}/.tools install --no-dev --no-cache --no-interaction --optimize-autoloader
 
 
 FROM toolbox-base AS nvim-plugins
 
-COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
+ARG user
+
+COPY /dotfiles/.config/nvim/lua/plugins.lua /home/${user}/.config/nvim/lua/plugins.lua
+COPY /dotfiles/.config/nvim/lazy-lock.json /home/${user}/.config/nvim/lazy-lock.json
 RUN nvim --headless -u NORC \
 	-c 'lua if not require("plugins") then os.exit(1) end' \
-	-c 'lua local ok, result = pcall(vim.cmd, "Lazy! install"); if not ok then os.exit(1) end' \
+	-c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then os.exit(1) end' \
 	-c 'lua os.exit(0)'
 
 

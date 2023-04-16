@@ -6,6 +6,7 @@ fish_add_path ~/.cargo/bin
 fish_add_path ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin
 fish_add_path ~/.luarocks/bin
 fish_add_path ~/.tools/vendor/bin
+fish_add_path ~/toolbox/bin
 
 set -gx SHELL "/usr/bin/fish"
 

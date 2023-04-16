@@ -85,6 +85,9 @@ tasks:
   # TODO: https://github.com/containers/podman/issues/16541
   sh:
     usage: Run a new toolbox shell.
+    args:
+      workspace:
+        usage: The absolute path for the workspace directory to run in.
     options:
       host-term:
         environment: TERM
@@ -106,7 +109,7 @@ tasks:
           --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev
           --volume toolbox-go:/home/${container-user}/go
           --volume toolbox-cargo:/home/${container-user}/.cargo
-          --volume ./workspaces:/workspaces:Z
-          --workdir /workspaces
+          --volume ${workspace}:${workspace}:Z
+          --workdir ${workspace}
           toolbox:latest
           fish

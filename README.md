@@ -51,17 +51,30 @@ tusk setup
 
 ## Build the image
 
+Build the podman image:
+
 ```sh
 tusk build
 ```
 
+Add the absolute path to `dotfiles/bin` directory to your PATH to use the `toolbox-run(1)` executable script.
+
+Get
+
 ## Run the toolbox
 
-```
-tusk sh
+Navigate to project directory and run the toolbox:
+
+```sh
+cd ~/Projects/project1
+toolbox-run .
 ```
 
-The toolbox boots up in the `/workspaces` working directory which is bind mounted from `dotfiles/toolbox/workspaces` directory.
+or equivalently:
+
+```sh
+toolbox-run ~/Projects/project1
+```
 
 ## Technical notes
 

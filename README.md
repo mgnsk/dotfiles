@@ -59,8 +59,6 @@ tusk build
 
 Add the absolute path to `dotfiles/bin` directory to your PATH to use the `toolbox-run(1)` executable script.
 
-Get
-
 ## Run the toolbox
 
 Navigate to project directory and run the toolbox:

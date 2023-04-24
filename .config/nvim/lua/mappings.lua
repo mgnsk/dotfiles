@@ -113,8 +113,72 @@ for i = 1, 9 do
 end
 set("n", "<leader>0", ":tablast<CR>", { desc = "Goto last tab" })
 
-set("n", "gj", vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
-set("n", "gk", vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic" })
+local function reverse(t)
+    for i = 1, math.floor(#t / 2) do
+        local j = #t - i + 1
+        t[i], t[j] = t[j], t[i]
+    end
+end
+
+local function sort_loclist(loclist)
+    table.sort(loclist, function(a, b)
+        if a.lnum < b.lnum then
+            return true
+        elseif a.lnum > b.lnum then
+            return false
+        end
+
+        return a.col < b.col
+    end)
+end
+
+set("n", "gj", function()
+    if vim.diagnostic.get_next() then
+        vim.diagnostic.goto_next()
+        return
+    end
+
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local bufnr = vim.api.nvim_get_current_buf()
+    local loclist = vim.fn.getloclist(0)
+    sort_loclist(loclist)
+
+    for _, entry in pairs(loclist) do
+        if entry.bufnr == bufnr then
+            if entry.lnum == row and entry.col > col or entry.lnum > row then
+                vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
+                return
+            end
+        end
+    end
+
+    vim.api.nvim_echo({ { "No more valid diagnostics or location list items to move to", "WarningMsg" } }, true, {})
+end, { desc = "Goto next diagnostic or location list item in current buffer" })
+
+set("n", "gk", function()
+    if vim.diagnostic.get_prev() then
+        vim.diagnostic.goto_prev()
+        return
+    end
+
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local bufnr = vim.api.nvim_get_current_buf()
+    local loclist = vim.fn.getloclist(0)
+    sort_loclist(loclist)
+    reverse(loclist)
+
+    for _, entry in pairs(loclist) do
+        if entry.bufnr == bufnr then
+            if entry.lnum == row and entry.col < col or entry.lnum < row then
+                vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
+                return
+            end
+        end
+    end
+
+    vim.api.nvim_echo({ { "No more valid diagnostics or location list items to move to", "WarningMsg" } }, true, {})
+end, { desc = "Goto prev diagnostic or location list item in current buffer" })
+
 set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
 set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })

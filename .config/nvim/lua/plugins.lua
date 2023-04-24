@@ -67,6 +67,7 @@ require("lazy").setup({
                 "toml",
                 "twig",
                 "typescript",
+                "yaml",
             }
 
             for _, parser in ipairs(parsers) do
@@ -170,10 +171,7 @@ require("lazy").setup({
         end,
     },
     {
-        "numToStr/Comment.nvim",
-        config = function()
-            require("Comment").setup()
-        end,
+        "tpope/vim-commentary",
     },
     {
         "ibhagwan/fzf-lua",

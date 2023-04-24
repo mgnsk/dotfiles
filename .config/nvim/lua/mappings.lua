@@ -139,6 +139,10 @@ local function escape_backticks(s)
     return string.format("%s %s %s", ticks, s, ticks)
 end
 
+vim.api.nvim_create_user_command("MarkdownPreview", function()
+    vim.cmd("Glow")
+end, { desc = "Markdown preview" })
+
 vim.api.nvim_create_user_command("GenerateKeymapDocs", function()
     -- Generate a table.
     local table_gen = require("table_gen")

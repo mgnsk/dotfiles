@@ -75,15 +75,11 @@
 | `o`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                        |
 | `x`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                        |
 | `n`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                        |
-| `n`  | `gcA`        |                                                                       | Comment insert end of line                             |
-| `n`  | `gcO`        |                                                                       | Comment insert above                                   |
-| `n`  | `gco`        |                                                                       | Comment insert below                                   |
-| `x`  | `gb`         | ` <Plug>(comment_toggle_blockwise_visual) `                           | Comment toggle blockwise (visual)                      |
-| `x`  | `gc`         | ` <Plug>(comment_toggle_linewise_visual) `                            | Comment toggle linewise (visual)                       |
-| `n`  | `gbc`        |                                                                       | Comment toggle current block                           |
-| `n`  | `gcc`        |                                                                       | Comment toggle current line                            |
-| `n`  | `gb`         | ` <Plug>(comment_toggle_blockwise) `                                  | Comment toggle blockwise                               |
-| `n`  | `gc`         | ` <Plug>(comment_toggle_linewise) `                                   | Comment toggle linewise                                |
+| `n`  | `gcu`        | ` <Plug>Commentary<Plug>Commentary `                                  |                                                        |
+| `n`  | `gcc`        | ` <Plug>CommentaryLine `                                              |                                                        |
+| `o`  | `gc`         | ` <Plug>Commentary `                                                  |                                                        |
+| `n`  | `gc`         | ` <Plug>Commentary `                                                  |                                                        |
+| `x`  | `gc`         | ` <Plug>Commentary `                                                  |                                                        |
 | `n`  | `gr`         |                                                                       | Show references                                        |
 | `n`  | `gD`         |                                                                       | Show implementations                                   |
 | `n`  | `ga`         |                                                                       | Code action                                            |

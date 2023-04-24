@@ -3,8 +3,66 @@ interpreter: bash -eu -o pipefail -c
 
 tasks:
   install:
-    usage: Install tools.
+    usage: Install all packages on the host machine. These commands are effectively duplicated in ~/toolbox/Dockerfile.
     run:
+      - command: >
+          sudo pacman -S --noconfirm --needed
+          git
+          unzip
+          wget
+          tmux
+          fish
+          tree
+          ripgrep
+          fd
+          bat
+          fzf
+          skim
+          parallel
+          moreutils
+          earlyoom
+          tidy
+          prettier
+          typescript-language-server
+          vscode-html-languageserver
+          vscode-css-languageserver
+          npm
+          eslint
+          go
+          gopls
+          go-tools
+          revive
+          python
+          ansible-lint
+          ansible-language-server
+          yamllint
+          shellcheck
+          shfmt
+          bash-language-server
+          brotli
+          direnv
+          luarocks
+          lua-language-server
+          luacheck
+          stylua
+          pgformatter
+          ruby-mdl
+          rtmidi
+          php
+          php-sqlite
+          composer
+          rustup
+          neovim
+      - command: >
+          yay -S --noconfirm --needed --batchinstall --removemake --cleanafter
+          fish-fzf
+          buf-bin
+          golangci-lint-bin
+          hadolint-bin
+          lscolors-git
+      - command: go install -v github.com/rliebz/tusk@latest
+      - command: go install -v github.com/goccmack/gocc@latest
+      - command: go install github.com/mgnsk/sway-fader@latest
       - command: rustup default nightly
       - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview
       - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader

@@ -81,12 +81,12 @@ USER ${user}
 
 FROM toolbox-base AS toolbox-aur
 
-RUN git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru-bin \
-	&& cd ~/.cache/paru-bin \
+RUN git clone https://aur.archlinux.org/yay-bin.git ~/.cache/yay-bin \
+	&& cd ~/.cache/yay-bin \
 	&& makepkg --noconfirm --syncdeps --install --clean \
 	&& rm -rf ~/.cache
 
-RUN paru -S --noconfirm --needed --batchinstall --removemake --cleanafter --failfast \
+RUN yay -S --noconfirm --needed --batchinstall --removemake --cleanafter \
 	fish-fzf \
 	buf-bin \
 	golangci-lint-bin \

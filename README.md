@@ -61,7 +61,7 @@ Add the absolute path to `dotfiles/bin` directory to your PATH to use the `toolb
 
 ## Run the toolbox
 
-Navigate to project directory and run the toolbox:
+Navigate to a project directory and run the toolbox:
 
 ```sh
 cd ~/Projects/project1

@@ -1,6 +1,11 @@
 ---
 interpreter: bash -eu -o pipefail -c
 
+options:
+  cache:
+    default:
+      command: echo "$HOME/.cache"
+
 tasks:
   install:
     usage: Install all packages on the host machine. These commands are effectively duplicated in ~/toolbox/Dockerfile.
@@ -53,6 +58,19 @@ tasks:
           composer
           rustup
           neovim
+
+      - when:
+          - exists: ${cache}/yay-bin
+        command: git -C ${cache}/yay-bin pull
+
+      - when:
+          - not-exists: ${cache}/yay-bin
+        command: git clone https://aur.archlinux.org/yay-bin.git ${cache}/yay-bin
+
+      - command:
+          dir: ${cache}/yay-bin
+          exec: makepkg --noconfirm --needed --syncdeps --install --clean
+
       - command: >
           yay -S --noconfirm --needed --batchinstall --removemake --cleanafter
           fish-fzf
@@ -60,15 +78,20 @@ tasks:
           golangci-lint-bin
           hadolint-bin
           lscolors-git
+
       - command: go install -v github.com/rliebz/tusk@latest
       - command: go install -v github.com/goccmack/gocc@latest
       - command: go install github.com/mgnsk/sway-fader@latest
+
       - command: rustup default nightly
       - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview
+
       - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
+
       - command: >
           nvim --headless -u NORC
           -c 'lua if not require("plugins") then os.exit(1) end'
           -c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then print(result); os.exit(1) end'
           -c 'lua os.exit(0)'
+
       - command: fish -c "fish_update_completions"

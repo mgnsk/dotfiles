@@ -52,7 +52,7 @@ tasks:
       - command:
           dir: ${host-home}
           exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${host-home}/toolbox/dotfiles
-      - task: build
+      - task: _build
 
   # TODO: https://github.com/containers/podman/issues/16541
   sh:

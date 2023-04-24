@@ -22,65 +22,37 @@ tasks:
       - command: podman system migrate
       - command: podman run --rm hello-world
 
+  _build:
+    private: true
+    run:
+      - command: >
+          podman build --jobs=0
+          --build-arg uid=${container-uid}
+          --build-arg gid=${container-gid}
+          --build-arg user=${container-user}
+          --build-arg group=${container-group}
+          -t toolbox:latest
+          -f Dockerfile
+          .
+
   build:
     usage: Build the production toolbox image.
-    options:
-      tmp:
-        default:
-          command: mktemp -d
     run:
-      - when:
-          - exists: dotfiles
-          - command: git -C dotfiles pull
-      - when:
-          - not-exists: dotfiles
-          - command: git clone git@github.com:mgnsk/dotfiles.git dotfiles
-      - command: >
-          podman build --jobs=0
-          --build-arg uid=${container-uid}
-          --build-arg gid=${container-gid}
-          --build-arg user=${container-user}
-          --build-arg group=${container-group}
-          -t toolbox:latest
-          -f Dockerfile
-          .
-    finally:
-      - command: rm -rf ${tmp}
+      - command: rm -rf dotfiles
+      - command: git clone git@github.com:mgnsk/dotfiles.git dotfiles
+      # Remove git dir to keep build.dev podman cache if any.
+      - command: rm -rf dotfiles/.git
+      - task: _build
 
-  build-dev:
+  build.dev:
     usage: Build the development toolbox image from host's dotfiles.
-    options:
-      tmp:
-        default:
-          command: mktemp -d
     run:
+      - command: rm -rf dotfiles
+      - command: mkdir -p dotfiles
       - command:
           dir: ${host-home}
-          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${tmp}
-      - command: mkdir -p ${host-home}/toolbox/dotfiles
-      - command: >
-          rsync -av
-          --checksum
-          --no-perms
-          --no-owner
-          --no-group
-          --omit-dir-times
-          --delete-after
-          --delay-updates
-          --exclude=toolbox
-          ${tmp}/
-          ${host-home}/toolbox/dotfiles
-      - command: >
-          podman build --jobs=0
-          --build-arg uid=${container-uid}
-          --build-arg gid=${container-gid}
-          --build-arg user=${container-user}
-          --build-arg group=${container-group}
-          -t toolbox:latest
-          -f Dockerfile
-          .
-    finally:
-      - command: rm -rf ${tmp}
+          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${host-home}/toolbox/dotfiles
+      - task: build
 
   # TODO: https://github.com/containers/podman/issues/16541
   sh:

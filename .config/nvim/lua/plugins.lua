@@ -44,7 +44,6 @@ end
 require("lazy").setup({
     {
         "nvim-treesitter/nvim-treesitter",
-        priority = 1000,
         build = function()
             local parsers = {
                 "bash",
@@ -83,15 +82,23 @@ require("lazy").setup({
                 highlight = {
                     enable = true,
                     disable = function(lang, buf)
-                        local max_filesize = 100 * 1024 -- 100 KB
+                        local max_filesize = 500 * 1024
                         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
                         if ok and stats and stats.size > max_filesize then
                             return true
                         end
                     end,
                 },
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        init_selection = "<cr>",
+                        node_incremental = "<tab>",
+                        scope_incremental = "<cr>",
+                        node_decremental = "<s-tab>",
+                    },
+                },
                 -- auto_install = true,
-                --incremental_selection = {enable = true},
                 -- textobjects = { enable = true },
             })
         end,
@@ -112,7 +119,6 @@ require("lazy").setup({
     },
     {
         "rktjmp/lush.nvim",
-        priority = 1000,
         config = function()
             if #(vim.api.nvim_list_uis()) > 0 then
                 vim.cmd("colorscheme codedarker")

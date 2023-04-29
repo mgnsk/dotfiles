@@ -81,7 +81,7 @@ tasks:
 
       - command: go install -v github.com/rliebz/tusk@latest
       - command: go install -v github.com/goccmack/gocc@latest
-      - command: go install github.com/mgnsk/sway-fader@latest
+      - command: go install -v github.com/mgnsk/sway-fader@latest
 
       - command: rustup default nightly
       - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview

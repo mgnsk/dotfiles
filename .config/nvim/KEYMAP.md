@@ -72,14 +72,14 @@
 | `o`  | `g%`         | ` <Plug>(MatchitOperationBackward) `                                  |                                                              |
 | `x`  | `g%`         | ` <Plug>(MatchitVisualBackward) `                                     |                                                              |
 | `n`  | `g%`         | ` <Plug>(MatchitNormalBackward) `                                     |                                                              |
+| `o`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
+| `x`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
+| `n`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
 | `n`  | `gcu`        | ` <Plug>Commentary<Plug>Commentary `                                  |                                                              |
 | `n`  | `gcc`        | ` <Plug>CommentaryLine `                                              |                                                              |
 | `o`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
 | `n`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
 | `x`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
-| `o`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
-| `x`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
-| `n`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
 | `n`  | `gr`         |                                                                       | Show references                                              |
 | `n`  | `gD`         |                                                                       | Show implementations                                         |
 | `n`  | `ga`         |                                                                       | Code action                                                  |

@@ -55,6 +55,9 @@ require("lazy").setup({
                 "dockerfile",
                 "glsl",
                 "go",
+                "gomod",
+                "gosum",
+                "gowork",
                 "html",
                 "javascript",
                 "lua",
@@ -70,7 +73,7 @@ require("lazy").setup({
             }
 
             for _, parser in ipairs(parsers) do
-                local ok, result = pcall(vim.cmd, string.format("TSInstallSync %s", parser))
+                local ok, result = pcall(vim.cmd, string.format("TSUpdateSync %s", parser))
                 if not ok then
                     print(result)
                     os.exit(1)

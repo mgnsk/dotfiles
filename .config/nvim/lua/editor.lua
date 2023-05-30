@@ -15,12 +15,20 @@ vim.o.wildmenu = true
 vim.o.scrolloff = 999
 vim.o.wrap = false
 vim.o.inccommand = "split"
+vim.o.encoding = "UTF-8"
+vim.o.pastetoggle = "<F2>"
+vim.o.path = vim.o.path .. "**"
+vim.o.shell = os.getenv("SHELL")
 -- Open files in new tab.
 vim.g.netrw_browse_split = 3
 -- Tree view.
 vim.g.netrw_liststyle = 3
 vim.g.gitgutter_sign_columns_always = 1
 
--- vim.cmd("set list") -- visible whitespace
+vim.cmd("set list") -- visible whitespace
 vim.cmd("set lcs+=space:·")
 vim.cmd("set switchbuf+=newtab")
+vim.cmd("syntax on")
+vim.cmd("set t_ut=")
+-- TODO what does this do?
+--vim.cmd("set noruler")

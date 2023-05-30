@@ -46,7 +46,6 @@ RUN pacman -Syyu --noconfirm \
 	lua-language-server \
 	luacheck \
 	stylua \
-	pgformatter \
 	ruby-mdl \
 	rtmidi \
 	php \

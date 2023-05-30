@@ -65,6 +65,7 @@ require("lazy").setup({
                 "proto",
                 "python",
                 "rust",
+                "sql",
                 "tlaplus",
                 "toml",
                 "twig",
@@ -174,7 +175,6 @@ require("lazy").setup({
                 go = { "goimports", "-w" },
                 rust = { "rustfmt" },
                 sh = { "shfmt", "-w" },
-                sql = { "pg_format", "-i", "--type-case", "0" },
                 php = { "pint" },
             })
         end,

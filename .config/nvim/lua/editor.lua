@@ -19,6 +19,7 @@ vim.o.encoding = "UTF-8"
 vim.o.pastetoggle = "<F2>"
 vim.o.path = vim.o.path .. "**"
 vim.o.shell = os.getenv("SHELL")
+-- vim.o.spell = true
 -- Open files in new tab.
 vim.g.netrw_browse_split = 3
 -- Tree view.

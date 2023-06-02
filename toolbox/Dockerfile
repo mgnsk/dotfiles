@@ -4,6 +4,7 @@ ARG user=dev
 ARG group=dev
 
 
+# System packages and user.
 FROM archlinux:base-devel AS toolbox-base
 
 RUN pacman -Syyu --noconfirm \
@@ -78,6 +79,7 @@ RUN if grep -q "${group}:" /etc/group; then \
 USER ${user}
 
 
+# AUR packages.
 FROM toolbox-base AS toolbox-aur
 
 RUN git clone https://aur.archlinux.org/yay-bin.git ~/.cache/yay-bin \
@@ -94,18 +96,21 @@ RUN yay -S --noconfirm --needed --batchinstall --removemake --cleanafter \
 	&& rm -rf ~/.cache
 
 
+# Go packages.
 FROM toolbox-base AS go-tools
 
 RUN go install -v github.com/rliebz/tusk@latest
 RUN go install -v github.com/goccmack/gocc@latest
 
 
+# Rust installation and packages.
 FROM toolbox-base AS rust-tools
 
 RUN rustup default nightly
 RUN rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
 
+# PHP packages.
 FROM toolbox-base AS php-tools
 
 ARG user
@@ -116,6 +121,18 @@ COPY /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
 RUN composer -d /home/${user}/.tools install --no-dev --no-cache --no-interaction --optimize-autoloader
 
 
+# Javascript packages.
+FROM toolbox-base AS js-tools
+
+ARG user
+
+RUN mkdir -p /home/${user}/.tools/node_modules
+COPY /dotfiles/.tools/package.json /home/${user}/.tools/package.json
+COPY /dotfiles/.tools/package-lock.json /home/${user}/.tools/package-lock.json
+RUN cd /home/${user}/.tools && npm ci
+
+
+# Neovim plugins.
 FROM toolbox-base AS nvim-plugins
 
 ARG uid
@@ -131,6 +148,7 @@ RUN nvim --headless -u NORC \
 	-c 'lua os.exit(0)'
 
 
+# Final image.
 FROM toolbox-aur
 
 ARG uid
@@ -142,6 +160,7 @@ RUN mkdir -p /home/${user}/go /home/${user}/.cargo
 COPY --from=go-tools --chown=${uid}:${gid} /home/${user}/go/bin /home/${user}/go/bin
 COPY --from=rust-tools /home/${user}/.rustup /home/${user}/.rustup
 COPY --from=php-tools /home/${user}/.tools/vendor /home/${user}/.tools/vendor
+COPY --from=js-tools /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-plugins /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
 COPY ./etc/php /etc/php
 

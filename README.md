@@ -12,7 +12,7 @@ $ config config status.showUntrackedFiles no
 $ config reset --hard origin/master
 ```
 
-[Neovim keymap](.config/nvim/KEYMAP.md)
+[Neovim keymap](.config/nvim/README.md)
 
 # Toolbox
 

@@ -376,4 +376,10 @@ require("lazy").setup({
             }
         end,
     },
+    {
+        "ryuichiroh/vim-cspell",
+        init = function()
+            vim.g.cspell_disable_autogroup = true
+        end,
+    },
 })

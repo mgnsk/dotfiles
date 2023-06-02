@@ -86,6 +86,7 @@ tasks:
       - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
       - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
+      - command: npm ci
 
       - command: >
           nvim --headless -u NORC

@@ -115,6 +115,7 @@ local codedarker = lush(function()
         SpellCap({ SpellBad }),
         SpellRare({ SpellBad }),
         SpellLocal({ SpellBad }),
+        CSpellBad({ SpellBad }),
         GitGutterAdd({ fg = cdGreen }),
         GitGutterChange({ fg = cdOrange }),
         GitGutterDelete({ fg = cdRed }),

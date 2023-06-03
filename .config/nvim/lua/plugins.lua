@@ -159,6 +159,7 @@ require("lazy").setup({
                     ["@type.builtin"] = { fg = c.vscBlueGreen, bg = "NONE" },
                     ["@constant.builtin"] = { fg = c.vscYellowOrange, bg = "NONE" },
                     ["@constant"] = { link = "@variable" },
+                    ["@constructor"] = { fg = c.vscFront, bg = "NONE" }, -- fixes some brackets
                 },
             })
             vscode.load()

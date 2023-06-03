@@ -54,6 +54,7 @@ RUN pacman -Syyu --noconfirm \
 	composer \
 	rustup \
 	neovim \
+	man \
 	&& bash -c "yes | pacman -Scc"
 
 ARG uid

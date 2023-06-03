@@ -7,7 +7,7 @@
   "cmp-nvim-lua": { "branch": "main", "commit": "f12408bdb54c39c23e67cab726264c10db33ada8" },
   "fzf-lua": { "branch": "main", "commit": "0f953fd7a35d22e1409d5ce77bbacef9cf07e2cb" },
   "glow.nvim": { "branch": "main", "commit": "bbd0473d72a45094495ee5600b5577823543eefe" },
-  "lazy.nvim": { "branch": "main", "commit": "9223c1aa200a8c329053f9e2ca0980ead56059d6" },
+  "lazy.nvim": { "branch": "main", "commit": "dbb2b609f66486251b51c79a7a1d275887413e8e" },
   "lsp_signature.nvim": { "branch": "master", "commit": "17ff7a405fea8376b015b8ea7910d2e59958bf68" },
   "neodev.nvim": { "branch": "main", "commit": "13872b2e3bfe4e7c76a0fd6010bbb466f3a84f91" },
   "neomake": { "branch": "master", "commit": "584f882b9f991245374e7e7d7d1f78bae90b7a35" },
@@ -25,7 +25,7 @@
   "vim-commentary": { "branch": "master", "commit": "e87cd90dc09c2a203e13af9704bd0ef79303d755" },
   "vim-cspell": { "branch": "main", "commit": "1aa1cb03420633196168e5144ad8b74a33b80262" },
   "vim-fugitive": { "branch": "master", "commit": "5f0d280b517cacb16f59316659966c7ca5e2bea2" },
-  "vim-gitgutter": { "branch": "master", "commit": "621b9e77ff14a34bc85d8ecc88f449396e8c01b9" },
+  "vim-gitgutter": { "branch": "master", "commit": "7d425ff4b90060578c49eb639f61bc79b5047e21" },
   "vim-illuminate": { "branch": "master", "commit": "a2907275a6899c570d16e95b9db5fd921c167502" },
   "vim-wordmotion": { "branch": "master", "commit": "81d9bd298376ab0dc465c85d55afa4cb8d5f47a1" },
   "vscode.nvim": { "branch": "main", "commit": "3ae7e188f0b58b29bc1b5d3698e47ce54f51caf9" }

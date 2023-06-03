@@ -156,10 +156,10 @@ require("lazy").setup({
                     TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
                     ["@namespace"] = { fg = c.vscLightBlue, bg = "NONE" },
                     ["@keyword.function"] = { fg = c.vscPink, bg = "NONE" },
+                    ["@function.macro"] = { fg = c.vscPink, bg = "NONE" },
                     ["@type.builtin"] = { fg = c.vscBlueGreen, bg = "NONE" },
                     ["@constant.builtin"] = { fg = c.vscYellowOrange, bg = "NONE" },
                     ["@constant"] = { link = "@variable" },
-                    ["@constructor"] = { fg = c.vscFront, bg = "NONE" }, -- fixes some brackets
                 },
             })
             vscode.load()
@@ -333,10 +333,14 @@ require("lazy").setup({
             "neovim/nvim-lspconfig",
         },
         config = function()
-            require("rust-tools").setup({
+            local rt = require("rust-tools")
+            rt.setup({
                 server = {
                     capabilities = capabilities,
-                    on_attach = on_attach,
+                    on_attach = function(client, bufnr)
+                        client.server_capabilities.semanticTokensProvider = nil
+                        on_attach(client, bufnr)
+                    end,
                 },
             })
         end,

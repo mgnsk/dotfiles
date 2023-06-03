@@ -44,22 +44,18 @@ function _G.git_status_line()
     return table.concat(s, " ")
 end
 
-local function status_line()
-    return table.concat({
-        "%#LineNr#",
-        "%{v:lua.git_status_line()}",
-        "%#LineNr#",
-        " %m",
-        " %f",
-        "%=",
-        "%#LineNr#",
-        " %y",
-        " %{&fileencoding?&fileencoding:&encoding}",
-        "[%{&fileformat}]",
-        " %{v:lua.file_size()}",
-        " %p%%",
-        " %l:%c",
-    })
-end
-
-vim.opt.statusline = status_line()
+vim.opt.statusline = table.concat({
+    "%#LineNr#",
+    "%{v:lua.git_status_line()}",
+    "%#LineNr#",
+    " %m",
+    " %f",
+    "%=",
+    "%#LineNr#",
+    " %y",
+    " %{&fileencoding?&fileencoding:&encoding}",
+    "[%{&fileformat}]",
+    " %{v:lua.file_size()}",
+    " %p%%",
+    " %l:%c",
+})

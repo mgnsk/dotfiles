@@ -57,7 +57,7 @@ Build the podman image:
 tusk build
 ```
 
-Add the absolute path to `dotfiles/bin` directory to your PATH to use the `toolbox-run(1)` executable script.
+Add the absolute path to `dotfiles/bin` directory to your PATH to use the `toolbox-run` executable script.
 
 ## Run the toolbox
 

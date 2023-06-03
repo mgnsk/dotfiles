@@ -49,6 +49,7 @@
 | `n`  | `,v`         | ` :vnew<CR> `                                                         | Open new window to right                                     |
 | `n`  | `,,`         | ` :let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR> ` | Open new terminal window to right                            |
 | `n`  | `,.`         | ` : `                                                                 | Command mode                                                 |
+| `n`  | `,<F5>`      |                                                                       | Toggle undo tree                                             |
 | `n`  | `K`          |                                                                       | Hover documentation                                          |
 | `n`  | `L`          |                                                                       | Hover diagnostic                                             |
 | `v`  | `Y`          | ` "+y<CR> `                                                           | Big yank (system clipboard)                                  |

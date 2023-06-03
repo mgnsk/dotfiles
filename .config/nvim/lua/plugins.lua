@@ -240,8 +240,11 @@ require("lazy").setup({
         end,
     },
     {
-        "Townk/vim-autoclose", -- TODO: check out alternatives
+        "windwp/nvim-autopairs",
         event = "InsertEnter",
+        config = function()
+            require("nvim-autopairs").setup({})
+        end,
     },
     {
         "ray-x/lsp_signature.nvim",
@@ -349,32 +352,42 @@ require("lazy").setup({
         dependencies = {
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-nvim-lsp-signature-help",
             "hrsh7th/cmp-nvim-lua",
-            "hrsh7th/cmp-path",
+            "FelipeLema/cmp-async-path",
         },
         enabled = not os.getenv("NVIM_DIFF"),
         config = function()
             local cmp = require("cmp")
             cmp.setup({
-                snippet = false,
+                snippet = {
+                    expand = function(args)
+                        -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+                        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+                        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+                    end,
+                },
                 sources = {
                     { name = "nvim_lsp" },
+                    { name = "nvim_lsp_signature_help" },
                     { name = "buffer" },
                     { name = "nvim_lua" },
-                    { name = "path" },
+                    { name = "async_path" },
                 },
                 sorting = {
                     comparators = {
+                        cmp.config.compare.exact,
                         cmp.config.compare.score,
                         cmp.config.compare.offset,
                     },
                 },
                 mapping = {
                     ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-                    ["<CR>"] = cmp.mapping.confirm({
-                        behavior = cmp.ConfirmBehavior.Replace,
+                    ["<CR>"] = cmp.mapping(cmp.mapping.confirm({
+                        behavior = cmp.ConfirmBehavior.Insert,
                         select = true,
-                    }),
+                    })),
                 },
             })
         end,

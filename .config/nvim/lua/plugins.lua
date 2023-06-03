@@ -64,6 +64,7 @@ require("lazy").setup({
                 "php",
                 "proto",
                 "python",
+                "query",
                 "rust",
                 "sql",
                 "tlaplus",
@@ -108,6 +109,12 @@ require("lazy").setup({
         end,
     },
     {
+        "nvim-treesitter/playground",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+        },
+    },
+    {
         "RRethy/vim-illuminate",
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
@@ -145,6 +152,12 @@ require("lazy").setup({
                     TabLine = { fg = c.vscGray, bg = bg },
                     TabLineFill = { fg = c.vscGray, bg = bg },
                     TabLineSel = { fg = c.vscFront, bg = bg },
+                    Type = { fg = c.vscBlueGreen, bg = "NONE" },
+                    TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
+                    ["@namespace"] = { fg = c.vscLightBlue, bg = "NONE" },
+                    ["@keyword.function"] = { fg = c.vscPink, bg = "NONE" },
+                    ["@type.builtin"] = { fg = c.vscBlueGreen, bg = "NONE" },
+                    ["@constant.builtin"] = { fg = c.vscYellowOrange, bg = "NONE" },
                 },
             })
             vscode.load()

@@ -7,7 +7,3 @@ local swapdir = vim.fn.stdpath("state") .. "/swap//"
 vim.fn.mkdir(swapdir, "p")
 vim.o.directory = swapdir
 vim.o.swapfile = true
-
--- Don't need backup as we already have swap and persistent undo.
-vim.o.backup = false
-vim.o.writebackup = false

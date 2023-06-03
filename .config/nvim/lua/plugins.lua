@@ -130,7 +130,7 @@ require("lazy").setup({
     },
     {
         "Mofiqul/vscode.nvim",
-        enabled = #(vim.api.nvim_list_uis()) > 0,
+        cond = #(vim.api.nvim_list_uis()) > 0,
         config = function()
             vim.o.background = "dark"
 
@@ -154,6 +154,7 @@ require("lazy").setup({
                     TabLineSel = { fg = c.vscFront, bg = bg },
                     Type = { fg = c.vscBlueGreen, bg = "NONE" },
                     TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
+                    QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },
                     ["@namespace"] = { fg = c.vscLightBlue, bg = "NONE" },
                     ["@keyword.function"] = { fg = c.vscPink, bg = "NONE" },
                     ["@function.macro"] = { fg = c.vscPink, bg = "NONE" },
@@ -433,4 +434,5 @@ require("lazy").setup({
             vim.g.cspell_disable_autogroup = true
         end,
     },
+    "mbbill/undotree",
 })

@@ -12,6 +12,8 @@ set("t", "jj", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
 set("t", "<Esc>", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
 set("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 
+set("n", "<leader><F5>", vim.cmd.UndotreeToggle)
+
 set("n", "qq", function()
     local buf_count = #(vim.fn.getbufinfo({ buflisted = 1 }))
 

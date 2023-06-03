@@ -22,6 +22,7 @@
   "symbols-outline.nvim": { "branch": "master", "commit": "512791925d57a61c545bc303356e8a8f7869763c" },
   "sync-format.nvim": { "branch": "main", "commit": "ea58721c5fddcd49ff028654abb40e01c07fb088" },
   "table_gen.lua": { "branch": "master", "commit": "329a22cf136b64bda0a01ba9016d0f52d61309c8" },
+  "undotree": { "branch": "master", "commit": "485f01efde4e22cb1ce547b9e8c9238f36566f21" },
   "vim-commentary": { "branch": "master", "commit": "e87cd90dc09c2a203e13af9704bd0ef79303d755" },
   "vim-cspell": { "branch": "main", "commit": "1aa1cb03420633196168e5144ad8b74a33b80262" },
   "vim-fugitive": { "branch": "master", "commit": "5f0d280b517cacb16f59316659966c7ca5e2bea2" },

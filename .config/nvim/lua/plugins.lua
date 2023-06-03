@@ -122,18 +122,32 @@ require("lazy").setup({
         end,
     },
     {
-        "rktjmp/lush.nvim",
+        "Mofiqul/vscode.nvim",
+        enabled = #(vim.api.nvim_list_uis()) > 0,
         config = function()
-            if #(vim.api.nvim_list_uis()) > 0 then
-                vim.cmd("colorscheme codedarker")
-            end
-        end,
-    },
-    {
-        "xiyaowong/transparent.nvim",
-        config = function()
-            vim.g.transparent_enableda = true
-            require("transparent").setup({})
+            vim.o.background = "dark"
+
+            local vscode = require("vscode")
+            local c = require("vscode.colors").get_colors()
+            local bg = "#101010"
+
+            vscode.setup({
+                transparent = true,
+                -- Enable italic comment
+                italic_comments = true,
+
+                color_overrides = {
+                    vscBack = bg,
+                },
+
+                group_overrides = {
+                    CSpellBad = { link = "SpellBad" },
+                    TabLine = { fg = c.vscGray, bg = bg },
+                    TabLineFill = { fg = c.vscGray, bg = bg },
+                    TabLineSel = { fg = c.vscFront, bg = bg },
+                },
+            })
+            vscode.load()
         end,
     },
     {

@@ -361,6 +361,7 @@ require("lazy").setup({
         enabled = not os.getenv("NVIM_DIFF"),
         config = function()
             local cmp = require("cmp")
+            local compare = cmp.config.compare
             cmp.setup({
                 snippet = {
                     expand = function(args)
@@ -379,9 +380,13 @@ require("lazy").setup({
                 },
                 sorting = {
                     comparators = {
-                        cmp.config.compare.exact,
-                        cmp.config.compare.score,
-                        cmp.config.compare.offset,
+                        compare.offset,
+                        compare.exact,
+                        compare.score,
+                        compare.kind,
+                        compare.sort_text,
+                        compare.length,
+                        compare.order,
                     },
                 },
                 mapping = {

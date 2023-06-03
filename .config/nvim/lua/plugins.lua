@@ -158,6 +158,7 @@ require("lazy").setup({
                     ["@keyword.function"] = { fg = c.vscPink, bg = "NONE" },
                     ["@type.builtin"] = { fg = c.vscBlueGreen, bg = "NONE" },
                     ["@constant.builtin"] = { fg = c.vscYellowOrange, bg = "NONE" },
+                    ["@constant"] = { link = "@variable" },
                 },
             })
             vscode.load()

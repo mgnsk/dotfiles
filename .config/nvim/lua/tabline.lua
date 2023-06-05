@@ -3,16 +3,18 @@ function _G.tab_line()
     local tc = vim.fn.tabpagenr("$")
 
     for t = 1, tc do
+        local tab = {}
+
         -- set highlight
         if t == vim.fn.tabpagenr() then
-            table.insert(tabline, "%#TabLineSel#")
+            table.insert(tab, "%#TabLineSel#")
         else
-            table.insert(tabline, "%#TabLine#")
+            table.insert(tab, "%#TabLine#")
         end
         -- set the tab page number (for mouse clicks)
-        table.insert(tabline, string.format("%%%dT ", t))
+        table.insert(tab, string.format("%%%dT ", t))
         -- set page number string
-        table.insert(tabline, string.format("%d ", t))
+        table.insert(tab, string.format("%d ", t))
 
         -- get buffer names and statuses
         local n = {} -- temp string for buffer names while we loop and check buftype
@@ -52,24 +54,25 @@ function _G.tab_line()
 
         -- add modified label [n+] where n pages in tab are modified
         if m > 0 then
-            table.insert(tabline, string.format("[%d+]", m))
+            table.insert(tab, string.format("[%d+]", m))
         end
         -- select the highlighting for the buffer names
         -- my default highlighting only underlines the active tab
         -- buffer names.
         if t == vim.fn.tabpagenr() then
-            table.insert(tabline, "%#TabLineSel#")
+            table.insert(tab, "%#TabLineSel#")
         else
-            table.insert(tabline, "%#TabLine#")
+            table.insert(tab, "%#TabLine#")
         end
         -- add buffer names
         if #n == 0 then
-            table.insert(tabline, "[New]")
+            table.insert(tab, "[New]")
         else
-            table.insert(tabline, table.concat(n, ""))
+            table.insert(tab, table.concat(n, ""))
         end
         -- switch to no underlining and add final space to buffer list
-        table.insert(tabline, " ")
+        table.insert(tab, " ")
+        table.insert(tabline, table.concat(tab, ""))
     end
 
     -- after the last tab fill with TabLineFill and reset tab page nr

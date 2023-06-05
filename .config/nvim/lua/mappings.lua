@@ -29,6 +29,9 @@ set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
 set("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
 set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
+set("n", "H", "gT", { desc = "Switch to previous tab" })
+set("n", "L", "gt", { desc = "Switch to next tab" })
+
 set("n", "<leader>.", ":", { desc = "Command mode", silent = false })
 set(
     "n",
@@ -184,8 +187,11 @@ end, { desc = "Goto prev diagnostic or location list item in current buffer" })
 set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
 set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
-set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-set("n", "L", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
+set("n", "K", function()
+    vim.lsp.buf.hover()
+    vim.diagnostic.open_float()
+end, { desc = "Hover documentation and diagnostic" })
+
 set("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
 set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
 

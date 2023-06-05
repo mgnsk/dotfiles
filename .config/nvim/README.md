@@ -50,8 +50,9 @@
 | `n`  | `,,`         | ` :let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR> ` | Open new terminal window to right                            |
 | `n`  | `,.`         | ` : `                                                                 | Command mode                                                 |
 | `n`  | `,<F5>`      |                                                                       | Toggle undo tree                                             |
-| `n`  | `K`          |                                                                       | Hover documentation                                          |
-| `n`  | `L`          |                                                                       | Hover diagnostic                                             |
+| `n`  | `H`          | ` gT `                                                                | Switch to previous tab                                       |
+| `n`  | `K`          |                                                                       | Hover documentation and diagnostic                           |
+| `n`  | `L`          | ` gt `                                                                | Switch to next tab                                           |
 | `v`  | `Y`          | ` "+y<CR> `                                                           | Big yank (system clipboard)                                  |
 | `n`  | `Y`          | ` y$ `                                                                | Nvim builtin                                                 |
 | `o`  | `[%`         | ` <Plug>(MatchitOperationMultiBackward) `                             |                                                              |

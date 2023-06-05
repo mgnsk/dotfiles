@@ -1,9 +1,11 @@
 function _G.tab_line()
     local tabline = {}
+    local tabtexts = {} -- tabtexts is just texts without highlight
     local tc = vim.fn.tabpagenr("$")
 
     for t = 1, tc do
         local tab = {}
+        local tabtext = {}
 
         -- set highlight
         if t == vim.fn.tabpagenr() then
@@ -13,8 +15,10 @@ function _G.tab_line()
         end
         -- set the tab page number (for mouse clicks)
         table.insert(tab, string.format("%%%dT ", t))
+        table.insert(tabtext, " ")
         -- set page number string
         table.insert(tab, string.format("%d ", t))
+        table.insert(tabtext, string.format("%d ", t))
 
         -- get buffer names and statuses
         local n = {} -- temp string for buffer names while we loop and check buftype
@@ -55,10 +59,9 @@ function _G.tab_line()
         -- add modified label [n+] where n pages in tab are modified
         if m > 0 then
             table.insert(tab, string.format("[%d+]", m))
+            table.insert(tabtext, string.format("[%d+]", m))
         end
         -- select the highlighting for the buffer names
-        -- my default highlighting only underlines the active tab
-        -- buffer names.
         if t == vim.fn.tabpagenr() then
             table.insert(tab, "%#TabLineSel#")
         else
@@ -67,19 +70,49 @@ function _G.tab_line()
         -- add buffer names
         if #n == 0 then
             table.insert(tab, "[New]")
+            table.insert(tabtext, "[New]")
         else
             table.insert(tab, table.concat(n, ""))
+            table.insert(tabtext, table.concat(n, ""))
         end
-        -- switch to no underlining and add final space to buffer list
+
         table.insert(tab, " ")
+        table.insert(tabtext, " ")
         table.insert(tabline, table.concat(tab, ""))
+        table.insert(tabtexts, table.concat(tabtext, ""))
     end
+
+    -- modify if too long
+    local prefix = ""
+    local suffix = ""
+    local tabstart = 1
+    local tabend = vim.fn.tabpagenr("$")
+    local tabpage = vim.fn.tabpagenr()
+
+    print(vim.inspect(tabtexts))
+
+    while string.len(table.concat(tabtexts, "")) + string.len(prefix) + string.len(suffix) > vim.go.columns do
+        if tabend - tabpage > tabpage - tabstart then
+            tabline = { unpack(tabline, 1, #tabline - 1) } -- delete one tab from right
+            tabtexts = { unpack(tabtexts, 1, #tabtexts - 1) }
+            suffix = "···"
+            tabend = tabend - 1
+        else
+            tabline = { unpack(tabline, 2, #tabline) } -- delete one tab from left
+            tabtexts = { unpack(tabtexts, 2, #tabtexts) }
+            prefix = "···"
+            tabstart = tabstart + 1
+        end
+    end
+
+    tabline = { prefix, unpack(tabline) }
+    table.insert(tabline, suffix)
 
     -- after the last tab fill with TabLineFill and reset tab page nr
     table.insert(tabline, "%#TabLineFill#%T")
     -- right-align the label to close the current tab page
     if vim.fn.tabpagenr("$") > 1 then
-        table.insert(tabline, "%=%#TabLineFill#%999Xclose")
+        table.insert(tabline, "%=%#TabLineFill#%999XX")
     end
 
     return table.concat(tabline, "")

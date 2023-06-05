@@ -232,7 +232,7 @@ require("lazy").setup({
     "tpope/vim-fugitive",
     {
         "neomake/neomake",
-        enabled = not os.getenv("NVIM_DIFF"),
+        cond = not os.getenv("NVIM_DIFF"),
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
@@ -262,7 +262,8 @@ require("lazy").setup({
     },
     {
         "neovim/nvim-lspconfig",
-        enabled = not os.getenv("NVIM_DIFF"),
+        cond = not os.getenv("NVIM_DIFF"),
+        event = { "BufNewFile", "BufRead" },
         dependencies = {
             {
                 "folke/neodev.nvim",
@@ -329,7 +330,7 @@ require("lazy").setup({
     {
         "simrat39/rust-tools.nvim",
         ft = "rust",
-        enabled = not os.getenv("NVIM_DIFF"),
+        cond = not os.getenv("NVIM_DIFF"),
         dependencies = {
             "neovim/nvim-lspconfig",
         },
@@ -363,7 +364,7 @@ require("lazy").setup({
             "hrsh7th/cmp-nvim-lua",
             "FelipeLema/cmp-async-path",
         },
-        enabled = not os.getenv("NVIM_DIFF"),
+        cond = not os.getenv("NVIM_DIFF"),
         config = function()
             local cmp = require("cmp")
             local compare = cmp.config.compare

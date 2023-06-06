@@ -63,6 +63,9 @@ tasks:
     options:
       host-term:
         environment: TERM
+      timezone:
+        default:
+          command: timedatectl show | grep Timezone | cut -d= -f2
     run:
       - command: podman volume create --ignore toolbox-go
       - command: podman volume create --ignore toolbox-cargo
@@ -73,6 +76,7 @@ tasks:
           --rm
           --pull=never
           --env TERM=${host-term}
+          --env TZ=${timezone}
           --hostname toolbox
           --network host
           --userns=keep-id:uid=${container-uid},gid=${container-gid}

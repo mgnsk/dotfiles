@@ -89,8 +89,6 @@ function _G.tab_line()
     local tabend = vim.fn.tabpagenr("$")
     local tabpage = vim.fn.tabpagenr()
 
-    print(vim.inspect(tabtexts))
-
     while string.len(table.concat(tabtexts, "")) + string.len(prefix) + string.len(suffix) > vim.go.columns do
         if tabend - tabpage > tabpage - tabstart then
             tabline = { unpack(tabline, 1, #tabline - 1) } -- delete one tab from right

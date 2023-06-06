@@ -263,7 +263,7 @@ require("lazy").setup({
     {
         "neovim/nvim-lspconfig",
         cond = not os.getenv("NVIM_DIFF"),
-        event = { "BufNewFile", "BufRead" },
+        event = { "BufEnter" },
         dependencies = {
             {
                 "folke/neodev.nvim",
@@ -383,17 +383,6 @@ require("lazy").setup({
                     { name = "buffer" },
                     { name = "nvim_lua" },
                     { name = "async_path" },
-                },
-                sorting = {
-                    comparators = {
-                        compare.offset,
-                        compare.exact,
-                        compare.score,
-                        compare.kind,
-                        compare.sort_text,
-                        compare.length,
-                        compare.order,
-                    },
                 },
                 mapping = {
                     ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),

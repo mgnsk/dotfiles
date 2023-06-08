@@ -10,6 +10,7 @@ FROM archlinux:base-devel AS toolbox-base
 RUN pacman -Syyu --noconfirm \
 	&& pacman -S --noconfirm --needed \
 	git \
+	git-delta \
 	unzip \
 	wget \
 	tmux \

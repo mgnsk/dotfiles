@@ -4,11 +4,11 @@
 	lg =  "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --all"
 	lb =  "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --first-parent $(git branch --show-current)"
 	sk = !" \
-	sk \
-	--ansi \
-	-ic \"git log --all --oneline --color -G\"{}\" $*\" \
-	--preview=\"git show --color -G {cq} {1} | rg  --colors=match:fg:blue --color=always --passthru {cq}\" \
-	"
+		sk \
+		--ansi \
+		-ic \"git log --all --oneline --color -G\"{}\" $*\" \
+		--preview=\"git show --color -G {cq} {1} | rg  --colors=match:fg:blue --color=always --passthru {cq}\" \
+		"
 [mergetool]
 	keepBackup = false
 [diff]
@@ -23,3 +23,11 @@
 	path = ~/.gitconfig_local
 [pull]
 	ff = only
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	light = false
+	line-numbers = true

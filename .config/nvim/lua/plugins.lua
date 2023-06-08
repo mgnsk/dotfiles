@@ -11,13 +11,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-local function on_attach(client, bufnr)
-    client.server_capabilities.document_formatting = false
-    require("lsp_signature").on_attach({}, bufnr) -- Note: add in lsp client on-attach
-end
-
 -- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, result, ctx)
     local util = vim.lsp.util
@@ -44,6 +37,7 @@ end
 require("lazy").setup({
     {
         "nvim-treesitter/nvim-treesitter",
+        event = { "BufEnter" },
         build = function()
             local parsers = {
                 "bash",
@@ -110,12 +104,14 @@ require("lazy").setup({
     },
     {
         "nvim-treesitter/playground",
+        event = { "BufEnter" },
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
         },
     },
     {
         "RRethy/vim-illuminate",
+        event = { "BufEnter" },
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
         },
@@ -157,6 +153,7 @@ require("lazy").setup({
                     QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },
                     ["@namespace"] = { fg = c.vscLightBlue, bg = "NONE" },
                     ["@keyword.function"] = { fg = c.vscPink, bg = "NONE" },
+                    ["@keyword.operator"] = { fg = c.vscPink, bg = "NONE" },
                     ["@function.macro"] = { fg = c.vscPink, bg = "NONE" },
                     ["@type.builtin"] = { fg = c.vscBlueGreen, bg = "NONE" },
                     ["@constant.builtin"] = { fg = c.vscYellowOrange, bg = "NONE" },
@@ -225,6 +222,14 @@ require("lazy").setup({
                 grep = {
                     rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --no-ignore-vcs --glob=!.git/",
                 },
+                git = {
+                    commits = {
+                        preview_pager = "delta",
+                    },
+                    bcommits = {
+                        preview_pager = "delta",
+                    },
+                },
             })
         end,
     },
@@ -233,6 +238,7 @@ require("lazy").setup({
     {
         "neomake/neomake",
         cond = not os.getenv("NVIM_DIFF"),
+        event = { "BufEnter" },
         config = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
@@ -249,10 +255,10 @@ require("lazy").setup({
             require("nvim-autopairs").setup({})
         end,
     },
-    {
-        "ray-x/lsp_signature.nvim",
-        lazy = true,
-    },
+    -- {
+    --     "ray-x/lsp_signature.nvim",
+    --     lazy = true,
+    -- },
     {
         "simrat39/symbols-outline.nvim",
         lazy = true,
@@ -265,6 +271,7 @@ require("lazy").setup({
         cond = not os.getenv("NVIM_DIFF"),
         event = { "BufEnter" },
         dependencies = {
+            "hrsh7th/nvim-cmp",
             {
                 "folke/neodev.nvim",
                 config = function()
@@ -274,6 +281,21 @@ require("lazy").setup({
         },
         config = function()
             local lsp = require("lspconfig")
+
+            -- https://github.com/hrsh7th/cmp-nvim-lsp/issues/44#issuecomment-1325692288
+            -- local capabilities = require("cmp_nvim_lsp").default_capabilities()
+            -- capabilities.textDocument.completion.completionItem.insertReplaceSupport = false
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+            lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
+                capabilities = capabilities,
+            })
+
+            local function on_attach(client, bufnr)
+                client.server_capabilities.document_formatting = false
+                -- require("lsp_signature").on_attach({}, bufnr)
+            end
+
             lsp.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.tsserver.setup({ capabilities = capabilities, on_attach = on_attach })
             lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
@@ -356,7 +378,6 @@ require("lazy").setup({
     },
     {
         "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
         dependencies = {
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-nvim-lsp",
@@ -365,6 +386,7 @@ require("lazy").setup({
             "FelipeLema/cmp-async-path",
         },
         cond = not os.getenv("NVIM_DIFF"),
+        event = { "BufEnter" },
         config = function()
             local cmp = require("cmp")
             local compare = cmp.config.compare
@@ -383,6 +405,19 @@ require("lazy").setup({
                     { name = "buffer" },
                     { name = "nvim_lua" },
                     { name = "async_path" },
+                },
+                sorting = {
+                    comparators = {
+                        compare.offset,
+                        compare.exact,
+                        compare.score,
+                        compare.recently_used,
+                        compare.locality,
+                        compare.kind,
+                        compare.sort_text,
+                        compare.length,
+                        compare.order,
+                    },
                 },
                 mapping = {
                     ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
@@ -420,7 +455,7 @@ require("lazy").setup({
     },
     {
         "ryuichiroh/vim-cspell",
-        init = function()
+        config = function()
             vim.g.cspell_disable_autogroup = true
         end,
     },

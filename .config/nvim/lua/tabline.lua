@@ -1,102 +1,103 @@
+-- Inspired by:
+-- https://stackoverflow.com/questions/33710069/how-to-write-tabline-function-in-vim/33765365#33765365
+-- https://github.com/lukelbd/vim-tabline
+-- https://gist.github.com/neilmarion/6432019
+
 function _G.tab_line()
     local tabline = {}
-    local tabtexts = {} -- tabtexts is just texts without highlight
-    local tc = vim.fn.tabpagenr("$")
+    local tabtexts = {} -- Tabtexts is just texts without highlight to calculate tabline width.
 
-    for t = 1, tc do
+    -- Loop through tabs.
+    for t = 1, vim.fn.tabpagenr("$") do
         local tab = {}
         local tabtext = {}
 
-        -- set highlight
         if t == vim.fn.tabpagenr() then
             table.insert(tab, "%#TabLineSel#")
         else
             table.insert(tab, "%#TabLine#")
         end
-        -- set the tab page number (for mouse clicks)
+
+        -- Set the tab page number for mouse clicks.
         table.insert(tab, string.format("%%%dT ", t))
         table.insert(tabtext, " ")
-        -- set page number string
+
+        -- Set the tab number string.
         table.insert(tab, string.format("%d ", t))
         table.insert(tabtext, string.format("%d ", t))
 
-        -- get buffer names and statuses
-        local n = {} -- temp string for buffer names while we loop and check buftype
-        local m = 0 -- &modified counter
+        local name = {}
+        local modified = 0
         local buflist = vim.fn.tabpagebuflist(t)
-        local bc = #buflist -- counter to avoid last ' '
 
-        -- loop through each buffer in a tab
+        -- Loop through each buffer in the tab
         for _, b in ipairs(buflist) do
-            -- buffer types: quickfix gets a [Q], help gets [H]{base fname}
-            -- others get 1dir/2dir/3dir/fname shortened to 1/2/3/fname
             local buftype = vim.fn.getbufvar(b, "&buftype")
             local bufname = vim.fn.bufname(b)
 
             if buftype == "help" then
-                table.insert(n, "[H]" .. vim.fn.fnamemodify(bufname, ":t:s/.txt$//"))
+                table.insert(name, "[H]" .. vim.fn.fnamemodify(bufname, ":t:s/.txt$//"))
+                table.insert(name, " ")
             elseif buftype == "quickfix" then
-                table.insert(n, "[Q]")
+                table.insert(name, "[Q]")
+                table.insert(name, " ")
             elseif buftype == "terminal" then
-                table.insert(n, "[T]" .. vim.fn.pathshorten(vim.split(bufname, "//")[2]))
+                table.insert(name, "[T]" .. vim.fn.pathshorten(vim.split(bufname, "//")[2]))
+                table.insert(name, " ")
             else
                 local path = vim.fn.pathshorten(bufname)
                 if string.len(path) > 0 then
-                    table.insert(n, path)
+                    table.insert(name, path)
+                    table.insert(name, " ")
                 end
             end
-            -- check and ++ tab's &modified count
+
             if vim.fn.getbufvar(b, "&modified") > 0 then
-                m = m + 1
+                modified = modified + 1
             end
-            -- no final ' ' added...formatting looks better done later
-            if bc > 1 then
-                table.insert(n, " ")
-            end
-            bc = bc - 1
         end
 
-        -- add modified label [n+] where n pages in tab are modified
-        if m > 0 then
-            table.insert(tab, string.format("[%d+]", m))
-            table.insert(tabtext, string.format("[%d+]", m))
+        -- Add modified label.
+        if modified > 0 then
+            table.insert(tab, string.format("[%d+]", modified))
+            table.insert(tabtext, string.format("[%d+]", modified))
         end
-        -- select the highlighting for the buffer names
-        if t == vim.fn.tabpagenr() then
-            table.insert(tab, "%#TabLineSel#")
-        else
-            table.insert(tab, "%#TabLine#")
-        end
-        -- add buffer names
-        if #n == 0 then
+
+        if #name == 0 then
             table.insert(tab, "[New]")
             table.insert(tabtext, "[New]")
         else
-            table.insert(tab, table.concat(n, ""))
-            table.insert(tabtext, table.concat(n, ""))
+            table.insert(tab, table.concat(name, ""))
+            table.insert(tabtext, table.concat(name, ""))
         end
 
-        table.insert(tab, " ")
-        table.insert(tabtext, " ")
         table.insert(tabline, table.concat(tab, ""))
         table.insert(tabtexts, table.concat(tabtext, ""))
     end
 
-    -- modify if too long
+    -- Modify if too long.
     local prefix = ""
     local suffix = ""
     local tabstart = 1
     local tabend = vim.fn.tabpagenr("$")
     local tabpage = vim.fn.tabpagenr()
 
-    while string.len(table.concat(tabtexts, "")) + string.len(prefix) + string.len(suffix) > vim.go.columns do
+    local function getlen()
+        local n = 0
+        for _, v in ipairs(tabtexts) do
+            n = n + string.len(v)
+        end
+        return n
+    end
+
+    while getlen() + string.len(prefix) + string.len(suffix) > vim.go.columns do
         if tabend - tabpage > tabpage - tabstart then
-            tabline = { unpack(tabline, 1, #tabline - 1) } -- delete one tab from right
+            tabline = { unpack(tabline, 1, #tabline - 1) } -- Remove one tab from right.
             tabtexts = { unpack(tabtexts, 1, #tabtexts - 1) }
             suffix = "···"
             tabend = tabend - 1
         else
-            tabline = { unpack(tabline, 2, #tabline) } -- delete one tab from left
+            tabline = { unpack(tabline, 2, #tabline) } -- Remove one tab from left.
             tabtexts = { unpack(tabtexts, 2, #tabtexts) }
             prefix = "···"
             tabstart = tabstart + 1
@@ -106,9 +107,9 @@ function _G.tab_line()
     tabline = { prefix, unpack(tabline) }
     table.insert(tabline, suffix)
 
-    -- after the last tab fill with TabLineFill and reset tab page nr
+    -- After the last tab fill with TabLineFill and reset tab page nr.
     table.insert(tabline, "%#TabLineFill#%T")
-    -- right-align the label to close the current tab page
+    -- Add a right-aligned X button to close the current tab with mouse.
     if vim.fn.tabpagenr("$") > 1 then
         table.insert(tabline, "%=%#TabLineFill#%999XX")
     end

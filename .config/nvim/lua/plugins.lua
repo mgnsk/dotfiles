@@ -255,15 +255,68 @@ require("lazy").setup({
             require("nvim-autopairs").setup({})
         end,
     },
-    -- {
-    --     "ray-x/lsp_signature.nvim",
-    --     lazy = true,
-    -- },
+    {
+        "ray-x/lsp_signature.nvim",
+        lazy = true,
+    },
     {
         "simrat39/symbols-outline.nvim",
         lazy = true,
         config = function()
             require("symbols-outline").setup()
+        end,
+    },
+    {
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-nvim-lsp-signature-help",
+            "hrsh7th/cmp-nvim-lua",
+            "FelipeLema/cmp-async-path",
+        },
+        cond = not os.getenv("NVIM_DIFF"),
+        event = { "BufEnter" },
+        config = function()
+            local cmp = require("cmp")
+            local compare = cmp.config.compare
+            cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+                        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+                        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+                    end,
+                },
+                sources = {
+                    { name = "nvim_lsp" },
+                    { name = "nvim_lsp_signature_help" },
+                    { name = "buffer" },
+                    { name = "nvim_lua" },
+                    { name = "async_path" },
+                },
+                sorting = {
+                    comparators = {
+                        compare.offset,
+                        compare.exact,
+                        compare.score,
+                        compare.recently_used,
+                        compare.locality,
+                        compare.kind,
+                        compare.sort_text,
+                        compare.length,
+                        compare.order,
+                    },
+                },
+                mapping = {
+                    ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
+                    ["<CR>"] = cmp.mapping(cmp.mapping.confirm({
+                        behavior = cmp.ConfirmBehavior.Insert,
+                        select = true,
+                    })),
+                },
+            })
         end,
     },
     {
@@ -283,17 +336,17 @@ require("lazy").setup({
             local lsp = require("lspconfig")
 
             -- https://github.com/hrsh7th/cmp-nvim-lsp/issues/44#issuecomment-1325692288
-            -- local capabilities = require("cmp_nvim_lsp").default_capabilities()
+            local capabilities =
+                require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
             -- capabilities.textDocument.completion.completionItem.insertReplaceSupport = false
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-            lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
-                capabilities = capabilities,
-            })
+            -- lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
+            --     capabilities = capabilities,
+            -- })
 
             local function on_attach(client, bufnr)
                 client.server_capabilities.document_formatting = false
-                -- require("lsp_signature").on_attach({}, bufnr)
+                require("lsp_signature").on_attach({}, bufnr)
             end
 
             lsp.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
@@ -377,59 +430,6 @@ require("lazy").setup({
         end,
     },
     {
-        "hrsh7th/nvim-cmp",
-        dependencies = {
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-nvim-lsp-signature-help",
-            "hrsh7th/cmp-nvim-lua",
-            "FelipeLema/cmp-async-path",
-        },
-        cond = not os.getenv("NVIM_DIFF"),
-        event = { "BufEnter" },
-        config = function()
-            local cmp = require("cmp")
-            local compare = cmp.config.compare
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-                        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-                        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-                        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-                    end,
-                },
-                sources = {
-                    { name = "nvim_lsp" },
-                    { name = "nvim_lsp_signature_help" },
-                    { name = "buffer" },
-                    { name = "nvim_lua" },
-                    { name = "async_path" },
-                },
-                sorting = {
-                    comparators = {
-                        compare.offset,
-                        compare.exact,
-                        compare.score,
-                        compare.recently_used,
-                        compare.locality,
-                        compare.kind,
-                        compare.sort_text,
-                        compare.length,
-                        compare.order,
-                    },
-                },
-                mapping = {
-                    ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-                    ["<CR>"] = cmp.mapping(cmp.mapping.confirm({
-                        behavior = cmp.ConfirmBehavior.Insert,
-                        select = true,
-                    })),
-                },
-            })
-        end,
-    },
-    {
         "mgnsk/table_gen.lua",
         lazy = true,
     },
@@ -455,7 +455,7 @@ require("lazy").setup({
     },
     {
         "ryuichiroh/vim-cspell",
-        config = function()
+        init = function()
             vim.g.cspell_disable_autogroup = true
         end,
     },

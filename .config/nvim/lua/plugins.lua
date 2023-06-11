@@ -208,6 +208,7 @@ require("lazy").setup({
     },
     {
         "tpope/vim-commentary",
+        event = "BufEnter",
     },
     {
         "ibhagwan/fzf-lua",
@@ -233,18 +234,26 @@ require("lazy").setup({
             })
         end,
     },
-    "airblade/vim-gitgutter",
-    "tpope/vim-fugitive",
+    {
+        "airblade/vim-gitgutter",
+        event = "BufEnter",
+    },
+    {
+        "tpope/vim-fugitive",
+        event = "BufEnter",
+    },
     {
         "neomake/neomake",
         cond = not os.getenv("NVIM_DIFF"),
         event = { "BufEnter" },
-        config = function()
+        init = function()
             vim.g.neomake_open_list = 2
             vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
             -- Note: golangci_lint is configured to run go_vet.
             vim.g.neomake_go_enabled_makers = { "go", "golangci_lint", "golint" }
             vim.g.neomake_c_enabled_makers = { "gcc" }
+        end,
+        config = function()
             vim.fn["neomake#configure#automake"]("w")
         end,
     },
@@ -267,6 +276,10 @@ require("lazy").setup({
         end,
     },
     {
+        "L3MON4D3/LuaSnip",
+        lazy = true,
+    },
+    {
         "hrsh7th/nvim-cmp",
         dependencies = {
             "hrsh7th/cmp-buffer",
@@ -278,15 +291,19 @@ require("lazy").setup({
         cond = not os.getenv("NVIM_DIFF"),
         event = { "BufEnter" },
         config = function()
+            local has_words_before = function()
+                local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+                return col ~= 0
+                    and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+            end
+
             local cmp = require("cmp")
             local compare = cmp.config.compare
+
             cmp.setup({
                 snippet = {
                     expand = function(args)
-                        -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-                        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-                        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-                        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+                        require("luasnip").lsp_expand(args.body)
                     end,
                 },
                 sources = {
@@ -310,11 +327,36 @@ require("lazy").setup({
                     },
                 },
                 mapping = {
-                    ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-                    ["<CR>"] = cmp.mapping(cmp.mapping.confirm({
+                    ["<Tab>"] = cmp.mapping(function(fallback)
+                        local luasnip = require("luasnip")
+                        if cmp.visible() then
+                            cmp.select_next_item()
+                        -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
+                        -- they way you will only jump inside the snippet region
+                        elseif luasnip.expand_or_jumpable() then
+                            luasnip.expand_or_jump()
+                        elseif has_words_before() then
+                            cmp.complete()
+                        else
+                            fallback()
+                        end
+                    end, { "i", "s" }),
+
+                    ["<S-Tab>"] = cmp.mapping(function(fallback)
+                        local luasnip = require("luasnip")
+                        if cmp.visible() then
+                            cmp.select_prev_item()
+                        elseif luasnip.jumpable(-1) then
+                            luasnip.jump(-1)
+                        else
+                            fallback()
+                        end
+                    end, { "i", "s" }),
+
+                    ["<CR>"] = cmp.mapping.confirm({
                         behavior = cmp.ConfirmBehavior.Insert,
-                        select = true,
-                    })),
+                        select = false,
+                    }),
                 },
             })
         end,
@@ -332,31 +374,34 @@ require("lazy").setup({
                 end,
             },
         },
+        init = function()
+            vim.lsp.handlers["textDocument/declaration"] = location_callback
+            vim.lsp.handlers["textDocument/definition"] = location_callback
+            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
+            vim.lsp.handlers["textDocument/implementation"] = location_callback
+            vim.lsp.handlers["textDocument/publishDiagnostics"] =
+                vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+                    update_in_insert = false,
+                })
+        end,
         config = function()
             local lsp = require("lspconfig")
 
-            -- https://github.com/hrsh7th/cmp-nvim-lsp/issues/44#issuecomment-1325692288
-            local capabilities =
-                require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-            -- capabilities.textDocument.completion.completionItem.insertReplaceSupport = false
+            lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
+                capabilities = require("cmp_nvim_lsp").default_capabilities(),
+                on_attach = function(client, bufnr)
+                    client.server_capabilities.document_formatting = false
+                    client.server_capabilities.semanticTokensProvider = nil
+                    require("lsp_signature").on_attach({}, bufnr)
+                end,
+            })
 
-            -- lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
-            --     capabilities = capabilities,
-            -- })
-
-            local function on_attach(client, bufnr)
-                client.server_capabilities.document_formatting = false
-                require("lsp_signature").on_attach({}, bufnr)
-            end
-
-            lsp.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
-            lsp.tsserver.setup({ capabilities = capabilities, on_attach = on_attach })
-            lsp.html.setup({ capabilities = capabilities, on_attach = on_attach })
-            lsp.cssls.setup({ capabilities = capabilities, on_attach = on_attach })
-            lsp.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
+            lsp.gopls.setup({})
+            lsp.tsserver.setup({})
+            lsp.html.setup({})
+            lsp.cssls.setup({})
+            lsp.bashls.setup({})
             lsp.lua_ls.setup({
-                capabilities = capabilities,
-                on_attach = on_attach,
                 settings = {
                     Lua = {
                         workspace = {
@@ -372,34 +417,8 @@ require("lazy").setup({
                     },
                 },
             })
-            lsp.phpactor.setup({ capabilities = capabilities, on_attach = on_attach })
-            lsp.ansiblels.setup({
-                capabilities = capabilities,
-                on_attach = on_attach,
-                -- TODO: neomake ansiblelint broken, linting with ansiblels
-                -- settings = {
-                --     ansible = {
-                --         validation = {
-                --             lint = {
-                --                 enabled = false,
-                --             },
-                --         },
-                --     },
-                -- },
-            })
-
-            vim.lsp.handlers["textDocument/declaration"] = location_callback
-            vim.lsp.handlers["textDocument/definition"] = location_callback
-            vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
-            vim.lsp.handlers["textDocument/implementation"] = location_callback
-            vim.lsp.handlers["textDocument/publishDiagnostics"] =
-                vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-                    update_in_insert = false,
-                })
-
-            -- vim.cmd([[ hi def link LspReferenceText CursorLine ]])
-            -- vim.cmd([[ hi def link LspReferenceWrite CursorLine ]])
-            -- vim.cmd([[ hi def link LspReferenceRead CursorLine ]])
+            lsp.phpactor.setup({})
+            lsp.ansiblels.setup({})
         end,
     },
     {
@@ -411,15 +430,7 @@ require("lazy").setup({
         },
         config = function()
             local rt = require("rust-tools")
-            rt.setup({
-                server = {
-                    capabilities = capabilities,
-                    on_attach = function(client, bufnr)
-                        client.server_capabilities.semanticTokensProvider = nil
-                        on_attach(client, bufnr)
-                    end,
-                },
-            })
+            rt.setup({})
         end,
     },
     {
@@ -455,9 +466,13 @@ require("lazy").setup({
     },
     {
         "ryuichiroh/vim-cspell",
+        cmd = "CSpell",
         init = function()
             vim.g.cspell_disable_autogroup = true
         end,
     },
-    "mbbill/undotree",
+    {
+        "mbbill/undotree",
+        event = "BufEnter",
+    },
 })

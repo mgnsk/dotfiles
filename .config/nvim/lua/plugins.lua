@@ -68,11 +68,19 @@ require("lazy").setup({
                 "yaml",
             }
 
-            for _, parser in ipairs(parsers) do
-                local ok, result = pcall(vim.cmd, string.format("TSUpdateSync %s", parser))
+            if #(vim.api.nvim_list_uis()) > 0 then
+                local ok, result = pcall(vim.cmd, string.format("TSUpdate %s", table.concat(parsers, " ")))
                 if not ok then
                     print(result)
                     os.exit(1)
+                end
+            else
+                for _, parser in ipairs(parsers) do
+                    local ok, result = pcall(vim.cmd, string.format("TSUpdateSync %s", parser))
+                    if not ok then
+                        print(result)
+                        os.exit(1)
+                    end
                 end
             end
         end,

@@ -72,5 +72,6 @@ require("indent")
 require("mappings")
 require("tabline")
 require("statusline")
+require("docs")
 
 require("lazy_setup")

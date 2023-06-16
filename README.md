@@ -17,6 +17,7 @@ $ config reset --hard origin/master
 # Toolbox
 
 The toolbox is a rootless development environment container running on podman.
+It's main application is running neovim.
 The following is a guide on how to run the toolbox without installing the dotfiles
 onto the host machine.
 
@@ -51,27 +52,21 @@ tusk setup
 
 ## Build the image
 
-Build the podman image:
+Build the image:
 
 ```sh
 tusk build
 ```
 
-Add the absolute path to `dotfiles/bin` directory to your PATH to use the `toolbox-run` executable script.
+Add the absolute path to `dotfiles/bin` directory to your PATH to use the `nv` executable script.
 
-## Run the toolbox
+## Run neovim
 
-Navigate to a project directory and run the toolbox:
+Navigate to a project directory and run it:
 
 ```sh
 cd ~/Projects/project1
-toolbox-run .
-```
-
-or equivalently:
-
-```sh
-toolbox-run ~/Projects/project1
+nv
 ```
 
 ## Technical notes

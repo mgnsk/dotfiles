@@ -55,8 +55,8 @@ tasks:
       - task: _build
 
   # TODO: https://github.com/containers/podman/issues/16541
-  sh:
-    usage: Run a new toolbox shell.
+  nvim:
+    usage: Run neovim in the absolute directory.
     args:
       workspace:
         usage: The absolute path for the workspace directory to run in.
@@ -88,4 +88,4 @@ tasks:
           --volume ${workspace}:${workspace}:Z
           --workdir ${workspace}
           toolbox:latest
-          fish
+          fish -c "nvim ."

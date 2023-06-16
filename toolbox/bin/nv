@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-workspace=$(readlink -f -- "$1")
 scriptdir=$(dirname -- "$(readlink -f -- "$0")")
 
-tusk -f "$scriptdir/../tusk.yml" sh "$workspace"
+tusk -f "$scriptdir/../tusk.yml" nvim "$(pwd)"

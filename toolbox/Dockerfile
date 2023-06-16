@@ -141,11 +141,10 @@ ARG uid
 ARG gid
 ARG user
 
-COPY /dotfiles/.config/nvim/lua/plugins.lua /home/${user}/.config/nvim/lua/plugins.lua
 # TODO: can we keep the lockfile owned by root? https://github.com/folke/lazy.nvim/issues/727
-COPY --chown=${uid}:${gid} /dotfiles/.config/nvim/lazy-lock.json /home/${user}/.config/nvim/lazy-lock.json
+COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
 RUN nvim --headless -u NORC \
-	-c 'lua if not require("plugins") then os.exit(1) end' \
+	-c 'lua if not require("lazy_setup") then os.exit(1) end' \
 	-c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then print(result); os.exit(1) end' \
 	-c 'lua os.exit(0)'
 

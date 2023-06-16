@@ -23,15 +23,16 @@ end
 
 return {
 	{
-		"ray-x/lsp_signature.nvim",
-		lazy = true,
-	},
-	{
 		"neovim/nvim-lspconfig",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = { "BufEnter" },
 		dependencies = {
-			"hrsh7th/nvim-cmp",
+			{
+				"ray-x/lsp_signature.nvim",
+				config = function()
+					require("lsp_signature").setup({})
+				end,
+			},
 			{
 				"folke/neodev.nvim",
 				config = function()
@@ -55,9 +56,7 @@ return {
 			lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
 				capabilities = require("cmp_nvim_lsp").default_capabilities(),
 				on_attach = function(client, bufnr)
-					client.server_capabilities.document_formatting = false
 					client.server_capabilities.semanticTokensProvider = nil
-					require("lsp_signature").on_attach({}, bufnr)
 				end,
 			})
 

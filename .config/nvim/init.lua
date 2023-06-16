@@ -35,36 +35,36 @@ vim.cmd("set t_ut=")
 --vim.cmd("set noruler")
 --
 vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave" }, {
-    callback = function()
-        vim.o.relativenumber = true
-    end,
+	callback = function()
+		vim.o.relativenumber = true
+	end,
 })
 
 vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter" }, {
-    callback = function()
-        vim.o.relativenumber = false
-    end,
+	callback = function()
+		vim.o.relativenumber = false
+	end,
 })
 
 vim.api.nvim_create_autocmd("TermOpen", {
-    command = [[ startinsert ]],
+	command = [[ startinsert ]],
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*",
-    command = [[%s/\s\+$//e]],
+	pattern = "*",
+	command = [[%s/\s\+$//e]],
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*",
-    command = [[%s/\n\+\%$//e]],
+	pattern = "*",
+	command = [[%s/\n\+\%$//e]],
 })
 
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
-    pattern = "*.zaml",
-    callback = function()
-        vim.bo.filetype = "zaml"
-    end,
+	pattern = "*.zaml",
+	callback = function()
+		vim.bo.filetype = "zaml"
+	end,
 })
 
 require("persistent_undo")

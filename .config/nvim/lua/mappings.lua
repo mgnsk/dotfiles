@@ -211,6 +211,10 @@ local function escape_backticks(s)
 	return string.format("%s %s %s", ticks, s, ticks)
 end
 
+vim.api.nvim_create_user_command("Wfa", function()
+	vim.cmd("WriteFormatAll")
+end, { desc = "Alias for WriteFormatAll" })
+
 vim.api.nvim_create_user_command("CSpell", function()
 	vim.api.nvim_call_function("cspell#lint", {})
 end, { desc = "Run cspell on current buffer" })

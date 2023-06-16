@@ -3,6 +3,7 @@
 ## Neovim keymap
 | mode |     lhs      |                                  rhs                                  |                             desc                             |
 |------|--------------|-----------------------------------------------------------------------|--------------------------------------------------------------|
+| `s`  | `<Tab>`      |                                                                       | cmp.utils.keymap.set_map                                     |
 | `n`  | `<Esc><Esc>` | ` :nohlsearch<CR> `                                                   | Clear search highlight                                       |
 | `x`  | `#`          | ` y?\V<C-R>"<CR> `                                                    | Nvim builtin                                                 |
 | `o`  | `%`          | ` <Plug>(MatchitOperationForward) `                                   |                                                              |
@@ -70,6 +71,11 @@
 | `o`  | `e`          | ` <Plug>WordMotion_e `                                                |                                                              |
 | `x`  | `e`          | ` <Plug>WordMotion_e `                                                |                                                              |
 | `n`  | `e`          | ` <Plug>WordMotion_e `                                                |                                                              |
+| `n`  | `gcu`        | ` <Plug>Commentary<Plug>Commentary `                                  |                                                              |
+| `n`  | `gcc`        | ` <Plug>CommentaryLine `                                              |                                                              |
+| `o`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
+| `n`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
+| `x`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
 | `x`  | `gx`         | ` <Plug>NetrwBrowseXVis `                                             |                                                              |
 | `n`  | `gx`         | ` <Plug>NetrwBrowseX `                                                |                                                              |
 | `o`  | `g%`         | ` <Plug>(MatchitOperationBackward) `                                  |                                                              |
@@ -78,11 +84,6 @@
 | `o`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
 | `x`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
 | `n`  | `ge`         | ` <Plug>WordMotion_ge `                                               |                                                              |
-| `n`  | `gcu`        | ` <Plug>Commentary<Plug>Commentary `                                  |                                                              |
-| `n`  | `gcc`        | ` <Plug>CommentaryLine `                                              |                                                              |
-| `o`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
-| `n`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
-| `x`  | `gc`         | ` <Plug>Commentary `                                                  |                                                              |
 | `n`  | `gr`         |                                                                       | Show references                                              |
 | `n`  | `gD`         |                                                                       | Show implementations                                         |
 | `n`  | `ga`         |                                                                       | Code action                                                  |
@@ -97,6 +98,7 @@
 | `x`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                              |
 | `n`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                              |
 | `n`  | `y<C-G>`     | ` :<C-U>call setreg(v:register, fugitive#Object(@%))<CR> `            |                                                              |
+| `s`  | `<S-Tab>`    |                                                                       | cmp.utils.keymap.set_map                                     |
 | `x`  | `<M-i>`      |                                                                       |                                                              |
 | `o`  | `<M-i>`      |                                                                       |                                                              |
 | `n`  | `<M-p>`      |                                                                       | Move to previous reference                                   |

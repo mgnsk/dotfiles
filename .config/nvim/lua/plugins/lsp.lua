@@ -23,6 +23,13 @@ end
 
 return {
 	{
+		"simrat39/symbols-outline.nvim",
+		lazy = true,
+		config = function()
+			require("symbols-outline").setup()
+		end,
+	},
+	{
 		"neovim/nvim-lspconfig",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = { "BufEnter" },

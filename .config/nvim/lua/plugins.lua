@@ -4,25 +4,10 @@ return {
 		event = "BufEnter",
 	},
 	{
-		"airblade/vim-gitgutter",
-		event = "BufEnter",
-	},
-	{
-		"tpope/vim-fugitive",
-		event = "BufEnter",
-	},
-	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
 		config = function()
 			require("nvim-autopairs").setup({})
-		end,
-	},
-	{
-		"simrat39/symbols-outline.nvim",
-		lazy = true,
-		config = function()
-			require("symbols-outline").setup()
 		end,
 	},
 	{

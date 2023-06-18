@@ -97,7 +97,6 @@
 | `o`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                              |
 | `x`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                              |
 | `n`  | `w`          | ` <Plug>WordMotion_w `                                                |                                                              |
-| `n`  | `y<C-G>`     | ` :<C-U>call setreg(v:register, fugitive#Object(@%))<CR> `            |                                                              |
 | `s`  | `<S-Tab>`    |                                                                       | cmp.utils.keymap.set_map                                     |
 | `x`  | `<M-i>`      |                                                                       |                                                              |
 | `o`  | `<M-i>`      |                                                                       |                                                              |
@@ -109,169 +108,137 @@
 | `n`  | `<C-L>`      | ` <C-W>l `                                                            | Move to right window                                         |
 
 ## Neovim commands
-|                name                |                                                  definition                                                   |
-|------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `AutoformatDisable`                | `Disable autoformat globally`                                                                                 |
-| `AutoformatDisableBuffer`          | `Disable autoformat for buffer`                                                                               |
-| `AutoformatEnable`                 | `Enable autoformat globally`                                                                                  |
-| `AutoformatEnableBuffer`           | `Enable autoformat for buffer`                                                                                |
-| `AutoformatToggle`                 | `Toggle autoformat globally`                                                                                  |
-| `AutoformatToggleBuffer`           | `Toggle autoformat for buffer`                                                                                |
-| `CSpell`                           | ``                                                                                                            |
-| `CmpStatus`                        | `Check status of cmp sources`                                                                                 |
-| `Commentary`                       | `call s:go(<line1>,<line2>,<bang>0)`                                                                          |
-| `DoMatchParen`                     | `call s:DoMatchParen()`                                                                                       |
-| `Explore`                          | `call netrw#Explore(<count>,0,0+<bang>0,<q-args>)`                                                            |
-| `FzfLua`                           | `lua require('fzf-lua.cmd').load_command(<f-args>)`                                                           |
-| `G`                                | `exe fugitive#Command(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                             |
-| `GBrowse`                          | `exe fugitive#BrowseCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                       |
-| `GDelete`                          | `exe fugitive#DeleteCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                       |
-| `GMove`                            | `exe fugitive#MoveCommand(  <line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                       |
-| `GRemove`                          | `exe fugitive#RemoveCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                       |
-| `GRename`                          | `exe fugitive#RenameCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                       |
-| `GUnlink`                          | `exe fugitive#UnlinkCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                       |
-| `Gbrowse`                          | `echoerr ":Gbrowse has been removed in favor of :GBrowse"`                                                    |
-| `GcLog`                            | `:exe fugitive#LogCommand(<line1>,<count>,+"<range>",<bang>0,"<mods>",<q-args>, "c")`                         |
-| `Gcd`                              | `exe fugitive#Cd(<q-args>, 0)`                                                                                |
-| `Gclog`                            | `:exe fugitive#LogCommand(<line1>,<count>,+"<range>",<bang>0,"<mods>",<q-args>, "c")`                         |
-| `Gdelete`                          | `echoerr ":Gdelete has been removed in favor of :GDelete"`                                                    |
-| `Gdiffsplit`                       | `exe fugitive#Diffsplit(1, <bang>0, "<mods>", <q-args>)`                                                      |
-| `Gdrop`                            | `exe fugitive#DropCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                         |
-| `Ge`                               | `exe fugitive#Open("edit<bang>", 0, "<mods>", <q-args>)`                                                      |
-| `Gedit`                            | `exe fugitive#Open("edit<bang>", 0, "<mods>", <q-args>)`                                                      |
-| `GenerateDocs`                     | ``                                                                                                            |
-| `Ggrep`                            | `exe fugitive#GrepCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                         |
-| `Ghdiffsplit`                      | `exe fugitive#Diffsplit(0, <bang>0, "<mods>", <q-args>)`                                                      |
-| `Git`                              | `exe fugitive#Command(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                             |
-| `GitGutter`                        | `call gitgutter#process_buffer(bufnr(''), 1)`                                                                 |
-| `GitGutterAll`                     | `call gitgutter#all(1)`                                                                                       |
-| `GitGutterBufferDisable`           | `call gitgutter#buffer_disable()`                                                                             |
-| `GitGutterBufferEnable`            | `call gitgutter#buffer_enable()`                                                                              |
-| `GitGutterBufferToggle`            | `call gitgutter#buffer_toggle()`                                                                              |
-| `GitGutterDebug`                   | `call gitgutter#debug#debug()`                                                                                |
-| `GitGutterDiffOrig`                | `call gitgutter#difforig()`                                                                                   |
-| `GitGutterDisable`                 | `call gitgutter#disable()`                                                                                    |
-| `GitGutterEnable`                  | `call gitgutter#enable()`                                                                                     |
-| `GitGutterFold`                    | `call gitgutter#fold#toggle()`                                                                                |
-| `GitGutterLineHighlightsDisable`   | `call gitgutter#highlight#line_disable()`                                                                     |
-| `GitGutterLineHighlightsEnable`    | `call gitgutter#highlight#line_enable()`                                                                      |
-| `GitGutterLineHighlightsToggle`    | `call gitgutter#highlight#line_toggle()`                                                                      |
-| `GitGutterLineNrHighlightsDisable` | `call gitgutter#highlight#linenr_disable()`                                                                   |
-| `GitGutterLineNrHighlightsEnable`  | `call gitgutter#highlight#linenr_enable()`                                                                    |
-| `GitGutterLineNrHighlightsToggle`  | `call gitgutter#highlight#linenr_toggle()`                                                                    |
-| `GitGutterNextHunk`                | `call gitgutter#hunk#next_hunk(<count>)`                                                                      |
-| `GitGutterPrevHunk`                | `call gitgutter#hunk#prev_hunk(<count>)`                                                                      |
-| `GitGutterPreviewHunk`             | `call gitgutter#hunk#preview()`                                                                               |
-| `GitGutterQuickFix`                | `call gitgutter#quickfix(0)`                                                                                  |
-| `GitGutterQuickFixCurrentFile`     | `call gitgutter#quickfix(1)`                                                                                  |
-| `GitGutterSignsDisable`            | `call gitgutter#sign#disable()`                                                                               |
-| `GitGutterSignsEnable`             | `call gitgutter#sign#enable()`                                                                                |
-| `GitGutterSignsToggle`             | `call gitgutter#sign#toggle()`                                                                                |
-| `GitGutterStageHunk`               | `call gitgutter#hunk#stage(<line1>,<line2>)`                                                                  |
-| `GitGutterToggle`                  | `call gitgutter#toggle()`                                                                                     |
-| `GitGutterUndoHunk`                | `call gitgutter#hunk#undo()`                                                                                  |
-| `GlLog`                            | `:exe fugitive#LogCommand(<line1>,<count>,+"<range>",<bang>0,"<mods>",<q-args>, "l")`                         |
-| `Glcd`                             | `exe fugitive#Cd(<q-args>, 1)`                                                                                |
-| `Glgrep`                           | `exe fugitive#GrepCommand(0, <count> > 0 ? <count> : 0, +"<range>", <bang>0, "<mods>", <q-args>)`             |
-| `Gllog`                            | `:exe fugitive#LogCommand(<line1>,<count>,+"<range>",<bang>0,"<mods>",<q-args>, "l")`                         |
-| `Gmove`                            | `echoerr ":Gmove has been removed in favor of :GMove"`                                                        |
-| `Gpedit`                           | `exe fugitive#Open("pedit", <bang>0, "<mods>", <q-args>)`                                                     |
-| `Gr`                               | `exe fugitive#ReadCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                         |
-| `Gread`                            | `exe fugitive#ReadCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                         |
-| `Gremove`                          | `echoerr ":Gremove has been removed in favor of :GRemove"`                                                    |
-| `Grename`                          | `echoerr ":Grename has been removed in favor of :GRename"`                                                    |
-| `Gsplit`                           | `exe fugitive#Open((<count> > 0 ? <count> : "").(<count> ? "split" : "edit"), <bang>0, "<mods>", <q-args>)`   |
-| `Gtabedit`                         | `exe fugitive#Open((<count> >= 0 ? <count> : "")."tabedit", <bang>0, "<mods>", <q-args>)`                     |
-| `Gvdiffsplit`                      | `exe fugitive#Diffsplit(0, <bang>0, "vertical <mods>", <q-args>)`                                             |
-| `Gvsplit`                          | `exe fugitive#Open((<count> > 0 ? <count> : "").(<count> ? "vsplit" : "edit!"), <bang>0, "<mods>", <q-args>)` |
-| `Gw`                               | `exe fugitive#WriteCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                        |
-| `Gwq`                              | `exe fugitive#WqCommand(   <line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                        |
-| `Gwrite`                           | `exe fugitive#WriteCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)`                        |
-| `Hexplore`                         | `call netrw#Explore(<count>,1,2+<bang>0,<q-args>)`                                                            |
-| `IlluminateDebug`                  | ``                                                                                                            |
-| `IlluminatePause`                  | ``                                                                                                            |
-| `IlluminatePauseBuf`               | ``                                                                                                            |
-| `IlluminateResume`                 | ``                                                                                                            |
-| `IlluminateResumeBuf`              | ``                                                                                                            |
-| `IlluminateToggle`                 | ``                                                                                                            |
-| `IlluminateToggleBuf`              | ``                                                                                                            |
-| `Inspect`                          | `Inspect highlights and extmarks at the cursor`                                                               |
-| `InspectTree`                      | `Inspect treesitter language tree for buffer`                                                                 |
-| `Lazy`                             | `Lazy`                                                                                                        |
-| `Lexplore`                         | `call netrw#Lexplore(<count>,<bang>0,<q-args>)`                                                               |
-| `LspInfo`                          | `Displays attached, active, and configured language servers`                                                  |
-| `LspLog`                           | `Opens the Nvim LSP client log.`                                                                              |
-| `LspRestart`                       | `Manually restart the given language client(s)`                                                               |
-| `LspStart`                         | `Manually launches a language server`                                                                         |
-| `LspStop`                          | `Manually stops the given language client(s)`                                                                 |
-| `Man`                              | ``                                                                                                            |
-| `MarkdownPreview`                  | `Markdown preview`                                                                                            |
-| `MatchDebug`                       | `call matchit#Match_debug()`                                                                                  |
-| `Neomake`                          | `call neomake#Make(<bang>1, [<f-args>])`                                                                      |
-| `NeomakeCancelJob`                 | `call neomake#CancelJob(<q-args>, <bang>0)`                                                                   |
-| `NeomakeCancelJobs`                | `call neomake#CancelJobs(<bang>0)`                                                                            |
-| `NeomakeClean`                     | `call neomake#cmd#clean(<bang>1)`                                                                             |
-| `NeomakeDisable`                   | `call neomake#cmd#disable(g:)`                                                                                |
-| `NeomakeDisableBuffer`             | `call neomake#cmd#disable(b:)`                                                                                |
-| `NeomakeDisableTab`                | `call neomake#cmd#disable(t:)`                                                                                |
-| `NeomakeEnable`                    | `call neomake#cmd#enable(g:)`                                                                                 |
-| `NeomakeEnableBuffer`              | `call neomake#cmd#enable(b:)`                                                                                 |
-| `NeomakeEnableTab`                 | `call neomake#cmd#enable(t:)`                                                                                 |
-| `NeomakeFile`                      | `Neomake <args>`                                                                                              |
-| `NeomakeInfo`                      | `call neomake#debug#display_info(<bang>0, <f-args>)`                                                          |
-| `NeomakeListJobs`                  | `call neomake#ListJobs()`                                                                                     |
-| `NeomakeNextLoclist`               | `call neomake#list#next(<count>, 1)`                                                                          |
-| `NeomakeNextQuickfix`              | `call neomake#list#next(<count>, 0)`                                                                          |
-| `NeomakePrevLoclist`               | `call neomake#list#prev(<count>, 1)`                                                                          |
-| `NeomakePrevQuickfix`              | `call neomake#list#prev(<count>, 0)`                                                                          |
-| `NeomakeProject`                   | `Neomake! <args>`                                                                                             |
-| `NeomakeSh`                        | `call neomake#ShCommand(<bang>0, <q-args>)`                                                                   |
-| `NeomakeStatus`                    | `call neomake#cmd#display_status()`                                                                           |
-| `NeomakeToggle`                    | `call neomake#cmd#toggle(g:)`                                                                                 |
-| `NeomakeToggleBuffer`              | `call neomake#cmd#toggle(b:)`                                                                                 |
-| `NeomakeToggleTab`                 | `call neomake#cmd#toggle(t:)`                                                                                 |
-| `NetUserPass`                      | `call NetUserPass(<f-args>)`                                                                                  |
-| `NetrwClean`                       | `call netrw#Clean(<bang>0)`                                                                                   |
-| `NetrwSettings`                    | `call netrwSettings#NetrwSettings()`                                                                          |
-| `Nexplore`                         | `call netrw#Explore(-1,0,0,<q-args>)`                                                                         |
-| `NoMatchParen`                     | `call s:NoMatchParen()`                                                                                       |
-| `Nread`                            | `let s:svpos= winsaveview()|call netrw#NetRead(<count>,<f-args>)|call winrestview(s:svpos)`                   |
-| `Nsource`                          | `let s:svpos= winsaveview()|call netrw#NetSource(<f-args>)|call winrestview(s:svpos)`                         |
-| `Ntree`                            | `call netrw#SetTreetop(1,<q-args>)`                                                                           |
-| `Nwrite`                           | `let s:svpos= winsaveview()|<line1>,<line2>call netrw#NetWrite(<f-args>)|call winrestview(s:svpos)`           |
-| `Pexplore`                         | `call netrw#Explore(-2,0,0,<q-args>)`                                                                         |
-| `Sexplore`                         | `call netrw#Explore(<count>,1,0+<bang>0,<q-args>)`                                                            |
-| `TOhtml`                           | `:call tohtml#Convert2HTML(<line1>, <line2>)`                                                                 |
-| `TSBufDisable`                     | `lua require'nvim-treesitter.configs'.commands.TSBufDisable['run<bang>'](<f-args>)`                           |
-| `TSBufEnable`                      | `lua require'nvim-treesitter.configs'.commands.TSBufEnable['run<bang>'](<f-args>)`                            |
-| `TSBufToggle`                      | `lua require'nvim-treesitter.configs'.commands.TSBufToggle['run<bang>'](<f-args>)`                            |
-| `TSCaptureUnderCursor`             | ``                                                                                                            |
-| `TSConfigInfo`                     | `lua require'nvim-treesitter.configs'.commands.TSConfigInfo['run<bang>'](<f-args>)`                           |
-| `TSDisable`                        | `lua require'nvim-treesitter.configs'.commands.TSDisable['run<bang>'](<f-args>)`                              |
-| `TSEditQuery`                      | `lua require'nvim-treesitter.configs'.commands.TSEditQuery['run<bang>'](<f-args>)`                            |
-| `TSEditQueryUserAfter`             | `lua require'nvim-treesitter.configs'.commands.TSEditQueryUserAfter['run<bang>'](<f-args>)`                   |
-| `TSEnable`                         | `lua require'nvim-treesitter.configs'.commands.TSEnable['run<bang>'](<f-args>)`                               |
-| `TSHighlightCapturesUnderCursor`   | ``                                                                                                            |
-| `TSInstall`                        | `lua require'nvim-treesitter.install'.commands.TSInstall['run<bang>'](<f-args>)`                              |
-| `TSInstallFromGrammar`             | `lua require'nvim-treesitter.install'.commands.TSInstallFromGrammar['run<bang>'](<f-args>)`                   |
-| `TSInstallInfo`                    | `lua require'nvim-treesitter.info'.commands.TSInstallInfo['run<bang>'](<f-args>)`                             |
-| `TSInstallSync`                    | `lua require'nvim-treesitter.install'.commands.TSInstallSync['run<bang>'](<f-args>)`                          |
-| `TSModuleInfo`                     | `lua require'nvim-treesitter.info'.commands.TSModuleInfo['run<bang>'](<f-args>)`                              |
-| `TSNodeUnderCursor`                | ``                                                                                                            |
-| `TSPlaygroundToggle`               | ``                                                                                                            |
-| `TSToggle`                         | `lua require'nvim-treesitter.configs'.commands.TSToggle['run<bang>'](<f-args>)`                               |
-| `TSUninstall`                      | `lua require'nvim-treesitter.install'.commands.TSUninstall['run<bang>'](<f-args>)`                            |
-| `TSUpdate`                         | `lua require'nvim-treesitter.install'.commands.TSUpdate['run<bang>'](<f-args>)`                               |
-| `TSUpdateSync`                     | `lua require'nvim-treesitter.install'.commands.TSUpdateSync['run<bang>'](<f-args>)`                           |
-| `Texplore`                         | `call netrw#Explore(<count>,0,6        ,<q-args>)`                                                            |
-| `Tutor`                            | `call tutor#TutorCmd(<q-args>)`                                                                               |
-| `UndotreeFocus`                    | `:call undotree#UndotreeFocus()`                                                                              |
-| `UndotreeHide`                     | `:call undotree#UndotreeHide()`                                                                               |
-| `UndotreeShow`                     | `:call undotree#UndotreeShow()`                                                                               |
-| `UndotreeToggle`                   | `:call undotree#UndotreeToggle()`                                                                             |
-| `UpdateRemotePlugins`              | `call remote#host#UpdateRemotePlugins()`                                                                      |
-| `Vexplore`                         | `call netrw#Explore(<count>,1,4+<bang>0,<q-args>)`                                                            |
-| `Vimuntar`                         | `call tar#Vimuntar(<q-args>)`                                                                                 |
-| `Wfa`                              | `Alias for WriteFormatAll`                                                                                    |
-| `WriteFormatAll`                   | `Write and format all loaded file buffers`                                                                    |
+|                name                |                                                        definition                                                         |
+|------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `AutoformatDisable`                | `Disable autoformat globally`                                                                                             |
+| `AutoformatDisableBuffer`          | `Disable autoformat for buffer`                                                                                           |
+| `AutoformatEnable`                 | `Enable autoformat globally`                                                                                              |
+| `AutoformatEnableBuffer`           | `Enable autoformat for buffer`                                                                                            |
+| `AutoformatToggle`                 | `Toggle autoformat globally`                                                                                              |
+| `AutoformatToggleBuffer`           | `Toggle autoformat for buffer`                                                                                            |
+| `CSpell`                           | ``                                                                                                                        |
+| `CmpStatus`                        | `Check status of cmp sources`                                                                                             |
+| `ColorizerAttachToBuffer`          | `lua require'colorizer'.attach_to_buffer(0)`                                                                              |
+| `ColorizerDetachFromBuffer`        | `lua require'colorizer'.detach_from_buffer(0)`                                                                            |
+| `ColorizerReloadAllBuffers`        | `lua require'colorizer'.reload_all_buffers()`                                                                             |
+| `ColorizerToggle`                  | `lua local c = require'colorizer' if c.is_buffer_attached(0) then c.detach_from_buffer(0) else c.attach_to_buffer(0) end` |
+| `Commentary`                       | `call s:go(<line1>,<line2>,<bang>0)`                                                                                      |
+| `DoMatchParen`                     | `call s:DoMatchParen()`                                                                                                   |
+| `Explore`                          | `call netrw#Explore(<count>,0,0+<bang>0,<q-args>)`                                                                        |
+| `FzfLua`                           | `lua require('fzf-lua.cmd').load_command(<f-args>)`                                                                       |
+| `GenerateDocs`                     | ``                                                                                                                        |
+| `GitGutter`                        | `call gitgutter#process_buffer(bufnr(''), 1)`                                                                             |
+| `GitGutterAll`                     | `call gitgutter#all(1)`                                                                                                   |
+| `GitGutterBufferDisable`           | `call gitgutter#buffer_disable()`                                                                                         |
+| `GitGutterBufferEnable`            | `call gitgutter#buffer_enable()`                                                                                          |
+| `GitGutterBufferToggle`            | `call gitgutter#buffer_toggle()`                                                                                          |
+| `GitGutterDebug`                   | `call gitgutter#debug#debug()`                                                                                            |
+| `GitGutterDiffOrig`                | `call gitgutter#difforig()`                                                                                               |
+| `GitGutterDisable`                 | `call gitgutter#disable()`                                                                                                |
+| `GitGutterEnable`                  | `call gitgutter#enable()`                                                                                                 |
+| `GitGutterFold`                    | `call gitgutter#fold#toggle()`                                                                                            |
+| `GitGutterLineHighlightsDisable`   | `call gitgutter#highlight#line_disable()`                                                                                 |
+| `GitGutterLineHighlightsEnable`    | `call gitgutter#highlight#line_enable()`                                                                                  |
+| `GitGutterLineHighlightsToggle`    | `call gitgutter#highlight#line_toggle()`                                                                                  |
+| `GitGutterLineNrHighlightsDisable` | `call gitgutter#highlight#linenr_disable()`                                                                               |
+| `GitGutterLineNrHighlightsEnable`  | `call gitgutter#highlight#linenr_enable()`                                                                                |
+| `GitGutterLineNrHighlightsToggle`  | `call gitgutter#highlight#linenr_toggle()`                                                                                |
+| `GitGutterNextHunk`                | `call gitgutter#hunk#next_hunk(<count>)`                                                                                  |
+| `GitGutterPrevHunk`                | `call gitgutter#hunk#prev_hunk(<count>)`                                                                                  |
+| `GitGutterPreviewHunk`             | `call gitgutter#hunk#preview()`                                                                                           |
+| `GitGutterQuickFix`                | `call gitgutter#quickfix(0)`                                                                                              |
+| `GitGutterQuickFixCurrentFile`     | `call gitgutter#quickfix(1)`                                                                                              |
+| `GitGutterSignsDisable`            | `call gitgutter#sign#disable()`                                                                                           |
+| `GitGutterSignsEnable`             | `call gitgutter#sign#enable()`                                                                                            |
+| `GitGutterSignsToggle`             | `call gitgutter#sign#toggle()`                                                                                            |
+| `GitGutterStageHunk`               | `call gitgutter#hunk#stage(<line1>,<line2>)`                                                                              |
+| `GitGutterToggle`                  | `call gitgutter#toggle()`                                                                                                 |
+| `GitGutterUndoHunk`                | `call gitgutter#hunk#undo()`                                                                                              |
+| `Hexplore`                         | `call netrw#Explore(<count>,1,2+<bang>0,<q-args>)`                                                                        |
+| `IlluminateDebug`                  | ``                                                                                                                        |
+| `IlluminatePause`                  | ``                                                                                                                        |
+| `IlluminatePauseBuf`               | ``                                                                                                                        |
+| `IlluminateResume`                 | ``                                                                                                                        |
+| `IlluminateResumeBuf`              | ``                                                                                                                        |
+| `IlluminateToggle`                 | ``                                                                                                                        |
+| `IlluminateToggleBuf`              | ``                                                                                                                        |
+| `Inspect`                          | `Inspect highlights and extmarks at the cursor`                                                                           |
+| `InspectTree`                      | `Inspect treesitter language tree for buffer`                                                                             |
+| `Lazy`                             | `Lazy`                                                                                                                    |
+| `Lexplore`                         | `call netrw#Lexplore(<count>,<bang>0,<q-args>)`                                                                           |
+| `LspInfo`                          | `Displays attached, active, and configured language servers`                                                              |
+| `LspLog`                           | `Opens the Nvim LSP client log.`                                                                                          |
+| `LspRestart`                       | `Manually restart the given language client(s)`                                                                           |
+| `LspStart`                         | `Manually launches a language server`                                                                                     |
+| `LspStop`                          | `Manually stops the given language client(s)`                                                                             |
+| `Man`                              | ``                                                                                                                        |
+| `MarkdownPreview`                  | `Markdown preview`                                                                                                        |
+| `MatchDebug`                       | `call matchit#Match_debug()`                                                                                              |
+| `Neomake`                          | `call neomake#Make(<bang>1, [<f-args>])`                                                                                  |
+| `NeomakeCancelJob`                 | `call neomake#CancelJob(<q-args>, <bang>0)`                                                                               |
+| `NeomakeCancelJobs`                | `call neomake#CancelJobs(<bang>0)`                                                                                        |
+| `NeomakeClean`                     | `call neomake#cmd#clean(<bang>1)`                                                                                         |
+| `NeomakeDisable`                   | `call neomake#cmd#disable(g:)`                                                                                            |
+| `NeomakeDisableBuffer`             | `call neomake#cmd#disable(b:)`                                                                                            |
+| `NeomakeDisableTab`                | `call neomake#cmd#disable(t:)`                                                                                            |
+| `NeomakeEnable`                    | `call neomake#cmd#enable(g:)`                                                                                             |
+| `NeomakeEnableBuffer`              | `call neomake#cmd#enable(b:)`                                                                                             |
+| `NeomakeEnableTab`                 | `call neomake#cmd#enable(t:)`                                                                                             |
+| `NeomakeFile`                      | `Neomake <args>`                                                                                                          |
+| `NeomakeInfo`                      | `call neomake#debug#display_info(<bang>0, <f-args>)`                                                                      |
+| `NeomakeListJobs`                  | `call neomake#ListJobs()`                                                                                                 |
+| `NeomakeNextLoclist`               | `call neomake#list#next(<count>, 1)`                                                                                      |
+| `NeomakeNextQuickfix`              | `call neomake#list#next(<count>, 0)`                                                                                      |
+| `NeomakePrevLoclist`               | `call neomake#list#prev(<count>, 1)`                                                                                      |
+| `NeomakePrevQuickfix`              | `call neomake#list#prev(<count>, 0)`                                                                                      |
+| `NeomakeProject`                   | `Neomake! <args>`                                                                                                         |
+| `NeomakeSh`                        | `call neomake#ShCommand(<bang>0, <q-args>)`                                                                               |
+| `NeomakeStatus`                    | `call neomake#cmd#display_status()`                                                                                       |
+| `NeomakeToggle`                    | `call neomake#cmd#toggle(g:)`                                                                                             |
+| `NeomakeToggleBuffer`              | `call neomake#cmd#toggle(b:)`                                                                                             |
+| `NeomakeToggleTab`                 | `call neomake#cmd#toggle(t:)`                                                                                             |
+| `NetUserPass`                      | `call NetUserPass(<f-args>)`                                                                                              |
+| `NetrwClean`                       | `call netrw#Clean(<bang>0)`                                                                                               |
+| `NetrwSettings`                    | `call netrwSettings#NetrwSettings()`                                                                                      |
+| `Nexplore`                         | `call netrw#Explore(-1,0,0,<q-args>)`                                                                                     |
+| `NoMatchParen`                     | `call s:NoMatchParen()`                                                                                                   |
+| `Nread`                            | `let s:svpos= winsaveview()|call netrw#NetRead(<count>,<f-args>)|call winrestview(s:svpos)`                               |
+| `Nsource`                          | `let s:svpos= winsaveview()|call netrw#NetSource(<f-args>)|call winrestview(s:svpos)`                                     |
+| `Ntree`                            | `call netrw#SetTreetop(1,<q-args>)`                                                                                       |
+| `Nwrite`                           | `let s:svpos= winsaveview()|<line1>,<line2>call netrw#NetWrite(<f-args>)|call winrestview(s:svpos)`                       |
+| `Pexplore`                         | `call netrw#Explore(-2,0,0,<q-args>)`                                                                                     |
+| `Sexplore`                         | `call netrw#Explore(<count>,1,0+<bang>0,<q-args>)`                                                                        |
+| `TOhtml`                           | `:call tohtml#Convert2HTML(<line1>, <line2>)`                                                                             |
+| `TSBufDisable`                     | `lua require'nvim-treesitter.configs'.commands.TSBufDisable['run<bang>'](<f-args>)`                                       |
+| `TSBufEnable`                      | `lua require'nvim-treesitter.configs'.commands.TSBufEnable['run<bang>'](<f-args>)`                                        |
+| `TSBufToggle`                      | `lua require'nvim-treesitter.configs'.commands.TSBufToggle['run<bang>'](<f-args>)`                                        |
+| `TSCaptureUnderCursor`             | ``                                                                                                                        |
+| `TSConfigInfo`                     | `lua require'nvim-treesitter.configs'.commands.TSConfigInfo['run<bang>'](<f-args>)`                                       |
+| `TSDisable`                        | `lua require'nvim-treesitter.configs'.commands.TSDisable['run<bang>'](<f-args>)`                                          |
+| `TSEditQuery`                      | `lua require'nvim-treesitter.configs'.commands.TSEditQuery['run<bang>'](<f-args>)`                                        |
+| `TSEditQueryUserAfter`             | `lua require'nvim-treesitter.configs'.commands.TSEditQueryUserAfter['run<bang>'](<f-args>)`                               |
+| `TSEnable`                         | `lua require'nvim-treesitter.configs'.commands.TSEnable['run<bang>'](<f-args>)`                                           |
+| `TSHighlightCapturesUnderCursor`   | ``                                                                                                                        |
+| `TSInstall`                        | `lua require'nvim-treesitter.install'.commands.TSInstall['run<bang>'](<f-args>)`                                          |
+| `TSInstallFromGrammar`             | `lua require'nvim-treesitter.install'.commands.TSInstallFromGrammar['run<bang>'](<f-args>)`                               |
+| `TSInstallInfo`                    | `lua require'nvim-treesitter.info'.commands.TSInstallInfo['run<bang>'](<f-args>)`                                         |
+| `TSInstallSync`                    | `lua require'nvim-treesitter.install'.commands.TSInstallSync['run<bang>'](<f-args>)`                                      |
+| `TSModuleInfo`                     | `lua require'nvim-treesitter.info'.commands.TSModuleInfo['run<bang>'](<f-args>)`                                          |
+| `TSNodeUnderCursor`                | ``                                                                                                                        |
+| `TSPlaygroundToggle`               | ``                                                                                                                        |
+| `TSToggle`                         | `lua require'nvim-treesitter.configs'.commands.TSToggle['run<bang>'](<f-args>)`                                           |
+| `TSUninstall`                      | `lua require'nvim-treesitter.install'.commands.TSUninstall['run<bang>'](<f-args>)`                                        |
+| `TSUpdate`                         | `lua require'nvim-treesitter.install'.commands.TSUpdate['run<bang>'](<f-args>)`                                           |
+| `TSUpdateSync`                     | `lua require'nvim-treesitter.install'.commands.TSUpdateSync['run<bang>'](<f-args>)`                                       |
+| `Texplore`                         | `call netrw#Explore(<count>,0,6        ,<q-args>)`                                                                        |
+| `Tutor`                            | `call tutor#TutorCmd(<q-args>)`                                                                                           |
+| `UndotreeFocus`                    | `:call undotree#UndotreeFocus()`                                                                                          |
+| `UndotreeHide`                     | `:call undotree#UndotreeHide()`                                                                                           |
+| `UndotreeShow`                     | `:call undotree#UndotreeShow()`                                                                                           |
+| `UndotreeToggle`                   | `:call undotree#UndotreeToggle()`                                                                                         |
+| `UpdateRemotePlugins`              | `call remote#host#UpdateRemotePlugins()`                                                                                  |
+| `Vexplore`                         | `call netrw#Explore(<count>,1,4+<bang>0,<q-args>)`                                                                        |
+| `Vimuntar`                         | `call tar#Vimuntar(<q-args>)`                                                                                             |
+| `Wfa`                              | `Alias for WriteFormatAll`                                                                                                |
+| `WriteFormatAll`                   | `Write and format all loaded file buffers`                                                                                |
 

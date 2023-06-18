@@ -5,6 +5,6 @@ return {
 	},
 	{
 		"tpope/vim-fugitive",
-		event = "BufEnter",
+		cond = not not os.getenv("NVIM_DIFF"),
 	},
 }

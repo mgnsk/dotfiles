@@ -42,20 +42,15 @@ return {
 		"norcalli/nvim-colorizer.lua",
 		ft = { "lua", "html", "css", "less" },
 		config = function()
-			local opts = {
-				RGB = true,
-				RRGGBB = true,
-				names = false,
-				rgb_fn = true,
-				hsl_fn = true,
-				css = true,
-			}
 			require("colorizer").setup({
-				"*",
-				lua = opts,
-				html = opts,
-				css = opts,
-				less = opts,
+				["*"] = {
+					RGB = true,
+					RRGGBB = true,
+					names = false,
+					rgb_fn = true,
+					hsl_fn = true,
+					css = true,
+				},
 			})
 		end,
 	},

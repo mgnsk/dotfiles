@@ -81,19 +81,4 @@ return {
 			"nvim-treesitter/nvim-treesitter",
 		},
 	},
-	{
-		"RRethy/vim-illuminate",
-		event = { "BufEnter" },
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-		},
-		config = function()
-			require("illuminate").configure({
-				providers = {
-					"treesitter",
-				},
-				delay = vim.o.updatetime,
-			})
-		end,
-	},
 }

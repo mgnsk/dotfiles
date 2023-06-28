@@ -30,9 +30,15 @@ return {
 						require("luasnip").lsp_expand(args.body)
 					end,
 				},
+				-- https://github.com/hrsh7th/nvim-cmp/issues/1621
+				completion = {
+					completeopt = "menu,menuone,noinsert", -- remove default noselect
+				},
+				preselect = cmp.PreselectMode.None,
 				sources = {
 					{ name = "nvim_lsp" },
 					{ name = "nvim_lsp_signature_help" },
+					{ name = "luasnip" },
 					{ name = "buffer" },
 					{ name = "nvim_lua" },
 					{ name = "async_path" },

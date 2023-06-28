@@ -187,10 +187,14 @@ end, { desc = "Goto prev diagnostic or location list item in current buffer" })
 set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
 set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
+
 set("n", "K", function()
 	vim.lsp.buf.hover()
+end, { desc = "Hover documentation" })
+
+set("n", "L", function()
 	vim.diagnostic.open_float()
-end, { desc = "Hover documentation and diagnostic" })
+end, { desc = "Hover diagnostic" })
 
 set("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
 set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })

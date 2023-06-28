@@ -22,9 +22,13 @@ return {
 		lazy = true,
 	},
 	"pearofducks/ansible-vim",
-	"chaoren/vim-wordmotion",
+	{
+		"chaoren/vim-wordmotion",
+		event = "BufEnter",
+	},
 	{
 		"ojroques/nvim-osc52",
+		event = "BufEnter",
 		config = function()
 			local function copy(lines, _)
 				require("osc52").copy(table.concat(lines, "\n"))

@@ -1,6 +1,7 @@
 return {
 	{
 		"mgnsk/sync-format.nvim",
+		event = "BufEnter",
 		config = function()
 			require("formatter").setup({
 				css = { "prettier", "-w" },

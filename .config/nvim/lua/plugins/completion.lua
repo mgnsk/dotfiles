@@ -49,6 +49,7 @@ return {
 				},
 				sorting = {
 					comparators = {
+						compare.length,
 						compare.offset,
 						compare.exact,
 						compare.score,
@@ -56,7 +57,6 @@ return {
 						compare.locality,
 						compare.kind,
 						compare.sort_text,
-						compare.length,
 						compare.order,
 					},
 				},

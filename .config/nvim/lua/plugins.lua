@@ -7,7 +7,10 @@ return {
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
 		config = function()
-			require("nvim-autopairs").setup({})
+			local ap = require("nvim-autopairs")
+			ap.setup({})
+			ap.remove_rule([[']])
+			ap.remove_rule([["]])
 		end,
 	},
 	{

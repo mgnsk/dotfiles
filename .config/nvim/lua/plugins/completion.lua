@@ -6,7 +6,6 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			"hrsh7th/cmp-nvim-lua",
-			"FelipeLema/cmp-async-path",
 			"hrsh7th/vim-vsnip",
 			"hrsh7th/vim-vsnip-integ",
 			"hrsh7th/cmp-vsnip",
@@ -26,7 +25,7 @@ return {
 			end
 
 			local cmp = require("cmp")
-			local compare = cmp.config.compare
+			local types = require("cmp.types")
 
 			cmp.setup({
 				snippet = {
@@ -40,24 +39,35 @@ return {
 				},
 				preselect = cmp.PreselectMode.None,
 				sources = {
-					{ name = "nvim_lsp" },
+					{ name = "nvim_lsp", priority = 1000 },
 					{ name = "nvim_lsp_signature_help" },
-					{ name = "vsnip" },
-					{ name = "buffer" },
-					{ name = "nvim_lua" },
-					{ name = "async_path", keyword_length = 3 },
+					{ name = "nvim_lua", priority = 900 },
+					{ name = "vsnip", priority = 800 },
+					{
+						name = "buffer",
+						priority = 700,
+						option = {
+							get_bufnrs = function()
+								return vim.api.nvim_list_bufs()
+							end,
+						},
+					},
 				},
 				sorting = {
 					comparators = {
-						compare.length,
-						compare.offset,
-						compare.exact,
-						compare.score,
-						compare.recently_used,
-						compare.locality,
-						compare.kind,
-						compare.sort_text,
-						compare.order,
+						function(entry1, entry2)
+							local kind1 = entry1:get_kind()
+							local kind2 = entry2:get_kind()
+							if
+								kind1 ~= types.lsp.CompletionItemKind.Module
+								and kind2 == types.lsp.CompletionItemKind.Module
+							then
+								return true
+							else
+								return false
+							end
+						end,
+						cmp.config.compare.order,
 					},
 				},
 				mapping = {

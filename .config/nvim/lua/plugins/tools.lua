@@ -9,6 +9,9 @@ return {
 						delay = 0,
 					},
 				},
+				files = {
+					fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
+				},
 				grep = {
 					rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --no-ignore-vcs --glob=!.git/",
 				},

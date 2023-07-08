@@ -221,7 +221,7 @@ input * {
 }
 
 input type:keyboard {
-    repeat_delay 200
+    repeat_delay 160
     repeat_rate 30
 }
 
@@ -247,19 +247,18 @@ exec sway-fader --app_id="foot:0.7:0.97"
 for_window [class=".*"] border none
 
 # AUTOSTART
-exec light -N 5
-exec light -I
-exec "lxsession"
-exec "lxpolkit"
-# TODO: why was this needed?
-# exec "dbus-update-activation-environment --systemd DISPLAY"
-# TODO: needed for fedora, test on arch
+
+# Needed for xdg-desktop-portal-wlr to not block swaybar and apps startup.
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+
+exec lxsession
+exec lxpolkit
 exec /usr/libexec/geoclue-2.0/demos/agent
-exec "gammastep-indicator"
-exec swaync
-exec "thunar --daemon"
-exec sway-audio-idle-inhibit
+exec gammastep-indicator
 exec nm-applet --indicator
+exec swaync
+exec thunar --daemon
+exec sway-audio-idle-inhibit
 exec swayidle -w \
                 timeout 600 'swaylock -f -c 000000' \
                 timeout 1200 'swaymsg "output * dpms off"' \

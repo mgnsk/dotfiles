@@ -62,7 +62,7 @@ return {
 
 			lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
 				capabilities = require("cmp_nvim_lsp").default_capabilities(),
-				on_attach = function(client, bufnr)
+				on_init = function(client, bufnr)
 					client.server_capabilities.semanticTokensProvider = nil
 				end,
 			})

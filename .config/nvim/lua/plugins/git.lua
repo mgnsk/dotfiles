@@ -5,6 +5,6 @@ return {
 	},
 	{
 		"tpope/vim-fugitive",
-		cond = not not os.getenv("NVIM_DIFF"),
+		cmd = "Gvdiffsplit",
 	},
 }

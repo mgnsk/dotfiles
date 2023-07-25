@@ -25,7 +25,6 @@ return {
 			end
 
 			local cmp = require("cmp")
-			local types = require("cmp.types")
 
 			cmp.setup({
 				snippet = {
@@ -56,18 +55,13 @@ return {
 				sorting = {
 					comparators = {
 						function(entry1, entry2)
-							local kind1 = entry1:get_kind()
-							local kind2 = entry2:get_kind()
-							if
-								kind1 ~= types.lsp.CompletionItemKind.Module
-								and kind2 == types.lsp.CompletionItemKind.Module
-							then
-								return true
-							else
-								return false
+							local preselect1 = entry1.completion_item.preselect or false
+							local preselect2 = entry2.completion_item.preselect or false
+
+							if preselect1 ~= preselect2 then
+								return preselect1
 							end
 						end,
-						cmp.config.compare.order,
 					},
 				},
 				mapping = {

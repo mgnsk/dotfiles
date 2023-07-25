@@ -60,13 +60,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	command = [[%s/\n\+\%$//e]],
 })
 
-vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
-	pattern = "*.zaml",
-	callback = function()
-		vim.bo.filetype = "zaml"
-	end,
-})
-
 require("persistent_undo")
 require("indent")
 require("mappings")

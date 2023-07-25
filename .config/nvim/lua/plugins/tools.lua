@@ -36,6 +36,14 @@ return {
 			-- Note: golangci_lint is configured to run go_vet.
 			vim.g.neomake_go_enabled_makers = { "go", "golangci_lint", "golint" }
 			vim.g.neomake_c_enabled_makers = { "gcc" }
+
+			vim.g.neomake_balafon_lint_maker = {
+				exe = "balafon",
+				args = "lint",
+				errorformat = "%f:%l:%c: error: %m",
+			}
+
+			vim.g.neomake_balafon_enabled_makers = { "lint" }
 		end,
 		config = function()
 			vim.fn["neomake#configure#automake"]("w")

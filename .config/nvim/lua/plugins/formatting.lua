@@ -4,6 +4,7 @@ return {
 		event = "BufEnter",
 		config = function()
 			require("formatter").setup({
+				balafon = { "balafon", "fmt", "-w" },
 				css = { "prettier", "-w" },
 				less = { "prettier", "-w" },
 				markdown = { "prettier", "-w" },

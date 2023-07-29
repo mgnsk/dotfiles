@@ -31,7 +31,6 @@ return {
 				filetype = "bal",
 			}
 			install({ "balafon" })
-			-- vim.opt.rtp:prepend(parser_config.balafon.install_info.url)
 		end,
 	},
 	{

@@ -1,7 +1,10 @@
 return {
 	{
-		"tpope/vim-commentary",
+		"numToStr/Comment.nvim",
 		event = "BufEnter",
+		config = function()
+			require("Comment").setup()
+		end,
 	},
 	{
 		"windwp/nvim-autopairs",

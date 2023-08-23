@@ -59,6 +59,7 @@ return {
 				"query",
 				"rust",
 				"sql",
+				"svelte",
 				"tlaplus",
 				"toml",
 				"twig",

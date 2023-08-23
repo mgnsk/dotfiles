@@ -12,6 +12,7 @@ return {
 				json = { "prettier", "-w" },
 				javascript = { "prettier", "-w" },
 				typescript = { "prettier", "-w" },
+				svelte = { "prettier", "-w", "--plugin", "prettier-plugin-svelte" },
 				lua = { "stylua" },
 				c = { "clang-format", "-i" },
 				glsl = { "clang-format", "-i" },

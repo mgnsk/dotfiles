@@ -39,7 +39,7 @@ return {
 				preselect = cmp.PreselectMode.None,
 				sources = {
 					{ name = "nvim_lsp", priority = 1000 },
-					{ name = "nvim_lsp_signature_help" },
+					{ name = "nvim_lsp_signature_help", priority = 950 },
 					{ name = "nvim_lua", priority = 900 },
 					{ name = "vsnip", priority = 800 },
 					{

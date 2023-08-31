@@ -63,7 +63,6 @@ return {
 	},
 	{
 		"ryuichiroh/vim-cspell",
-		cmd = "CSpell",
 		init = function()
 			vim.g.cspell_disable_autogroup = true
 		end,

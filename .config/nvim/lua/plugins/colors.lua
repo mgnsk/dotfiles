@@ -1,7 +1,6 @@
 return {
 	{
 		"Mofiqul/vscode.nvim",
-		cond = #(vim.api.nvim_list_uis()) > 0,
 		config = function()
 			vim.o.background = "dark"
 

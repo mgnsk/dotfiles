@@ -51,11 +51,3 @@ if status --is-interactive
 		direnv hook fish | source
 	end
 end
-
-# Start sway at login
-if status is-login
-	if test -z "$DISPLAY" -a "$XDG_VTNR" = 1
-		export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
-		exec sway
-	end
-end

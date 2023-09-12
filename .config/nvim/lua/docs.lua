@@ -40,7 +40,6 @@ local function generate_user_commands()
 	end)
 
 	for _, c in ipairs(commands) do
-		-- TODO: why some commands have empty definition (like CSpell) although their desc is set?
 		table.insert(rows, {
 			string.format("`%s`", c.name),
 			string.format("`%s`", c.definition),

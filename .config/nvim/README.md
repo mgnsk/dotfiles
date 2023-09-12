@@ -71,11 +71,15 @@
 | `o`  | `e`          | ` <Plug>WordMotion_e `                                                              |                                                              |
 | `x`  | `e`          | ` <Plug>WordMotion_e `                                                              |                                                              |
 | `n`  | `e`          | ` <Plug>WordMotion_e `                                                              |                                                              |
-| `n`  | `gcu`        | ` <Plug>Commentary<Plug>Commentary `                                                |                                                              |
-| `n`  | `gcc`        | ` <Plug>CommentaryLine `                                                            |                                                              |
-| `o`  | `gc`         | ` <Plug>Commentary `                                                                |                                                              |
-| `n`  | `gc`         | ` <Plug>Commentary `                                                                |                                                              |
-| `x`  | `gc`         | ` <Plug>Commentary `                                                                |                                                              |
+| `n`  | `gcA`        |                                                                                     | Comment insert end of line                                   |
+| `n`  | `gcO`        |                                                                                     | Comment insert above                                         |
+| `n`  | `gco`        |                                                                                     | Comment insert below                                         |
+| `x`  | `gb`         | ` <Plug>(comment_toggle_blockwise_visual) `                                         | Comment toggle blockwise (visual)                            |
+| `x`  | `gc`         | ` <Plug>(comment_toggle_linewise_visual) `                                          | Comment toggle linewise (visual)                             |
+| `n`  | `gbc`        |                                                                                     | Comment toggle current block                                 |
+| `n`  | `gcc`        |                                                                                     | Comment toggle current line                                  |
+| `n`  | `gb`         | ` <Plug>(comment_toggle_blockwise) `                                                | Comment toggle blockwise                                     |
+| `n`  | `gc`         | ` <Plug>(comment_toggle_linewise) `                                                 | Comment toggle linewise                                      |
 | `o`  | `ge`         | ` <Plug>WordMotion_ge `                                                             |                                                              |
 | `x`  | `ge`         | ` <Plug>WordMotion_ge `                                                             |                                                              |
 | `n`  | `ge`         | ` <Plug>WordMotion_ge `                                                             |                                                              |
@@ -113,9 +117,8 @@
 | `AutoformatEnableBuffer`           | `Enable autoformat for buffer`                                                                      |
 | `AutoformatToggle`                 | `Toggle autoformat globally`                                                                        |
 | `AutoformatToggleBuffer`           | `Toggle autoformat for buffer`                                                                      |
-| `CSpell`                           | ``                                                                                                  |
+| `CSpell`                           | `Run cspell on current buffer`                                                                      |
 | `CmpStatus`                        | `Check status of cmp sources`                                                                       |
-| `Commentary`                       | `call s:go(<line1>,<line2>,<bang>0)`                                                                |
 | `DoMatchParen`                     | `call s:DoMatchParen()`                                                                             |
 | `Explore`                          | `call netrw#Explore(<count>,0,0+<bang>0,<q-args>)`                                                  |
 | `FzfLua`                           | `lua require('fzf-lua.cmd').load_command(<f-args>)`                                                 |
@@ -147,6 +150,7 @@
 | `GitGutterStageHunk`               | `call gitgutter#hunk#stage(<line1>,<line2>)`                                                        |
 | `GitGutterToggle`                  | `call gitgutter#toggle()`                                                                           |
 | `GitGutterUndoHunk`                | `call gitgutter#hunk#undo()`                                                                        |
+| `Gvdiffsplit`                      | ``                                                                                                  |
 | `Hexplore`                         | `call netrw#Explore(<count>,1,2+<bang>0,<q-args>)`                                                  |
 | `Inspect`                          | `Inspect highlights and extmarks at the cursor`                                                     |
 | `InspectTree`                      | `Inspect treesitter language tree for buffer`                                                       |

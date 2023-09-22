@@ -88,4 +88,4 @@ tasks:
           --volume ${workspace}:${workspace}:Z
           --workdir ${workspace}
           toolbox:latest
-          fish -c "nvim ."
+          fish -c tmux

@@ -32,6 +32,7 @@ return {
 		event = { "BufEnter" },
 		init = function()
 			vim.g.neomake_open_list = 2
+			vim.g.neomake_list_height = 5
 			vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
 			-- Note: golangci_lint is configured to run go_vet.
 			vim.g.neomake_go_enabled_makers = { "go", "golangci_lint", "golint" }

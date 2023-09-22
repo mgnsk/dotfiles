@@ -60,6 +60,16 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	command = [[%s/\n\+\%$//e]],
 })
 
+vim.api.nvim_create_autocmd("QuitPre", {
+	desc = "Automatically close corresponding location list when quitting a window",
+	pattern = "*",
+	callback = function()
+		if vim.bo.filetype ~= "qf" then
+			vim.cmd("silent! lclose")
+		end
+	end,
+})
+
 require("persistent_undo")
 require("indent")
 require("mappings")

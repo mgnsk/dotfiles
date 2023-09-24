@@ -6,6 +6,7 @@ return {
 			require("formatter").setup({
 				balafon = { "balafon", "fmt", "-w" },
 				css = { "prettier", "-w" },
+				fish = { "fish", "-c", [['fish_indent -w $argv[1]']] },
 				less = { "prettier", "-w" },
 				markdown = { "prettier", "-w" },
 				html = { "prettier", "-w" },

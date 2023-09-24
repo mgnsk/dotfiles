@@ -9,13 +9,13 @@ fish_add_path ~/.tools/vendor/bin
 fish_add_path ~/.tools/node_modules/.bin
 fish_add_path ~/toolbox/bin
 
-set -gx SHELL "/usr/bin/fish"
+set -gx SHELL /usr/bin/fish
 
-set -gx GOFLAGS "-modcacherw"
+set -gx GOFLAGS -modcacherw
 set -gx GOPATH "$HOME/go"
 
-set -gx EDITOR "nvim"
-set -gx VISUAL "nvim"
+set -gx EDITOR nvim
+set -gx VISUAL nvim
 set -gx PAGER "less -R"
 set -gx MANPAGER "nvim +Man!"
 
@@ -38,16 +38,16 @@ set -g fish_color_comment f7ca88
 set -g fish_color_param d8d8d8
 
 if status --is-interactive
-	if test -d /usr/share/fzf/shell
-		source /usr/share/fzf/shell/key-bindings.fish
-	end
+    if test -d /usr/share/fzf/shell
+        source /usr/share/fzf/shell/key-bindings.fish
+    end
 
-	if test -f /usr/share/LS_COLORS/dircolors.sh
-		set colors $(sh -c ". /usr/share/LS_COLORS/dircolors.sh; printenv LS_COLORS")
-		set -gx LS_COLORS $colors
-	end
+    if test -f /usr/share/LS_COLORS/dircolors.sh
+        set colors $(sh -c ". /usr/share/LS_COLORS/dircolors.sh; printenv LS_COLORS")
+        set -gx LS_COLORS $colors
+    end
 
-	if type -q direnv
-		direnv hook fish | source
-	end
+    if type -q direnv
+        direnv hook fish | source
+    end
 end

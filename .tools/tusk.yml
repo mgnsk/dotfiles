@@ -43,7 +43,6 @@ tasks:
           ansible-lint
           ansible-language-server
           yamllint
-          shellcheck
           shfmt
           bash-language-server
           brotli
@@ -78,6 +77,7 @@ tasks:
           buf-bin
           golangci-lint-bin
           hadolint-bin
+          shellcheck-bin
           lscolors-git
 
       - command: go install -v github.com/rliebz/tusk@latest

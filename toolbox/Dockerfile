@@ -40,7 +40,6 @@ RUN pacman -Syyu --noconfirm \
 	ansible-lint \
 	ansible-language-server \
 	yamllint \
-	shellcheck \
 	shfmt \
 	bash-language-server \
 	brotli \
@@ -95,6 +94,7 @@ RUN yay -S --noconfirm --needed --batchinstall --removemake --cleanafter \
 	buf-bin \
 	golangci-lint-bin \
 	hadolint-bin \
+	shellcheck-bin \
 	lscolors-git \
 	&& rm -rf ~/.cache
 

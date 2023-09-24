@@ -38,7 +38,6 @@ RUN pacman -Syyu --noconfirm \
 	python \
 	python-pynvim \
 	ansible-lint \
-	ansible-language-server \
 	yamllint \
 	shfmt \
 	bash-language-server \

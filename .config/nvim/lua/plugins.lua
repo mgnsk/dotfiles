@@ -27,7 +27,19 @@ return {
 		"mgnsk/table_gen.lua",
 		lazy = true,
 	},
-	"pearofducks/ansible-vim",
+	{
+		"pearofducks/ansible-vim",
+		build = function()
+			-- TODO: are the snippets shown at all?
+			local script = vim.fn.stdpath("data") .. "/lazy/ansible-vim/UltiSnips/generate.sh"
+
+			local output = vim.fn.system("bash " .. script)
+
+			if vim.v.shell_error ~= 0 then
+				vim.notify(output, vim.log.levels.ERROR, { title = "ansible-vim" })
+			end
+		end,
+	},
 	{
 		"chaoren/vim-wordmotion",
 		event = "BufEnter",

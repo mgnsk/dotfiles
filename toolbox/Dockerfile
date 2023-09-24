@@ -47,7 +47,7 @@ RUN pacman -Syyu --noconfirm \
 	lua-language-server \
 	luacheck \
 	stylua \
-	ruby-mdl \
+	markdownlint \
 	rtmidi \
 	php \
 	php-sqlite \

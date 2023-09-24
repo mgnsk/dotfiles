@@ -36,6 +36,7 @@ RUN pacman -Syyu --noconfirm \
 	go-tools \
 	revive \
 	python \
+	python-pynvim \
 	ansible-lint \
 	ansible-language-server \
 	yamllint \

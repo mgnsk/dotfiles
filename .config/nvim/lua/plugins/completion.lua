@@ -6,10 +6,15 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			"hrsh7th/cmp-nvim-lua",
+
 			"hrsh7th/vim-vsnip",
 			"hrsh7th/vim-vsnip-integ",
 			"hrsh7th/cmp-vsnip",
 			"golang/vscode-go", -- For go snippets.
+
+			"SirVer/ultisnips",
+			"honza/vim-snippets",
+			"quangnguyen30192/cmp-nvim-ultisnips",
 		},
 		cond = not os.getenv("NVIM_DIFF"),
 		event = { "BufEnter" },
@@ -30,6 +35,7 @@ return {
 				snippet = {
 					expand = function(args)
 						vim.fn["vsnip#anonymous"](args.body)
+						vim.fn["UltiSnips#Anon"](args.body)
 					end,
 				},
 				-- https://github.com/hrsh7th/nvim-cmp/issues/1621
@@ -42,9 +48,10 @@ return {
 					{ name = "nvim_lsp_signature_help", priority = 950 },
 					{ name = "nvim_lua", priority = 900 },
 					{ name = "vsnip", priority = 800 },
+					{ name = "ultisnips", priority = 700 },
 					{
 						name = "buffer",
-						priority = 700,
+						priority = 600,
 						option = {
 							get_bufnrs = function()
 								return vim.api.nvim_list_bufs()
@@ -70,6 +77,10 @@ return {
 							cmp.select_next_item()
 						elseif vim.fn["vsnip#available"](1) == 1 then
 							feedkey("<Plug>(vsnip-expand-or-jump)", "")
+						elseif vim.fn["UltiSnips#CanExpandSnippet"]() == 1 then
+							feedkey("<Plug>(cmpu-expand)", "")
+						elseif vim.fn["UltiSnips#CanJumpForwards"]() == 1 then
+							feedkey("<Plug>(cmpu-jump-forwards)", "")
 						elseif has_words_before() then
 							cmp.complete()
 						else
@@ -82,6 +93,8 @@ return {
 							cmp.select_prev_item()
 						elseif vim.fn["vsnip#jumpable"](-1) == 1 then
 							feedkey("<Plug>(vsnip-jump-prev)", "")
+						elseif vim.fn["UltiSnips#CanJumpBackwards"]() == 1 then
+							feedkey("<Plug>(cmpu-jump-backwards)", "")
 						end
 					end, { "i", "s" }),
 

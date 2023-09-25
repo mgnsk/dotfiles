@@ -16,7 +16,7 @@ $ config reset --hard origin/master
 
 # Toolbox
 
-The toolbox is a rootless immutable development environment container running on podman.
+The toolbox is an immutable development environment container.
 It's main application is running neovim.
 The following is a guide on how to run the toolbox without installing the dotfiles
 onto the host machine.
@@ -44,12 +44,6 @@ git clone git@github.com:mgnsk/dotfiles.git dotfiles
 cd dotfiles/toolbox
 ```
 
-## Setup podman
-
-```sh
-tusk setup
-```
-
 ## Build the image
 
 Build the image:
@@ -68,8 +62,3 @@ Navigate to a project directory and run it:
 cd ~/Projects/project1
 ide
 ```
-
-## Technical notes
-
-The toolbox uses native overlay driver by default which has this problem: https://github.com/containers/podman/issues/16541
-Using the userspace `fuse-overlayfs` can avoid this but has horrible performance during runtime.

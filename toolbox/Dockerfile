@@ -58,6 +58,7 @@ RUN pacman -Syyu --noconfirm \
 	neovim \
 	man \
 	&& bash -c "yes | pacman -Scc" \
+    && echo "extension=pdo_sqlite" > /etc/php/conf.d/01-pdo_sqlite.ini \
     && if grep -q "${group}:" /etc/group; then \
 	groupmod -o -g ${gid} ${group}; \
 	else \
@@ -71,7 +72,12 @@ RUN pacman -Syyu --noconfirm \
 	${user} \
 	&& passwd -d ${user} \
 	&& echo "%wheel      ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01-wheel \
-	&& gpasswd -a ${user} wheel
+	&& gpasswd -a ${user} wheel \
+    && install -d --owner=${user} --group=${group} \
+    /home/${user}/.cache \
+    /home/${user}/.cargo \
+    /home/${user}/.local/state \
+    /home/${user}/go
 
 USER ${user}
 
@@ -79,8 +85,11 @@ USER ${user}
 # AUR packages.
 FROM toolbox-base AS toolbox-aur
 
-RUN git clone https://aur.archlinux.org/yay-bin.git ~/.cache/yay-bin \
-	&& cd ~/.cache/yay-bin \
+WORKDIR /home/${user}/.cache/yay-bin
+
+COPY /dotfiles/.config/pacman/makepkg.conf /home/${user}/.config/pacman/makepkg.conf
+
+RUN git clone https://aur.archlinux.org/yay-bin.git . \
 	&& makepkg --noconfirm --syncdeps --install --clean \
       # gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"
     && gpg --keyserver keys.openpgp.org --recv-keys CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0 \
@@ -114,22 +123,24 @@ RUN go install -v github.com/rliebz/tusk@latest \
 FROM toolbox-base AS php-tools
 
 ARG user
+WORKDIR /home/${user}/.tools
 
 RUN mkdir -p /home/${user}/.tools/vendor
 COPY /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
 COPY /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
-RUN composer -d /home/${user}/.tools install --no-dev --no-cache --no-interaction --optimize-autoloader
+RUN composer install --no-dev --no-cache --no-interaction --optimize-autoloader
 
 
 # Javascript packages.
 FROM toolbox-base AS js-tools
 
 ARG user
+WORKDIR /home/${user}/.tools
 
 RUN mkdir -p /home/${user}/.tools/node_modules
 COPY /dotfiles/.tools/package.json /home/${user}/.tools/package.json
 COPY /dotfiles/.tools/package-lock.json /home/${user}/.tools/package-lock.json
-RUN cd /home/${user}/.tools && npm ci
+RUN npm ci
 
 
 # Neovim plugins.
@@ -155,13 +166,11 @@ ARG gid
 ARG user
 
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
-RUN mkdir -p /home/${user}/go /home/${user}/.cargo
 COPY --from=go-tools --chown=${uid}:${gid} /home/${user}/go/bin /home/${user}/go/bin
 # COPY --from=rust-tools /home/${user}/.rustup /home/${user}/.rustup
 COPY --from=php-tools /home/${user}/.tools/vendor /home/${user}/.tools/vendor
 COPY --from=js-tools /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-plugins /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
-COPY ./etc/php /etc/php
 
 RUN fish -c "fish_update_completions"
 RUN sudo gpasswd -d ${user} wheel \

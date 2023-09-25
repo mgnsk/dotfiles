@@ -3,9 +3,11 @@ interpreter: bash -eu -o pipefail -c
 
 options:
   container-uid:
-    default: 3000
+    default:
+      command: id -u
   container-gid:
-    default: 3000
+    default:
+      command: id -g
   container-user:
     default: dev
   container-group:
@@ -14,19 +16,40 @@ options:
     environment: HOME
 
 tasks:
-  setup:
-    usage: Set up rootless podman for host machine.
-    run:
-      - command: sudo sysctl kernel.unprivileged_userns_clone=1
-      - command: sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $(id -un)
-      - command: podman system migrate
-      - command: podman run --rm hello-world
-
-  _build:
+  _dotfiles.prod:
     private: true
     run:
+      - command: rm -rf dotfiles
+      - command: git clone git@github.com:mgnsk/dotfiles.git dotfiles
+      # Remove git dir to keep build cache if any.
+      - command: rm -rf dotfiles/.git
+
+  _dotfiles.dev:
+    private: true
+    run:
+      - command: rm -rf dotfiles
+      - command: mkdir -p dotfiles
+      - command:
+          dir: ${host-home}
+          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${host-home}/toolbox/dotfiles
+
+  build:
+    usage: Build the production toolbox image.
+    options:
+      dev:
+        type: bool
+    run:
+      - when:
+          equal: {dev: true}
+        task: _dotfiles.dev
+
+      - when:
+          equal: {dev: false}
+        task: _dotfiles.prod
+
       - command: >
-          podman build --jobs=0
+          docker build
+          --ulimit nofile=1024:10240
           --build-arg uid=${container-uid}
           --build-arg gid=${container-gid}
           --build-arg user=${container-user}
@@ -35,26 +58,6 @@ tasks:
           -f Dockerfile
           .
 
-  build:
-    usage: Build the production toolbox image.
-    run:
-      - command: rm -rf dotfiles
-      - command: git clone git@github.com:mgnsk/dotfiles.git dotfiles
-      # Remove git dir to keep build.dev podman cache if any.
-      - command: rm -rf dotfiles/.git
-      - task: _build
-
-  build.dev:
-    usage: Build the development toolbox image from host's dotfiles.
-    run:
-      - command: rm -rf dotfiles
-      - command: mkdir -p dotfiles
-      - command:
-          dir: ${host-home}
-          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${host-home}/toolbox/dotfiles
-      - task: _build
-
-  # TODO: https://github.com/containers/podman/issues/16541
   sh:
     usage: Run a new shell in the absolute directory.
     args:
@@ -67,10 +70,10 @@ tasks:
         default:
           command: timedatectl show | grep Timezone | cut -d= -f2
     run:
-      - command: podman volume create --ignore toolbox-go
-      - command: podman volume create --ignore toolbox-cargo
+      - command: docker volume create toolbox-go || true
+      - command: docker volume create toolbox-cargo || true
       - command: >
-          podman run
+          docker run
           --interactive
           --tty
           --rm
@@ -80,10 +83,9 @@ tasks:
           --env TOOLBOX_ENV=true
           --hostname toolbox
           --network host
-          --userns=keep-id:uid=${container-uid},gid=${container-gid}
-          --tmpfs /tmp:rw,exec,nosuid,nodev
-          --tmpfs /home/${container-user}/.local:rw,exec,nosuid,nodev
-          --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev
+          --tmpfs /tmp:rw,exec,nosuid,nodev,mode=777
+          --tmpfs /home/${container-user}/.local/state:rw,exec,nosuid,nodev,mode=777
+          --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev,mode=777
           --volume toolbox-go:/home/${container-user}/go
           --volume toolbox-cargo:/home/${container-user}/.cargo
           --volume ${workspace}:${workspace}:Z

@@ -1,13 +1,6 @@
 {
-    "name": "mgnsk/tools",
-    "autoload": {
-        "psr-4": {
-            "Mgnsk\\Tools\\": "src/"
-        }
-    },
-    "require": {
-        "laravel/pint": "^1.6",
-        "phpstan/phpstan": "^1.10",
-        "phpactor/phpactor": "^0.18.1"
-    }
+  "name": "mgnsk/tools",
+  "require": {
+    "laravel/pint": "^1.13"
+  }
 }

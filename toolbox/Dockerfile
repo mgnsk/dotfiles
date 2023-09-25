@@ -7,6 +7,11 @@ ARG group=dev
 # System packages and user.
 FROM archlinux:base-devel AS toolbox-base
 
+ARG uid
+ARG gid
+ARG user
+ARG group
+
 RUN pacman -Syyu --noconfirm \
 	&& pacman -S --noconfirm --needed \
 	git \
@@ -35,9 +40,6 @@ RUN pacman -Syyu --noconfirm \
 	gopls \
 	go-tools \
 	revive \
-	python \
-	python-pynvim \
-	ansible-lint \
 	yamllint \
 	shfmt \
 	bash-language-server \
@@ -52,17 +54,11 @@ RUN pacman -Syyu --noconfirm \
 	php \
 	php-sqlite \
 	composer \
-	rustup \
+	# rustup \
 	neovim \
 	man \
-	&& bash -c "yes | pacman -Scc"
-
-ARG uid
-ARG gid
-ARG user
-ARG group
-
-RUN if grep -q "${group}:" /etc/group; then \
+	&& bash -c "yes | pacman -Scc" \
+    && if grep -q "${group}:" /etc/group; then \
 	groupmod -o -g ${gid} ${group}; \
 	else \
 	groupadd -f -g ${gid} ${group}; \
@@ -86,30 +82,32 @@ FROM toolbox-base AS toolbox-aur
 RUN git clone https://aur.archlinux.org/yay-bin.git ~/.cache/yay-bin \
 	&& cd ~/.cache/yay-bin \
 	&& makepkg --noconfirm --syncdeps --install --clean \
-	&& rm -rf ~/.cache
-
-RUN yay -S --noconfirm --needed --batchinstall --removemake --cleanafter \
+      # gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"
+    && gpg --keyserver keys.openpgp.org --recv-keys CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0 \
+    && yay -S --noconfirm --needed --batchinstall --removemake --cleanafter \
 	fish-fzf \
 	buf-bin \
 	golangci-lint-bin \
 	hadolint-bin \
 	shellcheck-bin \
 	lscolors-git \
+    phpactor \
+    phpstan-bin \
 	&& rm -rf ~/.cache
 
 
 # Go packages.
 FROM toolbox-base AS go-tools
 
-RUN go install -v github.com/rliebz/tusk@latest
-RUN go install -v github.com/goccmack/gocc@latest
+RUN go install -v github.com/rliebz/tusk@latest \
+    && go install -v github.com/goccmack/gocc@latest
 
 
 # Rust installation and packages.
-FROM toolbox-base AS rust-tools
-
-RUN rustup default nightly
-RUN rustup component add rustfmt rust-src clippy rust-analyzer-preview
+# FROM toolbox-base AS rust-tools
+#
+# RUN rustup default nightly
+# RUN rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
 
 # PHP packages.
@@ -159,7 +157,7 @@ ARG user
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 RUN mkdir -p /home/${user}/go /home/${user}/.cargo
 COPY --from=go-tools --chown=${uid}:${gid} /home/${user}/go/bin /home/${user}/go/bin
-COPY --from=rust-tools /home/${user}/.rustup /home/${user}/.rustup
+# COPY --from=rust-tools /home/${user}/.rustup /home/${user}/.rustup
 COPY --from=php-tools /home/${user}/.tools/vendor /home/${user}/.tools/vendor
 COPY --from=js-tools /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-plugins /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim

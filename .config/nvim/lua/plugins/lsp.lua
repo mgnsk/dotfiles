@@ -89,7 +89,6 @@ return {
 				},
 			})
 			lsp.phpactor.setup({})
-			lsp.ansiblels.setup({})
 			lsp.svelte.setup({})
 		end,
 	},

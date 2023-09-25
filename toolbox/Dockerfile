@@ -34,6 +34,7 @@ RUN pacman -Syyu --noconfirm \
 	typescript-language-server \
 	vscode-html-languageserver \
 	vscode-css-languageserver \
+	svelte-language-server \
 	npm \
 	eslint \
 	go \

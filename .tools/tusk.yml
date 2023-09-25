@@ -13,6 +13,7 @@ tasks:
       - command: >
           sudo pacman -S --noconfirm --needed
           git
+          git-delta
           unzip
           wget
           tmux
@@ -54,6 +55,7 @@ tasks:
           composer
           rustup
           neovim
+          man
 
       - when:
           - exists: ${cache}/yay-bin

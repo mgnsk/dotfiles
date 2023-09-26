@@ -77,6 +77,7 @@ RUN pacman -Syyu --noconfirm \
     && install -d --owner=${user} --group=${group} \
     /home/${user}/.cache \
     /home/${user}/.cargo \
+    /home/${user}/.local/share \
     /home/${user}/.local/state \
     /home/${user}/go
 

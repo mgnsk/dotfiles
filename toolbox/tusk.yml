@@ -47,6 +47,8 @@ tasks:
           equal: {dev: false}
         task: _dotfiles.prod
 
+      # Note: setting ulimit fixes the fakeroot slowness issue.
+      # https://github.com/greyltc-org/docker-archlinux-aur/issues/7#issuecomment-1516028357
       - command: >
           docker build
           --ulimit nofile=1024:10240

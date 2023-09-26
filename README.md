@@ -23,7 +23,8 @@ onto the host machine.
 
 ## Setting up the host machine
 
-Install [tusk](https://rliebz.github.io/tusk):
+The toolbox requires docker to bet set up on the machine.
+Install [tusk](https://rliebz.github.io/tusk) to run tasks:
 
 from binary:
 
@@ -56,9 +57,14 @@ Add the absolute path to `dotfiles/bin` directory to your PATH to use the `ide` 
 
 ## Run neovim
 
-Navigate to a project directory and run it:
+Navigate to a project directory and run the `ide` executable script to start a new fish shell in the container.
+The shell starts in the current directory bind mounted into the container.
+
+From there on, for example, you can start by invoking either `tmux` or `nvim`. See the [Neovim keymap docs](https://github.com/mgnsk/dotfiles/blob/master/.config/nvim/README.md).
 
 ```sh
 cd ~/Projects/project1
 ide
 ```
+
+An example using `tmux` would be to spawn a container in the projects root directory `~/Projects` and using each project in its own `tmux` window.

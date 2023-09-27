@@ -72,8 +72,8 @@ tasks:
         default:
           command: timedatectl show | grep Timezone | cut -d= -f2
     run:
-      - command: docker volume create toolbox-go || true
-      - command: docker volume create toolbox-cargo || true
+      - command: docker volume create ide-go || true
+      - command: docker volume create ide-cargo || true
       - command: >
           docker run
           --interactive
@@ -88,8 +88,8 @@ tasks:
           --tmpfs /tmp:rw,exec,nosuid,nodev,mode=777
           --tmpfs /home/${container-user}/.local/state:rw,exec,nosuid,nodev,mode=777
           --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev,mode=777
-          --volume toolbox-go:/home/${container-user}/go
-          --volume toolbox-cargo:/home/${container-user}/.cargo
+          --volume ide-go:/home/${container-user}/go
+          --volume ide-cargo:/home/${container-user}/.cargo
           --volume ${workspace}:${workspace}:Z
           --workdir ${workspace}
           toolbox:latest

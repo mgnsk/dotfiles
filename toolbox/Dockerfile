@@ -1,9 +1,3 @@
-ARG uid=3000
-ARG gid=3000
-ARG user=dev
-ARG group=dev
-
-
 # System packages and user.
 FROM archlinux:base-devel AS toolbox-base
 
@@ -13,73 +7,67 @@ ARG user
 ARG group
 
 RUN pacman -Syyu --noconfirm \
-	&& pacman -S --noconfirm --needed \
-	git \
-	git-delta \
-	unzip \
-	wget \
-	tmux \
-	fish \
-	tree \
-	ripgrep \
-	fd \
-	bat \
-	fzf \
-	skim \
-	parallel \
-	moreutils \
-	earlyoom \
-	tidy \
-	prettier \
-	typescript-language-server \
-	vscode-html-languageserver \
-	vscode-css-languageserver \
-	svelte-language-server \
-	npm \
-	eslint \
-	go \
-	gopls \
-	go-tools \
-	revive \
-	yamllint \
-	shfmt \
-	bash-language-server \
-	brotli \
-	direnv \
-	luarocks \
-	lua-language-server \
-	luacheck \
-	stylua \
-	markdownlint \
-	rtmidi \
-	php \
-	php-sqlite \
-	composer \
-	# rustup \
-	neovim \
-	man \
-	&& bash -c "yes | pacman -Scc" \
+    && pacman -S --noconfirm --needed \
+    git \
+    git-delta \
+    unzip \
+    wget \
+    tmux \
+    fish \
+    tree \
+    ripgrep \
+    fd \
+    bat \
+    fzf \
+    skim \
+    parallel \
+    moreutils \
+    earlyoom \
+    tidy \
+    prettier \
+    typescript-language-server \
+    vscode-html-languageserver \
+    vscode-css-languageserver \
+    svelte-language-server \
+    npm \
+    eslint \
+    go \
+    gopls \
+    go-tools \
+    revive \
+    yamllint \
+    shfmt \
+    bash-language-server \
+    brotli \
+    direnv \
+    luarocks \
+    lua-language-server \
+    luacheck \
+    stylua \
+    markdownlint \
+    rtmidi \
+    php \
+    php-sqlite \
+    composer \
+    # rustup \
+    neovim \
+    man \
+    && bash -c "yes | pacman -Scc" \
     && echo "extension=pdo_sqlite" > /etc/php/conf.d/01-pdo_sqlite.ini \
     && if grep -q "${group}:" /etc/group; then \
-	groupmod -o -g ${gid} ${group}; \
-	else \
-	groupadd -f -g ${gid} ${group}; \
-	fi \
-	&& useradd \
-	-m \
-	-s /usr/bin/fish \
-	-g ${group} \
-	--uid ${uid} \
-	${user} \
-	&& passwd -d ${user} \
-	&& echo "%wheel      ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01-wheel \
-	&& gpasswd -a ${user} wheel \
-    && install -d --owner=${user} --group=${group} \
-    /home/${user}/.cache \
-    /home/${user}/.cargo \
-    /home/${user}/.local/share \
-    /home/${user}/.local/state \
-    /home/${user}/go
+    groupmod -o -g ${gid} ${group}; \
+    else \
+    groupadd -f -g ${gid} ${group}; \
+    fi \
+    && useradd \
+    -m \
+    -s /usr/bin/fish \
+    -g ${group} \
+    --uid ${uid} \
+    ${user} \
+    && passwd -d ${user} \
+    && echo "%wheel      ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01-wheel \
+    && gpasswd -a ${user} wheel
 
 USER ${user}
 
@@ -92,19 +80,19 @@ WORKDIR /home/${user}/.cache/yay-bin
 COPY /dotfiles/.config/pacman/makepkg.conf /home/${user}/.config/pacman/makepkg.conf
 
 RUN git clone https://aur.archlinux.org/yay-bin.git . \
-	&& makepkg --noconfirm --syncdeps --install --clean \
+    && makepkg --noconfirm --syncdeps --install --clean \
       # gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"
     && gpg --keyserver keys.openpgp.org --recv-keys CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0 \
     && yay -S --noconfirm --needed --batchinstall --removemake --cleanafter \
-	fish-fzf \
-	buf-bin \
-	golangci-lint-bin \
-	hadolint-bin \
-	shellcheck-bin \
-	lscolors-git \
+    fish-fzf \
+    buf-bin \
+    golangci-lint-bin \
+    hadolint-bin \
+    shellcheck-bin \
+    lscolors-git \
     phpactor \
     phpstan-bin \
-	&& rm -rf ~/.cache
+    && rm -rf ~/.cache
 
 
 # Go packages.
@@ -155,9 +143,9 @@ ARG user
 # TODO: can we keep the lockfile owned by root? https://github.com/folke/lazy.nvim/issues/727
 COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
 RUN nvim --headless -u NORC \
-	-c 'lua if not require("lazy_setup") then os.exit(1) end' \
-	-c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then print(result); os.exit(1) end' \
-	-c 'lua os.exit(0)'
+    -c 'lua if not require("lazy_setup") then os.exit(1) end' \
+    -c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then print(result); os.exit(1) end' \
+    -c 'lua os.exit(0)'
 
 
 # Final image.
@@ -174,8 +162,14 @@ COPY --from=php-tools /home/${user}/.tools/vendor /home/${user}/.tools/vendor
 COPY --from=js-tools /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-plugins /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
 
-RUN fish -c "fish_update_completions"
-RUN sudo gpasswd -d ${user} wheel \
-	&& sudo rm /etc/sudoers.d/01-wheel
+RUN fish -c "fish_update_completions" \
+    && sudo gpasswd -d ${user} wheel \
+    && sudo rm /etc/sudoers.d/01-wheel \
+    && mkdir -p \
+    /home/${user}/.cache \
+    /home/${user}/.cargo \
+    /home/${user}/.local/share \
+    /home/${user}/.local/state \
+    /home/${user}/go
 
 WORKDIR /workspaces

@@ -74,6 +74,7 @@ tasks:
     run:
       - command: docker volume create ide-go || true
       - command: docker volume create ide-cargo || true
+      - command: docker volume create ide-fish-history || true
       - command: >
           docker run
           --interactive
@@ -90,6 +91,7 @@ tasks:
           --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev,mode=777
           --volume ide-go:/home/${container-user}/go
           --volume ide-cargo:/home/${container-user}/.cargo
+          --volume ide-fish-history:/home/${container-user}/.local/share/fish
           --volume ${workspace}:${workspace}:Z
           --workdir ${workspace}
           toolbox:latest

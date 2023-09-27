@@ -168,8 +168,6 @@ RUN fish -c "fish_update_completions" \
     && mkdir -p \
     /home/${user}/.cache \
     /home/${user}/.cargo \
-    /home/${user}/.local/share \
+    /home/${user}/.local/share/fish \
     /home/${user}/.local/state \
     /home/${user}/go
-
-WORKDIR /workspaces

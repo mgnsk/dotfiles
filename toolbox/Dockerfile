@@ -49,7 +49,6 @@ RUN pacman -Syyu --noconfirm \
     php \
     php-sqlite \
     composer \
-    # rustup \
     neovim \
     man \
     && bash -c "yes | pacman -Scc" \
@@ -69,12 +68,12 @@ RUN pacman -Syyu --noconfirm \
     && echo "%wheel      ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01-wheel \
     && gpasswd -a ${user} wheel
 
-USER ${user}
-
 
 # AUR packages.
 FROM toolbox-base AS toolbox-aur
 
+ARG user
+USER ${user}
 WORKDIR /home/${user}/.cache/yay-bin
 
 COPY /dotfiles/.config/pacman/makepkg.conf /home/${user}/.config/pacman/makepkg.conf
@@ -98,21 +97,32 @@ RUN git clone https://aur.archlinux.org/yay-bin.git . \
 # Go packages.
 FROM toolbox-base AS go-tools
 
+ARG user
+USER ${user}
+
 RUN go install -v github.com/rliebz/tusk@latest \
     && go install -v github.com/goccmack/gocc@latest
 
 
 # Rust installation and packages.
-# FROM toolbox-base AS rust-tools
-#
-# RUN rustup default nightly
-# RUN rustup component add rustfmt rust-src clippy rust-analyzer-preview
+FROM toolbox-base AS rust-tools
+
+RUN pacman -S --noconfirm --needed \
+    rustup \
+    && bash -c "yes | pacman -Scc"
+
+ARG user
+USER ${user}
+
+RUN rustup default nightly \
+    && rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
 
 # PHP packages.
 FROM toolbox-base AS php-tools
 
 ARG user
+USER ${user}
 WORKDIR /home/${user}/.tools
 
 RUN mkdir -p /home/${user}/.tools/vendor
@@ -125,6 +135,7 @@ RUN composer install --no-dev --no-cache --no-interaction --optimize-autoloader
 FROM toolbox-base AS js-tools
 
 ARG user
+USER ${user}
 WORKDIR /home/${user}/.tools
 
 RUN mkdir -p /home/${user}/.tools/node_modules
@@ -139,6 +150,7 @@ FROM toolbox-base AS nvim-plugins
 ARG uid
 ARG gid
 ARG user
+USER ${user}
 
 # TODO: can we keep the lockfile owned by root? https://github.com/folke/lazy.nvim/issues/727
 COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
@@ -154,10 +166,11 @@ FROM toolbox-aur
 ARG uid
 ARG gid
 ARG user
+USER ${user}
 
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 COPY --from=go-tools --chown=${uid}:${gid} /home/${user}/go/bin /home/${user}/go/bin
-# COPY --from=rust-tools /home/${user}/.rustup /home/${user}/.rustup
+COPY --from=rust-tools /home/${user}/.rustup /home/${user}/.rustup
 COPY --from=php-tools /home/${user}/.tools/vendor /home/${user}/.tools/vendor
 COPY --from=js-tools /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-plugins /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
@@ -170,4 +183,5 @@ RUN fish -c "fish_update_completions" \
     /home/${user}/.cargo \
     /home/${user}/.local/share/fish \
     /home/${user}/.local/state \
-    /home/${user}/go
+    /home/${user}/go \
+    /home/${user}/.rustup

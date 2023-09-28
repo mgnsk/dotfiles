@@ -53,7 +53,7 @@ Build the image:
 tusk build
 ```
 
-Add the absolute path to `dotfiles/bin` directory to your PATH to use the `ide` executable script.
+Add the absolute path to `dotfiles/toolbox/bin` directory to your PATH to use the `ide` executable script.
 
 ## Run neovim
 

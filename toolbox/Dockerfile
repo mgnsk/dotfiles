@@ -76,7 +76,7 @@ ARG user
 USER ${user}
 WORKDIR /home/${user}/.cache/yay-bin
 
-COPY /dotfiles/.config/pacman/makepkg.conf /home/${user}/.config/pacman/makepkg.conf
+COPY --chown=${uid}:${gid} /dotfiles/.config/pacman/makepkg.conf /home/${user}/.config/pacman/makepkg.conf
 
 RUN git clone https://aur.archlinux.org/yay-bin.git . \
     && makepkg --noconfirm --syncdeps --install --clean \
@@ -125,9 +125,9 @@ ARG user
 USER ${user}
 WORKDIR /home/${user}/.tools
 
-RUN mkdir -p /home/${user}/.tools/vendor
-COPY /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
-COPY /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
+COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
+COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
+
 RUN composer install --no-dev --no-cache --no-interaction --optimize-autoloader
 
 
@@ -138,9 +138,9 @@ ARG user
 USER ${user}
 WORKDIR /home/${user}/.tools
 
-RUN mkdir -p /home/${user}/.tools/node_modules
-COPY /dotfiles/.tools/package.json /home/${user}/.tools/package.json
-COPY /dotfiles/.tools/package-lock.json /home/${user}/.tools/package-lock.json
+COPY --chown=${uid}:${gid} /dotfiles/.tools/package.json /home/${user}/.tools/package.json
+COPY --chown=${uid}:${gid} /dotfiles/.tools/package-lock.json /home/${user}/.tools/package-lock.json
+
 RUN npm ci
 
 

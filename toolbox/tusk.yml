@@ -12,8 +12,6 @@ options:
     default: dev
   container-group:
     default: dev
-  host-home:
-    environment: HOME
 
 tasks:
   _dotfiles.prod:
@@ -26,6 +24,9 @@ tasks:
 
   _dotfiles.dev:
     private: true
+    options:
+      host-home:
+        environment: HOME
     run:
       - command: rm -rf dotfiles
       - command: mkdir -p dotfiles

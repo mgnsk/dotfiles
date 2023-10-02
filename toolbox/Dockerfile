@@ -85,7 +85,6 @@ RUN git clone https://aur.archlinux.org/yay-bin.git . \
     && yay -S --noconfirm --needed --batchinstall --removemake --cleanafter \
     fish-fzf \
     buf-bin \
-    golangci-lint-bin \
     hadolint-bin \
     shellcheck-bin \
     lscolors-git \

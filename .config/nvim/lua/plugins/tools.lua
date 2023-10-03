@@ -34,7 +34,7 @@ return {
 			vim.g.neomake_open_list = 2
 			vim.g.neomake_list_height = 5
 			vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
-			vim.g.neomake_go_enabled_makers = { "govet", "golint" }
+			vim.g.neomake_go_enabled_makers = { "go", "govet", "golint" }
 			vim.g.neomake_c_enabled_makers = { "gcc" }
 
 			vim.g.neomake_balafon_lint_maker = {

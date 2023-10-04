@@ -49,7 +49,6 @@ tasks:
           lua-language-server
           luacheck
           stylua
-          markdownlint
           rtmidi
           php
           php-sqlite

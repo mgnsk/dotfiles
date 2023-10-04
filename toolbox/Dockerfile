@@ -122,7 +122,6 @@ RUN sudo pacman -S --noconfirm --needed \
     lua-language-server \
     luacheck \
     stylua \
-    markdownlint \
     rtmidi \
     php \
     php-sqlite \

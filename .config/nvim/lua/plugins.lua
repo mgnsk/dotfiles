@@ -19,6 +19,11 @@ return {
 	{
 		"ellisonleao/glow.nvim",
 		ft = "markdown",
+		init = function()
+			vim.api.nvim_create_user_command("MarkdownPreview", function()
+				vim.cmd("Glow")
+			end, { desc = "Markdown preview" })
+		end,
 		config = function()
 			require("glow").setup({})
 		end,
@@ -52,6 +57,11 @@ return {
 	},
 	{
 		"mbbill/undotree",
+		init = function()
+			local map = require("util").map
+
+			map("n", "<leader>U", vim.cmd.UndotreeToggle, { desc = "Toggle undo tree" })
+		end,
 		event = "BufEnter",
 	},
 }

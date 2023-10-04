@@ -25,6 +25,13 @@ return {
 	{
 		"simrat39/symbols-outline.nvim",
 		lazy = true,
+		init = function()
+			local map = require("util").map
+
+			map("n", "<leader>V", function()
+				return require("symbols-outline").toggle_outline()
+			end, { desc = "Toggle LSP symbols outline tree" })
+		end,
 		config = function()
 			require("symbols-outline").setup()
 		end,
@@ -37,7 +44,7 @@ return {
 			{
 				"ray-x/lsp_signature.nvim",
 				config = function()
-					require("lsp_signature").setup({})
+					-- require("lsp_signature").setup({})
 				end,
 			},
 			{
@@ -56,6 +63,89 @@ return {
 				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
 					update_in_insert = false,
 				})
+
+			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+				callback = function(args)
+					local client = vim.lsp.get_client_by_id(args.data.client_id)
+					if client ~= nil and client.server_capabilities.inlayHintProvider then
+						vim.lsp.inlay_hint(args.buf, true)
+					end
+					-- whatever other lsp config you want
+				end,
+			})
+
+			local map = require("util").map
+
+			map("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
+			map("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
+			map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
+
+			map("n", "K", function()
+				vim.lsp.buf.hover()
+			end, { desc = "Hover documentation" })
+
+			map("n", "L", function()
+				vim.diagnostic.open_float()
+			end, { desc = "Hover diagnostic" })
+
+			map("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
+			map("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
+
+			map("n", "gj", function()
+				if vim.diagnostic.get_next() then
+					vim.diagnostic.goto_next()
+					return
+				end
+
+				local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+				local bufnr = vim.api.nvim_get_current_buf()
+				local loclist = vim.fn.getloclist(0)
+				require("util").sort_loclist(loclist)
+
+				for _, entry in pairs(loclist) do
+					if entry.bufnr == bufnr then
+						if entry.lnum == row and entry.col > col or entry.lnum > row then
+							vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
+							return
+						end
+					end
+				end
+
+				vim.api.nvim_echo(
+					{ { "No more valid diagnostics or location list items to move to", "WarningMsg" } },
+					true,
+					{}
+				)
+			end, { desc = "Goto next diagnostic or location list item in current buffer" })
+
+			map("n", "gk", function()
+				if vim.diagnostic.get_prev() then
+					vim.diagnostic.goto_prev()
+					return
+				end
+
+				local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+				local bufnr = vim.api.nvim_get_current_buf()
+				local loclist = vim.fn.getloclist(0)
+				require("util").sort_loclist(loclist)
+				require("util").reverse(loclist)
+
+				for _, entry in pairs(loclist) do
+					if entry.bufnr == bufnr then
+						if entry.lnum == row and entry.col < col or entry.lnum < row then
+							vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
+							return
+						end
+					end
+				end
+
+				vim.api.nvim_echo(
+					{ { "No more valid diagnostics or location list items to move to", "WarningMsg" } },
+					true,
+					{}
+				)
+			end, { desc = "Goto prev diagnostic or location list item in current buffer" })
 		end,
 		config = function()
 			local lsp = require("lspconfig")
@@ -90,6 +180,7 @@ return {
 			})
 			lsp.phpactor.setup({})
 			lsp.svelte.setup({})
+			lsp.rust_analyzer.setup({})
 		end,
 	},
 }

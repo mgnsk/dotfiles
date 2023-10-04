@@ -1,32 +1,5 @@
 return {
 	{
-		"ibhagwan/fzf-lua",
-		lazy = true,
-		config = function()
-			require("fzf-lua").setup({
-				winopts = {
-					preview = {
-						delay = 0,
-					},
-				},
-				files = {
-					fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
-				},
-				grep = {
-					rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",
-				},
-				git = {
-					commits = {
-						preview_pager = "delta",
-					},
-					bcommits = {
-						preview_pager = "delta",
-					},
-				},
-			})
-		end,
-	},
-	{
 		"neomake/neomake",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = { "BufEnter" },
@@ -50,21 +23,13 @@ return {
 		end,
 	},
 	{
-		"simrat39/rust-tools.nvim",
-		ft = "rust",
-		cond = not os.getenv("NVIM_DIFF"),
-		dependencies = {
-			"neovim/nvim-lspconfig",
-		},
-		config = function()
-			local rt = require("rust-tools")
-			rt.setup({})
-		end,
-	},
-	{
 		"ryuichiroh/vim-cspell",
 		init = function()
 			vim.g.cspell_disable_autogroup = true
+
+			vim.api.nvim_create_user_command("CSpell", function()
+				vim.api.nvim_call_function("cspell#lint", {})
+			end, { desc = "Run cspell on current buffer" })
 		end,
 	},
 }

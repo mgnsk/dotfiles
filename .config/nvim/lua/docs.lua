@@ -7,17 +7,32 @@ end
 local function generate_keymap()
 	local table_gen = require("table_gen")
 	local headings = { "mode", "lhs", "rhs", "desc" }
+	local keys = {}
+	for _, m in pairs(vim.api.nvim_get_keymap("")) do
+		if m.lhs:find("<Plug>", 1, true) ~= 1 then
+			table.insert(keys, m)
+		end
+	end
+
+	table.sort(keys, function(a, b)
+		if a.mode < b.mode then
+			return true
+		elseif a.mode > b.mode then
+			return false
+		end
+
+		return a.lhs < b.lhs
+	end)
+
 	local rows = {}
 
-	for _, m in ipairs(vim.api.nvim_get_keymap("")) do
-		if m.lhs:find("<Plug>", 1, true) ~= 1 then
-			table.insert(rows, {
-				string.format("`%s`", m.mode),
-				string.format("`%s`", m.lhs),
-				m.rhs and escape_backticks(m.rhs) or "",
-				m.desc,
-			})
-		end
+	for _, m in ipairs(keys) do
+		table.insert(rows, {
+			string.format("`%s`", m.mode),
+			string.format("`%s`", m.lhs),
+			m.rhs and escape_backticks(m.rhs) or "",
+			m.desc,
+		})
 	end
 
 	return table_gen(rows, headings, {

@@ -2,6 +2,11 @@ return {
 	{
 		"mgnsk/sync-format.nvim",
 		event = "BufEnter",
+		init = function()
+			vim.api.nvim_create_user_command("Wfa", function()
+				vim.cmd("WriteFormatAll")
+			end, { desc = "Alias for WriteFormatAll" })
+		end,
 		config = function()
 			require("formatter").setup({
 				balafon = { "balafon", "fmt", "-w" },

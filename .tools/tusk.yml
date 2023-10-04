@@ -39,6 +39,7 @@ tasks:
           gopls
           go-tools
           revive
+          buf
           yamllint
           shfmt
           bash-language-server
@@ -54,7 +55,6 @@ tasks:
           php-sqlite
           composer
           rustup
-          neovim
           man
 
       - when:
@@ -75,12 +75,12 @@ tasks:
       - command: >
           yay -S --noconfirm --needed --batchinstall --removemake --cleanafter
           fish-fzf
-          buf-bin
           hadolint-bin
           shellcheck-bin
           lscolors-git
           phpactor
           phpstan-bin
+          neovim-nightly-bin
 
       - command: go install -v github.com/rliebz/tusk@latest
       - command: go install -v github.com/goccmack/gocc@latest

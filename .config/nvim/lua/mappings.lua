@@ -15,14 +15,8 @@ set("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 set("n", "<leader>U", vim.cmd.UndotreeToggle, { desc = "Toggle undo tree" })
 
 set("n", "qq", function()
-	local buf_count = #(vim.fn.getbufinfo({ buflisted = 1 }))
-
-	if buf_count == 1 then
-		vim.cmd("q!")
-	else
-		vim.cmd("bd!")
-	end
-end, { desc = "Kill buffer" })
+	vim.cmd("q")
+end, { desc = "Quit buffer" })
 
 set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
 set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })

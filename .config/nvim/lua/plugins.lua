@@ -1,5 +1,11 @@
 return {
 	{
+		"mgnsk/autotabline.nvim",
+		config = function()
+			require("autotabline").setup()
+		end,
+	},
+	{
 		"numToStr/Comment.nvim",
 		event = "BufEnter",
 		config = function()

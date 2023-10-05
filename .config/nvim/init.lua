@@ -71,7 +71,6 @@ vim.api.nvim_create_autocmd("QuitPre", {
 require("persistent_undo")
 require("indent")
 require("mappings")
-require("tabline")
 require("statusline")
 require("docs")
 

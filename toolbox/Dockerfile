@@ -147,7 +147,7 @@ RUN sudo pacman -S --noconfirm --needed \
     && git clone https://aur.archlinux.org/phpactor.git . \
     && makepkg --noconfirm --needed --syncdeps --install --clean --rmdeps \
     && find -mindepth 1 -delete \
-# gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"
+    # gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"
     && gpg --keyserver keys.openpgp.org --recv-keys CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0 \
     && git clone https://aur.archlinux.org/phpstan-bin.git . \
     && makepkg --noconfirm --needed --syncdeps --install --clean --rmdeps \

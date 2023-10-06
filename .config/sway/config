@@ -241,10 +241,11 @@ bindsym XF86MonBrightnessDown exec "light -U 10 && light -O"
 set $wallpapers_path $HOME/wallpapers
 output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
-for_window [app_id="foot"] opacity 0.97
 exec sway-fader --app_id="foot:0.7:0.97"
 
 for_window [class=".*"] border none
+
+seat seat0 hide_cursor 3000
 
 # AUTOSTART
 

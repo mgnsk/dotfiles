@@ -12,6 +12,8 @@ $ config config status.showUntrackedFiles no
 $ config reset --hard origin/master
 ```
 
+# Neovim keymap
+
 [Neovim keymap](.config/nvim/README.md)
 
 # Toolbox
@@ -23,20 +25,8 @@ onto the host machine.
 
 ## Setting up the host machine
 
-The toolbox requires docker to bet set up on the machine.
+The toolbox requires docker to be set up on the machine.
 Install [tusk](https://rliebz.github.io/tusk) to run tasks:
-
-from binary:
-
-```sh
-curl -sL https://git.io/tusk | bash -s -- -b /usr/local/bin latest
-```
-
-or from source:
-
-```sh
-go install -v github.com/rliebz/tusk@latest
-```
 
 ## Clone the repository
 
@@ -67,4 +57,5 @@ cd ~/Projects/project1
 ide
 ```
 
-An example using `tmux` would be to spawn a container in the projects root directory `~/Projects` and using each project in its own `tmux` window.
+An example using `tmux` would be to spawn a container in the projects root directory `~/Projects`, running tmux and using each project in its own terminal.
+Sometimes it is useful to use tmux inside a single project to run multiple instances of neovim for different parts of the project.

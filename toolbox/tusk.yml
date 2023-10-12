@@ -2,16 +2,18 @@
 interpreter: bash -eu -o pipefail -c
 
 options:
-  container-uid:
+  uid:
     default:
       command: id -u
-  container-gid:
+  gid:
     default:
       command: id -g
-  container-user:
-    default: dev
-  container-group:
-    default: dev
+  user:
+    default:
+      command: id -un
+  group:
+    default:
+      command: id -gn
 
 tasks:
   _dotfiles.prod:
@@ -53,10 +55,10 @@ tasks:
       - command: >
           docker build
           --ulimit nofile=1024:10240
-          --build-arg uid=${container-uid}
-          --build-arg gid=${container-gid}
-          --build-arg user=${container-user}
-          --build-arg group=${container-group}
+          --build-arg uid=${uid}
+          --build-arg gid=${gid}
+          --build-arg user=${user}
+          --build-arg group=${group}
           -t toolbox:latest
           -f Dockerfile
           .
@@ -89,11 +91,11 @@ tasks:
           --hostname toolbox
           --network host
           --tmpfs /tmp:rw,exec,nosuid,nodev,mode=777
-          --tmpfs /home/${container-user}/.local/state:rw,exec,nosuid,nodev,mode=777
-          --tmpfs /home/${container-user}/.cache:rw,noexec,nosuid,nodev,mode=777
-          --volume ide-go:/home/${container-user}/go
-          --volume ide-cargo:/home/${container-user}/.cargo
-          --volume ide-fish-history:/home/${container-user}/.local/share/fish
+          --tmpfs /home/${user}/.local/state:rw,exec,nosuid,nodev,mode=777
+          --tmpfs /home/${user}/.cache:rw,noexec,nosuid,nodev,mode=777
+          --volume ide-go:/home/${user}/go
+          --volume ide-cargo:/home/${user}/.cargo
+          --volume ide-fish-history:/home/${user}/.local/share/fish
           --volume ${workspace}:${workspace}:Z
           --workdir ${workspace}
           toolbox:latest

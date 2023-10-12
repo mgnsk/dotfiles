@@ -54,6 +54,7 @@ tasks:
       # https://github.com/greyltc-org/docker-archlinux-aur/issues/7#issuecomment-1516028357
       - command: >
           docker build
+          --pull
           --ulimit nofile=1024:10240
           --build-arg uid=${uid}
           --build-arg gid=${gid}

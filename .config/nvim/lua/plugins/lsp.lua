@@ -181,6 +181,7 @@ return {
 			lsp.phpactor.setup({})
 			lsp.svelte.setup({})
 			lsp.rust_analyzer.setup({})
+			lsp.clangd.setup({})
 		end,
 	},
 }

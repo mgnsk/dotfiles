@@ -2,11 +2,6 @@ return {
 	{
 		"mgnsk/sync-format.nvim",
 		event = "BufEnter",
-		init = function()
-			vim.api.nvim_create_user_command("Wfa", function()
-				vim.cmd("WriteFormatAll")
-			end, { desc = "Alias for WriteFormatAll" })
-		end,
 		config = function()
 			require("formatter").setup({
 				balafon = { "balafon", "fmt", "-w" },
@@ -21,6 +16,7 @@ return {
 				svelte = { "prettier", "-w", "--plugin", "prettier-plugin-svelte" },
 				lua = { "stylua" },
 				c = { "clang-format", "-i" },
+				cpp = { "clang-format", "-i" },
 				glsl = { "clang-format", "-i" },
 				proto = { "buf", "format", "-w" },
 				go = { "goimports", "-w" },

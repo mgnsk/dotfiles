@@ -61,13 +61,4 @@ return {
 			}
 		end,
 	},
-	{
-		"mbbill/undotree",
-		init = function()
-			local map = require("util").map
-
-			map("n", "<leader>U", vim.cmd.UndotreeToggle, { desc = "Toggle undo tree" })
-		end,
-		event = "BufEnter",
-	},
 }

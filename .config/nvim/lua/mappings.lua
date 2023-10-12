@@ -9,8 +9,8 @@ map("t", "<Esc>", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
 map("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 
 map("n", "qq", function()
-	vim.cmd("q")
-end, { desc = "Quit buffer" })
+	vim.cmd("q!")
+end, { desc = "Quit window" })
 
 map("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
 map("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })

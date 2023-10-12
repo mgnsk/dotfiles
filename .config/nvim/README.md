@@ -24,7 +24,6 @@
 | `n`  | `,H`         |                                                                                     | FZF git_commits                                                                            |
 | `n`  | `,S`         |                                                                                     | Toggle vim spell check                                                                     |
 | `n`  | `,T`         |                                                                                     | FZF tags                                                                                   |
-| `n`  | `,U`         |                                                                                     | Toggle undo tree                                                                           |
 | `n`  | `,V`         |                                                                                     | Toggle LSP symbols outline tree                                                            |
 | `n`  | `,W`         | ` :Gw!<CR> `                                                                        | Select the current buffer when resolving git conflicts                                     |
 | `n`  | `,a`         |                                                                                     | FZF grep_project                                                                           |
@@ -74,7 +73,7 @@
 | `n`  | `gk`         |                                                                                     | Goto prev diagnostic or location list item in current buffer                               |
 | `n`  | `gr`         |                                                                                     | Show references                                                                            |
 | `n`  | `gx`         |                                                                                     | Opens filepath or URI under cursor with the system handler (file explorer, web browser, â€  |
-| `n`  | `qq`         |                                                                                     | Quit buffer                                                                                |
+| `n`  | `qq`         |                                                                                     | Quit window                                                                                |
 | `n`  | `tt`         | ` :let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR> `               | Open new terminal tab                                                                      |
 | `n`  | `w`          | ` <Plug>WordMotion_w `                                                              |                                                                                            |
 | `o`  | `%`          | ` <Plug>(MatchitOperationForward) `                                                 |                                                                                            |
@@ -229,10 +228,6 @@
 | `TSUpdateSync`                     | `lua require'nvim-treesitter.install'.commands.TSUpdateSync['run<bang>'](<f-args>)`                                       |
 | `Texplore`                         | `call netrw#Explore(<count>,0,6        ,<q-args>)`                                                                        |
 | `Tutor`                            | `call tutor#TutorCmd(<q-args>)`                                                                                           |
-| `UndotreeFocus`                    | `:call undotree#UndotreeFocus()`                                                                                          |
-| `UndotreeHide`                     | `:call undotree#UndotreeHide()`                                                                                           |
-| `UndotreeShow`                     | `:call undotree#UndotreeShow()`                                                                                           |
-| `UndotreeToggle`                   | `:call undotree#UndotreeToggle()`                                                                                         |
 | `UpdateRemotePlugins`              | `call remote#host#UpdateRemotePlugins()`                                                                                  |
 | `Vexplore`                         | `call netrw#Explore(<count>,1,4+<bang>0,<q-args>)`                                                                        |
 | `VsnipOpen`                        | `call s:open_command(<bang>0, 'vsplit', <q-args>)`                                                                        |
@@ -240,6 +235,4 @@
 | `VsnipOpenSplit`                   | `call s:open_command(<bang>0, 'split', <q-args>)`                                                                         |
 | `VsnipOpenVsplit`                  | `call s:open_command(<bang>0, 'vsplit', <q-args>)`                                                                        |
 | `VsnipYank`                        | `call s:add_command(<line1>, <line2>, <q-args>)`                                                                          |
-| `Wfa`                              | `Alias for WriteFormatAll`                                                                                                |
-| `WriteFormatAll`                   | `Write and format all loaded file buffers`                                                                                |
 

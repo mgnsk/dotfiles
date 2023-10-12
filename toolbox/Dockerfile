@@ -99,7 +99,6 @@ RUN sudo pacman -S --noconfirm --needed \
     skim \
     parallel \
     moreutils \
-    earlyoom \
     tidy \
     prettier \
     typescript-language-server \

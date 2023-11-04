@@ -51,3 +51,16 @@ if status --is-interactive
         direnv hook fish | source
     end
 end
+
+# Start sway at login
+if status is-login
+    if test -z "$DISPLAY" -a "$XDG_VTNR" = 1
+        set -gx XDG_CURRENT_DESKTOP sway
+        set -gx XDG_DATA_DIRS "/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$XDG_DATA_HOME/flatpak/exports/share"
+        set -gx XDG_SESSION_TYPE wayland
+
+        export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+
+        exec sway
+    end
+end

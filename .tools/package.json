@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cspell": "^6.31.1",
+    "cspell": "^7.3.8",
     "markdownlint-cli": "^0.37.0"
   }
 }

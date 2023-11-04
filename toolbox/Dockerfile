@@ -106,6 +106,7 @@ RUN sudo pacman -S --noconfirm --needed \
     vscode-css-languageserver \
     svelte-language-server \
     npm \
+    npm-check-updates \
     eslint \
     go \
     gopls \

@@ -30,7 +30,6 @@ set -gx ANSIBLE_NOCOWS 1
 
 set -gx GPG_TTY (tty)
 
-set -gx BEMENU_BACKEND wayland
 
 set -g fish_color_autosuggestion 585858
 set -g fish_color_command a1b56c
@@ -58,6 +57,7 @@ if status is-login
         set -gx XDG_CURRENT_DESKTOP sway
         set -gx XDG_DATA_DIRS "/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$XDG_DATA_HOME/flatpak/exports/share"
         set -gx XDG_SESSION_TYPE wayland
+        set -gx BEMENU_BACKEND wayland
 
         export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
 

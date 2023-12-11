@@ -69,6 +69,8 @@ tasks:
           dir: ${cache}/yay-bin
           exec: makepkg --noconfirm --needed --syncdeps --install --clean
 
+      - command: yay -Y --devel --save
+
       # gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"
       - command: gpg --keyserver keys.openpgp.org --recv-keys CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
 

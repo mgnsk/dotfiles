@@ -20,6 +20,7 @@ return {
 		},
 		build = function()
 			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+
 			parser_config.balafon = {
 				install_info = {
 					url = "https://github.com/mgnsk/tree-sitter-balafon",
@@ -30,6 +31,7 @@ return {
 				},
 				filetype = "bal",
 			}
+
 			install({ "balafon" })
 		end,
 	},

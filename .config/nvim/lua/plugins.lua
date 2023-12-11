@@ -39,10 +39,6 @@ return {
 		lazy = true,
 	},
 	{
-		"chaoren/vim-wordmotion",
-		event = "BufEnter",
-	},
-	{
 		"ojroques/nvim-osc52",
 		event = "BufEnter",
 		config = function()

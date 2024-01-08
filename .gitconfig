@@ -2,6 +2,7 @@
 	st = status
 	br = branch
 	co = checkout
+	ns = diff --name-status
 	lg =  "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --all"
 	lb =  "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --first-parent $(git branch --show-current)"
 	sk = !" \

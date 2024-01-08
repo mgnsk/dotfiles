@@ -14,6 +14,7 @@ return {
 				javascript = { "prettier", "-w" },
 				typescript = { "prettier", "-w" },
 				svelte = { "prettier", "-w", "--plugin", "prettier-plugin-svelte" },
+				twig = { "prettier", "-w" },
 				lua = { "stylua" },
 				c = { "clang-format", "-i" },
 				cpp = { "clang-format", "-i" },

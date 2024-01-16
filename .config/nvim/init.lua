@@ -22,7 +22,6 @@ vim.o.shell = os.getenv("SHELL")
 vim.g.netrw_browse_split = 3
 -- Tree view.
 vim.g.netrw_liststyle = 3
-vim.g.gitgutter_sign_columns_always = 1
 
 vim.cmd("set list") -- visible whitespace
 vim.cmd("set lcs+=space:·")

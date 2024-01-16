@@ -23,25 +23,21 @@ function _G.file_size()
 end
 
 function _G.git_status_line()
-	local success, head = pcall(vim.fn["FugitiveHead"])
-	if not success or not head or head == "" then
-		return ""
+	local s = {}
+
+	if vim.b.gitsigns_status_dict then
+		table.insert(s, string.format("(%s)", vim.b.gitsigns_status_dict["head"]))
 	end
 
-	local success, g = pcall(vim.fn["GitGutterGetHunkSummary"])
-	if not success or not g then
-		return ""
+	if vim.b.gitsigns_status ~= "" then
+		table.insert(s, vim.b.gitsigns_status)
 	end
 
-	local s = { head }
-
-	for i, symbol in ipairs({ "+", "~", "-" }) do
-		if g[i] > 0 then
-			table.insert(s, string.format("%s%d", symbol, g[i]))
-		end
+	if #s > 0 then
+		return table.concat(s, " ")
 	end
 
-	return table.concat(s, " ")
+	return ""
 end
 
 vim.opt.statusline = table.concat({

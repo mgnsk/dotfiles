@@ -25,7 +25,7 @@ return {
 					Type = { fg = c.vscBlueGreen, bg = "NONE" },
 					TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
 					QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },
-					["@namespace"] = { fg = c.vscLightBlue, bg = "NONE" },
+					["@module"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@keyword.function"] = { fg = c.vscPink, bg = "NONE" },
 					["@keyword.operator"] = { fg = c.vscPink, bg = "NONE" },
 					["@function.macro"] = { fg = c.vscPink, bg = "NONE" },

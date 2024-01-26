@@ -106,13 +106,10 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+space floating toggle, sticky toggle
 
 # FreeTube
-for_window [title="^Picture in picture$"] floating enable, sticky enable, border none
+for_window [title="^Picture in picture$"] floating enable, sticky enable, border none, move position 1000 0
 
 # Firefox
-for_window [title="^Picture-in-Picture$"] floating enable, sticky enable, border none
-
-# change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
+for_window [title="^Picture-in-Picture$"] floating enable, sticky enable, border none, move position 1000 0
 
 # focus the parent container
 bindsym $mod+a focus parent

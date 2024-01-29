@@ -75,7 +75,7 @@ tasks:
       - command: gpg --keyserver keys.openpgp.org --recv-keys CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
 
       - command: >
-          yay -S --noconfirm --needed --batchinstall --removemake --cleanafter
+          yay -S --noconfirm --batchinstall --removemake --cleanafter
           fish-fzf
           hadolint-bin
           shellcheck-bin
@@ -87,6 +87,7 @@ tasks:
       - command: go install -v github.com/rliebz/tusk@latest
       - command: go install -v github.com/goccmack/gocc@latest
       - command: go install -v github.com/mgnsk/sway-fader@latest
+      - command: go install -v golang.org/x/tools/cmd/deadcode@latest
 
       - command: rustup default nightly
       - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview

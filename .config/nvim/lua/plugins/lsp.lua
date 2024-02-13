@@ -77,20 +77,16 @@ return {
 
 			local map = require("util").map
 
+			map("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
+			map("n", "L", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
 			map("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
-			map("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
+			map("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })
+			map("n", "gi", vim.lsp.buf.implementation, { desc = "List implementations" })
+			map("n", "go", vim.lsp.buf.type_definition, { desc = "Goto definition" })
+			map("n", "gr", vim.lsp.buf.references, { desc = "List references" })
+			map("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature" })
 			map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
-
-			map("n", "K", function()
-				vim.lsp.buf.hover()
-			end, { desc = "Hover documentation" })
-
-			map("n", "L", function()
-				vim.diagnostic.open_float()
-			end, { desc = "Hover diagnostic" })
-
-			map("n", "gD", vim.lsp.buf.implementation, { desc = "Show implementations" })
-			map("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
+			map("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
 
 			map("n", "gj", function()
 				if vim.diagnostic.get_next() then

@@ -30,7 +30,19 @@ vim.cmd("syntax on")
 vim.cmd("set t_ut=")
 -- TODO what does this do?
 --vim.cmd("set noruler")
---
+
+vim.g.clipboard = {
+	name = "OSC 52",
+	copy = {
+		["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+		["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+	},
+	paste = {
+		["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+		["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+	},
+}
+
 vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave" }, {
 	callback = function()
 		vim.o.relativenumber = true

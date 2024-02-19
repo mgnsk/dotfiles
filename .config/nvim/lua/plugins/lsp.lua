@@ -42,12 +42,6 @@ return {
 		event = { "BufEnter" },
 		dependencies = {
 			{
-				"ray-x/lsp_signature.nvim",
-				config = function()
-					-- require("lsp_signature").setup({})
-				end,
-			},
-			{
 				"folke/neodev.nvim",
 				config = function()
 					require("neodev").setup({})
@@ -145,13 +139,6 @@ return {
 		end,
 		config = function()
 			local lsp = require("lspconfig")
-
-			lsp.util.default_config = vim.tbl_deep_extend("force", lsp.util.default_config, {
-				capabilities = require("cmp_nvim_lsp").default_capabilities(),
-				on_init = function(client, bufnr)
-					client.server_capabilities.semanticTokensProvider = nil
-				end,
-			})
 
 			lsp.gopls.setup({})
 			lsp.tsserver.setup({})

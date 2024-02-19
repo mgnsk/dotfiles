@@ -31,7 +31,7 @@ map("n", "tt", ":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR
 map("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
 map("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
 map("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
-map("n", "<leader>e", ":Tex<CR>", { desc = "Open file browser in new tab" })
+map("n", "<leader>e", ":Vex %:h<CR>", { desc = "Open file browser in split" })
 map("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
 map("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
 map("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })

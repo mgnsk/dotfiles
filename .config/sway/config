@@ -64,13 +64,13 @@ mode "mouse-mode" {
 }
 
 # start a terminal
-bindsym $mod+Return exec foot
+bindsym $mod+Return exec alacritty
 
 # kill focused window
 bindsym $mod+Shift+q kill
 bindsym $mod+q kill
 
-bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='bemenu -i' --term='foot'
+bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='bemenu -i' --term='alacritty'
 
 # change focus
 bindsym {
@@ -238,7 +238,7 @@ bindsym XF86MonBrightnessDown exec "light -U 10 && light -O"
 set $wallpapers_path $HOME/wallpapers
 output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
-exec sway-fader --app_id="foot:0.7:0.97"
+exec sway-fader --app_id="foot:0.7:0.97" --app_id="Alacritty:0.7:0.97"
 
 for_window [class=".*"] border none
 

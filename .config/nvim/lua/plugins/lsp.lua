@@ -21,13 +21,60 @@ local location_callback = function(_, result, ctx)
 	end
 end
 
+local function goto_next()
+	if vim.diagnostic.get_next() then
+		vim.diagnostic.goto_next()
+		return
+	end
+
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+	local bufnr = vim.api.nvim_get_current_buf()
+	local loclist = vim.fn.getloclist(0)
+	require("util").sort_loclist(loclist)
+
+	for _, entry in pairs(loclist) do
+		if entry.bufnr == bufnr then
+			if entry.lnum == row and entry.col > col or entry.lnum > row then
+				vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
+				return
+			end
+		end
+	end
+
+	vim.api.nvim_echo({ { "No more valid diagnostics or location list items to move to", "WarningMsg" } }, true, {})
+end
+
+local function goto_prev()
+	if vim.diagnostic.get_prev() then
+		vim.diagnostic.goto_prev()
+		return
+	end
+
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+	local bufnr = vim.api.nvim_get_current_buf()
+	local loclist = vim.fn.getloclist(0)
+	require("util").sort_loclist(loclist)
+	require("util").reverse(loclist)
+
+	for _, entry in pairs(loclist) do
+		if entry.bufnr == bufnr then
+			if entry.lnum == row and entry.col < col or entry.lnum < row then
+				vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
+				return
+			end
+		end
+	end
+
+	vim.api.nvim_echo({ { "No more valid diagnostics or location list items to move to", "WarningMsg" } }, true, {})
+end
+
+local map = require("util").map
+
 return {
 	{
 		"simrat39/symbols-outline.nvim",
 		lazy = true,
 		init = function()
-			local map = require("util").map
-
 			map("n", "<leader>V", function()
 				return require("symbols-outline").toggle_outline()
 			end, { desc = "Toggle LSP symbols outline tree" })
@@ -58,18 +105,16 @@ return {
 					update_in_insert = false,
 				})
 
-			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-				callback = function(args)
-					local client = vim.lsp.get_client_by_id(args.data.client_id)
-					if client ~= nil and client.server_capabilities.inlayHintProvider then
-						vim.lsp.inlay_hint.enable(args.buf, true)
-					end
-					-- whatever other lsp config you want
-				end,
-			})
-
-			local map = require("util").map
+			-- vim.api.nvim_create_autocmd("LspAttach", {
+			-- 	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+			-- 	callback = function(args)
+			-- 		local client = vim.lsp.get_client_by_id(args.data.client_id)
+			-- 		if client ~= nil and client.server_capabilities.inlayHintProvider then
+			-- 			vim.lsp.inlay_hint.enable(args.buf, true)
+			-- 		end
+			-- 		-- whatever other lsp config you want
+			-- 	end,
+			-- })
 
 			map("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
 			map("n", "L", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
@@ -81,61 +126,8 @@ return {
 			map("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature" })
 			map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
 			map("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
-
-			map("n", "gj", function()
-				if vim.diagnostic.get_next() then
-					vim.diagnostic.goto_next()
-					return
-				end
-
-				local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-				local bufnr = vim.api.nvim_get_current_buf()
-				local loclist = vim.fn.getloclist(0)
-				require("util").sort_loclist(loclist)
-
-				for _, entry in pairs(loclist) do
-					if entry.bufnr == bufnr then
-						if entry.lnum == row and entry.col > col or entry.lnum > row then
-							vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
-							return
-						end
-					end
-				end
-
-				vim.api.nvim_echo(
-					{ { "No more valid diagnostics or location list items to move to", "WarningMsg" } },
-					true,
-					{}
-				)
-			end, { desc = "Goto next diagnostic or location list item in current buffer" })
-
-			map("n", "gk", function()
-				if vim.diagnostic.get_prev() then
-					vim.diagnostic.goto_prev()
-					return
-				end
-
-				local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-				local bufnr = vim.api.nvim_get_current_buf()
-				local loclist = vim.fn.getloclist(0)
-				require("util").sort_loclist(loclist)
-				require("util").reverse(loclist)
-
-				for _, entry in pairs(loclist) do
-					if entry.bufnr == bufnr then
-						if entry.lnum == row and entry.col < col or entry.lnum < row then
-							vim.api.nvim_win_set_cursor(0, { entry.lnum, entry.col })
-							return
-						end
-					end
-				end
-
-				vim.api.nvim_echo(
-					{ { "No more valid diagnostics or location list items to move to", "WarningMsg" } },
-					true,
-					{}
-				)
-			end, { desc = "Goto prev diagnostic or location list item in current buffer" })
+			map("n", "gj", goto_next, { desc = "Goto next diagnostic or location list item in current buffer" })
+			map("n", "gk", goto_prev, { desc = "Goto prev diagnostic or location list item in current buffer" })
 		end,
 		config = function()
 			local lsp = require("lspconfig")

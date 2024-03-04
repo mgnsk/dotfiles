@@ -56,6 +56,7 @@ tasks:
           composer
           rustup
           man
+          neovim
 
       - when:
           - exists: ${cache}/yay-bin
@@ -82,7 +83,6 @@ tasks:
           lscolors-git
           phpactor
           phpstan-bin
-          neovim-nightly-bin
 
       - command: go install -v github.com/rliebz/tusk@latest
       - command: go install -v github.com/goccmack/gocc@latest

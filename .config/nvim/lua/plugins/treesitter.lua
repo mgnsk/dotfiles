@@ -39,7 +39,7 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufEnter" },
 		build = function()
-			local parsers = {
+			install({
 				"bash",
 				"beancount",
 				"c",
@@ -67,9 +67,7 @@ return {
 				"twig",
 				"typescript",
 				"yaml",
-			}
-
-			install(parsers)
+			})
 		end,
 		config = function()
 			require("nvim-treesitter.configs").setup({

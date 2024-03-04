@@ -18,20 +18,6 @@ return {
 		config = function()
 			local ap = require("nvim-autopairs")
 			ap.setup({})
-			ap.remove_rule([[']])
-			ap.remove_rule([["]])
-		end,
-	},
-	{
-		"ellisonleao/glow.nvim",
-		ft = "markdown",
-		init = function()
-			vim.api.nvim_create_user_command("MarkdownPreview", function()
-				vim.cmd("Glow")
-			end, { desc = "Markdown preview" })
-		end,
-		config = function()
-			require("glow").setup({})
 		end,
 	},
 	{

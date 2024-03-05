@@ -149,7 +149,7 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.aur.yml /home/${user}/.tools/tu
 WORKDIR /home/${user}/.tools
 
 RUN tusk -f tusk.aur.yml install.aur \
-    yay -Scc --noconfirm \
+    && yay -Scc --noconfirm \
     && rm -rf /home/${user}/.cache
 
 

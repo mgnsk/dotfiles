@@ -39,7 +39,6 @@ tasks:
           go
           gopls
           go-tools
-          revive
           buf
           yamllint
           shfmt
@@ -94,6 +93,8 @@ tasks:
       - command: go install -v github.com/goccmack/gocc@latest
       - command: go install -v github.com/mgnsk/sway-fader@latest
       - command: go install -v golang.org/x/tools/cmd/deadcode@latest
+      - command: go install -v github.com/mgechev/revive@latest
+
 
   install.rust:
     usage: Install rust packages.
@@ -107,7 +108,7 @@ tasks:
       - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
 
   install.js:
-    usage: Install JS packages.
+    usage: Install javascript packages.
     run:
       - command: npm ci
 

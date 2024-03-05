@@ -1,139 +1,27 @@
 ---
 interpreter: bash -eu -o pipefail -c
 
-options:
-  cache:
-    default:
-      command: echo "$HOME/.cache"
-
 tasks:
   install.system:
-    usage: Install all system packages on the host machine.
-    run:
-      - command: >
-          sudo pacman -S --noconfirm --needed
-          git
-          git-delta
-          unzip
-          wget
-          tmux
-          fish
-          tree
-          ripgrep
-          fd
-          bat
-          fzf
-          skim
-          parallel
-          moreutils
-          earlyoom
-          tidy
-          prettier
-          typescript-language-server
-          vscode-html-languageserver
-          vscode-css-languageserver
-          svelte-language-server
-          npm
-          npm-check-updates
-          eslint
-          go
-          gopls
-          go-tools
-          buf
-          yamllint
-          shfmt
-          bash-language-server
-          brotli
-          direnv
-          luarocks
-          lua-language-server
-          luacheck
-          stylua
-          rtmidi
-          php
-          php-sqlite
-          composer
-          rustup
-          man
-          neovim
+    include: .tusk/system.yml
 
   install.aur:
-    usage: Install AUR packages.
-    run:
-      - when:
-          - exists: ${cache}/yay-bin
-        command: git -C ${cache}/yay-bin pull
-
-      - when:
-          - not-exists: ${cache}/yay-bin
-        command: git clone https://aur.archlinux.org/yay-bin.git ${cache}/yay-bin
-
-      - command:
-          dir: ${cache}/yay-bin
-          exec: makepkg --noconfirm --needed --syncdeps --install --clean
-
-      - command: yay -Y --devel --save
-
-      # gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"
-      - command: gpg --keyserver keys.openpgp.org --recv-keys CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
-
-      - command: >
-          yay -S --noconfirm --batchinstall --removemake --cleanafter
-          fish-fzf
-          hadolint-bin
-          shellcheck-bin
-          lscolors-git
-          phpactor
-          phpstan-bin
+    include: .tusk/aur.yml
 
   install.go:
-    usage: Install go packages.
-    run:
-      - command: go install -v github.com/rliebz/tusk@latest
-      - command: go install -v github.com/goccmack/gocc@latest
-      - command: go install -v github.com/mgnsk/sway-fader@latest
-      - command: go install -v golang.org/x/tools/cmd/deadcode@latest
-      - command: go install -v github.com/mgechev/revive@latest
-
+    include: .tusk/go.yml
 
   install.rust:
-    usage: Install rust packages.
-    run:
-      - command: rustup default nightly
-      - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview
+    include: .tusk/rust.yml
 
   install.php:
-    usage: Install php packages.
-    run:
-      - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
+    include: .tusk/php.yml
 
   install.js:
-    usage: Install javascript packages.
-    run:
-      - command: npm ci
+    include: .tusk/js.yml
 
   install.nvim:
-    usage: Install nvim packages.
-    run:
-      - command: >
-          nvim --headless -u NORC
-          -c 'lua if not require("lazy_setup") then os.exit(1) end'
-          -c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then print(result); os.exit(1) end'
-          -c 'lua os.exit(0)'
+    include: .tusk/nvim.yml
 
-  install.completions:
-    usage: Install fish completion files.
-    run:
-      - command: fish -c "fish_update_completions"
-
-  install.all:
-    usage: Install all packages and files.
-    run:
-      - task: install.system
-      - task: install.aur
-      - task: install.go
-      - task: install.rust
-      - task: install.php
-      - task: install.js
-      - task: install.nvim
-      - task: install.completions
+  install.fish:
+    include: .tusk/fish.yml

@@ -46,11 +46,12 @@ FROM build-base AS go-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.yml /home/${user}/.tools/tusk.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/go.yml /home/${user}/.tools/.tusk/go.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.go.yml /home/${user}/.tools/tusk.go.yml
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.go \
+RUN tusk -f tusk.go.yml install.go \
     && sudo rm -rf /home/${user}/go/pkg
 
 
@@ -60,11 +61,12 @@ FROM build-base AS rust-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.yml /home/${user}/.tools/tusk.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/rust.yml /home/${user}/.tools/.tusk/rust.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.rust.yml /home/${user}/.tools/tusk.rust.yml
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.rust
+RUN tusk -f tusk.rust.yml install.rust
 # TODO: rm cache
 
 
@@ -74,13 +76,14 @@ FROM build-base AS php-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.yml /home/${user}/.tools/tusk.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/php.yml /home/${user}/.tools/.tusk/php.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.php.yml /home/${user}/.tools/tusk.php.yml
 COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
 COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.php
+RUN tusk -f tusk.php.yml install.php
 
 
 # Javascript packages.
@@ -89,13 +92,14 @@ FROM build-base AS js-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.yml /home/${user}/.tools/tusk.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/js.yml /home/${user}/.tools/.tusk/js.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.js.yml /home/${user}/.tools/tusk.js.yml
 COPY --chown=${uid}:${gid} /dotfiles/.tools/package.json /home/${user}/.tools/package.json
 COPY --chown=${uid}:${gid} /dotfiles/.tools/package-lock.json /home/${user}/.tools/package-lock.json
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.js
+RUN tusk -f tusk.js.yml install.js
 
 
 # Neovim packages.
@@ -104,12 +108,13 @@ FROM build-base AS nvim-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.yml /home/${user}/.tools/tusk.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/nvim.yml /home/${user}/.tools/.tusk/nvim.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.nvim.yml /home/${user}/.tools/tusk.nvim.yml
 COPY --chown=${uid}:${gid} /dotfiles/.config/nvim home/${user}/.config/nvim
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.nvim
+RUN tusk -f tusk.nvim.yml install.nvim
 
 
 # System packages.
@@ -118,11 +123,12 @@ FROM build-base AS toolbox-base-system
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.yml /home/${user}/.tools/tusk.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/system.yml /home/${user}/.tools/.tusk/system.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.system.yml /home/${user}/.tools/tusk.system.yml
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.system
+RUN tusk -f tusk.system.yml install.system
 
 
 # AUR packages.
@@ -132,11 +138,12 @@ ARG user
 USER ${user}
 
 COPY --chown=${uid}:${gid} /dotfiles/.config/pacman/makepkg.conf /home/${user}/.config/pacman/makepkg.conf
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.yml /home/${user}/.tools/tusk.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/aur.yml /home/${user}/.tools/.tusk/aur.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.aur.yml /home/${user}/.tools/tusk.aur.yml
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.aur \
+RUN tusk -f tusk.aur.yml install.aur \
     && rm -rf /home/${user}/.cache/yay
 
 
@@ -157,7 +164,7 @@ COPY --from=nvim-tools --chown=${uid}:${gid} /home/${user}/.local/share/nvim /ho
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.completions \
+RUN tusk install.fish \
     && sudo gpasswd -d ${user} wheel \
     && sudo rm /etc/sudoers.d/01-wheel \
     && mkdir -p \

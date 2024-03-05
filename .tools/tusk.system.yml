@@ -1,0 +1,6 @@
+---
+interpreter: bash -eu -o pipefail -c
+
+tasks:
+  install.system:
+    include: .tusk/system.yml

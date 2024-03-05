@@ -1,0 +1,6 @@
+---
+interpreter: bash -eu -o pipefail -c
+
+tasks:
+  install.php:
+    include: .tusk/php.yml

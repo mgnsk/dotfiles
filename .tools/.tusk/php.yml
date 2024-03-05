@@ -1,0 +1,4 @@
+---
+usage: Install php packages.
+run:
+  - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader

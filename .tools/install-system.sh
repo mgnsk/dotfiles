@@ -19,19 +19,11 @@ sudo pacman -S --noconfirm --needed \
 	moreutils \
 	earlyoom \
 	tidy \
-	prettier \
-	typescript-language-server \
-	vscode-html-languageserver \
-	vscode-css-languageserver \
-	svelte-language-server \
 	npm \
-	npm-check-updates \
-	eslint \
 	go \
 	buf \
 	yamllint \
 	shfmt \
-	bash-language-server \
 	brotli \
 	direnv \
 	luarocks \

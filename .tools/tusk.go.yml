@@ -1,6 +1,0 @@
----
-interpreter: bash -eu -o pipefail -c
-
-tasks:
-  install.go:
-    include: .tusk/go.yml

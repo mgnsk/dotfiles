@@ -1,4 +1,0 @@
----
-usage: Install fish completion files.
-run:
-  - command: fish -c "fish_update_completions"

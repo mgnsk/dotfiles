@@ -1,4 +1,0 @@
----
-usage: Install javascript packages.
-run:
-  - command: npm ci

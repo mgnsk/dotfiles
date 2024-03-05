@@ -1,8 +1,0 @@
----
-usage: Install go packages.
-run:
-  - command: go install -v github.com/rliebz/tusk@latest
-  - command: go install -v github.com/goccmack/gocc@latest
-  - command: go install -v github.com/mgnsk/sway-fader@latest
-  - command: go install -v golang.org/x/tools/cmd/deadcode@latest
-  - command: go install -v github.com/mgechev/revive@latest

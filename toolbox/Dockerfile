@@ -31,15 +31,6 @@ RUN pacman -S --noconfirm --needed \
     && echo "%wheel      ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/01-wheel \
     && gpasswd -a ${user} wheel
 
-ARG user
-USER ${user}
-
-RUN go install -v github.com/rliebz/tusk@latest \
-    && sudo rm -rf /home/${user}/go/pkg \
-    && rm -rf /home/${user}/.cache
-
-ENV PATH="$PATH:/home/${user}/go/bin"
-
 
 # Go packages.
 FROM build-base AS go-tools
@@ -47,12 +38,11 @@ FROM build-base AS go-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/go.yml /home/${user}/.tools/.tusk/go.yml
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.go.yml /home/${user}/.tools/tusk.go.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-go.sh /home/${user}/.tools/install-go.sh
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.go.yml install.go \
+RUN bash install-go.sh \
     && sudo rm -rf /home/${user}/go/pkg \
     && rm -rf /home/${user}/.cache
 
@@ -63,12 +53,11 @@ FROM build-base AS rust-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/rust.yml /home/${user}/.tools/.tusk/rust.yml
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.rust.yml /home/${user}/.tools/tusk.rust.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-rust.sh /home/${user}/.tools/install-rust.sh
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.rust.yml install.rust
+RUN bash install-rust.sh
 
 
 # PHP packages.
@@ -77,14 +66,13 @@ FROM build-base AS php-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/php.yml /home/${user}/.tools/.tusk/php.yml
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.php.yml /home/${user}/.tools/tusk.php.yml
 COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
 COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-php.sh /home/${user}/.tools/install-php.sh
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.php.yml install.php \
+RUN bash install-php.sh \
     && rm -rf /home/${user}/.cache
 
 
@@ -94,14 +82,13 @@ FROM build-base AS js-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/js.yml /home/${user}/.tools/.tusk/js.yml
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.js.yml /home/${user}/.tools/tusk.js.yml
 COPY --chown=${uid}:${gid} /dotfiles/.tools/package.json /home/${user}/.tools/package.json
 COPY --chown=${uid}:${gid} /dotfiles/.tools/package-lock.json /home/${user}/.tools/package-lock.json
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-js.sh /home/${user}/.tools/install-js.sh
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.js.yml install.js \
+RUN bash install-js.sh \
     && rm -rf /home/${user}/.npm
 
 
@@ -111,14 +98,26 @@ FROM build-base AS nvim-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/nvim.yml /home/${user}/.tools/.tusk/nvim.yml
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.nvim.yml /home/${user}/.tools/tusk.nvim.yml
 COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-nvim.sh /home/${user}/.tools/install-nvim.sh
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.nvim.yml install.nvim \
+RUN bash install-nvim.sh \
     && rm -rf /home/${user}/.cache
+
+
+# AUR packages.
+FROM build-base AS aur-tools
+
+ARG user
+USER ${user}
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/build-aur.sh /home/${user}/.tools/build-aur.sh
+
+WORKDIR /home/${user}/.tools
+
+RUN bash build-aur.sh
 
 
 # System packages.
@@ -127,34 +126,16 @@ FROM build-base AS toolbox-base-system
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/system.yml /home/${user}/.tools/.tusk/system.yml
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.system.yml /home/${user}/.tools/tusk.system.yml
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/install-system.sh
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.system.yml install.system \
+RUN bash install-system.sh \
     && sudo bash -c "yes | pacman -Scc"
 
 
-# AUR packages.
-FROM toolbox-base-system AS toolbox-base-aur
-
-ARG user
-USER ${user}
-
-COPY --chown=${uid}:${gid} /dotfiles/.config/pacman/makepkg.conf /home/${user}/.config/pacman/makepkg.conf
-COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/aur.yml /home/${user}/.tools/.tusk/aur.yml
-COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.aur.yml /home/${user}/.tools/tusk.aur.yml
-
-WORKDIR /home/${user}/.tools
-
-RUN tusk -f tusk.aur.yml install.aur \
-    && yay -Scc --noconfirm \
-    && rm -rf /home/${user}/.cache
-
-
 # Final image.
-FROM toolbox-base-aur
+FROM toolbox-base-system
 
 ARG uid
 ARG gid
@@ -167,10 +148,14 @@ COPY --from=rust-tools --chown=${uid}:${gid} /home/${user}/.rustup /home/${user}
 COPY --from=php-tools --chown=${uid}:${gid} /home/${user}/.tools/vendor /home/${user}/.tools/vendor
 COPY --from=js-tools --chown=${uid}:${gid} /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-tools --chown=${uid}:${gid} /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
+COPY --from=aur-tools --chown=${uid}:${gid} /home/${user}/.cache/aur /home/${user}/.cache/aur
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk install.fish \
+RUN bash install-aur.sh \
+    && rm -rf /home/${user}/.cache \
+    && sudo bash -c "yes | pacman -Scc" \
+    && bash install-fish.sh \
     && sudo gpasswd -d ${user} wheel \
     && sudo rm /etc/sudoers.d/01-wheel \
     && mkdir -p \

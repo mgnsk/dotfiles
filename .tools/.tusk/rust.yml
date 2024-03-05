@@ -1,5 +1,0 @@
----
-usage: Install rust packages.
-run:
-  - command: rustup default nightly
-  - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview

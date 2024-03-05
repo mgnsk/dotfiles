@@ -28,8 +28,6 @@ sudo pacman -S --noconfirm --needed \
 	npm-check-updates \
 	eslint \
 	go \
-	gopls \
-	go-tools \
 	buf \
 	yamllint \
 	shfmt \

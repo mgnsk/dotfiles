@@ -7,8 +7,8 @@ options:
       command: echo "$HOME/.cache"
 
 tasks:
-  install:
-    usage: Install all packages on the host machine. These commands are effectively duplicated in ~/toolbox/Dockerfile.
+  install.system:
+    usage: Install all system packages on the host machine.
     run:
       - command: >
           sudo pacman -S --noconfirm --needed
@@ -58,6 +58,9 @@ tasks:
           man
           neovim
 
+  install.aur:
+    usage: Install AUR packages.
+    run:
       - when:
           - exists: ${cache}/yay-bin
         command: git -C ${cache}/yay-bin pull
@@ -84,21 +87,52 @@ tasks:
           phpactor
           phpstan-bin
 
+  install.go:
+    usage: Install go packages.
+    run:
       - command: go install -v github.com/rliebz/tusk@latest
       - command: go install -v github.com/goccmack/gocc@latest
       - command: go install -v github.com/mgnsk/sway-fader@latest
       - command: go install -v golang.org/x/tools/cmd/deadcode@latest
 
+  install.rust:
+    usage: Install rust packages.
+    run:
       - command: rustup default nightly
       - command: rustup component add rustfmt rust-src clippy rust-analyzer-preview
 
+  install.php:
+    usage: Install php packages.
+    run:
       - command: composer install --no-dev --no-cache --no-interaction --optimize-autoloader
+
+  install.js:
+    usage: Install JS packages.
+    run:
       - command: npm ci
 
+  install.nvim:
+    usage: Install nvim packages.
+    run:
       - command: >
           nvim --headless -u NORC
           -c 'lua if not require("lazy_setup") then os.exit(1) end'
           -c 'lua local ok, result = pcall(vim.cmd, "Lazy! restore"); if not ok then print(result); os.exit(1) end'
           -c 'lua os.exit(0)'
 
+  install.completions:
+    usage: Install fish completion files.
+    run:
       - command: fish -c "fish_update_completions"
+
+  install.all:
+    usage: Install all packages and files.
+    run:
+      - task: install.system
+      - task: install.aur
+      - task: install.go
+      - task: install.rust
+      - task: install.php
+      - task: install.js
+      - task: install.nvim
+      - task: install.completions

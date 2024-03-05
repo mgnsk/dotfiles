@@ -35,7 +35,8 @@ ARG user
 USER ${user}
 
 RUN go install -v github.com/rliebz/tusk@latest \
-    && sudo rm -rf /home/${user}/go/pkg
+    && sudo rm -rf /home/${user}/go/pkg \
+    && rm -rf /home/${user}/.cache
 
 ENV PATH="$PATH:/home/${user}/go/bin"
 
@@ -52,7 +53,8 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.go.yml /home/${user}/.tools/tus
 WORKDIR /home/${user}/.tools
 
 RUN tusk -f tusk.go.yml install.go \
-    && sudo rm -rf /home/${user}/go/pkg
+    && sudo rm -rf /home/${user}/go/pkg \
+    && rm -rf /home/${user}/.cache
 
 
 # Rust packages.
@@ -67,7 +69,6 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.rust.yml /home/${user}/.tools/t
 WORKDIR /home/${user}/.tools
 
 RUN tusk -f tusk.rust.yml install.rust
-# TODO: rm cache
 
 
 # PHP packages.
@@ -83,7 +84,8 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.lock /home/${user}/.tools/c
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.php.yml install.php
+RUN tusk -f tusk.php.yml install.php \
+    && rm -rf /home/${user}/.cache
 
 
 # Javascript packages.
@@ -99,7 +101,8 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/package-lock.json /home/${user}/.too
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.js.yml install.js
+RUN tusk -f tusk.js.yml install.js \
+    && rm -rf /home/${user}/.npm
 
 
 # Neovim packages.
@@ -110,11 +113,12 @@ USER ${user}
 
 COPY --chown=${uid}:${gid} /dotfiles/.tools/.tusk/nvim.yml /home/${user}/.tools/.tusk/nvim.yml
 COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.nvim.yml /home/${user}/.tools/tusk.nvim.yml
-COPY --chown=${uid}:${gid} /dotfiles/.config/nvim home/${user}/.config/nvim
+COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.nvim.yml install.nvim
+RUN tusk -f tusk.nvim.yml install.nvim \
+    && rm -rf /home/${user}/.cache
 
 
 # System packages.
@@ -128,7 +132,8 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.system.yml /home/${user}/.tools
 
 WORKDIR /home/${user}/.tools
 
-RUN tusk -f tusk.system.yml install.system
+RUN tusk -f tusk.system.yml install.system \
+    && sudo bash -c "yes | pacman -Scc"
 
 
 # AUR packages.
@@ -144,7 +149,8 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/tusk.aur.yml /home/${user}/.tools/tu
 WORKDIR /home/${user}/.tools
 
 RUN tusk -f tusk.aur.yml install.aur \
-    && rm -rf /home/${user}/.cache/yay
+    yay -Scc --noconfirm \
+    && rm -rf /home/${user}/.cache
 
 
 # Final image.

@@ -6,9 +6,11 @@ user=$(id -un)
 tz=$(timedatectl show | grep Timezone | cut -d= -f2)
 pwd=$(pwd)
 
+docker volume create ide-cache || true
 docker volume create ide-go || true
 docker volume create ide-cargo || true
 docker volume create ide-fish-history || true
+
 docker run \
 	--init \
 	--interactive \
@@ -22,7 +24,7 @@ docker run \
 	--network host \
 	--tmpfs /tmp:rw,exec,nosuid,nodev,mode=777 \
 	--tmpfs "/home/$user/.local/state:rw,exec,nosuid,nodev,mode=777" \
-	--tmpfs "/home/$user/.cache:rw,noexec,nosuid,nodev,mode=777" \
+	--volume "ide-cache:/home/$user/.cache" \
 	--volume "ide-go:/home/$user/go" \
 	--volume "ide-cargo:/home/$user/.cargo" \
 	--volume "ide-fish-history:/home/$user/.local/share/fish" \

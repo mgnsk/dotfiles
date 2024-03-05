@@ -7,8 +7,6 @@ declare -a packages=(
 	"hadolint-bin"
 	"shellcheck-bin"
 	"lscolors-git"
-	"phpactor"
-	"phpstan-bin"
 )
 
 # gpg: key 51C67305FFC2E5C0: public key "PHPStan Bot <ondrej+phpstanbot@mirtes.cz>"

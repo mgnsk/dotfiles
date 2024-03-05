@@ -1,6 +1,8 @@
 {
   "name": "mgnsk/tools",
   "require": {
-    "laravel/pint": "^1.13"
+    "phpactor/phpactor": "^0.18.1",
+    "phpstan/phpstan": "^1.10",
+    "laravel/pint": "^1.14"
   }
 }

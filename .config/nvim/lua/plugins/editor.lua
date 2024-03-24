@@ -19,4 +19,13 @@ return {
 			require("nvim-autopairs").setup()
 		end,
 	},
+
+	{
+		event = "BufEnter",
+		"mbbill/undotree",
+		build = function()
+			local docPath = vim.fn.resolve(vim.fn.stdpath("data") .. "/lazy/undotree/doc")
+			vim.cmd.helptags(docPath)
+		end,
+	},
 }

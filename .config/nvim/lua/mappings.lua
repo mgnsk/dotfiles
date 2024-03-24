@@ -43,9 +43,6 @@ local function setupEditorMappings()
 	map("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
 	map("n", "<leader>w", ":set wrap!<CR>", { desc = "Toggle word wrap" })
 
-	map("n", "<leader>B", ":Git blame<CR>", { desc = "Git blame" })
-	map("n", "<leader>W", ":Gw!<CR>", { desc = "Select the current buffer when resolving git conflicts" })
-
 	map("n", "<leader>l", function()
 		if vim.wo.scrolloff > 0 then
 			vim.wo.scrolloff = 0
@@ -71,6 +68,8 @@ local function setupEditorMappings()
 			print("spell on")
 		end
 	end, { desc = "Toggle vim spell check" })
+
+	map("n", "<leader>U", ":UndotreeToggle<CR>", { desc = "Toggle undo tree" })
 end
 
 local function setupFZFMappings()
@@ -187,6 +186,32 @@ local function setupLSPMappings()
 	map("n", "gk", goto_prev, { desc = "Goto prev diagnostic or location list item in current buffer" })
 end
 
+local function setupGitMappings()
+	map("n", "gn", function()
+		require("gitsigns").next_hunk()
+	end, { desc = "Goto next git hunk" })
+
+	map("n", "gp", function()
+		require("gitsigns").prev_hunk()
+	end, { desc = "Goto prev git hunk" })
+
+	map("n", "<leader>d", function()
+		require("gitsigns").diffthis()
+	end, { desc = "Git diff" })
+
+	map("n", "B", function()
+		require("gitsigns").blame_line()
+	end, { desc = "Git blame line" })
+
+	map(
+		"n",
+		"<leader>dp",
+		":diffput 2<CR>",
+		{ desc = "Put the current diff hunk into MERGED window in 3-way merge mode" }
+	)
+end
+
 setupEditorMappings()
 setupFZFMappings()
 setupLSPMappings()
+setupGitMappings()

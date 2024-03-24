@@ -12,11 +12,8 @@ return {
 					changedelete = { text = "~" },
 					untracked = { text = "┆" },
 				},
+				status_formatter = nil, -- Use default
 			})
 		end,
-	},
-	{
-		"tpope/vim-fugitive",
-		cmd = "Gvdiffsplit",
 	},
 }

@@ -1,4 +1,4 @@
-local undodir = vim.fn.stdpath("state") .. "/undo/"
+local undodir = vim.fn.resolve(vim.fn.stdpath("state") .. "/undo/")
 vim.fn.mkdir(undodir, "p")
 vim.o.undodir = undodir
 vim.o.undofile = true

@@ -11,7 +11,6 @@ return {
 					},
 				},
 			},
-			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			"hrsh7th/cmp-nvim-lua",
@@ -53,7 +52,7 @@ return {
 					{ name = "nvim_lua", priority = 900 },
 					{ name = "vsnip", priority = 800 },
 					{
-						name = "buffer",
+						name = "fuzzy_buffer",
 						priority = 700,
 						option = {
 							get_bufnrs = function()
@@ -63,15 +62,17 @@ return {
 					},
 				},
 				sorting = {
+					priority_weight = 2,
 					comparators = {
-						function(entry1, entry2)
-							local preselect1 = entry1.completion_item.preselect or false
-							local preselect2 = entry2.completion_item.preselect or false
-
-							if preselect1 ~= preselect2 then
-								return preselect1
-							end
-						end,
+						require("cmp_fuzzy_buffer.compare"),
+						cmp.offset,
+						cmp.exact,
+						cmp.score,
+						cmp.recently_used,
+						cmp.kind,
+						cmp.sort_text,
+						cmp.length,
+						cmp.order,
 					},
 				},
 				mapping = {

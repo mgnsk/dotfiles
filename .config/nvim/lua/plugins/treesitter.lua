@@ -15,13 +15,14 @@ end
 return {
 	{
 		"mgnsk/tree-sitter-balafon",
+		event = { "BufEnter" },
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		build = function()
 			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 
-			parser_config.balafon = {
+			parser_config["balafon"] = {
 				install_info = {
 					url = "https://github.com/mgnsk/tree-sitter-balafon",
 					files = { "src/parser.c" },
@@ -73,7 +74,7 @@ return {
 			require("nvim-treesitter.configs").setup({
 				highlight = {
 					enable = true,
-					disable = function(lang, buf)
+					disable = function(_, buf)
 						local max_filesize = 1024 * 1024
 						local size = require("util").buf_size(buf)
 						if size > max_filesize then
@@ -90,8 +91,6 @@ return {
 						node_decremental = "<s-tab>",
 					},
 				},
-				-- auto_install = true,
-				-- textobjects = { enable = true },
 			})
 		end,
 	},

@@ -39,7 +39,7 @@ return {
 	},
 	{
 		"norcalli/nvim-colorizer.lua",
-		ft = { "lua", "html", "css", "less" },
+		ft = { "lua", "html", "css", "less", "svelte" },
 		config = function()
 			require("colorizer").setup({
 				["*"] = {

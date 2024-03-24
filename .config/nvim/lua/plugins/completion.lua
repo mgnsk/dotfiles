@@ -2,6 +2,15 @@ return {
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
+			{
+				"tzachar/cmp-fuzzy-buffer",
+				dependencies = {
+					"tzachar/fuzzy.nvim",
+					dependencies = {
+						{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+					},
+				},
+			},
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lsp-signature-help",

@@ -16,12 +16,7 @@ return {
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
 		config = function()
-			local ap = require("nvim-autopairs")
-			ap.setup({})
+			require("nvim-autopairs").setup()
 		end,
-	},
-	{
-		"mgnsk/table_gen.lua",
-		lazy = true,
 	},
 }

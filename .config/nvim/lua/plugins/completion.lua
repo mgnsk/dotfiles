@@ -14,11 +14,14 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			"hrsh7th/cmp-nvim-lua",
-
-			"hrsh7th/vim-vsnip",
+			{
+				"hrsh7th/vim-vsnip",
+				init = function()
+					vim.g.vsnip_snippet_dir = vim.fn.resolve(vim.fn.stdpath("config") .. "/snippets")
+				end,
+			},
 			"hrsh7th/vim-vsnip-integ",
 			"hrsh7th/cmp-vsnip",
-			"golang/vscode-go", -- For go snippets.
 		},
 		cond = not os.getenv("NVIM_DIFF"),
 		event = { "InsertEnter" },
@@ -47,13 +50,13 @@ return {
 				},
 				preselect = cmp.PreselectMode.None,
 				sources = {
-					{ name = "nvim_lsp", priority = 1000 },
-					{ name = "nvim_lsp_signature_help", priority = 950 },
-					{ name = "nvim_lua", priority = 900 },
-					{ name = "vsnip", priority = 800 },
+					{ name = "vsnip", priority = 1000 },
+					{ name = "nvim_lsp", priority = 900 },
+					{ name = "nvim_lsp_signature_help", priority = 800 },
+					{ name = "nvim_lua", priority = 700 },
 					{
 						name = "fuzzy_buffer",
-						priority = 700,
+						priority = 600,
 						option = {
 							get_bufnrs = function()
 								return vim.api.nvim_list_bufs()
@@ -62,17 +65,25 @@ return {
 					},
 				},
 				sorting = {
-					priority_weight = 2,
+					-- priority_weight = 2,
 					comparators = {
 						require("cmp_fuzzy_buffer.compare"),
 						cmp.offset,
-						cmp.exact,
-						cmp.score,
-						cmp.recently_used,
-						cmp.kind,
-						cmp.sort_text,
-						cmp.length,
-						cmp.order,
+						function(entry1, entry2)
+							local preselect1 = entry1.completion_item.preselect or false
+							local preselect2 = entry2.completion_item.preselect or false
+
+							if preselect1 ~= preselect2 then
+								return preselect1
+							end
+						end,
+						-- cmp.exact,
+						-- cmp.score,
+						-- cmp.recently_used,
+						-- cmp.kind,
+						-- cmp.sort_text,
+						-- cmp.length,
+						-- cmp.order,
 					},
 				},
 				mapping = {

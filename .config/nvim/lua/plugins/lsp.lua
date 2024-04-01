@@ -62,13 +62,25 @@ return {
 				})
 
 			local lsp = require("lspconfig")
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-			lsp.gopls.setup({})
-			lsp.tsserver.setup({})
-			lsp.html.setup({})
-			lsp.cssls.setup({})
-			lsp.bashls.setup({})
+			lsp.gopls.setup({
+				capabilities = capabilities,
+			})
+			lsp.tsserver.setup({
+				capabilities = capabilities,
+			})
+			lsp.html.setup({
+				capabilities = capabilities,
+			})
+			lsp.cssls.setup({
+				capabilities = capabilities,
+			})
+			lsp.bashls.setup({
+				capabilities = capabilities,
+			})
 			lsp.lua_ls.setup({
+				capabilities = capabilities,
 				settings = {
 					Lua = {
 						workspace = {
@@ -84,9 +96,15 @@ return {
 					},
 				},
 			})
-			lsp.phpactor.setup({})
-			lsp.svelte.setup({})
-			lsp.rust_analyzer.setup({})
+			lsp.phpactor.setup({
+				capabilities = capabilities,
+			})
+			lsp.svelte.setup({
+				capabilities = capabilities,
+			})
+			lsp.rust_analyzer.setup({
+				capabilities = capabilities,
+			})
 		end,
 	},
 }

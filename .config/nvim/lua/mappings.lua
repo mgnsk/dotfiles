@@ -203,12 +203,7 @@ local function setupGitMappings()
 		require("gitsigns").blame_line()
 	end, { desc = "Git blame line" })
 
-	map(
-		"n",
-		"<leader>dp",
-		":diffput 2<CR>",
-		{ desc = "Put the current diff hunk into MERGED window in 3-way merge mode" }
-	)
+	map("n", "<leader>W", ":Gw!<CR>", { desc = "Select the current buffer when resolving git conflicts" })
 end
 
 setupEditorMappings()

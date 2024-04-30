@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+sudo pacman -Syy
+
 sudo pacman -S --noconfirm --needed \
 	git \
 	git-delta \
@@ -37,3 +39,23 @@ sudo pacman -S --noconfirm --needed \
 	rustup \
 	man \
 	neovim
+
+declare -a packages=(
+	"fish-fzf"
+	"hadolint-bin"
+	"shellcheck-bin"
+	"lscolors-git"
+)
+
+for p in "${packages[@]}"; do
+	mkdir -p "$HOME/.cache/aur/$p"
+	cd "$HOME/.cache/aur/$p"
+
+	if test -d ./.git; then
+		git pull
+	else
+		git clone "https://aur.archlinux.org/$p.git" .
+	fi
+
+	makepkg --force --noconfirm --needed --syncdeps --clean --cleanbuild --rmdeps --install
+done

@@ -25,6 +25,7 @@ return {
 					Type = { fg = c.vscBlueGreen, bg = "NONE" },
 					TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
 					QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },
+					["@variable.builtin"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@module"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@keyword"] = { fg = c.vscPink, bg = "NONE" },
 					["@constructor"] = { link = "@function.call" },

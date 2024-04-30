@@ -6,9 +6,8 @@ ARG gid
 ARG user
 ARG group
 
-RUN pacman -Syyu --noconfirm
-
-RUN pacman -S --noconfirm --needed \
+RUN pacman -Syyu --noconfirm \
+    && pacman -S --noconfirm --needed \
     git \
     go \
     rustup \
@@ -107,19 +106,6 @@ RUN bash install-nvim.sh \
     && rm -rf /home/${user}/.cache
 
 
-# AUR packages.
-FROM build-base AS aur-tools
-
-ARG user
-USER ${user}
-
-COPY --chown=${uid}:${gid} /dotfiles/.tools/build-aur.sh /home/${user}/.tools/build-aur.sh
-
-WORKDIR /home/${user}/.tools
-
-RUN bash build-aur.sh
-
-
 # System packages.
 FROM build-base AS toolbox-base-system
 
@@ -131,6 +117,7 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.too
 WORKDIR /home/${user}/.tools
 
 RUN bash install-system.sh \
+    && rm -rf /home/${user}/.cache \
     && sudo bash -c "yes | pacman -Scc"
 
 
@@ -149,14 +136,10 @@ COPY --from=php-tools --chown=${uid}:${gid} /home/${user}/.tools/vendor /home/${
 COPY --from=php-tools /etc/php/conf.d /etc/php/conf.d
 COPY --from=js-tools --chown=${uid}:${gid} /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-tools --chown=${uid}:${gid} /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
-COPY --from=aur-tools --chown=${uid}:${gid} /home/${user}/.cache/aur /home/${user}/.cache/aur
 
 WORKDIR /home/${user}/.tools
 
-RUN bash install-aur.sh \
-    && rm -rf /home/${user}/.cache \
-    && sudo bash -c "yes | pacman -Scc" \
-    && bash install-fish.sh \
+RUN bash install-fish.sh \
     && sudo gpasswd -d ${user} wheel \
     && sudo rm /etc/sudoers.d/01-wheel \
     && mkdir -p \

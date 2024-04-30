@@ -2,15 +2,7 @@ return {
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
-			{
-				"tzachar/cmp-fuzzy-buffer",
-				dependencies = {
-					"tzachar/fuzzy.nvim",
-					dependencies = {
-						{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-					},
-				},
-			},
+			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			"hrsh7th/cmp-nvim-lua",
@@ -49,13 +41,14 @@ return {
 					completeopt = "menu,menuone,noinsert", -- remove default noselect
 				},
 				preselect = cmp.PreselectMode.None,
-				sources = {
+				sources = cmp.config.sources({
 					{ name = "vsnip", priority = 1000 },
 					{ name = "nvim_lsp", priority = 900 },
 					{ name = "nvim_lsp_signature_help", priority = 800 },
 					{ name = "nvim_lua", priority = 700 },
+				}, {
 					{
-						name = "fuzzy_buffer",
+						name = "buffer",
 						priority = 600,
 						option = {
 							get_bufnrs = function()
@@ -63,27 +56,19 @@ return {
 							end,
 						},
 					},
-				},
+				}),
 				sorting = {
-					-- priority_weight = 2,
+					priority_weight = 2,
 					comparators = {
-						require("cmp_fuzzy_buffer.compare"),
-						cmp.offset,
-						function(entry1, entry2)
-							local preselect1 = entry1.completion_item.preselect or false
-							local preselect2 = entry2.completion_item.preselect or false
-
-							if preselect1 ~= preselect2 then
-								return preselect1
-							end
-						end,
-						-- cmp.exact,
-						-- cmp.score,
-						-- cmp.recently_used,
-						-- cmp.kind,
-						-- cmp.sort_text,
-						-- cmp.length,
-						-- cmp.order,
+						cmp.order,
+						-- function(entry1, entry2)
+						-- 	local preselect1 = entry1.completion_item.preselect or false
+						-- 	local preselect2 = entry2.completion_item.preselect or false
+						--
+						-- 	if preselect1 ~= preselect2 then
+						-- 		return preselect1
+						-- 	end
+						-- end,
 					},
 				},
 				mapping = {

@@ -48,10 +48,8 @@ if status --is-interactive
     if type -q direnv
         direnv hook fish | source
     end
-end
-
-# Start sway at login
-if status is-login
+else if status is-login
+    # Start sway at login
     if test -z "$DISPLAY" -a "$XDG_VTNR" = 1
         set -gx XDG_CURRENT_DESKTOP sway
         set -gx XDG_DATA_DIRS "/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$XDG_DATA_HOME/flatpak/exports/share"

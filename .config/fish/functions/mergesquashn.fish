@@ -1,4 +1,4 @@
-function mergesquashn --description 'alias config=/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+function mergesquashn
     # Reset the current branch to the commit just before the last 12:
     git reset --hard "HEAD~$argv"
 

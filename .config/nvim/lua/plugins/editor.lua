@@ -19,13 +19,29 @@ return {
 			require("nvim-autopairs").setup()
 		end,
 	},
-
 	{
 		event = "BufEnter",
 		"mbbill/undotree",
 		build = function()
 			local docPath = vim.fn.resolve(vim.fn.stdpath("data") .. "/lazy/undotree/doc")
 			vim.cmd.helptags(docPath)
+		end,
+	},
+	{
+		"kevinhwang91/nvim-fundo",
+		event = "BufEnter",
+		dependencies = {
+			"kevinhwang91/promise-async",
+		},
+		config = function()
+			vim.o.undofile = true
+			vim.o.swapfile = false
+			vim.o.backup = false
+
+			require("fundo").setup({
+				archives_dir = vim.fn.resolve(vim.fn.stdpath("state") .. "/" .. "fundo"),
+				limit_archives_size = 64, -- 64M
+			})
 		end,
 	},
 }

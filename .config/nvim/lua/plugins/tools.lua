@@ -67,7 +67,23 @@ return {
 		end,
 	},
 	{
-		"mgnsk/table_gen.lua",
-		lazy = true,
+		"stevearc/oil.nvim",
+		cmd = "Oil",
+		config = function()
+			local oil = require("oil")
+
+			oil.setup({
+				view_options = {
+					show_hidden = true,
+					natural_order = false,
+					sort = {
+						{ "type", "asc" },
+						{ "name", "asc" },
+					},
+				},
+			})
+		end,
+		-- -- Optional dependencies
+		-- dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
 }

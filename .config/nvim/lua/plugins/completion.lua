@@ -60,15 +60,14 @@ return {
 				sorting = {
 					priority_weight = 2,
 					comparators = {
-						cmp.order,
-						-- function(entry1, entry2)
-						-- 	local preselect1 = entry1.completion_item.preselect or false
-						-- 	local preselect2 = entry2.completion_item.preselect or false
-						--
-						-- 	if preselect1 ~= preselect2 then
-						-- 		return preselect1
-						-- 	end
-						-- end,
+						function(entry1, entry2)
+							local preselect1 = entry1.completion_item.preselect or false
+							local preselect2 = entry2.completion_item.preselect or false
+
+							if preselect1 ~= preselect2 then
+								return preselect1
+							end
+						end,
 					},
 				},
 				mapping = {

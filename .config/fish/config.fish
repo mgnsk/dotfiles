@@ -2,7 +2,7 @@ fish_add_path ~/.local/bin
 fish_add_path ~/.bin
 fish_add_path ~/go/bin
 fish_add_path ~/.cargo/bin
-fish_add_path ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin
+fish_add_path ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin
 fish_add_path ~/.luarocks/bin
 fish_add_path ~/.tools/vendor/bin
 fish_add_path ~/.tools/node_modules/.bin
@@ -35,6 +35,20 @@ set -g fish_color_command a1b56c
 set -g fish_color_comment f7ca88
 set -g fish_color_param d8d8d8
 
+if status is-login
+    # Start sway at login
+    if test -z "$DISPLAY" -a "$XDG_VTNR" = 1
+        set -gx XDG_CURRENT_DESKTOP sway
+        set -gx XDG_DATA_DIRS "/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$XDG_DATA_HOME/flatpak/exports/share"
+        set -gx XDG_SESSION_TYPE wayland
+        set -gx BEMENU_BACKEND wayland
+
+        export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+
+        exec sway
+    end
+end
+
 if status --is-interactive
     if test -d /usr/share/fzf/shell
         source /usr/share/fzf/shell/key-bindings.fish
@@ -47,17 +61,5 @@ if status --is-interactive
 
     if type -q direnv
         direnv hook fish | source
-    end
-else if status is-login
-    # Start sway at login
-    if test -z "$DISPLAY" -a "$XDG_VTNR" = 1
-        set -gx XDG_CURRENT_DESKTOP sway
-        set -gx XDG_DATA_DIRS "/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$XDG_DATA_HOME/flatpak/exports/share"
-        set -gx XDG_SESSION_TYPE wayland
-        set -gx BEMENU_BACKEND wayland
-
-        export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
-
-        exec sway
     end
 end

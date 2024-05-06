@@ -8,7 +8,7 @@
 	sk = !" \
 		sk \
 		--ansi \
-		-ic \"git log --all --oneline --color -G\"{}\" $*\" \
+		-ic \"git log --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G\"{}\"\" \
 		--preview=\"git show --color -G {cq} {1} | rg  --colors=match:fg:blue --color=always --passthru {cq}\" \
 		"
 [mergetool]

@@ -1,0 +1,9 @@
+{
+  ".source.ts": {
+    "inspect": {
+      "prefix": "console",
+      "body": "console.log($0)",
+      "description": "Snippet for console log"
+    }
+  }
+}

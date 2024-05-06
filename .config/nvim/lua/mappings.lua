@@ -25,19 +25,20 @@ local function setupEditorMappings()
 	map(
 		"n",
 		"<leader>,",
-		":let $curdir=expand('%:p:h')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR>",
+		":let $curdir=substitute(expand('%:p:h'), 'oil://', '', '')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR>",
 		{ desc = "Open new terminal window to right" }
 	)
 	map(
 		"n",
 		"tt",
-		":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>",
+		":let $curdir=substitute(expand('%:p:h'), 'oil://', '', '')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>",
 		{ desc = "Open new terminal tab" }
 	)
 	map("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
 	map("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
 	map("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
-	map("n", "<leader>e", ":Vex %:h<CR>", { desc = "Open file browser in split" })
+	-- TODO: open in the directory of previous buffer
+	map("n", "-", ":Oil<CR>", { desc = "Open file browser in tab" })
 	map("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
 	map("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
 	map("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
@@ -99,25 +100,17 @@ local function setupFZFMappings()
 		return require("fzf-lua").files()
 	end, { desc = "FZF files" })
 
-	map("n", "<leader>T", function()
-		return require("fzf-lua").tags()
-	end, { desc = "FZF tags" })
-
 	map("n", "<leader>f", function()
-		return require("fzf-lua").lsp_document_symbols()
-	end, { desc = "FZF lsp_document_symbols" })
-
-	map("n", "<leader>F", function()
 		return require("fzf-lua").lsp_live_workspace_symbols()
 	end, { desc = "FZF lsp_live_workspace_symbols" })
 
-	map("n", "<leader>G", function()
-		return require("fzf-lua").git_bcommits()
-	end, { desc = "FZF git_bcommits" })
+	map("n", "<leader>h", function()
+		return require("fzf").fzf_git_log()
+	end, { desc = "FZF git log patch messages" })
 
 	map("n", "<leader>H", function()
-		return require("fzf-lua").git_commits()
-	end, { desc = "FZF git_commits" })
+		return require("fzf").fzf_git_reflog()
+	end, { desc = "FZF git reflog patch messages" })
 end
 
 local function goto_next()
@@ -173,7 +166,8 @@ local function setupLSPMappings()
 	end, { desc = "Toggle LSP symbols outline tree" })
 
 	map("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-	map("n", "L", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
+	map("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
+
 	map("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 	map("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })
 	map("n", "gi", vim.lsp.buf.implementation, { desc = "List implementations" })

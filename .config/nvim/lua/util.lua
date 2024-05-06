@@ -5,7 +5,10 @@ function util.buf_size(buf)
 end
 
 function util.map(mode, lhs, rhs, opts_overrides)
-	local opts = { noremap = true, silent = true }
+	local opts = {
+		noremap = true,
+		silent = true,
+	}
 	opts = vim.tbl_extend("force", opts, opts_overrides or {})
 	vim.keymap.set(mode, lhs, rhs, opts)
 end

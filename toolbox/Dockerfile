@@ -58,6 +58,11 @@ WORKDIR /home/${user}/.tools
 
 RUN bash install-rust.sh
 
+RUN bash install-rust.sh \
+    && rm -rf \
+    /home/${user}/.cargo/git \
+    /home/${user}/.cargo/registry
+
 
 # PHP packages.
 FROM build-base AS php-tools

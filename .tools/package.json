@@ -11,7 +11,6 @@
   "dependencies": {
     "bash-language-server": "^5.1.2",
     "cspell": "^8.6.0",
-    "eslint": "^8.57.0",
     "markdownlint-cli": "^0.39.0",
     "npm-check-updates": "^16.14.15",
     "prettier": "^3.2.5",

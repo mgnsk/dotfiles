@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+npx --no-install -p eslint "$(realpath "$1")"

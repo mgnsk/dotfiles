@@ -42,16 +42,18 @@ return {
 			},
 		},
 		config = function()
-			-- vim.api.nvim_create_autocmd("LspAttach", {
-			-- 	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-			-- 	callback = function(args)
-			-- 		local client = vim.lsp.get_client_by_id(args.data.client_id)
-			-- 		if client ~= nil and client.server_capabilities.inlayHintProvider then
-			-- 			vim.lsp.inlay_hint.enable(args.buf, true)
-			-- 		end
-			-- 		-- whatever other lsp config you want
-			-- 	end,
-			-- })
+			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+				callback = function(args)
+					local client = vim.lsp.get_client_by_id(args.data.client_id)
+					if client ~= nil and client.server_capabilities.inlayHintProvider then
+						print(vim.inspect("jea"))
+						vim.lsp.inlay_hint.enable(true)
+					end
+					-- whatever other lsp config you want
+				end,
+			})
+
 			vim.lsp.handlers["textDocument/declaration"] = location_callback
 			vim.lsp.handlers["textDocument/definition"] = location_callback
 			vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
@@ -66,9 +68,34 @@ return {
 
 			lsp.gopls.setup({
 				capabilities = capabilities,
+				settings = {
+					gopls = {
+						hints = {
+							assignVariableTypes = true,
+							compositeLiteralFields = true,
+							compositeLiteralTypes = true,
+							constantValues = true,
+							functionTypeParameters = true,
+							parameterNames = true,
+							rangeVariableTypes = true,
+						},
+					},
+				},
 			})
 			lsp.tsserver.setup({
 				capabilities = capabilities,
+				init_options = {
+					preferences = {
+						includeInlayParameterNameHints = "all",
+						includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+						includeInlayFunctionParameterTypeHints = true,
+						includeInlayVariableTypeHints = true,
+						includeInlayPropertyDeclarationTypeHints = true,
+						includeInlayFunctionLikeReturnTypeHints = true,
+						includeInlayEnumMemberValueHints = true,
+						importModuleSpecifierPreference = "non-relative",
+					},
+				},
 			})
 			lsp.html.setup({
 				capabilities = capabilities,
@@ -90,6 +117,15 @@ return {
 						completion = {
 							enable = true,
 						},
+						hint = {
+							arrayIndex = "Auto",
+							await = true,
+							enable = true,
+							paramName = "All",
+							paramType = true,
+							semicolon = "SameLine",
+							setType = true,
+						},
 						runtime = { version = "LuaJIT" },
 						diagnostics = { globals = { "vim" } },
 						telemetry = { enable = false },
@@ -98,9 +134,12 @@ return {
 			})
 			lsp.phpactor.setup({
 				capabilities = capabilities,
-			})
-			lsp.svelte.setup({
-				capabilities = capabilities,
+				-- TODO
+				-- init_options = {
+				-- 	["language_server_worse_reflection.inlay_hints.enable"] = true,
+				-- 	["language_server_worse_reflection.inlay_hints.params"] = true,
+				-- 	["language_server_worse_reflection.inlay_hints.types"] = true,
+				-- },
 			})
 			lsp.rust_analyzer.setup({
 				capabilities = capabilities,

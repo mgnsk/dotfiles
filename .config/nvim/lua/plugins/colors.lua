@@ -28,11 +28,28 @@ return {
 					["@variable.builtin"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@module"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@keyword"] = { fg = c.vscPink, bg = "NONE" },
+
 					["@constructor"] = { link = "@function.call" },
 					["@function.macro"] = { fg = c.vscPink, bg = "NONE" },
 					["@type.builtin"] = { fg = c.vscBlueGreen, bg = "NONE" },
 					["@constant.builtin"] = { fg = c.vscYellowOrange, bg = "NONE" },
 					["@constant"] = { link = "@variable" },
+
+					-- typescriptreact: TODO:
+					["typescriptArrowFunc"] = { fg = c.vscFront, bg = "NONE" },
+					-- ["typescriptBlock"] = { fg = c.vscFront, bg = "NONE" },
+					["typescriptImportType"] = { link = "@keyword" },
+					["typescriptFuncKeyword"] = { link = "@keyword" },
+					["typescriptAliasKeyword"] = { link = "@keyword" },
+					["typescriptVariable"] = { link = "@keyword" },
+					["typescriptAsyncFuncKeyword"] = { link = "@keyword" },
+					["typescriptOperator"] = { link = "@keyword" },
+					["typescriptKeywordOp"] = { link = "@keyword" },
+					["typescriptCastKeyword"] = { link = "@keyword" },
+					["typescriptTry"] = { link = "@keyword" },
+					["typescriptExceptions"] = { link = "@keyword" },
+					["typescriptIdentifierName"] = { link = "@variable" }, -- TODO: not working
+					["typescriptNull"] = { link = "@constant.builtin" },
 				},
 			})
 			vscode.load()
@@ -40,7 +57,7 @@ return {
 	},
 	{
 		"norcalli/nvim-colorizer.lua",
-		ft = { "lua", "html", "css", "less", "svelte" },
+		ft = { "lua", "html", "css", "less", "typescriptreact" },
 		config = function()
 			require("colorizer").setup({
 				["*"] = {

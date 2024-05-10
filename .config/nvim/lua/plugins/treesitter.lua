@@ -15,18 +15,17 @@ end
 return {
 	{
 		"mgnsk/tree-sitter-balafon",
-		event = { "BufEnter" },
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 		},
-		build = function()
+		event = { "BufEnter" },
+		build = function(plugin)
 			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 
 			parser_config["balafon"] = {
 				install_info = {
-					url = "https://github.com/mgnsk/tree-sitter-balafon",
+					url = plugin.dir,
 					files = { "src/parser.c" },
-					branch = "main",
 					generate_requires_npm = true,
 					requires_generate_from_grammar = false,
 				},
@@ -62,7 +61,6 @@ return {
 				"query",
 				"rust",
 				"sql",
-				"svelte",
 				"tlaplus",
 				"toml",
 				"twig",

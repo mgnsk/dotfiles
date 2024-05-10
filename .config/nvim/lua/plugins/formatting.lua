@@ -13,7 +13,7 @@ return {
 				json = { "prettier", "-w" },
 				javascript = { "prettier", "-w" },
 				typescript = { "prettier", "-w" },
-				svelte = { "prettier", "-w", "--plugin", "prettier-plugin-svelte" },
+				typescriptreact = { "prettier", "-w" },
 				twig = { "prettier", "-w" },
 				lua = { "stylua" },
 				c = { "clang-format", "-i" },

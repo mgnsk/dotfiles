@@ -22,9 +22,8 @@ return {
 	{
 		event = "BufEnter",
 		"mbbill/undotree",
-		build = function()
-			local docPath = vim.fn.resolve(vim.fn.stdpath("data") .. "/lazy/undotree/doc")
-			vim.cmd.helptags(docPath)
+		build = function(plugin)
+			vim.cmd.helptags(plugin.dir .. "/doc")
 		end,
 	},
 	{

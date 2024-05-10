@@ -9,14 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bash-language-server": "^5.1.2",
-    "cspell": "^8.6.0",
-    "markdownlint-cli": "^0.39.0",
-    "npm-check-updates": "^16.14.15",
+    "bash-language-server": "^5.2.0",
+    "cspell": "^8.8.1",
+    "markdownlint-cli": "^0.40.0",
+    "npm-check-updates": "^16.14.20",
     "prettier": "^3.2.5",
-    "svelte-language-server": "^0.16.5",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.5",
     "typescript-language-server": "^4.3.3",
-    "vscode-langservers-extracted": "^4.8.0"
+    "vscode-langservers-extracted": "^4.10.0"
   }
 }

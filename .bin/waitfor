@@ -1,3 +1,3 @@
 #!/bin/bash
 
-read -r -d ''
+exec read -r -d ''

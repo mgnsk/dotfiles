@@ -25,79 +25,6 @@ local function git_log_search(source, prompt)
 	})
 end
 
--- Search for PRs or issues including comments that contain the text.
-local function gh_search(command, repo, prompt)
-	return require("fzf-lua").fzf_live(function(q)
-		local cmd = table.concat({
-			"GH_FORCE_TTY='50%'",
-			"gh",
-			"search",
-			command .. "s",
-			"--repo",
-			string.format([["%s"]], repo),
-			"--sort updated",
-			"--json number,title,createdAt,author",
-			"--template",
-			[['{{range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{.title}}{{"\n"}}{{end}}']],
-			string.format([["%s"]], q),
-		}, " ")
-		return cmd
-	end, {
-		prompt = prompt,
-		fzf_opts = {
-			["--preview"] = {
-				type = "cmd",
-				fn = function(items)
-					local number = string.match(unpack(items), "%d+")
-
-					local target = ""
-
-					if command == "pr" then
-						target = "pulls"
-					elseif command == "issue" then
-						target = "issues"
-					end
-
-					local cmd = table.concat({
-						-- First command.
-						"GH_FORCE_TTY='50%'",
-						"gh",
-						command,
-						"view",
-						number,
-						"--comments",
-						";",
-
-						-- Second command.
-						"GH_FORCE_TTY='50%'",
-						string.format([[gh api "repos/{owner}/{repo}/%s/%s/comments"]], target, number),
-						"--template",
-						[['{{range .}}{{timeago .created_at | autocolor "red"}} {{printf "(%s)" .user.login | autocolor "blue"}}: {{.body}}{{"\n"}}{{end}}']],
-					}, " ")
-
-					return cmd
-				end,
-			},
-		},
-		actions = {
-			["default"] = function(selected)
-				vim.fn.setreg("", unpack(selected))
-				print(selected)
-			end,
-		},
-	})
-end
-
-local function get_repo()
-	local output = vim.fn.system([[gh repo view --json nameWithOwner --template "{{.nameWithOwner}}"]])
-	if vim.v.shell_error ~= 0 then
-		vim.notify(output, vim.log.levels.ERROR, { title = "gh" })
-		return ""
-	end
-
-	return output
-end
-
 local M = {}
 
 function M.fzf_git_log()
@@ -109,13 +36,67 @@ function M.fzf_git_reflog()
 end
 
 function M.fzf_gh_prs()
-	local repo = get_repo()
-	return gh_search("pr", repo, "Pull requests> ")
+	local gh = require("github")
+	local repo = gh.get_repo()
+
+	return require("fzf-lua").fzf_live(function(q)
+		return gh.cmd_search_prs(repo, q)
+	end, {
+		prompt = "Pull requests> ",
+		fzf_opts = {
+			["--preview"] = {
+				type = "cmd",
+				fn = function(items)
+					local number = string.match(unpack(items), "%d+")
+					return table.concat({
+						-- First command.
+						gh.cmd_view_pr(number),
+						";",
+						-- Second command.
+						gh.cmd_view_pr_comments(number),
+					}, " ")
+				end,
+			},
+			["--preview-window"] = "wrap",
+		},
+		actions = {
+			["default"] = function(selected)
+				if selected ~= nil then
+					vim.fn.setreg("", unpack(selected))
+					print(selected)
+				end
+			end,
+		},
+	})
 end
 
 function M.fzf_gh_issues()
-	local repo = get_repo()
-	return gh_search("issue", repo, "Issues> ")
+	local gh = require("github")
+	local repo = gh.get_repo()
+
+	return require("fzf-lua").fzf_live(function(q)
+		return gh.cmd_search_issues(repo, q)
+	end, {
+		prompt = "Issues> ",
+		fzf_opts = {
+			["--preview"] = {
+				type = "cmd",
+				fn = function(items)
+					local number = string.match(unpack(items), "%d+")
+					return gh.cmd_view_issue(number)
+				end,
+			},
+			["--preview-window"] = "wrap",
+		},
+		actions = {
+			["default"] = function(selected)
+				if selected ~= nil then
+					vim.fn.setreg("", unpack(selected))
+					print(selected)
+				end
+			end,
+		},
+	})
 end
 
 function M.setup()

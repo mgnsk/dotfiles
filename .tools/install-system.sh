@@ -16,6 +16,7 @@ sudo pacman -S --noconfirm --needed \
 	fd \
 	bat \
 	fzf \
+	glow \
 	parallel \
 	moreutils \
 	earlyoom \

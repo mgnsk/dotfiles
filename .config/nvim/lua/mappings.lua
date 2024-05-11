@@ -103,14 +103,6 @@ local function setupFZFMappings()
 	map("n", "<leader>f", function()
 		return require("fzf-lua").lsp_live_workspace_symbols()
 	end, { desc = "FZF lsp_live_workspace_symbols" })
-
-	map("n", "<leader>h", function()
-		return require("fzf").fzf_git_log()
-	end, { desc = "FZF git log patch messages" })
-
-	map("n", "<leader>H", function()
-		return require("fzf").fzf_git_reflog()
-	end, { desc = "FZF git reflog patch messages" })
 end
 
 local function goto_next()

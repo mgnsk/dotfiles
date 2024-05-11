@@ -16,7 +16,6 @@ sudo pacman -S --noconfirm --needed \
 	fd \
 	bat \
 	fzf \
-	skim \
 	parallel \
 	moreutils \
 	earlyoom \

@@ -103,6 +103,14 @@ local function setupFZFMappings()
 	map("n", "<leader>f", function()
 		return require("fzf-lua").lsp_live_workspace_symbols()
 	end, { desc = "FZF lsp_live_workspace_symbols" })
+
+	map("n", "<leader>h", function()
+		return require("fzf-lua").git_bcommits()
+	end, { desc = "FZF git_bcommits" })
+
+	map("n", "<leader>H", function()
+		return require("fzf-lua").git_commits()
+	end, { desc = "FZF commits" })
 end
 
 local function goto_next()

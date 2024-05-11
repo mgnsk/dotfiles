@@ -84,6 +84,4 @@ require("indent")
 require("mappings")
 require("statusline")
 
-require("git/fzf_git").setup()
-
 require("lazy_setup")

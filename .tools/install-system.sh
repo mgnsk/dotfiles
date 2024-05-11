@@ -37,14 +37,14 @@ sudo pacman -S --noconfirm --needed \
 	php-sqlite \
 	composer \
 	rustup \
-	man \
-	neovim
+	man
 
 declare -a packages=(
 	"fish-fzf"
 	"hadolint-bin"
 	"shellcheck-bin"
 	"lscolors-git"
+	"neovim-nightly-bin"
 )
 
 for p in "${packages[@]}"; do

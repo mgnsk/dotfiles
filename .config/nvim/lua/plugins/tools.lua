@@ -2,7 +2,7 @@ return {
 	{
 		"neomake/neomake",
 		cond = not os.getenv("NVIM_DIFF"),
-		event = { "BufEnter" },
+		cmd = { "Neomake" },
 		init = function()
 			vim.g.neomake_open_list = 2
 			vim.g.neomake_list_height = 5
@@ -17,14 +17,18 @@ return {
 			}
 
 			vim.g.neomake_balafon_enabled_makers = { "lint" }
-		end,
-		config = function()
-			vim.fn["neomake#configure#automake"]("w")
+
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				pattern = "*",
+				callback = function()
+					vim.cmd("Neomake")
+				end,
+			})
 		end,
 	},
 	{
 		"ryuichiroh/vim-cspell",
-		event = { "BufEnter" },
+		cmd = "CSpell",
 		init = function()
 			vim.g.cspell_disable_autogroup = true
 		end,

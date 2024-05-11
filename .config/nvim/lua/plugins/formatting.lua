@@ -1,7 +1,7 @@
 return {
 	{
 		"mgnsk/sync-format.nvim",
-		event = "BufEnter",
+		event = "BufWritePost",
 		config = function()
 			require("formatter").setup({
 				balafon = { "balafon", "fmt", "-w" },

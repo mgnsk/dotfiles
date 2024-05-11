@@ -47,10 +47,8 @@ return {
 				callback = function(args)
 					local client = vim.lsp.get_client_by_id(args.data.client_id)
 					if client ~= nil and client.server_capabilities.inlayHintProvider then
-						print(vim.inspect("jea"))
 						vim.lsp.inlay_hint.enable(true)
 					end
-					-- whatever other lsp config you want
 				end,
 			})
 
@@ -71,12 +69,12 @@ return {
 				settings = {
 					gopls = {
 						hints = {
-							assignVariableTypes = true,
-							compositeLiteralFields = true,
-							compositeLiteralTypes = true,
+							assignVariableTypes = false,
+							compositeLiteralFields = false,
+							compositeLiteralTypes = false,
 							constantValues = true,
 							functionTypeParameters = true,
-							parameterNames = true,
+							parameterNames = false,
 							rangeVariableTypes = true,
 						},
 					},
@@ -118,13 +116,13 @@ return {
 							enable = true,
 						},
 						hint = {
-							arrayIndex = "Auto",
-							await = true,
-							enable = true,
-							paramName = "All",
-							paramType = true,
-							semicolon = "SameLine",
-							setType = true,
+							enable = false,
+							-- arrayIndex = "Disable",
+							-- await = true,
+							-- paramName = "All",
+							-- paramType = true,
+							-- semicolon = "SameLine",
+							-- setType = false,
 						},
 						runtime = { version = "LuaJIT" },
 						diagnostics = { globals = { "vim" } },

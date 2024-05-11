@@ -4,7 +4,7 @@ local Github = {}
 function Github.get_repo()
 	local output = vim.fn.system([[gh repo view --json nameWithOwner --template "{{.nameWithOwner}}"]])
 	if vim.v.shell_error ~= 0 then
-		vim.notify(output, vim.log.levels.ERROR, { title = "gh" })
+		vim.notify(output, vim.log.levels.ERROR)
 		return ""
 	end
 

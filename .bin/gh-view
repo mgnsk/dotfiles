@@ -6,15 +6,59 @@ set -euo pipefail
 
 target="$1"
 number="$2"
-issue_pr_jq_template='. as $parent | {url, createdAt, number, title, state, login: .author.login, comments: [({url, createdAt: $parent.createdAt, login: $parent.author.login, body: $parent.body}), ($parent.comments[] | {url, createdAt, login: .author.login, body})]}'
-issue_pr_go_template='# #{{.number}} {{.title}}{{"\n"}}state: {{.state}}{{"\n\n\n"}}{{range .comments}}{{"\n\n\n"}}# *{{timeago .createdAt}} {{printf "(%s)" .login}}:*{{"\n"}}{{.url}}{{"\n"}}{{if .diff_hunk}}{{printf "```diff\n%s\n```" .diff_hunk}}{{end}}{{"\n"}}{{.body}}{{end}}'
+
+issue_pr_jq_template="$(
+	cat <<-'EOF'
+		. as $parent | {
+			url,
+			createdAt,
+			number,
+			title,
+			state,
+			login: .author.login,
+			comments: [
+				# Treat the PR or issue itself as the first comment.
+				{
+					url,
+					createdAt: $parent.createdAt,
+					login: $parent.author.login,
+					body: $parent.body
+				},
+				# The rest of the comments.
+				($parent.comments[] | {
+					url,
+					createdAt,
+					login: .author.login,
+					body
+				})
+			]
+		}
+	EOF
+)"
+
+issue_pr_go_template="$(
+	cat <<-'EOF'
+		# #{{.number}} {{.title}}
+		state: {{.state}}
+
+		{{range .comments}}
+			---
+
+			# *{{timeago .createdAt}} {{printf "(%s)" .login}}:*
+			{{.url}}
+
+			{{if .diff_hunk}}{{printf "```diff\n%s\n```" .diff_hunk}}{{end}}
+			{{.body}}
+		{{end}}
+	EOF
+)"
 
 if [ "$target" == "pr" ]; then
 	# PR with body and comments. The PR body is treated as the first comment.
 	pr=$(gh pr view "$number" --json number,url,title,state,createdAt,author,body,comments --jq "$issue_pr_jq_template")
 
 	# Diff comments.
-	diff_comments=$(gh api "repos/{owner}/{repo}/pulls/$number/comments" | jq ' [.[] | {url, createdAt: .created_at, login: .user.login, diff_hunk, body}]')
+	diff_comments=$(gh api "repos/{owner}/{repo}/pulls/$number/comments" | jq '[.[] | {url, createdAt: .created_at, login: .user.login, diff_hunk, body}]')
 
 	# PR with all comments merged and sorted.
 	pr_joined=$(jq -n -s --argjson pr "$pr" --argjson diff_comments "$diff_comments" '{url: $pr.url, createdAt: $pr.createdAt, number: $pr.number, title: $pr.title, state: $pr.state, login: $pr.login, comments: ($pr.comments + $diff_comments) | sort_by(.createdAt)}')

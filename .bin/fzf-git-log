@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+command="$1"
+
+export FZF_DEFAULT_COMMAND="git $command --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G {q}"
+
+fzf --bind "change:reload:sleep 0.1; $FZF_DEFAULT_COMMAND || true" --ansi --phony --query '' \
+	--preview 'git show --color -G {q} {1} | delta | rg --colors=match:bg:yellow --color=always --passthru {q}' \
+	--preview-window=wrap \
+	--prompt "Git log> "

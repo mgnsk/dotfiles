@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+target="$1"
+query="$2"
+
+GH_FORCE_TTY='50%' gh search "$target" --repo "$(printenv GH_REPO)" --sort updated --json number,title,createdAt,author \
+	--template '{{range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{.title}}{{"\n"}}{{end}}' \
+	"$query"

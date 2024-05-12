@@ -10,3 +10,4 @@ go install -v golang.org/x/tools/cmd/godoc@latest
 go install -v golang.org/x/tools/gopls@latest
 go install -v golang.org/x/tools/cmd/goimports@latest
 go install -v github.com/mgechev/revive@latest
+go install -v github.com/mgnsk/gh-tpl@latest

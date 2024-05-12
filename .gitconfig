@@ -6,68 +6,10 @@
 	lg =  "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --all"
 	lb =  "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --first-parent $(git branch --show-current)"
 
-	; fzf-log queries git log full patch messages for text.
-	; Requires fzf, delta (diff syntax highlight), rg (highlight search query in results).
-	fzf-log = !" \
-		export FZF_DEFAULT_COMMAND=\"git log --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G {q}\"; \
-		fzf --bind \"change:reload:sleep 0.1; $FZF_DEFAULT_COMMAND || true\" \
-		--ansi \
-		--phony \
-		--query '' \
-		--preview \"git show --color -G {q} {1} | delta | rg --colors=match:bg:yellow --color=always --passthru {q}\" \
-		--preview-window=wrap \
-		--prompt \"Git log> \" \
-		"
-
-	; fzf-reflog queries git reflog full patch messages for text.
-	; Requires fzf, delta (diff syntax highlight), rg (highlight search query in results).
-	fzf-reflog = !" \
-		export FZF_DEFAULT_COMMAND=\"git reflog --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G {q}\"; \
-		fzf --bind \"change:reload:sleep 0.1; $FZF_DEFAULT_COMMAND || true\" \
-		--ansi \
-		--phony \
-		--query '' \
-		--preview \"git show --color -G {q} {1} | delta | rg --colors=match:bg:yellow --color=always --passthru {q}\" \
-		--preview-window=wrap \
-		--prompt \"Git reflog> \" \
-		"
-
-	; fzf-prs queries github pull requests and comments for text.
-	; The preview shows PR with comments first, then additional review comments.
-	; Requires gh, fzf, delta (diff syntax highlight), rg (highlight search query in results), glow (for markdown highlight).
-	fzf-prs = !" \
-		export REPO=\"$(gh repo view --json nameWithOwner --template '{{.nameWithOwner}}')\"; \
-		export FZF_DEFAULT_COMMAND=\"GH_FORCE_TTY='50%' gh search prs --repo \\\"$REPO\\\" --sort updated --json number,title,createdAt,author \
-		--template '{{range .}}{{.number | autocolor \\\"yellow\\\"}} {{timeago .createdAt | autocolor \\\"red\\\"}} {{printf \\\"(%s)\\\" .author.login | autocolor \\\"blue\\\"}} {{.title}}{{\\\"\\n\\\"}}{{end}}' {q}\"; \
-		\
-		fzf --bind \"change:reload:sleep 0.1; $FZF_DEFAULT_COMMAND || true\" --ansi --phony --query '' \
-		--preview \"\
-		GH_FORCE_TTY='40%' gh pr view {1} --comments | rg --colors=match:bg:yellow --color=always --passthru {q}; \
-		\
-		echo {1} | xargs -I[] gh api 'repos/{owner}/{repo}/pulls/[]/comments' \
-		--template '{{range .}}**{{timeago .created_at}} {{printf \\\"(%s)\\\" .user.login}}:**{{\\\"\\n\\\"}}{{.body}}{{\\\"\\n\\n\\n\\\"}}{{end}}' \
-		| glow -s auto | rg --colors=match:bg:yellow --color=always --passthru {q}; \
-		\
-		gh pr diff {1} | delta | rg --colors=match:bg:yellow --color=always --passthru {q}; \
-		\" \
-		--preview-window=wrap \
-		--prompt \"Pull requests> \" \
-		"
-
-	; fzf-issues queries github issues and comments for text.
-	; Requires gh, fzf, rg (highlight search query in results).
-	fzf-issues = !" \
-		export REPO=\"$(gh repo view --json nameWithOwner --template '{{.nameWithOwner}}')\"; \
-		export FZF_DEFAULT_COMMAND=\"GH_FORCE_TTY='50%' gh search issues --repo \\\"$REPO\\\" --sort updated --json number,title,createdAt,author \
-		--template '{{range .}}{{.number | autocolor \\\"yellow\\\"}} {{timeago .createdAt | autocolor \\\"red\\\"}} {{printf \\\"(%s)\\\" .author.login | autocolor \\\"blue\\\"}} {{.title}}{{\\\"\\n\\\"}}{{end}}' {q}\"; \
-		\
-		fzf --bind \"change:reload:sleep 0.1; $FZF_DEFAULT_COMMAND || true\" --ansi --phony --query '' \
-		--preview \"\
-		GH_FORCE_TTY='40%' gh issue view {1} --comments | rg --colors=match:bg:yellow --color=always --passthru {q} \
-		\" \
-		--preview-window=wrap \
-		--prompt \"Pull requests> \" \
-		"
+	logs = !fzf-git-log log
+	reflogs = !fzf-git-log reflog
+	prs = !fzf-git-prs
+	issues = !fzf-git-issues
 
 [mergetool]
 	keepBackup = false

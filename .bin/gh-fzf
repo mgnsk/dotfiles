@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+target="$1"
+
+if [ "$target" != "prs" ] && [ "$target" != "issues" ]; then
+	echo "usage: gh-fzf {prs|issues}"
+	exit 1
+fi
+
+repo="$(gh repo view --json nameWithOwner --template '{{.nameWithOwner}}')"
+
+export GH_REPO="$repo"
+export FZF_DEFAULT_COMMAND="gh-search $target {q}"
+
+fzf --ansi --phony --query '' \
+	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
+	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
+	--preview "gh-view ${target::-1} {1} | rg --colors=match:bg:yellow --color=always --passthru {q}" \
+	--preview-window=wrap \
+	--prompt "$target> "

@@ -17,6 +17,6 @@ export FZF_DEFAULT_COMMAND="gh-search $target {q}"
 fzf --ansi --phony --query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-	--preview "gh-view ${target::-1} {1} | rg --colors=match:bg:yellow --color=always --passthru {q}" \
+	--preview "gh-view ${target::-1} {1} | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}" \
 	--preview-window=wrap \
 	--prompt "$target> "

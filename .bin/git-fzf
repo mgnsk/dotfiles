@@ -14,6 +14,6 @@ export FZF_DEFAULT_COMMAND="git $target --all --color --decorate --pretty=format
 fzf --ansi --phony --query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-	--preview 'git show --color -G {q} {1} | delta | rg --colors=match:bg:yellow --color=always --passthru {q}' \
+	--preview 'git show --color -G {q} {1} | delta | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
 	--preview-window=wrap \
 	--prompt "$target> "

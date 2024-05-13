@@ -9,7 +9,7 @@ number="$2"
 
 issue_pr_jq_template="$(
 	cat <<-'EOF'
-		. as $parent | {
+		. | {
 			url,
 			createdAt,
 			number,
@@ -20,12 +20,12 @@ issue_pr_jq_template="$(
 				# Treat the PR or issue itself as the first comment.
 				{
 					url,
-					createdAt: $parent.createdAt,
-					login: $parent.author.login,
-					body: $parent.body
+					createdAt,
+					login: .author.login,
+					body
 				},
 				# The rest of the comments.
-				($parent.comments[] | {
+				(.comments[] | {
 					url,
 					createdAt,
 					login: .author.login,

@@ -38,7 +38,8 @@ sudo pacman -S --noconfirm --needed \
 	composer \
 	rustup \
 	man \
-	python-pipx
+	python-pipx \
+	mdcat
 
 declare -a packages=(
 	"fish-fzf"

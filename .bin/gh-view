@@ -72,60 +72,25 @@ pr_query="$(
 
 pr_jq_template="$(
 	cat <<-'EOF'
-		.data.repository.pullRequest | {
-			number,
-			url,
-			createdAt,
-			author,
-			title,
-			state,
-			body,
-			comments: [
-				# Comments.
-				(.comments.nodes[] | {
-					url,
-					createdAt,
-					author,
-					minimizedReason,
-					body
-				}),
+		.data.repository.pullRequest | .comments = ([
+			# Comments.
+			(.comments.nodes[]),
 
-				# Reviews.
-				(.reviews.nodes[] | {
-					url,
-					createdAt,
-					state,
-					author,
-					minimizedReason,
-					body
-				} | select(.body != "")), # Skip placeholder reviews.
+			# Reviews.
+			(.reviews.nodes[] | select(.body != "")), # Skip placeholder reviews.
 
-				# Review comments.
-				(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | {
-					url,
-					createdAt,
-					state: $review.state,
-					author,
-					minimizedReason,
-					body,
-					path,
-					position,
-					startLine,
-					line,
-					originalStartLine,
-					originalLine,
-					# Show only lines commented on from hunk.
-					diffHunk: [ (.diffHunk | split("\n") | . as $arr | to_entries[] |
-						# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
-						if $comment.originalStartLine == null and $comment.originalLine != null then
-							select(.key > ($arr|length)-5)
-						else
-							select(true)
-						end
-						| .value) ] | join("\n")
-				})
-				] | sort_by(.createdAt)
-		}
+			# Review comments.
+			(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | .state = $review.state | .diffHunk = ([
+				(.diffHunk | split("\n") | . as $arr | to_entries[] |
+				# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
+				if $comment.originalStartLine == null and $comment.originalLine != null then
+					select(.key > ($arr|length)-5)
+				else
+					select(true)
+				end
+				| .value)
+			] | join("\n")))
+		] | sort_by(.createdAt))
 	EOF
 )"
 
@@ -162,29 +127,10 @@ issue_query="$(
 
 issue_jq_template="$(
 	cat <<-'EOF'
-		.data.repository.issue | {
-			number,
-			url,
-			createdAt,
-			author,
-			title,
-			state,
-			body,
-			comments: [
-				# Comments.
-				(.comments.nodes[] | {
-					url,
-					createdAt,
-					author,
-					minimizedReason,
-					body
-				})
-			] | sort_by(.createdAt)
-		}
+		.data.repository.issue | .comments = .comments.nodes
 	EOF
 )"
 
-# Note: italic urls don't work in glow, must use mdcat.
 issue_pr_go_template="$(
 	cat <<-'EOF'
 		# #{{.number}} {{.title}} ({{.state}})
@@ -207,16 +153,22 @@ issue_pr_go_template="$(
 )"
 
 function render {
-	rich --markdown --force-terminal --emoji -
-	# mdcat -p --ansi --columns "$FZF_PREVIEW_COLUMNS" # https://github.com/swsnr/mdcat
-	# glow --pager --style auto --width "$FZF_PREVIEW_COLUMNS"
+	# mdcat: Best readability. Respects user colors.
+	mdcat -p --ansi --columns "$FZF_PREVIEW_COLUMNS"
 
-	# cmark-gfm --to html | elinks -dump -dump-color-mode 3
+	# rich-cli: Less readable. Respects user colors.
+	# rich --markdown --force-terminal --emoji -
+
+	# HTML options.
+	# cmark-gfm --to html --width "$FZF_PREVIEW_COLUMNS" | elinks -dump -dump-color-mode 3
+	# marked --gfm | elinks -dump -dump-color-mode 3
+
+	# glow: Poor performance. Italic URLs don't display.
+	# glow --pager --style auto --width "$FZF_PREVIEW_COLUMNS"
 }
 
 if [ "$target" == "pr" ]; then
 	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" --jq "$pr_jq_template" | gh-tpl "$issue_pr_go_template" | render
-	# | render
 	# gh pr diff "$number" | delta
 elif [ "$target" == "issue" ]; then
 	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" --jq "$issue_jq_template" | gh-tpl "$issue_pr_go_template" | render

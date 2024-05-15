@@ -106,7 +106,6 @@ pr_jq_template="$(
 					createdAt,
 					state: $review.state,
 					author,
-					isMinimized,
 					minimizedReason,
 					body,
 					path,
@@ -151,6 +150,7 @@ issue_query="$(
 							author {
 								login
 							},
+							minimizedReason,
 							body
 						}
 					}
@@ -176,7 +176,6 @@ issue_jq_template="$(
 					url,
 					createdAt,
 					author,
-					isMinimized,
 					minimizedReason,
 					body
 				})
@@ -216,11 +215,11 @@ function render {
 }
 
 if [ "$target" == "pr" ]; then
-	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" | jq "$pr_jq_template" | gh-tpl "$issue_pr_go_template" | render
+	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" --jq "$pr_jq_template" | gh-tpl "$issue_pr_go_template" | render
 	# | render
 	# gh pr diff "$number" | delta
 elif [ "$target" == "issue" ]; then
-	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" | jq "$issue_jq_template" | gh-tpl "$issue_pr_go_template" | render
+	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" --jq "$issue_jq_template" | gh-tpl "$issue_pr_go_template" | render
 else
 	echo "usage: gh-view {pr|issue} {number}"
 	exit 1

@@ -134,7 +134,7 @@ issue_jq_template="$(
 issue_pr_go_template="$(
 	cat <<-'EOF'
 		# #{{.number}} {{.title}} ({{.state}})
-		## *{{timeago .createdAt}} {{printf "(%s)" .author.login}}:*
+		## *{{timeago .createdAt}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}:*
 		*{{.url}}*
 
 		{{.body}}
@@ -142,7 +142,7 @@ issue_pr_go_template="$(
 		{{range .comments}}
 			---
 
-			## *{{timeago .createdAt}} {{printf "(%s)" .author.login}}{{if .state}} {{.state}}{{end}}:*
+			## *{{timeago .createdAt}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state}}{{end}}:*
 			*{{.url}}*
 			{{if .minimizedReason}}*minimized: {{.minimizedReason}}*{{end}}
 			{{if .path}}*path: {{.path}}*{{end}}

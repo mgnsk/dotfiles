@@ -55,6 +55,7 @@ return {
 				"html",
 				"javascript",
 				"lua",
+				"markdown",
 				"php",
 				"proto",
 				"python",

@@ -1,76 +1,226 @@
 #!/usr/bin/env bash
 
-# Requires gh-tpl: https://github.com/mgnsk/gh-tpl.
-
 set -euo pipefail
 
 target="$1"
 number="$2"
 
-issue_pr_json_flags='number,url,title,state,createdAt,author,body,comments'
+if [ "$number" == "" ]; then
+	echo "number argument empty"
+	exit 1
+fi
 
-issue_pr_jq_template="$(
+pr_query="$(
 	cat <<-'EOF'
-		. | {
-			url,
-			createdAt,
-			number,
-			title,
-			state,
-			login: .author.login,
-			comments: [
-				# Treat the PR or issue itself as the first comment.
-				{
+		query($name: String!, $owner: String!, $number: Int!) {
+			repository(owner: $owner, name: $name) {
+				pullRequest(number: $number) {
+					number,
+					title,
 					url,
 					createdAt,
-					login: .author.login,
-					body
-				},
-				# The rest of the comments.
-				(.comments[] | {
-					url,
-					createdAt,
-					login: .author.login,
-					body
-				})
-			]
+					state,
+					author {
+						login
+					},
+					body,
+					comments(last: 100) {
+						nodes {
+							createdAt,
+							url,
+							author {
+								login
+							},
+							minimizedReason,
+							body
+						}
+					},
+					reviews(last: 100) {
+						nodes {
+							createdAt,
+							url,
+							state,
+							author {
+								login
+							},
+							minimizedReason,
+							body,
+							comments(last: 100) {
+								nodes {
+									createdAt,
+									url,
+									author {
+										login
+									},
+									minimizedReason,
+									position,
+									startLine,
+									line,
+									originalStartLine,
+									originalLine,
+									diffHunk,
+									body
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	EOF
 )"
 
+pr_jq_template="$(
+	cat <<-'EOF'
+		.data.repository.pullRequest | {
+			number,
+			url,
+			createdAt,
+			author,
+			title,
+			state,
+			body,
+			comments: [
+				# Comments.
+				(.comments.nodes[] | {
+					url,
+					createdAt,
+					author,
+					minimizedReason,
+					body
+				}),
+
+				# Reviews.
+				(.reviews.nodes[] | {
+					url,
+					createdAt,
+					state,
+					author,
+					minimizedReason,
+					body
+				} | select(.body != "")), # Skip placeholder reviews.
+
+				# Review comments.
+				(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | {
+					url,
+					createdAt,
+					state: $review.state,
+					author,
+					isMinimized,
+					minimizedReason,
+					body,
+					path,
+					position,
+					startLine,
+					line,
+					originalStartLine,
+					originalLine,
+					# Show only lines commented on from hunk.
+					diffHunk: [ (.diffHunk | split("\n") | . as $arr | to_entries[] |
+						# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
+						if $comment.originalStartLine == null and $comment.originalLine != null then
+							select(.key > ($arr|length)-5)
+						else
+							select(true)
+						end
+						| .value) ] | join("\n")
+				})
+				] | sort_by(.createdAt)
+		}
+	EOF
+)"
+
+issue_query="$(
+	cat <<-'EOF'
+		query($name: String!, $owner: String!, $number: Int!) {
+			repository(owner: $owner, name: $name) {
+				issue(number: $number) {
+					number,
+					title,
+					url,
+					createdAt,
+					state,
+					author {
+						login
+					},
+					body,
+					comments(last: 100) {
+						nodes {
+							createdAt,
+							url,
+							author {
+								login
+							},
+							body
+						}
+					}
+				}
+			}
+		}
+	EOF
+)"
+
+issue_jq_template="$(
+	cat <<-'EOF'
+		.data.repository.issue | {
+			number,
+			url,
+			createdAt,
+			author,
+			title,
+			state,
+			body,
+			comments: [
+				# Comments.
+				(.comments.nodes[] | {
+					url,
+					createdAt,
+					author,
+					isMinimized,
+					minimizedReason,
+					body
+				})
+			] | sort_by(.createdAt)
+		}
+	EOF
+)"
+
+# Note: italic urls don't work in glow, must use mdcat.
 issue_pr_go_template="$(
 	cat <<-'EOF'
-		# #{{.number}} {{.title}}
-		state: {{.state}}
+		# #{{.number}} {{.title}} ({{.state}})
+		## *{{timeago .createdAt}} {{printf "(%s)" .author.login}}:*
+		*{{.url}}*
+
+		{{.body}}
 
 		{{range .comments}}
 			---
 
-			# *{{timeago .createdAt}} {{printf "(%s)" .login}}:*
-			{{.url}}
-
-			{{if .diff_hunk}}{{printf "```diff\n%s\n```" .diff_hunk}}{{end}}
+			## *{{timeago .createdAt}} {{printf "(%s)" .author.login}}{{if .state}} {{.state}}{{end}}:*
+			*{{.url}}*
+			{{if .minimizedReason}}*minimized: {{.minimizedReason}}*{{end}}
+			{{if .path}}*path: {{.path}}*{{end}}
+			{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
 			{{.body}}
 		{{end}}
 	EOF
 )"
 
+function render {
+	rich --markdown --force-terminal --emoji -
+	# mdcat -p --ansi --columns "$FZF_PREVIEW_COLUMNS" # https://github.com/swsnr/mdcat
+	# glow --pager --style auto --width "$FZF_PREVIEW_COLUMNS"
+
+	# cmark-gfm --to html | elinks -dump -dump-color-mode 3
+}
+
 if [ "$target" == "pr" ]; then
-	# PR with body and comments. The PR body is treated as the first comment.
-	pr=$(gh pr view "$number" --json "$issue_pr_json_flags" --jq "$issue_pr_jq_template")
-
-	# Diff comments.
-	diff_comments=$(gh api "repos/{owner}/{repo}/pulls/$number/comments" | jq '[.[] | {url, createdAt: .created_at, login: .user.login, diff_hunk, body}]')
-
-	# PR with all comments merged and sorted.
-	pr_joined=$(jq -n -s --argjson pr "$pr" --argjson diff_comments "$diff_comments" '{url: $pr.url, createdAt: $pr.createdAt, number: $pr.number, title: $pr.title, state: $pr.state, login: $pr.login, comments: ($pr.comments + $diff_comments) | sort_by(.createdAt)}')
-
-	echo "$pr_joined" | gh-tpl "$issue_pr_go_template" | glow -s auto
-
-	# Show the full diff.
-	gh pr diff "$number" | delta
+	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" | jq "$pr_jq_template" | gh-tpl "$issue_pr_go_template" | render
+	# | render
+	# gh pr diff "$number" | delta
 elif [ "$target" == "issue" ]; then
-	gh issue view "$number" --json "$issue_pr_json_flags" --jq "$issue_pr_jq_template" | gh-tpl "$issue_pr_go_template" | glow -s auto
+	gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" | jq "$issue_jq_template" | gh-tpl "$issue_pr_go_template" | render
 else
 	echo "usage: gh-view {pr|issue} {number}"
 	exit 1

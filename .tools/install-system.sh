@@ -37,7 +37,8 @@ sudo pacman -S --noconfirm --needed \
 	php-sqlite \
 	composer \
 	rustup \
-	man
+	man \
+	python-pipx
 
 declare -a packages=(
 	"fish-fzf"
@@ -46,9 +47,6 @@ declare -a packages=(
 	"lscolors-git"
 	"neovim-nightly-bin"
 )
-
-# Disable package compression.
-export PKGEXT=".tar"
 
 for p in "${packages[@]}"; do
 	mkdir -p "$HOME/.cache/aur/$p"

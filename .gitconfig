@@ -10,6 +10,7 @@
 	reflogs = !git-fzf reflog
 	prs = !gh-fzf prs
 	issues = !gh-fzf issues
+	events =!gh-fzf events
 
 [mergetool]
 	keepBackup = false

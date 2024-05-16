@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# source "$(dirname "$0")/gh-lib/comments.sh"
+#
+# export FZF_PREVIEW_COLUMNS=120
+#
+# gh api graphql -f query="$viewer_comments_query" --jq "$viewer_comments_jq_template" | gh-tpl "$viewer_comments_go_template" | render-markdown
+# TODO: get reviewRequests for viewer
+# {
+#   viewer {
+#     repositoriesContributedTo(contributionTypes:PULL_REQUEST,includeUserRepositories:true, last: 10) {
+#       nodes {
+#         pullRequests(last: 10) {
+#           nodes {
+#             number
+#             url
+#             reviewRequests(last: 10) {
+#               nodes {
+#                 requestedReviewer {
+#                   ... on User {
+#                     login
+#                   }
+#                 }
+#               }
+#             }
+#           }
+#         }
+#       }
+#     }
+#   }
+# }

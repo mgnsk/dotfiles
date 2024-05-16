@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# mdcat: Best readability. Respects user colors.
+mdcat -p --ansi --columns "$FZF_PREVIEW_COLUMNS"
+
+# rich-cli: Less readable. Respects user colors.
+# rich --markdown --force-terminal --emoji -
+
+# HTML options.
+# cmark-gfm --to html --width "$FZF_PREVIEW_COLUMNS" | elinks -dump -dump-color-mode 3
+# marked --gfm | elinks -dump -dump-color-mode 3
+
+# glow: Poor performance. Italic URLs don't display.
+# glow --pager --style auto --width "$FZF_PREVIEW_COLUMNS"

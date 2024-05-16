@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
 target="$1"
 
@@ -9,18 +9,237 @@ if [ "$target" != "prs" ] && [ "$target" != "issues" ]; then
 	exit 1
 fi
 
+set -e
+
+export target
+
 repo="$(gh repo view --json nameWithOwner --template '{{.nameWithOwner}}')"
+export repo
 
-export GH_REPO="$repo"
-export FZF_DEFAULT_COMMAND="gh-search $target {q}"
+pr_query="$(
+	cat <<-'EOF'
+		query($name: String!, $owner: String!, $number: Int!) {
+			repository(owner: $owner, name: $name) {
+				pullRequest(number: $number) {
+					number,
+					title,
+					url,
+					createdAt,
+					state,
+					author {
+						login
+					},
+					body,
+					comments(last: 100) {
+						nodes {
+							createdAt,
+							url,
+							author {
+								login
+							},
+							minimizedReason,
+							body
+						}
+					},
+					reviews(last: 100) {
+						nodes {
+							createdAt,
+							url,
+							state,
+							author {
+								login
+							},
+							minimizedReason,
+							body,
+							comments(last: 100) {
+								nodes {
+									createdAt,
+									url,
+									author {
+										login
+									},
+									minimizedReason,
+									position,
+									startLine,
+									line,
+									originalStartLine,
+									originalLine,
+									diffHunk,
+									body
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	EOF
+)"
 
-# TODO: preview-bottom broken
+export pr_query
+
+pr_jq_template="$(
+	cat <<-'EOF'
+		.data.repository.pullRequest | .comments = ([
+			# Comments.
+			(.comments.nodes[]),
+
+			# Reviews.
+			(.reviews.nodes[] | select(.body != "")), # Skip placeholder reviews.
+
+			# Review comments.
+			(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | .state = $review.state | .diffHunk = ([
+				(.diffHunk | split("\n") | . as $arr | to_entries[] |
+				# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
+				if $comment.originalStartLine == null and $comment.originalLine != null then
+					select(.key > ($arr|length)-5)
+				else
+					select(true)
+				end
+				| .value)
+			] | join("\n")))
+		] | sort_by(.createdAt))
+	EOF
+)"
+
+export pr_jq_template
+
+issue_query="$(
+	cat <<-'EOF'
+		query($name: String!, $owner: String!, $number: Int!) {
+			repository(owner: $owner, name: $name) {
+				issue(number: $number) {
+					number,
+					title,
+					url,
+					createdAt,
+					state,
+					author {
+						login
+					},
+					body,
+					comments(last: 100) {
+						nodes {
+							createdAt,
+							url,
+							author {
+								login
+							},
+							minimizedReason,
+							body
+						}
+					}
+				}
+			}
+		}
+	EOF
+)"
+
+export issue_query
+
+issue_jq_template="$(
+	cat <<-'EOF'
+		.data.repository.issue | .comments = .comments.nodes
+	EOF
+)"
+
+export issue_jq_template
+
+issue_pr_go_template="$(
+	cat <<-'EOF'
+		# #{{.number}} {{.title}} ({{.state}})
+		## *{{timeago .createdAt}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}:*
+		*{{.url}}*
+
+		{{.body}}
+
+		{{range .comments}}
+			---
+
+			## *{{timeago .createdAt}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state}}{{end}}:*
+			*{{.url}}*
+			{{if .minimizedReason}}*minimized: {{.minimizedReason}}*{{end}}
+			{{if .path}}*path: {{.path}}*{{end}}
+			{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
+			{{.body}}
+		{{end}}
+	EOF
+)"
+
+export issue_pr_go_template
+
+issue_pr_list_go_template="$(
+	cat <<-'EOF'
+		{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{.title | replace "\n" " "}} ({{.state}}){{"\n"}}{{end -}}
+	EOF
+)"
+
+export issue_pr_list_go_template
+
+function render-markdown {
+	set -euo pipefail
+
+	# mdcat: Best readability. Respects user colors.
+	mdcat -p --ansi --columns "$FZF_PREVIEW_COLUMNS"
+
+	# rich-cli: Less readable. Respects user colors.
+	# rich --markdown --force-terminal --emoji -
+
+	# HTML options.
+	# cmark-gfm --to html --width "$FZF_PREVIEW_COLUMNS" | elinks -dump -dump-color-mode 3
+	# marked --gfm | elinks -dump -dump-color-mode 3
+
+	# glow: Poor performance. Italic URLs don't display.
+	# glow --pager --style auto --width "$FZF_PREVIEW_COLUMNS"
+}
+
+export -f render-markdown
+
+function gh-search {
+	set -euo pipefail
+
+	query="$1"
+
+	# Handle empty query.
+	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+		gh "${target::-1}" list --json number,title,state,createdAt,author | gh-tpl --color "$issue_pr_list_go_template"
+		exit
+	fi
+
+	gh search "$target" --repo "$repo" --sort updated --json number,title,state,createdAt,author "$query" | gh-tpl --color "$issue_pr_list_go_template"
+}
+
+export -f gh-search
+
+function gh-view {
+	set -euo pipefail
+
+	number="$1"
+
+	if [ "$number" == "" ]; then
+		echo "number argument empty"
+		exit 1
+	fi
+
+	if [ "$target" == "prs" ]; then
+		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" --jq "$pr_jq_template" | gh-tpl "$issue_pr_go_template" | render-markdown
+		# gh pr diff "$number" | delta
+	elif [ "$target" == "issues" ]; then
+		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" --jq "$issue_jq_template" | gh-tpl "$issue_pr_go_template" | render-markdown
+	fi
+}
+
+export -f gh-view
+
+export FZF_DEFAULT_COMMAND='bash -c "gh-search {q} 2>&1"'
+
+# TODO: preview-bottom not working correctly
 fzf --ansi --phony --query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 	--bind shift-up:preview-top,shift-down:preview-bottom \
 	--header 'Press Ctrl-L to open in web browser' \
 	--bind "ctrl-l:execute-silent(gh ${target::-1} view {1} --web)" \
-	--preview "gh-view ${target::-1} {1} | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}" \
+	--preview 'bash -c "gh-view {1}" | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
 	--preview-window=wrap \
 	--prompt "$target> "

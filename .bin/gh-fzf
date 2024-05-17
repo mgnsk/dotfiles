@@ -217,7 +217,8 @@ function gh-search {
 		gh search "$target" \
 			--repo "$repo" \
 			--sort updated \
-			--json number,title,state,createdAt,author "$query" |
+			--json number,title,state,createdAt,author \
+			"$query" |
 			gh-tpl --color "$issue_pr_list_go_template"
 	fi
 }
@@ -235,12 +236,21 @@ function gh-view {
 	fi
 
 	if [ "$target" == "prs" ]; then
-		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" --jq "$pr_jq_template" |
+		gh api graphql \
+			-F owner='{owner}' \
+			-F name='{repo}' \
+			-F number="$number" \
+			-f query="$pr_query" \
+			--jq "$pr_jq_template" |
 			gh-tpl "$issue_pr_go_template" |
 			render-markdown
-		# gh pr diff "$number" | delta
 	elif [ "$target" == "issues" ]; then
-		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" --jq "$issue_jq_template" |
+		gh api graphql \
+			-F owner='{owner}' \
+			-F name='{repo}' \
+			-F number="$number" \
+			-f query="$issue_query" \
+			--jq "$issue_jq_template" |
 			gh-tpl "$issue_pr_go_template" |
 			render-markdown
 	fi
@@ -253,7 +263,10 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
 	export FZF_DEFAULT_COMMAND="bash -c \"gh-search $repo {q} 2>&1\""
 
-	fzf --ansi --phony --query '' \
+	fzf \
+		--ansi \
+		--phony \
+		--query '' \
 		--no-sort \
 		--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 		--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
@@ -274,6 +287,7 @@ event_list_jq_template="$(
 	EOF
 )"
 
+# TODO: .type trimsuffix "Event"
 event_list_go_template="$(
 	cat <<-'EOF'
 		{{- range . -}}
@@ -298,24 +312,33 @@ if [ "$target" == "events" ]; then
 	user=$(gh api user --jq '.login')
 
 	# List events for the authenticated user.
-	user_events="$(gh api \
-		-H "Accept: application/vnd.github+json" \
-		-H "X-GitHub-Api-Version: 2022-11-28" \
-		"/users/$user/events")"
+	user_events="$(
+		gh api \
+			-H "Accept: application/vnd.github+json" \
+			-H "X-GitHub-Api-Version: 2022-11-28" \
+			"/users/$user/events"
+	)"
 
 	# List events received by the authenticated user.
-	received_events="$(gh api \
-		-H "Accept: application/vnd.github+json" \
-		-H "X-GitHub-Api-Version: 2022-11-28" \
-		"/users/$user/received_events")"
+	received_events="$(
+		gh api \
+			-H "Accept: application/vnd.github+json" \
+			-H "X-GitHub-Api-Version: 2022-11-28" \
+			"/users/$user/received_events"
+	)"
 
-	all_events=$(jq -n -s \
-		--slurpfile user_events <(echo "$user_events") \
-		--slurpfile received_events <(echo "$received_events") \
-		"$event_list_jq_template")
+	all_events=$(
+		jq \
+			-n \
+			-s \
+			--slurpfile user_events <(echo "$user_events") \
+			--slurpfile received_events <(echo "$received_events") \
+			"$event_list_jq_template"
+	)
 
 	echo "$all_events" | gh-tpl --color "$event_list_go_template" |
-		fzf --ansi \
+		fzf \
+			--ansi \
 			--no-sort \
 			--prompt "$target> "
 

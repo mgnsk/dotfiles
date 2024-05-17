@@ -273,7 +273,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--bind shift-up:preview-top,shift-down:preview-bottom \
 		--header "Ctrl-L: web browser, Ctrl-O: diff" \
 		--bind "ctrl-l:execute-silent(gh ${target::-1} view {1} --web)" \
-		--bind "ctrl-p:execute(gh pr diff {1} | delta)" \
+		--bind "ctrl-o:execute(gh pr diff {1} | delta)" \
 		--preview 'bash -c "gh-view {1}" | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
 		--preview-window=wrap \
 		--prompt "$target> "

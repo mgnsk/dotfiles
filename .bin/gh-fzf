@@ -21,6 +21,7 @@ pr_query="$(
 					number,
 					title,
 					url,
+					updatedAt,
 					createdAt,
 					state,
 					author {
@@ -29,6 +30,7 @@ pr_query="$(
 					body,
 					comments(last: 100) {
 						nodes {
+							updatedAt,
 							createdAt,
 							url,
 							author {
@@ -40,6 +42,7 @@ pr_query="$(
 					},
 					reviews(last: 100) {
 						nodes {
+							updatedAt,
 							createdAt,
 							url,
 							state,
@@ -50,6 +53,7 @@ pr_query="$(
 							body,
 							comments(last: 100) {
 								nodes {
+									updatedAt,
 									createdAt,
 									url,
 									author {
@@ -109,6 +113,7 @@ issue_query="$(
 					number,
 					title,
 					url,
+					updatedAt,
 					createdAt,
 					state,
 					author {
@@ -117,6 +122,7 @@ issue_query="$(
 					body,
 					comments(last: 100) {
 						nodes {
+							updatedAt,
 							createdAt,
 							url,
 							author {
@@ -145,7 +151,7 @@ export issue_jq_template
 issue_pr_go_template="$(
 	cat <<-'EOF'
 		# #{{.number}} {{.title}} ({{.state}})
-		## *{{timeago .createdAt}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}:*
+		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
 		*{{.url}}*
 
 		{{.body}}
@@ -153,7 +159,7 @@ issue_pr_go_template="$(
 		{{range .comments}}
 			---
 
-			## *{{timeago .createdAt}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state}}{{end}}:*
+			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state}}{{end}}:*
 			*{{.url}}*
 			{{if .minimizedReason}}*minimized: {{.minimizedReason}}*{{end}}
 			{{if .path}}*path: {{.path}}*{{end}}
@@ -201,7 +207,8 @@ function gh-search {
 	if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		# Handle empty query.
 		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-			gh "${target::-1}" list --json number,title,state,createdAt,author | gh-tpl --color "$issue_pr_list_go_template"
+			gh "${target::-1}" list --json number,title,state,createdAt,author |
+				gh-tpl --color "$issue_pr_list_go_template"
 			exit
 		fi
 
@@ -226,10 +233,14 @@ function gh-view {
 	fi
 
 	if [ "$target" == "prs" ]; then
-		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" --jq "$pr_jq_template" | gh-tpl "$issue_pr_go_template" | render-markdown
+		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$pr_query" --jq "$pr_jq_template" |
+			gh-tpl "$issue_pr_go_template" |
+			render-markdown
 		# gh pr diff "$number" | delta
 	elif [ "$target" == "issues" ]; then
-		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" --jq "$issue_jq_template" | gh-tpl "$issue_pr_go_template" | render-markdown
+		gh api graphql -F owner='{owner}' -F name='{repo}' -F number="$number" -f query="$issue_query" --jq "$issue_jq_template" |
+			gh-tpl "$issue_pr_go_template" |
+			render-markdown
 	fi
 }
 
@@ -241,6 +252,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	export FZF_DEFAULT_COMMAND="bash -c \"gh-search $repo {q} 2>&1\""
 
 	fzf --ansi --phony --query '' \
+		--no-sort \
 		--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 		--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 		--bind shift-up:preview-top,shift-down:preview-bottom \

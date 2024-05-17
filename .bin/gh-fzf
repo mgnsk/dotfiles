@@ -207,7 +207,9 @@ function gh-search {
 	if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		# Handle empty query.
 		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-			gh "${target::-1}" list --json number,title,state,createdAt,author |
+			gh "${target::-1}" list \
+				--json number,title,state,createdAt,updatedAt,author \
+				--jq 'sort_by(.updatedAt) | reverse' |
 				gh-tpl --color "$issue_pr_list_go_template"
 			exit
 		fi

@@ -295,7 +295,7 @@ event_list_go_template="$(
 		{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end -}}
 		{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end -}}
 		{{- if .payload.ref}} {{printf "(%s)" .payload.ref | autocolor "cyan"}}{{end -}}
-		{{- printf " %s" .type | autocolor "yellow" -}}
+		{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
 		{{- if .payload.action}} {{.payload.action}}{{end -}}
 		{{- if .payload.review.state}} {{.payload.review.state}}{{end -}}
 		{{- if .payload.review.commit_id}} {{.payload.review.commit_id | autocolor "yellow"}}{{end -}}

@@ -196,8 +196,6 @@ local function setupGitMappings()
 	map("n", "B", function()
 		require("gitsigns").blame_line()
 	end, { desc = "Git blame line" })
-
-	map("n", "<leader>W", ":Gw!<CR>", { desc = "Select the current buffer when resolving git conflicts" })
 end
 
 setupEditorMappings()

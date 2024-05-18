@@ -331,7 +331,7 @@ if [ "$target" == "events" ]; then
 	wait
 
 	cat "$events_path" "$received_events_path" |
-		jq -s 'add | sort_by(.created_at) | reverse' |
+		gojq -s 'add | sort_by(.created_at) | reverse' |
 		gh-tpl --color "$event_list_go_template" |
 		fzf \
 			--ansi \

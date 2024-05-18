@@ -49,6 +49,8 @@ declare -a packages=(
 	"neovim-nightly-bin"
 )
 
+export PKGEXT=".pkg.tar"
+
 for p in "${packages[@]}"; do
 	mkdir -p "$HOME/.cache/aur/$p"
 	cd "$HOME/.cache/aur/$p"

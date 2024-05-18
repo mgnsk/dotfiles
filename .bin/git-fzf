@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
 target="$1"
 
@@ -9,11 +9,56 @@ if [ "$target" != "log" ] && [ "$target" != "reflog" ]; then
 	exit 1
 fi
 
-export FZF_DEFAULT_COMMAND="git $target --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G {q}"
+set -e
 
-fzf --ansi --phony --query '' \
+export target
+
+function git-search {
+	set -euo pipefail
+
+	query="$1"
+
+	# Handle empty query.
+	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+		git "$target" --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s'
+		exit
+	fi
+
+	git "$target" --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G "$query"
+}
+
+export -f git-search
+
+function git-view {
+	set -euo pipefail
+
+	commit="$1"
+	query="$2"
+
+	if [ "$commit" == "" ]; then
+		echo "usage: git-view {commit} {query}"
+		exit 1
+	fi
+
+	# Handle empty query.
+	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+		git show --color "$commit" | delta
+		exit
+	fi
+
+	git show --color -G "$query" "$commit" | delta | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru "$query"
+}
+
+export -f git-view
+
+export FZF_DEFAULT_COMMAND="bash -c \"git-search {q} 2>&1\""
+
+fzf \
+	--ansi \
+	--phony \
+	--query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-	--preview 'git show --color -G {q} {1} | delta | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
+	--preview 'bash -c "git-view {1} {q}"' \
 	--preview-window=wrap \
 	--prompt "$target> "

@@ -231,7 +231,7 @@ function gh-view {
 	number="$1"
 
 	if [ "$number" == "" ]; then
-		echo "empty query"
+		echo "usage: gh-view {number}"
 		exit 1
 	fi
 

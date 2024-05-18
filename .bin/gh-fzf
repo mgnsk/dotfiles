@@ -281,13 +281,6 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	exit
 fi
 
-event_list_jq_template="$(
-	cat <<-'EOF'
-		[($user_events[]), ($received_events[])] | add | sort_by(.created_at) | reverse
-	EOF
-)"
-
-# TODO: .type trimsuffix "Event"
 event_list_go_template="$(
 	cat <<-'EOF'
 		{{- range . -}}
@@ -307,36 +300,39 @@ event_list_go_template="$(
 	EOF
 )"
 
+tmpdir="/tmp/gh-tpl.$$"
+mkdir "$tmpdir"
+
+function cleanup {
+	rm -rf "$tmpdir"
+}
+
+trap cleanup EXIT
+
 # Events uses fzf filtering.
 if [ "$target" == "events" ]; then
 	user=$(gh api user --jq '.login')
 
-	# List events for the authenticated user.
-	user_events="$(
-		gh api \
-			-H "Accept: application/vnd.github+json" \
-			-H "X-GitHub-Api-Version: 2022-11-28" \
-			"/users/$user/events"
-	)"
+	events_path="$tmpdir/events"
+	received_events_path="$tmpdir/received_events"
+
+	# # List events for the authenticated user.
+	gh api \
+		-H "Accept: application/vnd.github+json" \
+		-H "X-GitHub-Api-Version: 2022-11-28" \
+		"/users/$user/events" >"$events_path" &
 
 	# List events received by the authenticated user.
-	received_events="$(
-		gh api \
-			-H "Accept: application/vnd.github+json" \
-			-H "X-GitHub-Api-Version: 2022-11-28" \
-			"/users/$user/received_events"
-	)"
+	gh api \
+		-H "Accept: application/vnd.github+json" \
+		-H "X-GitHub-Api-Version: 2022-11-28" \
+		"/users/$user/received_events" >"$received_events_path" &
 
-	all_events=$(
-		jq \
-			-n \
-			-s \
-			--slurpfile user_events <(echo "$user_events") \
-			--slurpfile received_events <(echo "$received_events") \
-			"$event_list_jq_template"
-	)
+	wait
 
-	echo "$all_events" | gh-tpl --color "$event_list_go_template" |
+	cat "$events_path" "$received_events_path" |
+		jq -s 'add | sort_by(.created_at) | reverse' |
+		gh-tpl --color "$event_list_go_template" |
 		fzf \
 			--ansi \
 			--no-sort \

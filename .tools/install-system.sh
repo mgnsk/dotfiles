@@ -39,14 +39,14 @@ sudo pacman -S --noconfirm --needed \
 	rustup \
 	man \
 	python-pipx \
-	mdcat
+	mdcat \
+	neovim
 
 declare -a packages=(
 	"fish-fzf"
 	"hadolint-bin"
 	"shellcheck-bin"
 	"lscolors-git"
-	"neovim-nightly-bin"
 )
 
 export PKGEXT=".pkg.tar"

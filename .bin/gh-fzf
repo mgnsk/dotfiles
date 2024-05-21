@@ -23,6 +23,7 @@ function cleanup {
 
 trap cleanup EXIT
 
+# Note: skipping pullRequest.comments, these are included in timeline.
 pr_query="$(
 	cat <<-'EOF'
 		query($name: String!, $owner: String!, $number: Int!) {
@@ -38,18 +39,6 @@ pr_query="$(
 						login
 					},
 					body,
-					comments(last: 100) {
-						nodes {
-							updatedAt,
-							createdAt,
-							url,
-							author {
-								login
-							},
-							minimizedReason,
-							body
-						}
-					},
 					reviews(last: 100) {
 						nodes {
 							updatedAt,
@@ -92,9 +81,6 @@ export pr_query
 pr_jq_template="$(
 	cat <<-'EOF'
 		.data.repository.pullRequest | .comments = ([
-			# Comments.
-			(.comments.nodes[] | .html_url = .url),
-
 			# Reviews.
 			(.reviews.nodes[] | select(.body != "") | .html_url = .url), # Skip placeholder reviews.
 
@@ -217,8 +203,8 @@ issue_pr_comments_go_template="$(
 			{{if .assignee}}***{{.assignee.login}}***{{end}}
 			{{if .label}}***{{.label.name}}***{{end}}
 			{{if .rename}}***{{printf "~~%s~~ %s" .rename.from .rename.to}}***{{end}}
-			{{if .source.issue}}***{{.source.issue.title}}***{{end}}
-			{{if .source.pull_request}}***{{.source.pull_request.title}}***{{end}}
+			{{if .source.issue}}***issue: {{printf "#%v" .source.issue.number}} {{.source.issue.title}}***{{end}}
+			{{if .source.pull_request}}***pull_request: {{printf "#%v" .source.pull_request_number}} {{.source.pull_request.title}}***{{end}}
 			{{if .project_id}}***project: {{.project_id}}***{{end}}
 			{{if .column}}***{{.column}}***{{end}}
 			{{if .project_card.previous_column_name}}

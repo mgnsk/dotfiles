@@ -194,7 +194,7 @@ issue_pr_header_go_template="$(
 	cat <<-'EOF'
 		# #{{.number}} {{.title}} {{(printf "(%s)" .state) | autocolor "red"}}
 		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
-		*{{.url}}*
+		***{{.url}}***
 
 		{{.body}}
 	EOF
@@ -208,29 +208,29 @@ issue_pr_comments_go_template="$(
 			---
 
 			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}:*
-			{{if .html_url}}*{{.html_url}}*{{end}}
-			{{if .minimizedReason}}*minimized: {{.minimizedReason}}*{{end}}
-			{{if .path}}*path: {{.path}}*{{end}}
+			{{if .html_url}}***{{.html_url}}***{{end}}
+			{{if .minimizedReason}}***minimized: {{.minimizedReason}}***{{end}}
+			{{if .path}}***path: {{.path}}***{{end}}
 			{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
 			{{if .body}}{{.body}}{{end}}
 			{{if .sha}}{{.sha | trunc 7 | autocolor "yellow"}}{{- printf " %s" .message}}{{end}}
-			{{if .assignee}}{{.assignee.login}}{{end}}
-			{{if .label}}{{.label.name}}{{end}}
-			{{if .rename}}{{printf "~~%s~~ %s" .rename.from .rename.to}}{{end}}
-			{{if .source.issue}}{{.source.issue.title}}{{end}}
-			{{if .source.pull_request}}{{.source.pull_request.title}}{{end}}
-			{{if .project_id}}*project: {{.project_id}}*{{end}}
-			{{if .column}}{{.column}}{{end}}
+			{{if .assignee}}***{{.assignee.login}}***{{end}}
+			{{if .label}}***{{.label.name}}***{{end}}
+			{{if .rename}}***{{printf "~~%s~~ %s" .rename.from .rename.to}}***{{end}}
+			{{if .source.issue}}***{{.source.issue.title}}***{{end}}
+			{{if .source.pull_request}}***{{.source.pull_request.title}}***{{end}}
+			{{if .project_id}}***project: {{.project_id}}***{{end}}
+			{{if .column}}***{{.column}}***{{end}}
 			{{if .project_card.previous_column_name}}
-				{{printf "%s -> %s" .project_card.previous_column_name .project_card.column_name}}
+				***{{printf "%s -> %s" .project_card.previous_column_name .project_card.column_name}}***
 			{{else if .project_card.column_name}}
-				{{.project_card.column_name}}
+				***{{.project_card.column_name}}***
 			{{end}}
-			{{if .lock_reason}}{{.lock_reason}}{{end}}
-			{{if .milestone}}{{.milestone.title}}{{end}}
+			{{if .lock_reason}}***{{.lock_reason}}***{{end}}
+			{{if .milestone}}***{{.milestone.title}}***{{end}}
 			{{if .dismissed_review}}{{.dismissed_review.dismissal_message}}{{end}}
-			{{if .requested_reviewer}}{{.requested_reviewer.login}}{{end}}
-			{{if .requested_team}}{{.requested_team.name}}{{end}}
+			{{if .requested_reviewer}}***{{.requested_reviewer.login}}***{{end}}
+			{{if .requested_team}}***{{.requested_team.name}}***{{end}}
 		{{end}}
 	EOF
 )"
@@ -374,66 +374,48 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	exit
 fi
 
-# Event list: newlines replaced.
 event_list_go_template="$(
 	cat <<-'EOF'
 		{{- range . -}}
-		{{" "}}{{.id | autocolor "yellow" -}}
-		{{" "}}{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
-		{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end -}}
-		{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end -}}
-		{{- if .payload.ref}}
-			{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref))}}
-				{{- (printf " (%s)" .payload.ref) | autocolor "red" -}}
-			{{else}}
-				{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
+			{{" "}}{{.id | autocolor "yellow" -}}
+			{{" "}}{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
+			{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end -}}
+			{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end -}}
+			{{- if .payload.ref}}
+				{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref))}}
+					{{- (printf " (%s)" .payload.ref) | autocolor "red" -}}
+				{{else}}
+					{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
+				{{end -}}
 			{{end -}}
-		{{end -}}
-		{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
-		{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
-		{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
-		{{- if .payload.review.state}} {{(printf "(%s)" .payload.review.state) | autocolor "red"}}{{end -}}
-		{{- if .payload.review.commit_id}} {{.payload.review.commit_id | autocolor "yellow"}}{{end -}}
-		{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
-		{{- if .payload.comment.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.comment.body " ")}}{{end -}}
-		{{- if .payload.commits}}
-			{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
-			{{- range .payload.commits -}}
-				{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
-			{{- end -}}
-		{{end -}}
-		{{- "\n" -}}
+			{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
+			{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
+			{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
+			{{- if .payload.review.state}} {{(printf "(%s)" .payload.review.state) | autocolor "red"}}{{end -}}
+
+			{{- if .payload.review.commit_id}} {{.payload.review.commit_id | trunc 7 | autocolor "yellow"}}{{end -}}
+			{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
+			{{- if .payload.comment.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.comment.body " ")}}{{end -}}
+			{{- if .payload.commits}}
+				{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
+				{{- range .payload.commits -}}
+					{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
+				{{- end -}}
+			{{end -}}
+			{{- "\n" -}}
 		{{- end -}}
 	EOF
 )"
 
-# Event view: original newlines.
 event_view_go_template="$(
 	cat <<-'EOF'
-		{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
-		{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end -}}
-		{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end -}}
-		{{- if .payload.ref}}
-			{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref))}}
-				{{- (printf " (%s)" .payload.ref) | autocolor "red" -}}
-			{{else}}
-				{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
-			{{end -}}
-		{{end -}}
-		{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
-		{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
-		{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
-		{{- if .payload.review.state}} {{(printf "(%s)" .payload.review.state) | autocolor "red"}}{{end -}}
-		{{- if .payload.review.commit_id}} {{.payload.review.commit_id | autocolor "yellow"}}{{end -}}
-		{{- if .payload.review.body}}{{"\n\n"}}{{(.payload.review.body)}}{{end -}}
-		{{- if .payload.comment.body}}{{"\n\n"}}{{(.payload.comment.body)}}{{end -}}
-		{{- if .payload.commits}}
-			{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
-			{{- range .payload.commits -}}
-				{{- "\n\n" -}}
-				{{- .sha | trunc 7 | autocolor "yellow" -}}{{- printf " %s" .message -}}
-			{{- end -}}
-		{{end -}}
+		{{if .payload.review.body}} {{.payload.review.body}}{{end}}
+		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
+		{{if .payload.commits}}
+			{{range .payload.commits}}
+				{{.sha | trunc 7 | autocolor "yellow"}} {{.message}}
+			{{end}}
+		{{end}}
 	EOF
 )"
 

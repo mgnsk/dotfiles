@@ -39,7 +39,6 @@ sudo pacman -S --noconfirm --needed \
 	rustup \
 	man \
 	python-pipx \
-	mdcat \
 	neovim
 
 declare -a packages=(

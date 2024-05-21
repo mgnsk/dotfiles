@@ -180,8 +180,7 @@ issue_pr_header_go_template="$(
 	cat <<-'EOF'
 		# #{{.number}} {{.title}} {{(printf "(%s)" .state) | autocolor "red"}}
 		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
-		***{{.url}}***
-
+		{{.url}}
 		{{.body}}
 	EOF
 )"
@@ -194,7 +193,7 @@ issue_pr_comments_go_template="$(
 			---
 
 			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}:*
-			{{if .html_url}}***{{.html_url}}***{{end}}
+			{{if .html_url}}{{.html_url}}{{end}}
 			{{if .minimizedReason}}***minimized: {{.minimizedReason}}***{{end}}
 			{{if .path}}***path: {{.path}}***{{end}}
 			{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
@@ -213,6 +212,7 @@ issue_pr_comments_go_template="$(
 				***{{.project_card.column_name}}***
 			{{end}}
 			{{if .lock_reason}}***{{.lock_reason}}***{{end}}
+			{{if .state_reason}}***{{.state_reason}}***{{end}}
 			{{if .milestone}}***{{.milestone.title}}***{{end}}
 			{{if .dismissed_review}}{{.dismissed_review.dismissal_message}}{{end}}
 			{{if .requested_reviewer}}***{{.requested_reviewer.login}}***{{end}}
@@ -234,18 +234,15 @@ export issue_pr_list_go_template
 function render-markdown {
 	set -euo pipefail
 
-	# mdcat: Best readability. Respects user colors.
-	mdcat -p --ansi --columns "$FZF_PREVIEW_COLUMNS"
+	glow --style auto --width "$FZF_PREVIEW_COLUMNS"
 
-	# rich-cli: Less readable. Respects user colors.
+	# Other options.
+	# mdcat --ansi --columns "$FZF_PREVIEW_COLUMNS"
 	# rich --markdown --force-terminal --emoji -
-
+	#
 	# HTML options.
 	# cmark-gfm --to html --width "$FZF_PREVIEW_COLUMNS" | elinks -dump -dump-color-mode 3
 	# marked --gfm | elinks -dump -dump-color-mode 3
-
-	# glow: Poor performance. Italic URLs don't display.
-	# glow --pager --style auto --width "$FZF_PREVIEW_COLUMNS"
 }
 
 export -f render-markdown
@@ -354,7 +351,6 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--bind "ctrl-l:execute-silent(gh ${target::-1} view {1} --web)" \
 		--bind "ctrl-o:execute(gh pr diff {1} | delta)" \
 		--preview 'bash -c "gh-view {1}" | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
-		--preview-window=wrap \
 		--prompt "$target> "
 
 	exit
@@ -399,7 +395,7 @@ event_view_go_template="$(
 		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
 		{{if .payload.commits}}
 			{{range .payload.commits}}
-				{{.sha | trunc 7 | autocolor "yellow"}} {{.message}}
+				* {{.sha | trunc 7 | autocolor "yellow"}} {{.message}}
 			{{end}}
 		{{end}}
 	EOF
@@ -411,7 +407,7 @@ function view-event {
 	id="$(echo "$1" | tr -d "'")"
 
 	gojq ".[] | select(.id == \"$id\")" |
-		gh-tpl --color "$event_view_go_template" |
+		gh-tpl "$event_view_go_template" |
 		render-markdown
 }
 
@@ -449,7 +445,7 @@ if [ "$target" == "events" ]; then
 			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 			--bind shift-up:preview-top,shift-down:preview-bottom \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}\"" \
-			--preview-window=down,wrap \
+			--preview-window=down \
 			--prompt "$target> "
 
 	exit

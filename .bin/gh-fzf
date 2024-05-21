@@ -13,6 +13,16 @@ set -e
 
 export target
 
+tmpdir="/tmp/gh-tpl.$$"
+mkdir -p "$tmpdir"
+export tmpdir
+
+function cleanup {
+	rm -rf "$tmpdir"
+}
+
+trap cleanup EXIT
+
 pr_query="$(
 	cat <<-'EOF'
 		query($name: String!, $owner: String!, $number: Int!) {
@@ -83,10 +93,10 @@ pr_jq_template="$(
 	cat <<-'EOF'
 		.data.repository.pullRequest | .comments = ([
 			# Comments.
-			(.comments.nodes[]),
+			(.comments.nodes[] | .html_url = .url),
 
 			# Reviews.
-			(.reviews.nodes[] | select(.body != "")), # Skip placeholder reviews.
+			(.reviews.nodes[] | select(.body != "") | .html_url = .url), # Skip placeholder reviews.
 
 			# Review comments.
 			(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | .state = $review.state | .diffHunk = ([
@@ -98,7 +108,7 @@ pr_jq_template="$(
 					select(true)
 				end
 				| .value)
-			] | join("\n")))
+			] | join("\n")) | .html_url = .url)
 		] | sort_by(.createdAt))
 	EOF
 )"
@@ -148,28 +158,84 @@ issue_jq_template="$(
 
 export issue_jq_template
 
-issue_pr_go_template="$(
+issue_timeline_jq_template="$(
+	cat <<-'EOF'
+		[
+			.[] | .createdAt = (
+				if has("created_at") then
+					.created_at
+				elif has("submitted_at") then
+					.submitted_at
+				elif has("committer") then
+					.committer.date
+				end
+			) | .author.login = (
+				if has("author") then
+					.author.name
+				elif has("actor") then
+					.actor.login
+				elif has("user") then
+					.user.login
+				end
+			) | .url = (
+				if has("html_url") then
+					.html_url
+				else
+					null
+				end
+			) | select(.event != "subscribed" and .event != "mentioned")
+		]
+	EOF
+)"
+
+export issue_timeline_jq_template
+
+issue_pr_header_go_template="$(
 	cat <<-'EOF'
 		# #{{.number}} {{.title}} {{(printf "(%s)" .state) | autocolor "red"}}
 		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
 		*{{.url}}*
 
 		{{.body}}
+	EOF
+)"
 
-		{{range .comments}}
+export issue_pr_header_go_template
+
+issue_pr_comments_go_template="$(
+	cat <<-'EOF'
+		{{range .}}
 			---
 
-			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | autocolor "red"}}{{end}}:*
-			*{{.url}}*
+			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}:*
+			{{if .html_url}}*{{.html_url}}*{{end}}
 			{{if .minimizedReason}}*minimized: {{.minimizedReason}}*{{end}}
 			{{if .path}}*path: {{.path}}*{{end}}
 			{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
-			{{.body}}
+			{{if .body}}{{.body}}{{end}}
+			{{if .sha}}{{.sha | trunc 7 | autocolor "yellow"}}{{- printf " %s" .message}}{{end}}
+			{{if .assignee}}{{.assignee.login}}{{end}}
+			{{if .label}}{{.label.name}}{{end}}
+			{{if .rename}}{{printf "~~%s~~ %s" .rename.from .rename.to}}{{end}}
+			{{if .source.issue}}{{.source.issue.title}}{{end}}
+			{{if .source.pull_request}}{{.source.pull_request.title}}{{end}}
+			{{if .project_id}}*project: {{.project_id}}*{{end}}
+			{{if .column}}{{.column}}{{end}}
+			{{if .project_card.previous_column_name}}
+				{{printf "%s -> %s" .project_card.previous_column_name .project_card.column_name}}
+			{{else if .project_card.column_name}}
+				{{.project_card.column_name}}
+			{{end}}
+			{{if .lock_reason}}{{.lock_reason}}{{end}}
+			{{if .milestone}}{{.milestone.title}}{{end}}
+			{{if .dismissed_review}}{{.dismissed_review.dismissal_message}}{{end}}
+			{{if .requested_reviewer}}{{.requested_reviewer.login}}{{end}}
+			{{if .requested_team}}{{.requested_team.name}}{{end}}
 		{{end}}
 	EOF
 )"
 
-export issue_pr_go_template
+export issue_pr_comments_go_template
 
 issue_pr_list_go_template="$(
 	cat <<-'EOF'
@@ -236,14 +302,33 @@ function gh-view {
 		exit 1
 	fi
 
+	timeline_path="$tmpdir/timeline"
+	issue_pr_path="$tmpdir/issue"
+
+	gh api \
+		-H "Accept: application/vnd.github+json" \
+		-H "X-GitHub-Api-Version: 2022-11-28" \
+		"/repos/{owner}/{repo}/issues/$number/timeline" |
+		gojq "$issue_timeline_jq_template" >"$timeline_path" &
+
 	if [ "$target" == "prs" ]; then
 		gh api graphql \
 			-F owner='{owner}' \
 			-F name='{repo}' \
 			-F number="$number" \
 			-f query="$pr_query" \
-			--jq "$pr_jq_template" |
-			gh-tpl "$issue_pr_go_template" |
+			--jq "$pr_jq_template" >"$issue_pr_path" &
+
+		wait
+
+		gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
+			render-markdown
+
+		comments="$(gojq '[ .comments[] ]' <"$issue_pr_path")"
+
+		cat <(echo "$comments") "$timeline_path" |
+			gojq -s 'add | sort_by(.createdAt)' |
+			gh-tpl "$issue_pr_comments_go_template" |
 			render-markdown
 	elif [ "$target" == "issues" ]; then
 		gh api graphql \
@@ -251,8 +336,15 @@ function gh-view {
 			-F name='{repo}' \
 			-F number="$number" \
 			-f query="$issue_query" \
-			--jq "$issue_jq_template" |
-			gh-tpl "$issue_pr_go_template" |
+			--jq "$issue_jq_template" >"$issue_pr_path" &
+
+		wait
+
+		gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
+			render-markdown
+
+		gojq -s 'add | sort_by(.createdAt)' <"$timeline_path" |
+			gh-tpl "$issue_pr_comments_go_template" |
 			render-markdown
 	fi
 }
@@ -356,15 +448,6 @@ function view-event {
 }
 
 export -f view-event
-
-tmpdir="/tmp/gh-tpl.$$"
-mkdir "$tmpdir"
-
-function cleanup {
-	rm -rf "$tmpdir"
-}
-
-trap cleanup EXIT
 
 # Events uses fzf filtering.
 if [ "$target" == "events" ]; then

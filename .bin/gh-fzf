@@ -150,7 +150,7 @@ export issue_jq_template
 
 issue_pr_go_template="$(
 	cat <<-'EOF'
-		# #{{.number}} {{.title}} ({{.state}})
+		# #{{.number}} {{.title}} {{(printf "(%s)" .state) | autocolor "red"}}
 		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
 		*{{.url}}*
 
@@ -159,7 +159,7 @@ issue_pr_go_template="$(
 		{{range .comments}}
 			---
 
-			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state}}{{end}}:*
+			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | autocolor "red"}}{{end}}:*
 			*{{.url}}*
 			{{if .minimizedReason}}*minimized: {{.minimizedReason}}*{{end}}
 			{{if .path}}*path: {{.path}}*{{end}}
@@ -173,7 +173,7 @@ export issue_pr_go_template
 
 issue_pr_list_go_template="$(
 	cat <<-'EOF'
-		{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{.title | replace "\n" " "}} ({{.state}}){{"\n"}}{{end -}}
+		{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{(printf "(%s)" .state) | autocolor "red"}}{{"\n"}}{{end -}}
 	EOF
 )"
 
@@ -202,12 +202,13 @@ function gh-search {
 	set -euo pipefail
 
 	repo="$1"
-	query="$2"
+	id="$2"
 
 	if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		# Handle empty query.
-		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+		if [ "$id" == "{q}" ] || [ "$id" == "" ]; then
 			gh "${target::-1}" list \
+				--state=all \
 				--json number,title,state,createdAt,updatedAt,author \
 				--jq 'sort_by(.updatedAt) | reverse' |
 				gh-tpl --color "$issue_pr_list_go_template"
@@ -218,7 +219,7 @@ function gh-search {
 			--repo "$repo" \
 			--sort updated \
 			--json number,title,state,createdAt,author \
-			"$query" |
+			"$id" |
 			gh-tpl --color "$issue_pr_list_go_template"
 	fi
 }
@@ -274,31 +275,87 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--header "Ctrl-L: web browser, Ctrl-O: diff" \
 		--bind "ctrl-l:execute-silent(gh ${target::-1} view {1} --web)" \
 		--bind "ctrl-o:execute(gh pr diff {1} | delta)" \
-		--preview 'bash -c "gh-view {1}" | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
+		--preview 'bash -c "gh-view {1}" | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
 		--preview-window=wrap \
 		--prompt "$target> "
 
 	exit
 fi
 
+# Event list: newlines replaced.
 event_list_go_template="$(
 	cat <<-'EOF'
 		{{- range . -}}
-		{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
+		{{" "}}{{.id | autocolor "yellow" -}}
+		{{" "}}{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
 		{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end -}}
 		{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end -}}
-		{{- if .payload.ref}} {{printf "(%s)" .payload.ref | autocolor "cyan"}}{{end -}}
+		{{- if .payload.ref}}
+			{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref))}}
+				{{- (printf " (%s)" .payload.ref) | autocolor "red" -}}
+			{{else}}
+				{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
+			{{end -}}
+		{{end -}}
 		{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
-		{{- if .payload.action}} {{.payload.action}}{{end -}}
-		{{- if .payload.review.state}} {{.payload.review.state}}{{end -}}
+		{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
+		{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
+		{{- if .payload.review.state}} {{(printf "(%s)" .payload.review.state) | autocolor "red"}}{{end -}}
 		{{- if .payload.review.commit_id}} {{.payload.review.commit_id | autocolor "yellow"}}{{end -}}
 		{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
 		{{- if .payload.comment.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.comment.body " ")}}{{end -}}
-		{{- if .payload.commits}} {{.payload.size}} {{int .payload.size | plural "commit" "commits"}}{{end -}}
+		{{- if .payload.commits}}
+			{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
+			{{- range .payload.commits -}}
+				{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
+			{{- end -}}
+		{{end -}}
 		{{- "\n" -}}
 		{{- end -}}
 	EOF
 )"
+
+# Event view: original newlines.
+event_view_go_template="$(
+	cat <<-'EOF'
+		{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
+		{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end -}}
+		{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end -}}
+		{{- if .payload.ref}}
+			{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref))}}
+				{{- (printf " (%s)" .payload.ref) | autocolor "red" -}}
+			{{else}}
+				{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
+			{{end -}}
+		{{end -}}
+		{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
+		{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
+		{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
+		{{- if .payload.review.state}} {{(printf "(%s)" .payload.review.state) | autocolor "red"}}{{end -}}
+		{{- if .payload.review.commit_id}} {{.payload.review.commit_id | autocolor "yellow"}}{{end -}}
+		{{- if .payload.review.body}}{{"\n\n"}}{{(.payload.review.body)}}{{end -}}
+		{{- if .payload.comment.body}}{{"\n\n"}}{{(.payload.comment.body)}}{{end -}}
+		{{- if .payload.commits}}
+			{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
+			{{- range .payload.commits -}}
+				{{- "\n\n" -}}
+				{{- .sha | trunc 7 | autocolor "yellow" -}}{{- printf " %s" .message -}}
+			{{- end -}}
+		{{end -}}
+	EOF
+)"
+
+export event_view_go_template
+
+function view-event {
+	id="$(echo "$1" | tr -d "'")"
+
+	gojq ".[] | select(.id == \"$id\")" |
+		gh-tpl --color "$event_view_go_template" |
+		render-markdown
+}
+
+export -f view-event
 
 tmpdir="/tmp/gh-tpl.$$"
 mkdir "$tmpdir"
@@ -316,7 +373,7 @@ if [ "$target" == "events" ]; then
 	events_path="$tmpdir/events"
 	received_events_path="$tmpdir/received_events"
 
-	# # List events for the authenticated user.
+	# List events for the authenticated user.
 	gh api \
 		-H "Accept: application/vnd.github+json" \
 		-H "X-GitHub-Api-Version: 2022-11-28" \
@@ -336,6 +393,12 @@ if [ "$target" == "events" ]; then
 		fzf \
 			--ansi \
 			--no-sort \
+			--exact \
+			-i \
+			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
+			--bind shift-up:preview-top,shift-down:preview-bottom \
+			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}\"" \
+			--preview-window=down,wrap \
 			--prompt "$target> "
 
 	exit

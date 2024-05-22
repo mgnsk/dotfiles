@@ -448,6 +448,7 @@ if [ "$target" == "events" ]; then
 		gojq -s 'add | sort_by(.created_at) | reverse' |
 		gh-tpl --color "$event_list_go_template" |
 		fzf \
+			--with-nth 2.. \
 			--ansi \
 			--no-sort \
 			--exact \

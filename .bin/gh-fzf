@@ -89,6 +89,7 @@ pr_jq_template="$(
 				(.diffHunk | split("\n") | . as $arr | to_entries[] |
 				# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
 				if $comment.originalStartLine == null and $comment.originalLine != null then
+					# Show 4 lines like github does.
 					select(.key > ($arr|length)-5)
 				else
 					select(true)
@@ -261,11 +262,11 @@ function gh-search {
 	set -euo pipefail
 
 	repo="$1"
-	id="$2"
+	query="$2"
 
 	if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		# Handle empty query.
-		if [ "$id" == "{q}" ] || [ "$id" == "" ]; then
+		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
 			gh "${target::-1}" list \
 				--state=all \
 				--json number,title,state,createdAt,updatedAt,author \
@@ -278,7 +279,7 @@ function gh-search {
 			--repo "$repo" \
 			--sort updated \
 			--json number,title,state,createdAt,author \
-			"$id" |
+			"$query" |
 			gh-tpl --color "$issue_pr_list_go_template"
 	fi
 }

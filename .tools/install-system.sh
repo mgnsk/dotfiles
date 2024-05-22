@@ -39,7 +39,8 @@ sudo pacman -S --noconfirm --needed \
 	rustup \
 	man \
 	python-pipx \
-	neovim
+	neovim \
+	github-cli
 
 declare -a packages=(
 	"fish-fzf"

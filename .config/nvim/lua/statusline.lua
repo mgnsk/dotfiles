@@ -22,27 +22,7 @@ function _G.file_size()
 	return string.format(format, size, unit)
 end
 
-function _G.git_status_line()
-	local s = {}
-
-	if vim.b.gitsigns_status_dict then
-		table.insert(s, string.format("(%s)", vim.b.gitsigns_status_dict["head"]))
-	end
-
-	if vim.b.gitsigns_status ~= "" then
-		table.insert(s, vim.b.gitsigns_status)
-	end
-
-	if #s > 0 then
-		return table.concat(s, " ")
-	end
-
-	return ""
-end
-
 vim.opt.statusline = table.concat({
-	"%#LineNr#",
-	"%{v:lua.git_status_line()}",
 	"%#LineNr#",
 	" %m%f",
 	"%=",

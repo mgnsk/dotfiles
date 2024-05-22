@@ -39,39 +39,6 @@ return {
 		end,
 	},
 	{
-		"ibhagwan/fzf-lua",
-		lazy = true,
-		config = function()
-			require("fzf-lua").setup({
-				winopts = {
-					fullscreen = true,
-					preview = {
-						delay = 0,
-					},
-				},
-				files = {
-					fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
-					fzf_opts = { ["--ansi"] = false },
-				},
-				grep = {
-					rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",
-				},
-				git = {
-					commits = {
-						preview_pager = "delta",
-					},
-					bcommits = {
-						preview_pager = "delta",
-					},
-				},
-				defaults = {
-					git_icons = false,
-					file_icons = false,
-				},
-			})
-		end,
-	},
-	{
 		"stevearc/oil.nvim",
 		cmd = "Oil",
 		config = function()

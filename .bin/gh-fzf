@@ -211,7 +211,7 @@ issue_pr_comments_go_template="$(
 				{{.source.issue.html_url}}
 			{{end}}
 			{{if .source.pull_request}}
-				***{{printf "#%v" .source.pull_request_number}} {{.source.pull_request.title}}***
+				***{{printf "#%v" .source.pull_request.number}} {{.source.pull_request.title}}***
 
 				{{.source.pull_request.html_url}}
 			{{end}}

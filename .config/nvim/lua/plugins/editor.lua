@@ -13,11 +13,8 @@ return {
 		end,
 	},
 	{
-		"windwp/nvim-autopairs",
+		"cohama/lexima.vim",
 		event = "InsertEnter",
-		config = function()
-			require("nvim-autopairs").setup()
-		end,
 	},
 	{
 		event = "BufEnter",

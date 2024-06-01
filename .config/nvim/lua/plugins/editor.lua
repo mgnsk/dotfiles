@@ -17,8 +17,8 @@ return {
 		event = "InsertEnter",
 	},
 	{
-		event = "BufEnter",
 		"mbbill/undotree",
+		event = "BufEnter",
 		build = function(plugin)
 			vim.cmd.helptags(plugin.dir .. "/doc")
 		end,

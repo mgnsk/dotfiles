@@ -87,6 +87,18 @@ local map = require("util").map
 
 vim.g.mapleader = ","
 
+vim.g.clipboard = {
+	name = "OSC 52",
+	copy = {
+		["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+		["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+	},
+	paste = {
+		["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+		["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+	},
+}
+
 map("v", "Y", [["+y<CR>]], { desc = "Big yank (system clipboard)" })
 map("i", "jj", "<Esc>", { desc = "Escape from insert mode" })
 map("t", "jj", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })

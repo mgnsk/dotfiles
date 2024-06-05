@@ -25,6 +25,8 @@ docker run \
 	--tmpfs /tmp:rw,exec,nosuid,nodev,mode=777 \
 	--volume "ide-state:/home/$user/.local/state" \
 	--volume "ide-cache:/home/$user/.cache" \
+	--volume "ide-cache:/home/$user/.cache" \
+	--volume "ide-cache:/cache" \
 	--volume "ide-go-pkg:/home/$user/go/pkg" \
 	--volume "ide-fish:/home/$user/.local/share/fish" \
 	--volume "$pwd:$pwd:Z" \

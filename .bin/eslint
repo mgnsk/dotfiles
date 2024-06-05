@@ -16,6 +16,6 @@ for (let i = 0; i < process.argv.length; i++) {
 }
 
 // Call eslint through current project npx.
-let stdout = execSync("npx --no-install eslint " + process.argv.join(" "));
+let stdout = execSync("npx --offline eslint " + process.argv.join(" "));
 
 console.log(stdout.toString());

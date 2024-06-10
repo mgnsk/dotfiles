@@ -6,10 +6,6 @@ return {
 		end,
 	},
 	{
-		"cohama/lexima.vim",
-		event = "InsertEnter",
-	},
-	{
 		"mbbill/undotree",
 		event = "BufEnter",
 		build = function(plugin)

@@ -8,7 +8,7 @@ pwd=$(pwd)
 
 docker volume create ide-state || true
 docker volume create ide-cache || true
-docker volume create ide-go-pkg || true
+docker volume create ide-go || true
 docker volume create ide-fish || true
 
 docker run \
@@ -27,7 +27,7 @@ docker run \
 	--volume "ide-cache:/home/$user/.cache" \
 	--volume "ide-cache:/home/$user/.cache" \
 	--volume "ide-cache:/cache" \
-	--volume "ide-go-pkg:/home/$user/go/pkg" \
+	--volume "ide-go:/home/$user/go" \
 	--volume "ide-fish:/home/$user/.local/share/fish" \
 	--volume "$pwd:$pwd:Z" \
 	--workdir "$pwd" \

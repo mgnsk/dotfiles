@@ -18,7 +18,7 @@ set -gx VISUAL nvim
 set -gx PAGER "less -R"
 set -gx MANPAGER "nvim +Man!"
 
-set -gx FZF_DEFAULT_OPTS "--layout=reverse"
+set -gx FZF_DEFAULT_OPTS "--layout=reverse --marker='>' --pointer='>'"
 set -gx FZF_DEFAULT_COMMAND "fd --type f --hidden --exclude '.git'"
 set -gx FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
 set -gx FZF_ALT_C_COMMAND "fd --type d --hidden --exclude '.git'"

@@ -1,69 +1,24 @@
 {
   ".source.go": {
-    "single import": {
-      "prefix": "im",
-      "body": "import \"${1:package}\"",
-      "description": "Snippet for import statement"
-    },
     "multiple imports": {
-      "prefix": "ims",
+      "prefix": "im",
       "body": "import (\n\t\"${1:package}\"\n)",
-      "description": "Snippet for a import block"
-    },
-    "switch statement": {
-      "prefix": "switch",
-      "body": "switch ${1:expression} {\ncase ${2:condition}:\n\t$0\n}",
-      "description": "Snippet for switch statement"
-    },
-    "select statement": {
-      "prefix": "select",
-      "body": "select {\ncase ${1:condition}:\n\t$0\n}",
-      "description": "Snippet for select statement"
-    },
-    "case clause": {
-      "prefix": "case",
-      "body": "case ${1:condition}:$0",
-      "description": "Snippet for case clause"
-    },
-    "map declaration": {
-      "prefix": "map",
-      "body": "map[${1:type}]${2:type}",
-      "description": "Snippet for a map"
-    },
-    "map[string]any declaration": {
-      "prefix": "many",
-      "body": "map[string]any{$0}",
-      "description": "Snippet for a map[string]any"
-    },
-    "[]any declaration": {
-      "prefix": "sany",
-      "body": "[]any{$0}",
-      "description": "Snippet for a []any"
+      "description": "Snippet for an import block"
     },
     "if err != nil": {
       "prefix": "iferr",
       "body": "if err != nil {\n\t${1:return ${2:nil, }${3:err}}\n}",
       "description": "Snippet for if err != nil"
     },
-    "make(...)": {
-      "prefix": "make",
-      "body": "make(${1:type}, ${2:0})",
-      "description": "Snippet for make statement"
-    },
-    "goroutine anonymous function": {
+    "go anonymous function": {
       "prefix": "go",
       "body": "go func() {\n\t$0\n}()",
       "description": "Snippet for anonymous goroutine declaration"
     },
-    "defer statement": {
+    "defer anonymous function": {
       "prefix": "defer",
       "body": "defer func() {\n\t$0\n}()",
       "description": "Snippet for defer statement"
-    },
-    "table driven test": {
-      "prefix": "tdt",
-      "body": "func Test$1(t *testing.T) {\n\ttestCases := []struct {\n\t\tdesc\tstring\n\t\t$2\n\t}{\n\t\t{\n\t\t\tdesc: \"$3\",\n\t\t\t$4\n\t\t},\n\t}\n\tfor _, tC := range testCases {\n\t\tt.Run(tC.desc, func(t *testing.T) {\n\t\t\t$0\n\t\t})\n\t}\n}",
-      "description": "Snippet for table driven test"
     }
   }
 }

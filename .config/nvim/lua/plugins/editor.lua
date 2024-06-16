@@ -6,6 +6,13 @@ return {
 		end,
 	},
 	{
+		"mgnsk/dumb-autopairs.nvim",
+		event = "InsertEnter",
+		config = function()
+			require("dumb-autopairs").setup()
+		end,
+	},
+	{
 		"mbbill/undotree",
 		event = "BufEnter",
 		build = function(plugin)

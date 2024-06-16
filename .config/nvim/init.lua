@@ -20,7 +20,6 @@ vim.o.path = vim.o.path .. "**"
 vim.o.shell = os.getenv("SHELL")
 
 vim.o.autoindent = true
-vim.o.smartindent = true
 vim.o.expandtab = false
 vim.o.shiftwidth = 4
 vim.o.softtabstop = 4
@@ -83,8 +82,6 @@ vim.api.nvim_create_autocmd("QuitPre", {
 	end,
 })
 
-local map = require("util").map
-
 vim.g.mapleader = ","
 
 vim.g.clipboard = {
@@ -99,47 +96,52 @@ vim.g.clipboard = {
 	},
 }
 
-map("v", "Y", [["+y<CR>]], { desc = "Big yank (system clipboard)" })
-map("i", "jj", "<Esc>", { desc = "Escape from insert mode" })
-map("t", "jj", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
-map("t", "<Esc>", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
-map("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
+vim.keymap.set("v", "Y", [["+y<CR>]], { desc = "Big yank (system clipboard)" })
+vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape from insert mode" })
+vim.keymap.set("t", "jj", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
+vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
+vim.keymap.set("n", "<Esc><Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 
-map("n", "qq", function()
+vim.keymap.set("n", "qq", function()
 	vim.cmd("q!")
 end, { desc = "Quit window" })
 
-map("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
-map("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
-map("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
-map("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
-map("n", "H", "gT", { desc = "Switch to previous tab" })
-map("n", "L", "gt", { desc = "Switch to next tab" })
+vim.keymap.set("n", "H", "gT", { desc = "Switch to previous tab" })
+vim.keymap.set("n", "L", "gt", { desc = "Switch to next tab" })
 
-map("n", "<leader>.", ":", { desc = "Command mode", silent = false })
-map(
+vim.keymap.set("n", "<leader>.", ":", { desc = "Command mode" })
+vim.keymap.set(
 	"n",
 	"<leader>,",
 	":let $curdir=substitute(expand('%:p:h'), 'oil://', '', '')<CR>:vsplit<CR>:ter<CR>cd $curdir<CR>",
 	{ desc = "Open new terminal window to right in current buffer's directory" }
 )
-map(
+vim.keymap.set(
 	"n",
 	"tt",
 	":let $curdir=substitute(expand('%:p:h'), 'oil://', '', '')<CR>:tabnew<CR>:ter<CR>cd $curdir<CR>",
 	{ desc = "Open new terminal tab in current buffer's directory" }
 )
-map("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
-map("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
-map("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
-map("n", "<leader>e", ":let $curdir=expand('%:h')<CR>:tabnew<CR>:e $curdir<CR>", { desc = "Open file browser in tab" })
-map("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
-map("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
-map("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
-map("n", "<leader>w", ":set wrap!<CR>", { desc = "Toggle word wrap" })
+vim.keymap.set("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
+vim.keymap.set("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
+vim.keymap.set("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
+vim.keymap.set(
+	"n",
+	"<leader>e",
+	":let $curdir=expand('%:h')<CR>:tabnew<CR>:e $curdir<CR>",
+	{ desc = "Open file browser in tab" }
+)
+vim.keymap.set("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
+vim.keymap.set("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
+vim.keymap.set("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
+vim.keymap.set("n", "<leader>w", ":set wrap!<CR>", { desc = "Toggle word wrap" })
 
-map("n", "<leader>l", function()
+vim.keymap.set("n", "<leader>l", function()
 	if vim.wo.scrolloff > 0 then
 		vim.wo.scrolloff = 0
 	else
@@ -147,15 +149,20 @@ map("n", "<leader>l", function()
 	end
 end, { desc = "Toggle cursor lock" })
 
-map("n", "<leader>mt", ":tabm +1<CR>", { desc = "Move tab to right" })
-map("n", "<leader>mT", ":tabm -1<CR>", { desc = "Move tab to left" })
+vim.keymap.set("n", "<leader>mt", ":tabm +1<CR>", { desc = "Move tab to right" })
+vim.keymap.set("n", "<leader>mT", ":tabm -1<CR>", { desc = "Move tab to left" })
 
 for i = 1, 9 do
-	map("n", string.format("<leader>%d", i), string.format("%dgt", i), { desc = string.format("Goto %dth tab", i) })
+	vim.keymap.set(
+		"n",
+		string.format("<leader>%d", i),
+		string.format("%dgt", i),
+		{ desc = string.format("Goto %dth tab", i) }
+	)
 end
-map("n", "<leader>0", ":tablast<CR>", { desc = "Goto last tab" })
+vim.keymap.set("n", "<leader>0", ":tablast<CR>", { desc = "Goto last tab" })
 
-map("n", "<leader>S", function()
+vim.keymap.set("n", "<leader>S", function()
 	if vim.o.spell then
 		vim.o.spell = false
 		print("spell off")
@@ -165,10 +172,20 @@ map("n", "<leader>S", function()
 	end
 end, { desc = "Toggle vim spell check" })
 
-map("n", "<leader>U", ":UndotreeToggle<CR>", { desc = "Toggle undo tree" })
+vim.keymap.set("n", "<leader>U", ":UndotreeToggle<CR>", { desc = "Toggle undo tree" })
 
-map("n", "gj", require("util").goto_next, { desc = "Goto next diagnostic or location list item in current buffer" })
-map("n", "gk", require("util").goto_prev, { desc = "Goto prev diagnostic or location list item in current buffer" })
+vim.keymap.set(
+	"n",
+	"gj",
+	require("util").goto_next,
+	{ desc = "Goto next diagnostic or location list item in current buffer" }
+)
+vim.keymap.set(
+	"n",
+	"gk",
+	require("util").goto_prev,
+	{ desc = "Goto prev diagnostic or location list item in current buffer" }
+)
 
 require("statusline")
 require("lazy_setup")

@@ -1,5 +1,3 @@
-local map = require("util").map
-
 -- location_callback opens all LSP gotos in a new tab
 local location_callback = function(_, result, ctx)
 	local util = vim.lsp.util
@@ -28,7 +26,7 @@ return {
 		"simrat39/symbols-outline.nvim",
 		lazy = true,
 		init = function()
-			map("n", "<leader>V", function()
+			vim.keymap.set("n", "<leader>V", function()
 				return require("symbols-outline").toggle_outline()
 			end, { desc = "Toggle LSP symbols outline tree" })
 		end,
@@ -49,17 +47,17 @@ return {
 			},
 		},
 		init = function()
-			map("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-			map("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
+			vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
+			vim.keymap.set("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
 
-			map("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
-			map("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })
-			map("n", "gi", vim.lsp.buf.implementation, { desc = "List implementations" })
-			map("n", "go", vim.lsp.buf.type_definition, { desc = "Goto definition" })
-			map("n", "gr", vim.lsp.buf.references, { desc = "List references" })
-			map("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature" })
-			map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
-			map("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
+			vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
+			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })
+			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "List implementations" })
+			vim.keymap.set("n", "go", vim.lsp.buf.type_definition, { desc = "Goto definition" })
+			vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "List references" })
+			vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature" })
+			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
+			vim.keymap.set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
 		end,
 		config = function()
 			vim.api.nvim_create_autocmd("LspAttach", {

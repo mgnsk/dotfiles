@@ -21,6 +21,7 @@ local location_callback = function(_, result, ctx)
 	end
 end
 
+--- @type LazySpec[]
 return {
 	{
 		"simrat39/symbols-outline.nvim",

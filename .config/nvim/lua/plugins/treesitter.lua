@@ -12,6 +12,7 @@ local function install(parsers)
 	end
 end
 
+--- @type LazySpec[]
 return {
 	{
 		"mgnsk/tree-sitter-balafon",

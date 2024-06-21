@@ -1,3 +1,4 @@
+--- @return string
 function _G.file_size()
 	local file = vim.fn.expand("%:p")
 	if string.len(file) == 0 then
@@ -22,9 +23,21 @@ function _G.file_size()
 	return string.format(format, size, unit)
 end
 
+--- @return string
+function _G.num_selected()
+	if vim.fn.mode() == "V" then
+		local count = math.abs(vim.fn.line(".") - vim.fn.line("v")) + 1
+
+		return string.format("%d", count)
+	end
+
+	return ""
+end
+
 vim.opt.statusline = table.concat({
 	"%#LineNr#",
 	" %m%f",
+	" %{v:lua.num_selected()}",
 	"%=",
 	"%#LineNr#",
 	" %y",

@@ -8,6 +8,7 @@ pwd=$(pwd)
 
 docker volume create ide-state || true
 docker volume create ide-cache || true
+docker volume create ide-cargo || true
 docker volume create ide-go || true
 docker volume create ide-fish || true
 
@@ -25,7 +26,7 @@ docker run \
 	--tmpfs /tmp:rw,exec,nosuid,nodev,mode=777 \
 	--volume "ide-state:/home/$user/.local/state" \
 	--volume "ide-cache:/home/$user/.cache" \
-	--volume "ide-cache:/home/$user/.cache" \
+	--volume "ide-cargo:/home/$user/.cargo" \
 	--volume "ide-cache:/cache" \
 	--volume "ide-go:/home/$user/go" \
 	--volume "ide-fish:/home/$user/.local/share/fish" \

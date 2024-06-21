@@ -148,6 +148,7 @@ RUN bash install-fish.sh \
     && sudo rm /etc/sudoers.d/01-wheel \
     && mkdir -p \
     /home/${user}/.cache \
+    /home/${user}/.cargo \
     /home/${user}/.local/share/fish \
     /home/${user}/.local/state \
     /home/${user}/go/pkg \

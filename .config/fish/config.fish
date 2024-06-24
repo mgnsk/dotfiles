@@ -8,6 +8,9 @@ fish_add_path ~/.tools/vendor/bin
 fish_add_path ~/.tools/node_modules/.bin
 fish_add_path ~/toolbox/bin
 
+set -gx LC_ALL en_US.UTF-8
+set -gx LANG en_US.UTF-8
+
 set -gx SHELL /usr/bin/fish
 
 set -gx GOFLAGS -modcacherw

@@ -55,8 +55,6 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/install-rust.sh /home/${user}/.tools
 
 WORKDIR /home/${user}/.tools
 
-RUN bash install-rust.sh
-
 RUN bash install-rust.sh \
     && rm -rf \
     /home/${user}/.cargo/git \

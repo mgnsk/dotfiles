@@ -6,7 +6,9 @@ ARG gid
 ARG user
 ARG group
 
-RUN pacman -Syyu --noconfirm \
+RUN pacman -Syy \
+    && pacman -S --noconfirm --needed archlinux-keyring \
+    && pacman -Syu --noconfirm \
     && pacman -S --noconfirm --needed \
     git \
     go \

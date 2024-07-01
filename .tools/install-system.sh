@@ -49,6 +49,7 @@ declare -a packages=(
 	"lscolors-git"
 )
 
+# Disable makepkg compression.
 export PKGEXT=".pkg.tar"
 
 for p in "${packages[@]}"; do

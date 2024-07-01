@@ -105,11 +105,7 @@ bindsym $mod+f fullscreen toggle
 # toggle tiling / floating and make floating windows sticky by default
 bindsym $mod+Shift+space floating toggle, sticky toggle
 
-# FreeTube
-for_window [title="^Picture in picture$"] floating enable, sticky enable, border none, move position 1000 0
-
-# Firefox
-for_window [title="^Picture-in-Picture$"] floating enable, sticky enable, border none, move position 1000 0
+for_window [title="^(Picture in picture)|(Picture-in-Picture)$"] floating enable, sticky enable, border none, move position 1000 0
 
 # focus the parent container
 bindsym $mod+a focus parent
@@ -235,7 +231,6 @@ exec_always {
 set $wallpapers_path $HOME/wallpapers
 output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
-exec sway-fader --app_id="foot:0.7:0.97"
 
 for_window [class=".*"] border none
 
@@ -245,7 +240,7 @@ seat seat0 hide_cursor 3000
 
 # Needed for xdg-desktop-portal-wlr to not block swaybar and apps startup.
 exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
-
+exec sway-fader --app_id="foot:0.7:0.97"
 exec lxsession
 exec lxpolkit
 exec /usr/libexec/geoclue-2.0/demos/agent
@@ -255,7 +250,7 @@ exec swaync
 exec thunar --daemon
 exec sway-audio-idle-inhibit
 exec swayidle -w \
-                timeout 600 'swaylock -f -c 000000' \
-                timeout 1200 'swaymsg "output * dpms off"' \
-                     resume 'swaymsg "output * dpms on"' \
-                before-sleep 'swaylock -f -c 000000'
+    timeout 600 'swaylock -f -c 000000' \
+    timeout 1200 'swaymsg "output * dpms off"' \
+    resume 'swaymsg "output * dpms on"' \
+    before-sleep 'swaylock -f -c 000000'

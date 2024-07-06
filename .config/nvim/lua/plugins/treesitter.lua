@@ -41,9 +41,7 @@ return {
 		event = { "BufEnter" },
 		build = function()
 			install({
-				"bash",
 				"beancount",
-				"c",
 				"comment",
 				"cpp",
 				"css",
@@ -55,11 +53,8 @@ return {
 				"gowork",
 				"html",
 				"javascript",
-				"lua",
-				"markdown",
 				"php",
 				"proto",
-				"python",
 				"query",
 				"rust",
 				"sql",

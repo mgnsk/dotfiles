@@ -9,7 +9,7 @@ local location_callback = function(_, result, ctx)
 
 	vim.api.nvim_command("tabnew")
 
-	if vim.tbl_islist(result) then
+	if vim.islist(result) then
 		util.jump_to_location(result[1], "utf-8", false)
 		if #result > 1 then
 			vim.diagnostic.setqflist(util.locations_to_items(result, "utf-8"))
@@ -49,7 +49,6 @@ return {
 		},
 		init = function()
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-			vim.keymap.set("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
 
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })

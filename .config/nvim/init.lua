@@ -174,6 +174,8 @@ end, { desc = "Toggle vim spell check" })
 
 vim.keymap.set("n", "<leader>U", ":UndotreeToggle<CR>", { desc = "Toggle undo tree" })
 
+vim.keymap.set("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
+
 vim.keymap.set(
 	"n",
 	"gj",

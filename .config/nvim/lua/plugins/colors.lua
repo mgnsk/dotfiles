@@ -64,7 +64,7 @@ return {
 				["*"] = {
 					RGB = true,
 					RRGGBB = true,
-					names = false,
+					names = true,
 					rgb_fn = true,
 					hsl_fn = true,
 					css = true,

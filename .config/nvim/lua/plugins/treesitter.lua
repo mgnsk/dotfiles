@@ -89,11 +89,4 @@ return {
 			})
 		end,
 	},
-	{
-		"nvim-treesitter/playground",
-		event = { "BufEnter" },
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-		},
-	},
 }

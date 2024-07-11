@@ -189,5 +189,14 @@ vim.keymap.set(
 	{ desc = "Goto prev diagnostic or location list item in current buffer" }
 )
 
+vim.api.nvim_create_user_command("GhBrowse", function()
+	local file = vim.fn.expand("%")
+	if string.len(file) == 0 then
+		return
+	end
+
+	vim.fn.system(string.format("gh browse %s --branch $(git rev-parse --abbrev-ref HEAD)", file))
+end, { desc = "Browse current file on Github" })
+
 require("statusline")
 require("lazy_setup")

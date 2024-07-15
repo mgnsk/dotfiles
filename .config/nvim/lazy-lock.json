@@ -6,6 +6,7 @@
   "cmp-nvim-lua": { "branch": "main", "commit": "f12408bdb54c39c23e67cab726264c10db33ada8" },
   "cmp-vsnip": { "branch": "main", "commit": "989a8a73c44e926199bfd05fa7a516d51f2d2752" },
   "conform.nvim": { "branch": "master", "commit": "cd75be867f2331b22905f47d28c0c270a69466aa" },
+  "dumb-autopairs.nvim": { "branch": "main", "commit": "3c74f6856d2bead04975e96ac77f99a492e30d28" },
   "fzf-lua": { "branch": "main", "commit": "3d214f8db4a4119723ab5148b7a333aab3fa9063" },
   "lazy.nvim": { "branch": "main", "commit": "315191aa9e1b0ce5a023c01f959059411405b7c9" },
   "neodev.nvim": { "branch": "main", "commit": "46aa467dca16cf3dfe27098042402066d2ae242d" },

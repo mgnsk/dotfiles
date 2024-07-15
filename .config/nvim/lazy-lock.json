@@ -6,16 +6,15 @@
   "cmp-nvim-lua": { "branch": "main", "commit": "f12408bdb54c39c23e67cab726264c10db33ada8" },
   "cmp-vsnip": { "branch": "main", "commit": "989a8a73c44e926199bfd05fa7a516d51f2d2752" },
   "conform.nvim": { "branch": "master", "commit": "cd75be867f2331b22905f47d28c0c270a69466aa" },
-  "dumb-autopairs.nvim": { "branch": "main", "commit": "3c74f6856d2bead04975e96ac77f99a492e30d28" },
-  "fzf-lua": { "branch": "main", "commit": "975534f4861e2575396716225c1202572645583d" },
-  "lazy.nvim": { "branch": "main", "commit": "d1de92dffab5a862332fdd1892889d362369c12f" },
+  "fzf-lua": { "branch": "main", "commit": "3d214f8db4a4119723ab5148b7a333aab3fa9063" },
+  "lazy.nvim": { "branch": "main", "commit": "315191aa9e1b0ce5a023c01f959059411405b7c9" },
   "neodev.nvim": { "branch": "main", "commit": "46aa467dca16cf3dfe27098042402066d2ae242d" },
   "neomake": { "branch": "master", "commit": "584f882b9f991245374e7e7d7d1f78bae90b7a35" },
-  "nvim-cmp": { "branch": "main", "commit": "a110e12d0b58eefcf5b771f533fc2cf3050680ac" },
+  "nvim-cmp": { "branch": "main", "commit": "7e348da6e5085ac447144a2ef4b637220ba27209" },
   "nvim-colorizer.lua": { "branch": "master", "commit": "a065833f35a3a7cc3ef137ac88b5381da2ba302e" },
   "nvim-fundo": { "branch": "main", "commit": "ac9c9372c4bf677721e24f144ef29d3a05c2b589" },
-  "nvim-lspconfig": { "branch": "master", "commit": "cf97d2485fc3f6d4df1b79a3ea183e24c272215e" },
-  "nvim-treesitter": { "branch": "master", "commit": "e9ec8b4658880ab41986dba3cf8eaf1f805659bb" },
+  "nvim-lspconfig": { "branch": "master", "commit": "216deb2d1b5fbf24398919228208649bbf5cbadf" },
+  "nvim-treesitter": { "branch": "master", "commit": "a6b2f4ecc8a47011868632142a9b687d7e0f9aaf" },
   "promise-async": { "branch": "main", "commit": "28c1d5a295eb5310afa2523d4ae9aa41ec5a9de2" },
   "symbols-outline.nvim": { "branch": "master", "commit": "564ee65dfc9024bdde73a6621820866987cbb256" },
   "tree-sitter-balafon": { "branch": "main", "commit": "efc74c759cf3eab3de2a476a9feadad46b46ead2" },
@@ -24,5 +23,5 @@
   "vim-fugitive": { "branch": "master", "commit": "8c8cdf4405cb8bdb70dd9812a33bb52363a87dbc" },
   "vim-vsnip": { "branch": "master", "commit": "02a8e79295c9733434aab4e0e2b8c4b7cea9f3a9" },
   "vim-vsnip-integ": { "branch": "master", "commit": "1914e72cf3de70df7f5dde476cd299aba2440aef" },
-  "vscode.nvim": { "branch": "main", "commit": "46212834b32866ce45479f885ca82d2259044f46" }
+  "vscode.nvim": { "branch": "main", "commit": "3ba16d763097cecc75eb93761f4a981467acfc23" }
 }

@@ -362,6 +362,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--bind "ctrl-l:execute-silent(gh ${target::-1} view {1} --web)" \
 		--bind "ctrl-o:execute(gh pr diff {1} | delta)" \
 		--preview 'bash -c "gh-view {1}" | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
+		--preview-window=down \
 		--prompt "$target> "
 
 	exit

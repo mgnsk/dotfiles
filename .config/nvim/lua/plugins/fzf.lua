@@ -57,14 +57,6 @@ return {
 				grep = {
 					rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",
 				},
-				git = {
-					commits = {
-						preview_pager = "delta",
-					},
-					bcommits = {
-						preview_pager = "delta",
-					},
-				},
 				defaults = {
 					git_icons = false,
 					file_icons = false,

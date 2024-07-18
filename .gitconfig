@@ -35,4 +35,4 @@
 	navigate = true
 	light = false
 	line-numbers = true
-	side-by-side = true
+	side-by-side = false

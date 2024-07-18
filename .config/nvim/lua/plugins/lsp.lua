@@ -49,6 +49,7 @@ return {
 		},
 		init = function()
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
+			vim.keymap.set("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
 
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })

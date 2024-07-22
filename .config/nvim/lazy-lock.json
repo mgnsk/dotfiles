@@ -8,6 +8,7 @@
   "conform.nvim": { "branch": "master", "commit": "cd75be867f2331b22905f47d28c0c270a69466aa" },
   "dumb-autopairs.nvim": { "branch": "main", "commit": "3c74f6856d2bead04975e96ac77f99a492e30d28" },
   "fzf-lua": { "branch": "main", "commit": "3d214f8db4a4119723ab5148b7a333aab3fa9063" },
+  "jsonpath.nvim": { "branch": "main", "commit": "ea7e07e935f3f95deda97f9f6dc87f7bcf3fb69a" },
   "lazy.nvim": { "branch": "main", "commit": "315191aa9e1b0ce5a023c01f959059411405b7c9" },
   "neodev.nvim": { "branch": "main", "commit": "46aa467dca16cf3dfe27098042402066d2ae242d" },
   "neomake": { "branch": "master", "commit": "584f882b9f991245374e7e7d7d1f78bae90b7a35" },

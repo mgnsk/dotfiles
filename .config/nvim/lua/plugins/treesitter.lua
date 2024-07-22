@@ -53,6 +53,7 @@ return {
 				"gowork",
 				"html",
 				"javascript",
+				"json",
 				"php",
 				"proto",
 				"query",

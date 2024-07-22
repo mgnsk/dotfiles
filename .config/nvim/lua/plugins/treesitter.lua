@@ -1,14 +1,35 @@
-local function install(parsers)
-	if #(vim.api.nvim_list_uis()) > 0 then
-		vim.cmd(string.format("TSUpdate %s", table.concat(parsers, " ")))
-	else
-		for _, parser in ipairs(parsers) do
-			local ok, result = pcall(vim.cmd, string.format("TSUpdateSync %s", parser))
-			if not ok then
-				print(result)
-				os.exit(1)
-			end
-		end
+vim.g.ts_langs = {
+	"beancount",
+	"comment",
+	"cpp",
+	"css",
+	"dockerfile",
+	"glsl",
+	"go",
+	"gomod",
+	"gosum",
+	"gowork",
+	"html",
+	"javascript",
+	"json",
+	"php",
+	"proto",
+	"query",
+	"rust",
+	"sql",
+	"tlaplus",
+	"toml",
+	"twig",
+	"typescript",
+	"yaml",
+}
+
+function _G.install_ts_lang(lang)
+	-- Note: need to use the vim API since treesitter's lua api doesn't throw errors.
+	local ok, result = pcall(vim.api.nvim_cmd, { cmd = [[TSUpdateSync]], args = { lang } }, { output = true })
+	io.stderr:write(result)
+	if not ok then
+		os.exit(1)
 	end
 end
 
@@ -33,39 +54,15 @@ return {
 				filetype = "bal",
 			}
 
-			install({ "balafon" })
+			_G.install_ts_lang("balafon")
 		end,
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufEnter" },
-		build = function()
-			install({
-				"beancount",
-				"comment",
-				"cpp",
-				"css",
-				"dockerfile",
-				"glsl",
-				"go",
-				"gomod",
-				"gosum",
-				"gowork",
-				"html",
-				"javascript",
-				"json",
-				"php",
-				"proto",
-				"query",
-				"rust",
-				"sql",
-				"tlaplus",
-				"toml",
-				"twig",
-				"typescript",
-				"yaml",
-			})
-		end,
+		init = function() end,
+		-- Note: would like to use a function but TSUpdateSync command is not available then (lazy bug?). Instead, need to use a ':' command.
+		build = ":lua for _, lang in ipairs(vim.g.ts_langs) do _G.install_ts_lang(lang) end",
 		config = function()
 			require("nvim-treesitter.configs").setup({
 				highlight = {

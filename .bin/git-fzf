@@ -20,11 +20,11 @@ function git-search {
 
 	# Handle empty query.
 	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-		git "$target" --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s'
+		git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s'
 		exit
 	fi
 
-	git "$target" --all --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G "$query"
+	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G "$query"
 }
 
 export -f git-search

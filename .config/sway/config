@@ -47,21 +47,32 @@ font pango:monospace 8
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 
-bindsym $mod+m mode "mouse-mode"
+mode Mouse {
+    bindsym a mode default, exec 'wl-kbptr-sway-active-win; swaymsg mode Mouse'
+    bindsym Shift+a mode default, exec 'wl-kbptr; swaymsg mode Mouse'
 
-mode "mouse-mode" {
-	set $key d
-	set $press seat - cursor press BTN_LEFT; bindsym $key $$release
-	set $release seat - cursor release BTN_LEFT; bindsym $key $$press
-	bindsym {
-		h seat - cursor move -10 0
-		j seat - cursor move 0 10
-		k seat - cursor move 0 -10
-		l seat - cursor move 10 0
-		$key $press
-		Escape    mode "default"
-	}
+    # Mouse move
+    bindsym h seat seat0 cursor move -15 0
+    bindsym j seat seat0 cursor move 0 15
+    bindsym k seat seat0 cursor move 0 -15
+    bindsym l seat seat0 cursor move 15 0
+
+    # Left button
+    bindsym s seat seat0 cursor press button1
+    bindsym --release s seat seat0 cursor release button1
+
+    # Middle button
+    bindsym d seat seat0 cursor press button2
+    bindsym --release d seat seat0 cursor release button2
+
+    # Right button
+    bindsym f seat seat0 cursor press button3
+    bindsym --release f seat seat0 cursor release button3
+
+    bindsym Escape mode default
 }
+
+bindsym $mod+m mode Mouse
 
 # start a terminal
 bindsym $mod+Return exec foot

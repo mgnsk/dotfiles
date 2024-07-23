@@ -49,6 +49,7 @@ declare -a packages=(
 	"hadolint-bin"
 	"shellcheck-bin"
 	"lscolors-git"
+	"wl-kbptr"
 )
 
 # Disable makepkg compression.

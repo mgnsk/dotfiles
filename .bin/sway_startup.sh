@@ -2,7 +2,19 @@
 
 set -euo pipefail
 
-dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+# Adapted from /etc/sway/config.d/50-systemd-user.conf.
+systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
+systemctl --user import-environment \
+	DISPLAY \
+	SWAYSOCK \
+	WAYLAND_DISPLAY \
+	XDG_CURRENT_DESKTOP
+
+dbus-update-activation-environment --systemd \
+	DISPLAY \
+	SWAYSOCK \
+	XDG_CURRENT_DESKTOP=sway \
+	WAYLAND_DISPLAY
 
 waybar &
 

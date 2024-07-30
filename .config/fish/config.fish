@@ -47,13 +47,19 @@ set -g fish_color_param d8d8d8
 if status is-login
     # Start sway at login
     if test -z "$DISPLAY" -a "$XDG_VTNR" = 1
+        set -gx XDG_CONFIG_HOME "$HOME/.config"
+        set -gx XDG_CACHE_HOME "$HOME/.cache"
+        set -gx XDG_STATE_HOME "$HOME/.local/state"
+        set -gx XDG_DATA_HOME "$HOME/.local/share"
+        set -gx XDG_DATA_DIRS "$HOME/.local/bin/$USER:$HOME/.local/bin:$XDG_DATA_DIRS:/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$XDG_DATA_HOME/flatpak/exports/share"
         set -gx XDG_CURRENT_DESKTOP sway
-        set -gx XDG_DATA_DIRS "/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:$XDG_DATA_HOME/flatpak/exports/share"
+        set -gx XDG_SESSION_DESKTOP sway
         set -gx XDG_SESSION_TYPE wayland
+
         set -gx BEMENU_BACKEND wayland
         set -gx MOZ_ENABLE_WAYLAND 1
 
-        export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+        #export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
 
         exec sway
     end

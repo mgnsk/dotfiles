@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+# Reference: https://github.com/Alexays/Waybar/discussions/1828#discussioncomment-10126615
+
 # Adapted from /etc/sway/config.d/50-systemd-user.conf.
 systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
 systemctl --user import-environment \

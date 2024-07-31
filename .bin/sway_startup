@@ -32,8 +32,6 @@ gsettings set "$gnome_schema" gtk-theme 'oomox-tizix_dark'
 gsettings set "$gnome_schema" icon-theme 'oomox-tizix_dark'
 gsettings set "$gnome_schema" font-name 'Cantarell 11'
 
-export "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)"
-
 sway-fader --app_id="foot:0.7:0.97" &
 lxsession &
 lxpolkit &

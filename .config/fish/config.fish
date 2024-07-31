@@ -59,7 +59,7 @@ if status is-login
         set -gx BEMENU_BACKEND wayland
         set -gx MOZ_ENABLE_WAYLAND 1
 
-        #export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+        export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
 
         exec sway
     end

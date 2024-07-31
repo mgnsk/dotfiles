@@ -12,6 +12,7 @@ vim.g.ts_langs = {
 	"html",
 	"javascript",
 	"json",
+	"jsonnet",
 	"php",
 	"proto",
 	"query",

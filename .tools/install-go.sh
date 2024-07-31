@@ -12,3 +12,4 @@ go install -v golang.org/x/tools/cmd/goimports@latest
 go install -v github.com/mgechev/revive@latest
 go install -v github.com/mgnsk/gh-tpl@latest
 go install -v github.com/itchyny/gojq/cmd/gojq@latest
+go install -v github.com/grafana/jsonnet-language-server@latest

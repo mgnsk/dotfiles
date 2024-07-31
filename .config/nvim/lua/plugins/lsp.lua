@@ -101,18 +101,19 @@ return {
 			})
 			lsp.tsserver.setup({
 				capabilities = capabilities,
-				init_options = {
-					preferences = {
-						includeInlayParameterNameHints = "all",
-						includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-						includeInlayFunctionParameterTypeHints = true,
-						includeInlayVariableTypeHints = true,
-						includeInlayPropertyDeclarationTypeHints = true,
-						includeInlayFunctionLikeReturnTypeHints = true,
-						includeInlayEnumMemberValueHints = true,
-						importModuleSpecifierPreference = "non-relative",
-					},
-				},
+				-- TODO
+				-- init_options = {
+				-- 	preferences = {
+				-- 		includeInlayParameterNameHints = "all",
+				-- 		includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+				-- 		includeInlayFunctionParameterTypeHints = true,
+				-- 		includeInlayVariableTypeHints = true,
+				-- 		includeInlayPropertyDeclarationTypeHints = true,
+				-- 		includeInlayFunctionLikeReturnTypeHints = true,
+				-- 		includeInlayEnumMemberValueHints = true,
+				-- 		importModuleSpecifierPreference = "non-relative",
+				-- 	},
+				-- },
 			})
 			lsp.html.setup({
 				capabilities = capabilities,
@@ -159,6 +160,9 @@ return {
 				-- },
 			})
 			lsp.rust_analyzer.setup({
+				capabilities = capabilities,
+			})
+			lsp.jsonnet_ls.setup({
 				capabilities = capabilities,
 			})
 		end,

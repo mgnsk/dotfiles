@@ -10,12 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "bash-language-server": "^5.4.0",
-    "cspell": "^8.12.1",
+    "cspell": "^8.13.2",
     "markdownlint-cli": "^0.41.0",
-    "npm-check-updates": "^16.14.20",
-    "pnpm": "^9.6.0",
+    "npm-check-updates": "^17.0.6",
+    "pnpm": "^9.7.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "typescript-language-server": "^4.3.3",
     "vscode-langservers-extracted": "^4.10.0"
   }

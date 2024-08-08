@@ -27,7 +27,6 @@ sudo pacman -S --noconfirm --needed \
 	go \
 	buf \
 	yamllint \
-	shfmt \
 	brotli \
 	direnv \
 	luarocks \
@@ -41,8 +40,7 @@ sudo pacman -S --noconfirm --needed \
 	rustup \
 	man \
 	python-pipx \
-	neovim \
-	github-cli
+	neovim
 
 declare -a packages=(
 	"fish-fzf"

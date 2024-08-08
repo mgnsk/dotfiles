@@ -1642,16 +1642,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.16.2",
+            "version": "v1.17.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "51f1ba679a6afe0315621ad143d788bd7ded0eca"
+                "reference": "e8a88130a25e3f9d4d5785e6a1afca98268ab110"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/51f1ba679a6afe0315621ad143d788bd7ded0eca",
-                "reference": "51f1ba679a6afe0315621ad143d788bd7ded0eca",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/e8a88130a25e3f9d4d5785e6a1afca98268ab110",
+                "reference": "e8a88130a25e3f9d4d5785e6a1afca98268ab110",
                 "shasum": ""
             },
             "require": {
@@ -1662,13 +1662,13 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.59.3",
-                "illuminate/view": "^10.48.12",
-                "larastan/larastan": "^2.9.7",
+                "friendsofphp/php-cs-fixer": "^3.61.1",
+                "illuminate/view": "^10.48.18",
+                "larastan/larastan": "^2.9.8",
                 "laravel-zero/framework": "^10.4.0",
                 "mockery/mockery": "^1.6.12",
                 "nunomaduro/termwind": "^1.15.1",
-                "pestphp/pest": "^2.34.8"
+                "pestphp/pest": "^2.35.0"
             },
             "bin": [
                 "builds/pint"
@@ -1700,11 +1700,7 @@
                 "linter",
                 "php"
             ],
-            "support": {
-                "issues": "https://github.com/laravel/pint/issues",
-                "source": "https://github.com/laravel/pint"
-            },
-            "time": "2024-07-09T15:58:08+00:00"
+            "time": "2024-08-06T15:11:54+00:00"
         },
         {
             "name": "league/uri-parser",
@@ -3565,21 +3561,21 @@
         },
         {
             "name": "phpactor/phly-event-dispatcher",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpactor/phly-event-dispatcher.git",
-                "reference": "5519ac1a5df8a1db72df82e11367b23443f2a0fe"
+                "reference": "5693311b68faf1d589a98721e0e8fbb5e7ad7e24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpactor/phly-event-dispatcher/zipball/5519ac1a5df8a1db72df82e11367b23443f2a0fe",
-                "reference": "5519ac1a5df8a1db72df82e11367b23443f2a0fe",
+                "url": "https://api.github.com/repos/phpactor/phly-event-dispatcher/zipball/5693311b68faf1d589a98721e0e8fbb5e7ad7e24",
+                "reference": "5693311b68faf1d589a98721e0e8fbb5e7ad7e24",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.3||^8.0",
-                "psr/container": "^1.0",
+                "psr/container": "^1.0||^2.0",
                 "psr/event-dispatcher": "^1.0"
             },
             "conflict": {
@@ -3620,12 +3616,7 @@
                 "event-dispatcher",
                 "psr-14"
             ],
-            "support": {
-                "issues": "https://github.com/phly/phly-event-dispatcher/issues",
-                "rss": "https://github.com/phly/phly-event-dispatcher/releases.atom",
-                "source": "https://github.com/phly/phly-event-dispatcher"
-            },
-            "time": "2021-02-06T14:38:57+00:00"
+            "time": "2024-08-03T18:04:28+00:00"
         },
         {
             "name": "phpactor/php-extension",
@@ -4432,16 +4423,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.11.7",
+            "version": "1.11.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "52d2bbfdcae7f895915629e4694e9497d0f8e28d"
+                "reference": "640410b32995914bde3eed26fa89552f9c2c082f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/52d2bbfdcae7f895915629e4694e9497d0f8e28d",
-                "reference": "52d2bbfdcae7f895915629e4694e9497d0f8e28d",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/640410b32995914bde3eed26fa89552f9c2c082f",
+                "reference": "640410b32995914bde3eed26fa89552f9c2c082f",
                 "shasum": ""
             },
             "require": {
@@ -4469,13 +4460,6 @@
                 "dev",
                 "static analysis"
             ],
-            "support": {
-                "docs": "https://phpstan.org/user-guide/getting-started",
-                "forum": "https://github.com/phpstan/phpstan/discussions",
-                "issues": "https://github.com/phpstan/phpstan/issues",
-                "security": "https://github.com/phpstan/phpstan/security/policy",
-                "source": "https://github.com/phpstan/phpstan-src"
-            },
             "funding": [
                 {
                     "url": "https://github.com/ondrejmirtes",
@@ -4486,7 +4470,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-07-06T11:17:41+00:00"
+            "time": "2024-08-08T09:02:50+00:00"
         },
         {
             "name": "psr/container",
@@ -4997,16 +4981,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v5.4.41",
+            "version": "v5.4.42",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "6473d441a913cb997123b59ff2dbe3d1cf9e11ba"
+                "reference": "cef62396a0477e94fc52e87a17c6e5c32e226b7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/6473d441a913cb997123b59ff2dbe3d1cf9e11ba",
-                "reference": "6473d441a913cb997123b59ff2dbe3d1cf9e11ba",
+                "url": "https://api.github.com/repos/symfony/console/zipball/cef62396a0477e94fc52e87a17c6e5c32e226b7f",
+                "reference": "cef62396a0477e94fc52e87a17c6e5c32e226b7f",
                 "shasum": ""
             },
             "require": {
@@ -5075,9 +5059,6 @@
                 "console",
                 "terminal"
             ],
-            "support": {
-                "source": "https://github.com/symfony/console/tree/v5.4.41"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -5092,7 +5073,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-28T07:48:55+00:00"
+            "time": "2024-07-26T12:21:55+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -5230,16 +5211,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v5.4.40",
+            "version": "v5.4.42",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "f51cff4687547641c7d8180d74932ab40b2205ce"
+                "reference": "0724c51fa067b198e36506d2864e09a52180998a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/f51cff4687547641c7d8180d74932ab40b2205ce",
-                "reference": "f51cff4687547641c7d8180d74932ab40b2205ce",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/0724c51fa067b198e36506d2864e09a52180998a",
+                "reference": "0724c51fa067b198e36506d2864e09a52180998a",
                 "shasum": ""
             },
             "require": {
@@ -5272,9 +5253,6 @@
             ],
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/finder/tree/v5.4.40"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -5289,7 +5267,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-31T14:33:22+00:00"
+            "time": "2024-07-22T08:53:29+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -5985,16 +5963,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v6.4.9",
+            "version": "v6.4.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "76792dbd99690a5ebef8050d9206c60c59e681d7"
+                "reference": "ccf9b30251719567bfd46494138327522b9a9446"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/76792dbd99690a5ebef8050d9206c60c59e681d7",
-                "reference": "76792dbd99690a5ebef8050d9206c60c59e681d7",
+                "url": "https://api.github.com/repos/symfony/string/zipball/ccf9b30251719567bfd46494138327522b9a9446",
+                "reference": "ccf9b30251719567bfd46494138327522b9a9446",
                 "shasum": ""
             },
             "require": {
@@ -6050,9 +6028,6 @@
                 "utf-8",
                 "utf8"
             ],
-            "support": {
-                "source": "https://github.com/symfony/string/tree/v6.4.9"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -6067,7 +6042,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-28T09:25:38+00:00"
+            "time": "2024-07-22T10:21:14+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -6528,5 +6503,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "1.1.0"
 }

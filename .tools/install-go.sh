@@ -13,3 +13,5 @@ go install -v github.com/mgechev/revive@latest
 go install -v github.com/mgnsk/gh-tpl@latest
 go install -v github.com/itchyny/gojq/cmd/gojq@latest
 go install -v github.com/grafana/jsonnet-language-server@latest
+go install -v mvdan.cc/sh/v3/cmd/shfmt@latest
+go install -v github.com/cli/cli/v2/cmd/gh@latest

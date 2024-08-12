@@ -435,12 +435,14 @@ if [ "$target" == "events" ]; then
 	gh api \
 		-H "Accept: application/vnd.github+json" \
 		-H "X-GitHub-Api-Version: 2022-11-28" \
+		--paginate \
 		"/users/$user/events" >"$events_path" &
 
 	# List events received by the authenticated user.
 	gh api \
 		-H "Accept: application/vnd.github+json" \
 		-H "X-GitHub-Api-Version: 2022-11-28" \
+		--paginate \
 		"/users/$user/received_events" >"$received_events_path" &
 
 	wait

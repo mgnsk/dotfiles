@@ -113,6 +113,7 @@ issue_query="$(
 					updatedAt,
 					createdAt,
 					state,
+					stateReason,
 					author {
 						login
 					},
@@ -179,7 +180,7 @@ export issue_timeline_jq_template
 
 issue_pr_header_go_template="$(
 	cat <<-'EOF'
-		# #{{.number}} {{.title}} {{(printf "(%s)" .state) | autocolor "red"}}
+		# #{{.number}} {{.title}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}
 		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
 		{{.url}}
 
@@ -236,7 +237,7 @@ export issue_pr_comments_go_template
 
 issue_pr_list_go_template="$(
 	cat <<-'EOF'
-		{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{(printf "(%s)" .state) | autocolor "red"}}{{"\n"}}{{end -}}
+		{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}{{"\n"}}{{end -}}
 	EOF
 )"
 
@@ -264,7 +265,7 @@ function gh-search {
 	repo="$1"
 	query="$2"
 
-	if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
+	if [ "$target" == "prs" ]; then
 		# Handle empty query.
 		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
 			gh "${target::-1}" list \
@@ -279,6 +280,23 @@ function gh-search {
 			--repo "$repo" \
 			--sort updated \
 			--json number,title,state,createdAt,author \
+			"$query" |
+			gh-tpl --color "$issue_pr_list_go_template"
+	elif [ "$target" == "issues" ]; then
+		# Handle empty query.
+		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+			gh "${target::-1}" list \
+				--state=all \
+				--json number,title,state,stateReason,createdAt,updatedAt,author \
+				--jq 'sort_by(.updatedAt) | reverse' |
+				gh-tpl --color "$issue_pr_list_go_template"
+			exit
+		fi
+
+		gh search "$target" \
+			--repo "$repo" \
+			--sort updated \
+			--json number,title,state,stateReason,createdAt,author \
 			"$query" |
 			gh-tpl --color "$issue_pr_list_go_template"
 	fi
@@ -302,6 +320,7 @@ function gh-view {
 	gh api \
 		-H "Accept: application/vnd.github+json" \
 		-H "X-GitHub-Api-Version: 2022-11-28" \
+		--paginate \
 		"/repos/{owner}/{repo}/issues/$number/timeline" |
 		gojq "$issue_timeline_jq_template" >"$timeline_path" &
 

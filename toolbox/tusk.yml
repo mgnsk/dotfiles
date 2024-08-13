@@ -32,9 +32,7 @@ tasks:
     run:
       - command: rm -rf dotfiles
       - command: mkdir -p dotfiles
-      - command:
-          dir: ${host-home}
-          exec: git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${host-home}/toolbox/dotfiles
+      - command: cd ${host-home}; git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${host-home}/toolbox/dotfiles
 
   build:
     usage: Build the production toolbox image.

@@ -85,18 +85,18 @@ bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='beme
 
 # change focus
 bindsym {
-	$mod+h focus left
-	$mod+j focus down
-	$mod+k focus up
-	$mod+l focus right
+    $mod+h focus left
+    $mod+j focus down
+    $mod+k focus up
+    $mod+l focus right
 }
 
 # move focused window
 bindsym {
-	$mod+Shift+h move left
-	$mod+Shift+j move down
-	$mod+Shift+k move up
-	$mod+Shift+l move right
+    $mod+Shift+h move left
+    $mod+Shift+j move down
+    $mod+Shift+k move up
+    $mod+Shift+l move right
 }
 
 # split in horizontal orientation
@@ -125,63 +125,38 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 bindsym $mod+Control+h workspace prev
-
 bindsym $mod+Control+l workspace next
+bindsym $mod+tab workspace back_and_forth
+bindsym Alt+tab workspace back_and_forth
+bindsym $mod+Shift+tab workspace prev_on_output
+bindsym Alt+Shift+tab workspace prev_on_output
 
 # switch to workspace
 bindsym {
-	$mod+1 workspace 1
-	$mod+2 workspace 2
-	$mod+3 workspace 3
-	$mod+4 workspace 4
-	$mod+5 workspace 5
-	$mod+6 workspace 6
-	$mod+7 workspace 7
-	$mod+8 workspace 8
-	$mod+9 workspace 9
-	$mod+0 workspace 10
-}
-
-# workspaces from 11-20
-bindsym {
-	$mod+Control+1 workspace 11
-	$mod+Control+2 workspace 12
-	$mod+Control+3 workspace 13
-	$mod+Control+4 workspace 14
-	$mod+Control+5 workspace 15
-	$mod+Control+6 workspace 16
-	$mod+Control+7 workspace 17
-	$mod+Control+8 workspace 18
-	$mod+Control+9 workspace 19
-	$mod+Control+0 workspace 20
+    $mod+1 workspace 1
+    $mod+2 workspace 2
+    $mod+3 workspace 3
+    $mod+4 workspace 4
+    $mod+5 workspace 5
+    $mod+6 workspace 6
+    $mod+7 workspace 7
+    $mod+8 workspace 8
+    $mod+9 workspace 9
+    $mod+0 workspace 10
 }
 
 # move focused container to workspace
 bindsym {
-	$mod+Shift+1 move container to workspace 1
-	$mod+Shift+2 move container to workspace 2
-	$mod+Shift+3 move container to workspace 3
-	$mod+Shift+4 move container to workspace 4
-	$mod+Shift+5 move container to workspace 5
-	$mod+Shift+6 move container to workspace 6
-	$mod+Shift+7 move container to workspace 7
-	$mod+Shift+8 move container to workspace 8
-	$mod+Shift+9 move container to workspace 9
-	$mod+Shift+0 move container to workspace 10
-}
-
-# move focused container to workspace
-bindsym {
-	$mod+Control+Shift+1 move container to workspace 11
-	$mod+Control+Shift+2 move container to workspace 12
-	$mod+Control+Shift+3 move container to workspace 13
-	$mod+Control+Shift+4 move container to workspace 14
-	$mod+Control+Shift+5 move container to workspace 15
-	$mod+Control+Shift+6 move container to workspace 16
-	$mod+Control+Shift+7 move container to workspace 17
-	$mod+Control+Shift+8 move container to workspace 18
-	$mod+Control+Shift+9 move container to workspace 19
-	$mod+Control+Shift+0 move container to workspace 20
+    $mod+Shift+1 move container to workspace 1
+    $mod+Shift+2 move container to workspace 2
+    $mod+Shift+3 move container to workspace 3
+    $mod+Shift+4 move container to workspace 4
+    $mod+Shift+5 move container to workspace 5
+    $mod+Shift+6 move container to workspace 6
+    $mod+Shift+7 move container to workspace 7
+    $mod+Shift+8 move container to workspace 8
+    $mod+Shift+9 move container to workspace 9
+    $mod+Shift+0 move container to workspace 10
 }
 
 # Reload the config file.
@@ -189,33 +164,27 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'"
 bindsym $mod+Shift+Backspace exec swaylock -c 000000
-
-bindsym $mod+tab workspace back_and_forth
-bindsym Alt+tab workspace back_and_forth
-bindsym $mod+Shift+tab workspace prev_on_output
-bindsym Alt+Shift+tab workspace prev_on_output
+# Toggle control center
+bindsym $mod+Shift+n exec swaync-client -t -sw
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
-# These bindings trigger as soon as you enter the resize mode
-	bindsym Left resize shrink width 10 px or 10 ppt
-		bindsym Down resize grow height 10 px or 10 ppt
-		bindsym Up resize shrink height 10 px or 10 ppt
-		bindsym Right resize grow width 10 px or 10 ppt
+    # These bindings trigger as soon as you enter the resize mode
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
 
-# back to normal: Enter or Escape
-		bindsym Return mode "default"
-		bindsym Escape mode "default"
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
 }
 
 bindsym $mod+r mode "resize"
 
-# Toggle control center
-bindsym $mod+Shift+n exec swaync-client -t -sw
-
 input * {
-	xkb_layout us,ee
-	xkb_options caps:escape,grp:win_space_toggle
+    xkb_layout us,ee
+    xkb_options caps:escape,grp:win_space_toggle
 }
 
 input type:keyboard {
@@ -227,7 +196,6 @@ focus_follows_mouse no
 
 set $wallpapers_path $HOME/wallpapers
 output * bg `find $wallpapers_path -type f | shuf -n 1` fill
-
 
 for_window [class=".*"] border none
 

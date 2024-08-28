@@ -4,8 +4,10 @@ vim.bo.softtabstop = 4
 vim.bo.tabstop = 4
 
 vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = "*Dockerfile",
+	pattern = "*",
 	callback = function()
-		vim.cmd("silent! retab")
+		if vim.bo.filetype == "dockerfile" then
+			vim.cmd("silent! retab")
+		end
 	end,
 })

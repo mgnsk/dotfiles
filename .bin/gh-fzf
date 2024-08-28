@@ -287,7 +287,7 @@ function gh-search {
 		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
 			gh "${target::-1}" list \
 				--state=all \
-				--json number,title,state,stateReason,createdAt,updatedAt,author \
+				--json number,title,state,createdAt,updatedAt,author \
 				--jq 'sort_by(.updatedAt) | reverse' |
 				gh-tpl --color "$issue_pr_list_go_template"
 			exit
@@ -296,7 +296,7 @@ function gh-search {
 		gh search "$target" \
 			--repo "$repo" \
 			--sort updated \
-			--json number,title,state,stateReason,createdAt,author \
+			--json number,title,state,createdAt,author \
 			"$query" |
 			gh-tpl --color "$issue_pr_list_go_template"
 	fi

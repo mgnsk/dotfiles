@@ -14,13 +14,6 @@ return {
 		end,
 	},
 	{
-		"mbbill/undotree",
-		event = "BufEnter",
-		build = function(plugin)
-			vim.cmd.helptags(plugin.dir .. "/doc")
-		end,
-	},
-	{
 		"kevinhwang91/nvim-fundo",
 		event = "BufEnter",
 		dependencies = {

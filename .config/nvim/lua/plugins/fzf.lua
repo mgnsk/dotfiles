@@ -41,6 +41,30 @@ return {
 			vim.keymap.set("n", "<leader>H", function()
 				return require("fzf-lua").git_commits()
 			end, { desc = "FZF commits" })
+
+			vim.keymap.set("n", "<leader>B", function()
+				local lineArg =
+					string.format([[ -L %s,%s:%s]], vim.fn.line("."), vim.fn.line("."), vim.fn.expand("%:p"))
+				local gitCmd = require("fzf-lua").defaults.git.commits.cmd
+				local contentsCmd = gitCmd .. " --no-patch" .. lineArg .. " | nl -ba" -- Add line numbers.
+
+				return require("fzf-lua").fzf_exec(contentsCmd, {
+					prompt = "Blame> ",
+					fzf_opts = { ["--with-nth"] = "2.." }, -- Without the added line numbers.
+					preview = {
+						type = "cmd",
+						fn = function(items)
+							-- Skip this many entries in preview to only show the current selected.
+							local skip = tonumber(string.match(items[1], "%d")) - 1
+							return gitCmd
+								.. lineArg
+								.. " --max-count=1"
+								.. string.format(" --skip=%d", skip)
+								.. " | delta"
+						end,
+					},
+				})
+			end, { desc = "FZF blame current line" })
 		end,
 		config = function()
 			require("fzf-lua").setup({

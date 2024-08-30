@@ -15,6 +15,7 @@ RUN pacman -Syy \
     rustup \
     composer \
     npm \
+    neovim \
     && bash -c "yes | pacman -Scc" \
     && if grep -q "${group}:" /etc/group; then \
     groupmod -o -g ${gid} ${group}; \
@@ -95,6 +96,21 @@ RUN bash install-js.sh \
     && rm -rf /home/${user}/.npm
 
 
+# Neovim packages.
+FROM build-base AS nvim-tools
+
+ARG user
+USER ${user}
+
+COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-nvim.sh /home/${user}/.tools/install-nvim.sh
+
+WORKDIR /home/${user}/.tools
+
+RUN bash install-nvim.sh \
+    && rm -rf /home/${user}/.cache
+
+
 # System packages.
 FROM build-base AS toolbox-base-system
 
@@ -108,21 +124,6 @@ WORKDIR /home/${user}/.tools
 RUN bash install-system.sh \
     && rm -rf /home/${user}/.cache \
     && sudo bash -c "yes | pacman -Scc"
-
-
-# Neovim packages.
-FROM toolbox-base-system AS nvim-tools
-
-ARG user
-USER ${user}
-
-COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-nvim.sh /home/${user}/.tools/install-nvim.sh
-
-WORKDIR /home/${user}/.tools
-
-RUN bash install-nvim.sh \
-    && rm -rf /home/${user}/.cache
 
 
 # Final image.

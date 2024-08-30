@@ -25,6 +25,11 @@ sudo pacman -S --noconfirm --needed \
 	tidy \
 	npm \
 	go \
+	gopls \
+	go-tools \
+	revive \
+	shfmt \
+	github-cli \
 	buf \
 	yamllint \
 	brotli \
@@ -40,7 +45,8 @@ sudo pacman -S --noconfirm --needed \
 	rustup \
 	man \
 	python-pipx \
-	neovim
+	neovim \
+	clang
 
 declare -a packages=(
 	"fish-fzf"

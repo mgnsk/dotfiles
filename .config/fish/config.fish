@@ -37,7 +37,7 @@ set -gx PKGEXT ".pkg.tar"
 
 set -gx NODE_OPTIONS "--max_old_space_size=4096"
 
-set -gx COMPOSE_PARALLEL_LIMIT 2
+set -gx COMPOSE_PARALLEL_LIMIT 1
 
 set -g fish_color_autosuggestion 585858
 set -g fish_color_command a1b56c

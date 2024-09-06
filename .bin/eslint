@@ -1,21 +1,5 @@
-#!/usr/bin/env node
+#!/usr/bin/env bash
 
-const { execSync } = require("child_process");
-let path = require("path");
+set -eo pipefail
 
-// Shift program and script.
-process.argv.shift();
-process.argv.shift();
-
-// Make the file argument absolute.
-for (let i = 0; i < process.argv.length; i++) {
-  let arg = process.argv[i];
-  if (arg.includes(".")) {
-    process.argv[i] = path.join(process.cwd(), arg);
-  }
-}
-
-// Call eslint through current project npx.
-let stdout = execSync("npx --offline eslint " + process.argv.join(" "));
-
-console.log(stdout.toString());
+npx --offline eslint "$@"

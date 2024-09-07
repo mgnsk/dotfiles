@@ -163,6 +163,9 @@ return {
 			lsp.jsonnet_ls.setup({
 				capabilities = capabilities,
 			})
+			lsp.docker_compose_language_service.setup({
+				capabilities = capabilities,
+			})
 		end,
 	},
 }

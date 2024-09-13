@@ -32,5 +32,7 @@ docker run \
 	--volume "ide-fish:/home/$user/.local/share/fish" \
 	--volume "$pwd:$pwd:Z" \
 	--workdir "$pwd" \
+	--memory 2G \
+	--memory-swap 2G \
 	toolbox:latest \
 	fish

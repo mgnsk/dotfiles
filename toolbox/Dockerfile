@@ -11,11 +11,6 @@ RUN pacman -Syy \
     && pacman -Syu --noconfirm \
     && pacman -S --noconfirm --needed \
     git \
-    go \
-    rustup \
-    composer \
-    npm \
-    neovim \
     && bash -c "yes | pacman -Scc" \
     && if grep -q "${group}:" /etc/group; then \
     groupmod -o -g ${gid} ${group}; \
@@ -33,8 +28,23 @@ RUN pacman -Syy \
     && gpasswd -a ${user} wheel
 
 
+# System packages.
+FROM build-base AS toolbox-base-system
+
+ARG user
+USER ${user}
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/install-system.sh
+
+WORKDIR /home/${user}/.tools
+
+RUN bash install-system.sh \
+    && rm -rf /home/${user}/.cache \
+    && sudo bash -c "yes | pacman -Scc"
+
+
 # Go packages.
-FROM build-base AS go-tools
+FROM toolbox-base-system AS go-tools
 
 ARG user
 USER ${user}
@@ -49,7 +59,7 @@ RUN bash install-go.sh \
 
 
 # Rust packages.
-FROM build-base AS rust-tools
+FROM toolbox-base-system AS rust-tools
 
 ARG user
 USER ${user}
@@ -65,7 +75,7 @@ RUN bash install-rust.sh \
 
 
 # PHP packages.
-FROM build-base AS php-tools
+FROM toolbox-base-system AS php-tools
 
 ARG user
 USER ${user}
@@ -81,7 +91,7 @@ RUN bash install-php.sh \
 
 
 # Javascript packages.
-FROM build-base AS js-tools
+FROM toolbox-base-system AS js-tools
 
 ARG user
 USER ${user}
@@ -97,7 +107,7 @@ RUN bash install-js.sh \
 
 
 # Neovim packages.
-FROM build-base AS nvim-tools
+FROM toolbox-base-system AS nvim-tools
 
 ARG user
 USER ${user}
@@ -109,21 +119,6 @@ WORKDIR /home/${user}/.tools
 
 RUN bash install-nvim.sh \
     && rm -rf /home/${user}/.cache
-
-
-# System packages.
-FROM build-base AS toolbox-base-system
-
-ARG user
-USER ${user}
-
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/install-system.sh
-
-WORKDIR /home/${user}/.tools
-
-RUN bash install-system.sh \
-    && rm -rf /home/${user}/.cache \
-    && sudo bash -c "yes | pacman -Scc"
 
 
 # Final image.

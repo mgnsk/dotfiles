@@ -119,6 +119,9 @@ return {
 			lsp.cssls.setup({
 				capabilities = capabilities,
 			})
+			lsp.tailwindcss.setup({
+				capabilities = capabilities,
+			})
 			lsp.bashls.setup({
 				capabilities = capabilities,
 			})

@@ -402,8 +402,14 @@ event_list_go_template="$(
 			{{end -}}
 			{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
 			{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
-			{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
-			{{- if .payload.review.state}} {{(printf "(%s)" .payload.review.state) | autocolor "red"}}{{end -}}
+
+			{{- if .payload.pull_request.merged  -}}
+				{{- " (merged)" | autocolor "red" -}}
+			{{- else -}}
+				{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
+			{{- end -}}
+
+			{{- if .payload.review.state}} {{(printf " (%s)" .payload.review.state) | autocolor "red"}}{{end -}}
 
 			{{- if .payload.review.commit_id}} {{.payload.review.commit_id | trunc 7 | autocolor "yellow"}}{{end -}}
 			{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
@@ -421,8 +427,16 @@ event_list_go_template="$(
 
 event_view_go_template="$(
 	cat <<-'EOF'
+		{{.created_at | toDate "2006-01-02T15:04:05Z07:00" | date "2006-01-02 15:04:05" | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" }}
+		---
+		{{if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end}}
+		{{if .payload.pull_request}}- {{.payload.pull_request.html_url}}{{end}}
+		{{if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end}}
+		{{if .payload.issue}}- {{.payload.issue.html_url}}{{end}}
+
 		{{if .payload.review.body}} {{.payload.review.body}}{{end}}
 		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
+
 		{{if .payload.commits}}
 			{{range .payload.commits}}
 				* {{.sha | trunc 7 | autocolor "yellow"}} {{.message}}

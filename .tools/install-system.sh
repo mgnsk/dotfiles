@@ -47,32 +47,3 @@ sudo pacman -S --noconfirm --needed \
 	python-pipx \
 	neovim \
 	clang
-
-declare -a packages=(
-	"fish-fzf"
-	"hadolint-bin"
-	"shellcheck-bin"
-	"lscolors-git"
-	"wl-kbptr"
-)
-
-# Disable makepkg compression.
-export PKGEXT=".pkg.tar"
-
-for p in "${packages[@]}"; do
-	mkdir -p "$HOME/.cache/aur/$p"
-	cd "$HOME/.cache/aur/$p"
-
-	if test -d ./.git; then
-		git pull
-	else
-		git clone "https://aur.archlinux.org/$p.git" .
-	fi
-
-	makepkg --force --noconfirm --needed --syncdeps --clean --cleanbuild --rmdeps --install
-done
-
-# Generate locales.
-echo "en_US.UTF-8 UTF-8" | sudo tee /etc/locale.gen
-sudo locale-gen
-echo "LANG=en_US.UTF-8" | sudo tee /etc/locale.conf

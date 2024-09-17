@@ -1,5 +1,5 @@
 # Base image for system.
-FROM archlinux:base-devel AS build-base
+FROM archlinux:base-devel AS system-base
 
 ARG uid
 ARG gid
@@ -29,18 +29,46 @@ RUN pacman -Syy \
 
 
 # System packages.
-FROM build-base AS toolbox-base-system
+FROM system-base AS toolbox-system-packages
 
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/install-system.sh
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/
 
 WORKDIR /home/${user}/.tools
 
 RUN bash install-system.sh \
     && rm -rf /home/${user}/.cache \
     && sudo bash -c "yes | pacman -Scc"
+
+
+# AUR packages.
+FROM toolbox-system-packages AS toolbox-aur-packages
+
+ARG user
+USER ${user}
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-aur.sh /home/${user}/.tools/
+
+WORKDIR /home/${user}/.tools
+
+RUN bash install-aur.sh \
+    && rm -rf /home/${user}/.cache \
+    && sudo bash -c "yes | pacman -Scc"
+
+
+# System configuration.
+FROM toolbox-aur-packages AS toolbox-base-system
+
+ARG user
+USER ${user}
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/configure-system.sh /home/${user}/.tools/
+
+WORKDIR /home/${user}/.tools
+
+RUN bash configure-system.sh
 
 
 # Go packages.
@@ -136,10 +164,12 @@ COPY --from=php-tools --chown=${uid}:${gid} /home/${user}/.tools/vendor /home/${
 COPY --from=php-tools /etc/php/conf.d /etc/php/conf.d
 COPY --from=js-tools --chown=${uid}:${gid} /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-tools --chown=${uid}:${gid} /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
+COPY --chown=${uid}:${gid} /dotfiles/.tools/configure-system.sh /home/${user}/.tools/
 
 WORKDIR /home/${user}/.tools
 
-RUN bash install-fish.sh \
+RUN bash configure-system.sh \
+    && bash install-fish.sh \
     && sudo gpasswd -d ${user} wheel \
     && sudo rm /etc/sudoers.d/01-wheel \
     && mkdir -p \

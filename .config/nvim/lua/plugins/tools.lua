@@ -3,10 +3,10 @@ return {
 	{
 		"neomake/neomake",
 		cond = not os.getenv("NVIM_DIFF"),
-		cmd = { "Neomake" },
-		init = function()
+		event = "BufEnter",
+		config = function()
 			vim.g.neomake_open_list = 2
-			vim.g.neomake_list_height = 5
+			vim.g.neomake_go_enabled_makers = { "go", "golint" }
 			vim.g.neomake_typescript_enabled_makers = { "tsc", "eslint" }
 			vim.g.neomake_go_enabled_makers = { "go", "govet", "golint" }
 			vim.g.neomake_c_enabled_makers = { "gcc" }
@@ -19,12 +19,7 @@ return {
 
 			vim.g.neomake_balafon_enabled_makers = { "lint" }
 
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				pattern = "*",
-				callback = function()
-					vim.cmd("Neomake")
-				end,
-			})
+			vim.fn["neomake#configure#automake"]("w")
 		end,
 	},
 	{

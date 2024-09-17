@@ -196,5 +196,19 @@ vim.api.nvim_create_user_command("GhBrowse", function()
 	vim.fn.system(string.format("gh browse %s --branch $(git rev-parse --abbrev-ref HEAD)", file))
 end, { desc = "Browse current file on Github" })
 
+vim.keymap.set("n", "<leader>L", function()
+	local winid = vim.fn.getloclist(0, { winid = 0 }).winid
+	local num_entries = #vim.fn.getloclist(0)
+
+	if winid == 0 then
+		vim.cmd.lopen({ count = num_entries })
+		vim.cmd("wincmd p") -- preserve cursor position.
+	else
+		vim.cmd.lclose()
+	end
+end, {
+	desc = "Toggle loclist",
+})
+
 require("statusline")
 require("lazy_setup")

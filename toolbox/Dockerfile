@@ -44,7 +44,7 @@ RUN bash install-system.sh \
 
 
 # AUR packages.
-FROM toolbox-system-packages AS toolbox-aur-packages
+FROM toolbox-system-packages AS toolbox-base-system
 
 ARG user
 USER ${user}
@@ -56,19 +56,6 @@ WORKDIR /home/${user}/.tools
 RUN bash install-aur.sh \
     && rm -rf /home/${user}/.cache \
     && sudo bash -c "yes | pacman -Scc"
-
-
-# System configuration.
-FROM toolbox-aur-packages AS toolbox-base-system
-
-ARG user
-USER ${user}
-
-COPY --chown=${uid}:${gid} /dotfiles/.tools/configure-system.sh /home/${user}/.tools/
-
-WORKDIR /home/${user}/.tools
-
-RUN bash configure-system.sh
 
 
 # Go packages.

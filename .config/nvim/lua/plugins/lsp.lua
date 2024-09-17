@@ -69,6 +69,14 @@ return {
 				end,
 			})
 
+			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+				callback = vim.lsp.buf.document_highlight,
+			})
+
+			vim.api.nvim_create_autocmd("CursorMoved", {
+				callback = vim.lsp.buf.clear_references,
+			})
+
 			vim.lsp.handlers["textDocument/declaration"] = location_callback
 			vim.lsp.handlers["textDocument/definition"] = location_callback
 			vim.lsp.handlers["textDocument/typeDefinition"] = location_callback

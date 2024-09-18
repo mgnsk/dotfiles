@@ -60,20 +60,31 @@ return {
 				group = group,
 				callback = function(args)
 					local client = vim.lsp.get_client_by_id(args.data.client_id)
-					if client ~= nil and client.server_capabilities.inlayHintProvider then
+
+					if client == nil then
+						return
+					end
+
+					if client.server_capabilities.inlayHintProvider then
 						vim.lsp.inlay_hint.enable(true)
 					end
+
+					if client.supports_method("textDocument/documentHighlight") then
+						local docHighlightGroup = vim.api.nvim_create_augroup("lsp_document_highlight", {})
+
+						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+							group = docHighlightGroup,
+							buffer = args.buf,
+							callback = vim.lsp.buf.document_highlight,
+						})
+
+						vim.api.nvim_create_autocmd("CursorMoved", {
+							group = docHighlightGroup,
+							buffer = args.buf,
+							callback = vim.lsp.buf.clear_references,
+						})
+					end
 				end,
-			})
-
-			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-				group = group,
-				callback = vim.lsp.buf.document_highlight,
-			})
-
-			vim.api.nvim_create_autocmd("CursorMoved", {
-				group = group,
-				callback = vim.lsp.buf.clear_references,
 			})
 
 			vim.lsp.handlers["textDocument/declaration"] = location_callback

@@ -72,11 +72,11 @@ return {
 					fullscreen = true,
 					preview = {
 						delay = 0,
+						wrap = "wrap",
 					},
 				},
 				files = {
 					fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
-					fzf_opts = { ["--ansi"] = false },
 				},
 				grep = {
 					rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",

@@ -381,6 +381,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--bind "ctrl-l:execute-silent(gh ${target::-1} view {1} --web)" \
 		--bind "ctrl-o:execute(gh pr diff {1} | delta)" \
 		--preview 'bash -c "gh-view {1}" | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
+		--preview-window=right:wrap \
 		--prompt "$target> "
 
 	exit
@@ -492,7 +493,7 @@ if [ "$target" == "events" ]; then
 			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 			--bind shift-up:preview-top,shift-down:preview-bottom \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}\"" \
-			--preview-window=down \
+			--preview-window=down:wrap \
 			--prompt "$target> "
 
 	exit

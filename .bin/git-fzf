@@ -42,11 +42,11 @@ function git-view {
 
 	# Handle empty query.
 	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-		git show --color "$commit" | delta --width "$FZF_PREVIEW_COLUMNS"
+		git show --color "$commit" | delta
 		exit
 	fi
 
-	git show --color -G "$query" "$commit" | delta --width "$FZF_PREVIEW_COLUMNS" | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru "$query"
+	git show --color -G "$query" "$commit" | delta | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru "$query"
 }
 
 export -f git-view
@@ -60,4 +60,5 @@ fzf \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 	--preview 'bash -c "git-view {1} {q}"' \
+	--preview-window=right:wrap \
 	--prompt "$target> "

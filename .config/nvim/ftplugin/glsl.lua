@@ -1,1 +1,1 @@
-require("conform").formatters_by_ft.glsl = { "clang-format" }
+require("file_actions").configureFormatBeforeSave({ "clang-format" })

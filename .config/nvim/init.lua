@@ -72,16 +72,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	command = [[%s/\n\+\%$//e]],
 })
 
-vim.api.nvim_create_autocmd("QuitPre", {
-	desc = "Automatically close corresponding location list when quitting a window",
-	pattern = "*",
-	callback = function()
-		if vim.bo.filetype ~= "qf" then
-			vim.cmd("silent! lclose")
-		end
-	end,
-})
-
 vim.g.mapleader = ","
 
 vim.g.clipboard = {
@@ -172,21 +162,6 @@ vim.keymap.set("n", "<leader>S", function()
 	end
 end, { desc = "Toggle vim spell check" })
 
-vim.keymap.set("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
-
-vim.keymap.set(
-	"n",
-	"gj",
-	require("util").goto_next,
-	{ desc = "Goto next diagnostic or location list item in current buffer" }
-)
-vim.keymap.set(
-	"n",
-	"gk",
-	require("util").goto_prev,
-	{ desc = "Goto prev diagnostic or location list item in current buffer" }
-)
-
 vim.api.nvim_create_user_command("GhBrowse", function()
 	local file = vim.fn.expand("%")
 	if string.len(file) == 0 then
@@ -196,19 +171,6 @@ vim.api.nvim_create_user_command("GhBrowse", function()
 	vim.fn.system(string.format("gh browse %s --branch $(git rev-parse --abbrev-ref HEAD)", file))
 end, { desc = "Browse current file on Github" })
 
-vim.keymap.set("n", "<leader>L", function()
-	local winid = vim.fn.getloclist(0, { winid = 0 }).winid
-	local num_entries = #vim.fn.getloclist(0)
-
-	if winid == 0 then
-		vim.cmd.lopen({ count = num_entries })
-		vim.cmd("wincmd p") -- preserve cursor position.
-	else
-		vim.cmd.lclose()
-	end
-end, {
-	desc = "Toggle loclist",
-})
-
+require("diagnostic")
 require("statusline")
 require("lazy_setup")

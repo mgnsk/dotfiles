@@ -1,1 +1,2 @@
-require("conform").formatters_by_ft.markdown = { "prettier" }
+require("file_actions").configureFormatBeforeSave({ "prettier" })
+require("file_actions").configureLintAfterSave({ "markdownlint" }) -- TODO: cspell

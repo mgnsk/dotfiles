@@ -1,6 +1,8 @@
-require("conform").formatters.balafon = {
-	command = "balafon",
-	args = { "fmt" },
+vim.g.neomake_balafon_balafon_maker = {
+	exe = "balafon",
+	args = "lint",
+	errorformat = "%f:%l:%c: error: %m",
 }
 
-require("conform").formatters_by_ft.balafon = { "balafon" }
+require("file_actions").configureFormatBeforeSave({ "balafon" })
+require("file_actions").configureLintAfterSave({ "balafon" })

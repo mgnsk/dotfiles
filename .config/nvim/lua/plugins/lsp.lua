@@ -11,11 +11,6 @@ local location_callback = function(_, result, ctx)
 
 	if vim.islist(result) then
 		util.jump_to_location(result[1], "utf-8", false)
-		if #result > 1 then
-			vim.diagnostic.setqflist(util.locations_to_items(result, "utf-8"))
-			vim.api.nvim_command("copen")
-			vim.api.nvim_command("wincmd p")
-		end
 	else
 		util.jump_to_location(result, "utf-8", false)
 	end
@@ -59,8 +54,10 @@ return {
 			vim.keymap.set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
 		end,
 		config = function()
+			local group = vim.api.nvim_create_augroup("UserLspConfig", {})
+
 			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+				group = group,
 				callback = function(args)
 					local client = vim.lsp.get_client_by_id(args.data.client_id)
 					if client ~= nil and client.server_capabilities.inlayHintProvider then
@@ -70,10 +67,12 @@ return {
 			})
 
 			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+				group = group,
 				callback = vim.lsp.buf.document_highlight,
 			})
 
 			vim.api.nvim_create_autocmd("CursorMoved", {
+				group = group,
 				callback = vim.lsp.buf.clear_references,
 			})
 

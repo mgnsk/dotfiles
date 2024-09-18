@@ -1,1 +1,2 @@
-require("conform").formatters_by_ft.sh = { "shfmt" }
+require("file_actions").configureFormatBeforeSave({ "shfmt" })
+require("file_actions").configureLintAfterSave({ "shellcheck" })

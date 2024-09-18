@@ -1,1 +1,2 @@
-require("conform").formatters_by_ft.go = { "goimports" }
+require("file_actions").configureFormatBeforeSave({ "goimports" })
+require("file_actions").configureLintAfterSave({ "go", "govet", "golint" })

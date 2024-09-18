@@ -1,1 +1,1 @@
-require("conform").formatters_by_ft.twig = { "prettier" }
+require("file_actions").configureFormatBeforeSave({ "prettier" })

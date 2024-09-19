@@ -1,5 +1,12 @@
 local M = {}
 
+--- Register a custom formatter for the current buffer's filetype.
+---
+---@param config conform.FormatterConfigOverride
+function M.registerFormatter(config)
+	require("conform").formatters[vim.bo.filetype] = config
+end
+
 --- Configure formatter for the current buffer's filetype to run on BufWritePre.
 ---
 ---@param formatters string[]
@@ -20,6 +27,18 @@ function M.configureRetabBeforeSave()
 			end
 		end,
 	})
+end
+
+---@class (exact) NeomakeLinter
+---@field exe string
+---@field args string[]
+---@field errorformat string
+
+--- Register a custom linter for the current buffer's filetype.
+---
+---@param config NeomakeLinter
+function M.registerLinter(config)
+	vim.g["neomake_" .. vim.bo.filetype .. "_" .. config.exe .. "_maker"] = config
 end
 
 --- Configure linters for the current buffer's filetype to run on BufWritePost.

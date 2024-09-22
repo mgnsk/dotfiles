@@ -10,14 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "@microsoft/compose-language-service": "^0.2.0",
-    "@tailwindcss/language-server": "^0.0.24",
     "bash-language-server": "^5.4.0",
     "cspell": "^8.14.2",
     "markdownlint-cli": "^0.41.0",
     "npm-check-updates": "^17.1.1",
     "pnpm": "^9.9.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4",
     "typescript-language-server": "^4.3.3",
     "vscode-langservers-extracted": "^4.10.0"
   }

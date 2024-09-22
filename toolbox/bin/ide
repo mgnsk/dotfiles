@@ -12,6 +12,11 @@ docker volume create ide-cargo || true
 docker volume create ide-go || true
 docker volume create ide-fish || true
 
+softMemLimit=2G
+hardMemLimit=3G
+# Total memory including swap: https://docs.docker.com/engine/containers/resource_constraints/#--memory-swap-details
+memSwap=4G
+
 docker run \
 	--init \
 	--interactive \
@@ -32,7 +37,8 @@ docker run \
 	--volume "ide-fish:/home/$user/.local/share/fish" \
 	--volume "$pwd:$pwd:Z" \
 	--workdir "$pwd" \
-	--memory 2G \
-	--memory-swap 2G \
+	--memory-reservation $softMemLimit \
+	--memory $hardMemLimit \
+	--memory-swap $memSwap \
 	toolbox:latest \
 	fish

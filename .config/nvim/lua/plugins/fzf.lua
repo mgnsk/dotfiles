@@ -75,6 +75,12 @@ return {
 						wrap = "wrap",
 					},
 				},
+				previewers = {
+					builtin = {
+						syntax = true,
+						syntax_limit_b = require("const").treesitter_max_filesize,
+					},
+				},
 				files = {
 					fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
 				},

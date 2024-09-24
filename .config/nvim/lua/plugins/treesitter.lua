@@ -69,9 +69,8 @@ return {
 				highlight = {
 					enable = true,
 					disable = function(_, buf)
-						local max_filesize = 1024 * 1024
 						local bufsize = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
-						if bufsize > max_filesize then
+						if bufsize > require("const").treesitter_max_filesize then
 							return true
 						end
 					end,

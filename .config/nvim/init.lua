@@ -123,7 +123,7 @@ vim.keymap.set("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
 vim.keymap.set(
 	"n",
 	"<leader>e",
-	":let $curdir=expand('%:h')<CR>:tabnew<CR>:e $curdir<CR>",
+	":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:e $curdir<CR>",
 	{ desc = "Open file browser in tab" }
 )
 vim.keymap.set("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })

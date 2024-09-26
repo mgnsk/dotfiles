@@ -1,10 +1,10 @@
 local M = {}
 
---- Register a custom formatter for the current buffer's filetype.
+--- Register a custom formatter. The formatter name is config.command.
 ---
 ---@param config conform.FormatterConfigOverride
 function M.registerFormatter(config)
-	require("conform").formatters[vim.bo.filetype] = config
+	require("conform").formatters[config.command] = config
 end
 
 --- Configure formatter for the current buffer's filetype to run on BufWritePre.

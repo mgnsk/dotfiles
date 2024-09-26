@@ -32,13 +32,6 @@ return {
 					end
 					return { timeout_ms = 600000, lsp_format = false }
 				end,
-
-				formatters = {
-					balafon = {
-						command = "balafon",
-						args = { "fmt" },
-					},
-				},
 			})
 		end,
 	},

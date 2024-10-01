@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Lists packages by size (including dependencies).
+
+trap "echo Exited!; exit;" SIGINT SIGTERM
+
+packages=$(LC_ALL=C.UTF-8 pacman -Qi | awk '/^Name/{print $3}')
+
+result=()
+
+for pkg in $packages; do
+	if pacman -Rs --print-format '%s' "$pkg" &>/dev/null; then
+		size=$(pacman -Rs --print-format '%s' "$pkg" | awk '{size+=$1} END {print size/1048576}')
+		result+=("$pkg $size")
+	fi
+done
+
+printf '%s\n' "${result[@]}" | sort -n -r -k2

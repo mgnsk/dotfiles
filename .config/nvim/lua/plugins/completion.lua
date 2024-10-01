@@ -58,17 +58,27 @@ return {
 						},
 					},
 				}),
+				matching = {
+					disallow_fuzzy_matching = false,
+					disallow_fullfuzzy_matching = false,
+					disallow_partial_fuzzy_matching = false,
+					disallow_partial_matching = false,
+					disallow_prefix_unmatching = false,
+					disallow_symbol_nonprefix_matching = false,
+				},
 				sorting = {
 					priority_weight = 2,
 					comparators = {
-						function(entry1, entry2)
-							local preselect1 = entry1.completion_item.preselect or false
-							local preselect2 = entry2.completion_item.preselect or false
-
-							if preselect1 ~= preselect2 then
-								return preselect1
-							end
-						end,
+						cmp.config.compare.offset,
+						cmp.config.compare.exact,
+						-- compare.scopes,
+						cmp.config.compare.score,
+						cmp.config.compare.recently_used,
+						cmp.config.compare.locality,
+						cmp.config.compare.kind,
+						-- compare.sort_text,
+						cmp.config.compare.length,
+						cmp.config.compare.order,
 					},
 				},
 				mapping = {

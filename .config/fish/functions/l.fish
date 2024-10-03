@@ -1,3 +1,3 @@
-function l --wraps='ls -la'
-    LC_COLLATE=C ls -la --group-directories-first $argv
+function l --wraps='ls'
+    ls -Alhv --group-directories-first $argv
 end

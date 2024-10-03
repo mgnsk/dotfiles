@@ -120,11 +120,12 @@ vim.keymap.set(
 vim.keymap.set("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
 vim.keymap.set("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
 vim.keymap.set("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
+vim.keymap.set("n", "-", ":Oil<CR>", { desc = "Open Oil file browser" })
 vim.keymap.set(
 	"n",
 	"<leader>e",
 	":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:e $curdir<CR>",
-	{ desc = "Open file browser in tab" }
+	{ desc = "Open netrw file browser in tab" }
 )
 vim.keymap.set("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
 vim.keymap.set("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })

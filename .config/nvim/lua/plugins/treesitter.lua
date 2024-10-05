@@ -22,6 +22,7 @@ vim.g.ts_langs = {
 	"toml",
 	"twig",
 	"typescript",
+	"tsx",
 	"yaml",
 }
 
@@ -89,14 +90,16 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter-context",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-		},
 		event = { "BufEnter" },
 		config = function()
 			require("treesitter-context").setup({
 				multiline_threshold = 1, -- Maximum number of lines to show for a single context
 			})
 		end,
+	},
+	{
+		"folke/ts-comments.nvim",
+		opts = {},
+		event = "VeryLazy",
 	},
 }

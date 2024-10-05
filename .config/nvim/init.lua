@@ -35,6 +35,9 @@ vim.cmd("set t_ut=")
 --vim.cmd("set noruler")
 --
 
+vim.opt.foldmethod = "expr"
+vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
 vim.g.netrw_banner = 0
 -- Tree view.
 vim.g.netrw_liststyle = 3

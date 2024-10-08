@@ -26,12 +26,20 @@ vim.g.ts_langs = {
 	"yaml",
 }
 
-function _G.install_ts_lang(lang)
+---@param lang string
+local function install_ts_lang(lang)
 	-- Note: need to use the vim API since treesitter's lua api doesn't throw errors.
 	local ok, result = pcall(vim.api.nvim_cmd, { cmd = [[TSUpdateSync]], args = { lang } }, { output = true })
 	io.stderr:write(result .. "\n")
 	if not ok then
 		os.exit(1)
+	end
+end
+
+---@param langs string[]
+function _G.install_ts_langs(langs)
+	for _, lang in ipairs(langs) do
+		install_ts_lang(lang)
 	end
 end
 
@@ -56,7 +64,7 @@ return {
 				filetype = "bal",
 			}
 
-			_G.install_ts_lang("balafon")
+			install_ts_lang("balafon")
 		end,
 	},
 	{
@@ -64,7 +72,7 @@ return {
 		event = { "BufEnter" },
 		init = function() end,
 		-- Note: would like to use a function but TSUpdateSync command is not available then (lazy bug?). Instead, need to use a ':' command.
-		build = ":lua for _, lang in ipairs(vim.g.ts_langs) do _G.install_ts_lang(lang) end",
+		build = ":lua _G.install_ts_langs(vim.g.ts_langs)",
 		config = function()
 			require("nvim-treesitter.configs").setup({
 				highlight = {

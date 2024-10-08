@@ -29,7 +29,7 @@ vim.g.ts_langs = {
 function _G.install_ts_lang(lang)
 	-- Note: need to use the vim API since treesitter's lua api doesn't throw errors.
 	local ok, result = pcall(vim.api.nvim_cmd, { cmd = [[TSUpdateSync]], args = { lang } }, { output = true })
-	io.stderr:write(result)
+	io.stderr:write(result .. "\n")
 	if not ok then
 		os.exit(1)
 	end

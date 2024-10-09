@@ -195,7 +195,7 @@ issue_pr_comments_go_template="$(
 		{{range .}}
 			---
 
-			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}:*
+			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}*
 			{{if .html_url}}{{.html_url}}{{end}}
 
 			{{if .minimizedReason}}***minimized: {{.minimizedReason}}***{{end}}
@@ -369,20 +369,32 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
 	export FZF_DEFAULT_COMMAND="bash -c \"gh-search $repo {q} 2>&1\""
 
-	fzf \
-		--ansi \
-		--phony \
-		--query '' \
-		--no-sort \
-		--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
-		--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-		--bind shift-up:preview-top,shift-down:preview-bottom \
-		--header "Ctrl-L: web browser, Ctrl-O: diff" \
-		--bind "ctrl-l:execute-silent(gh ${target::-1} view {1} --web)" \
-		--bind "ctrl-o:execute(gh pr diff {1} | delta)" \
-		--preview 'bash -c "gh-view {1}" | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}' \
-		--preview-window=right:wrap \
+	args=(
+		--ansi
+		--phony
+		--query ''
+		--no-sort
+		--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true"
+		--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
+		--bind "shift-up:preview-top,shift-down:preview-bottom"
+		--bind "ctrl-l:execute-silent(gh browse {1})"
+		--preview 'bash -c "gh-view {1}" | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}'
+		--preview-window=right:wrap
 		--prompt "$target> "
+	)
+
+	if [ "$target" == "prs" ]; then
+		args+=(
+			--header "Ctrl-L: web browser, Ctrl-O: diff"
+			--bind "ctrl-o:execute(gh pr diff {1} | delta)"
+		)
+	elif [ "$target" == "issues" ]; then
+		args+=(
+			--header "Ctrl-L: web browser"
+		)
+	fi
+
+	fzf "${args[@]}"
 
 	exit
 fi
@@ -421,6 +433,19 @@ event_list_go_template="$(
 					{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
 				{{- end -}}
 			{{end -}}
+
+			{{- if .payload.comment.html_url -}}
+				{{- printf " %s" .payload.comment.html_url -}}
+			{{- else if .payload.review.html_url -}}
+				{{- printf " %s" .payload.review.html_url -}}
+			{{- else if .payload.pull_request.html_url -}}
+				{{- printf " %s" .payload.pull_request.html_url -}}
+			{{- else if .payload.issue.html_url -}}
+				{{- printf " %s" .payload.issue.html_url -}}
+			{{- else if .payload.release.html_url -}}
+				{{- printf " %s" .payload.release.html_url -}}
+			{{- end -}}
+
 			{{- "\n" -}}
 		{{- end -}}
 	EOF
@@ -428,15 +453,29 @@ event_list_go_template="$(
 
 event_view_go_template="$(
 	cat <<-'EOF'
-		{{.created_at | toDate "2006-01-02T15:04:05Z07:00" | date "2006-01-02 15:04:05" | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" }}
+		## *{{.created_at | toDate "2006-01-02T15:04:05Z07:00" | date "2006-01-02 15:04:05" | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" }}*
+		{{if .payload.comment.html_url}}
+			{{.payload.comment.html_url}}
+		{{else if .payload.review.html_url}}
+			{{.payload.review.html_url}}
+		{{else if .payload.pull_request.html_url}}
+			{{.payload.pull_request.html_url}}
+		{{else if .payload.issue.html_url}}
+			{{.payload.issue.html_url}}
+		{{else if .payload.release.html_url}}
+			{{.payload.release.html_url}}
+		{{end}}
+
 		---
 		{{if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end}}
-		{{if .payload.pull_request}}- {{.payload.pull_request.html_url}}{{end}}
 		{{if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end}}
-		{{if .payload.issue}}- {{.payload.issue.html_url}}{{end}}
+		{{if .payload.release}} {{printf "%s" .payload.release.name | autocolor "cyan"}}{{end}}
 
-		{{if .payload.review.body}} {{.payload.review.body}}{{end}}
 		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
+		{{if .payload.review.body}} {{.payload.review.body}}{{end}}
+		{{if .payload.pull_request.body}} {{.payload.pull_request.body}}{{end}}
+		{{if .payload.issue.body}} {{.payload.issue.body}}{{end}}
+		{{if .payload.release.body}} {{.payload.release.body}}{{end}}
 
 		{{if .payload.commits}}
 			{{range .payload.commits}}
@@ -485,13 +524,15 @@ if [ "$target" == "events" ]; then
 		gojq -s 'add | sort_by(.created_at) | reverse' |
 		gh-tpl --color "$event_list_go_template" |
 		fzf \
-			--with-nth 2.. \
+			--with-nth 2..-2 \
 			--ansi \
 			--no-sort \
 			--exact \
 			-i \
 			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 			--bind shift-up:preview-top,shift-down:preview-bottom \
+			--header "Ctrl-L: web browser" \
+			--bind "ctrl-l:execute-silent(xdg-open {-1})" \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}\"" \
 			--preview-window=down:wrap \
 			--prompt "$target> "

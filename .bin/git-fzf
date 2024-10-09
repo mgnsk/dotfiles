@@ -59,6 +59,8 @@ fzf \
 	--query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
+	--header "Ctrl-L: web browser" \
+	--bind "ctrl-l:execute-silent(gh browse {1})" \
 	--preview 'bash -c "git-view {1} {q}"' \
 	--preview-window=right:wrap \
 	--prompt "$target> "

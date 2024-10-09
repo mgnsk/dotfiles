@@ -13,6 +13,40 @@ set -e
 
 export target
 
+tmpdir="/tmp/gh-tpl.$$"
+mkdir -p "$tmpdir"
+export tmpdir
+
+function cleanup {
+	rm -rf "$tmpdir"
+}
+
+trap cleanup EXIT
+
+function ripgrep {
+	rgflags=$(cat "$tmpdir/rg_flags")
+	query="$1"
+
+	# Note: we need rgflags unquoted:
+	# shellcheck disable=SC2086
+	rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always $rgflags "$query"
+}
+
+export -f ripgrep
+
+# Default flag.
+echo "--passthrough" >"$tmpdir/rg_flags"
+
+function toggle-rg-passthrough {
+	if grep -q "passthrough" "$tmpdir/rg_flags"; then
+		echo "" >"$tmpdir/rg_flags"
+	else
+		echo "--passthrough" >"$tmpdir/rg_flags"
+	fi
+}
+
+export -f toggle-rg-passthrough
+
 function git-search {
 	set -euo pipefail
 
@@ -24,7 +58,7 @@ function git-search {
 		exit
 	fi
 
-	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -G "$query"
+	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -i -G "$query"
 }
 
 export -f git-search
@@ -32,6 +66,7 @@ export -f git-search
 function git-view {
 	set -euo pipefail
 
+	rgflags=$(cat "$tmpdir/rg_flags")
 	commit="$1"
 	query="$2"
 
@@ -46,7 +81,9 @@ function git-view {
 		exit
 	fi
 
-	git show --color -G "$query" "$commit" | delta | rg --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru "$query"
+	git show --color -i -G "$query" "$commit" |
+		delta |
+		ripgrep "$query"
 }
 
 export -f git-view
@@ -59,8 +96,9 @@ fzf \
 	--query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-	--header "Ctrl-L: web browser" \
+	--header "Ctrl-L: web browser, Ctrl-P: toggle pinpoint mode" \
 	--bind "ctrl-l:execute-silent(gh browse {1})" \
+	--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+refresh-preview" \
 	--preview 'bash -c "git-view {1} {q}"' \
 	--preview-window=right:wrap \
 	--prompt "$target> "

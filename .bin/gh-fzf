@@ -23,6 +23,30 @@ function cleanup {
 
 trap cleanup EXIT
 
+function ripgrep {
+	rgflags=$(cat "$tmpdir/rg_flags")
+	query="$1"
+
+	# Note: we need rgflags unquoted:
+	# shellcheck disable=SC2086
+	rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always $rgflags "$query"
+}
+
+export -f ripgrep
+
+# Default flag.
+echo "--passthrough" >"$tmpdir/rg_flags"
+
+function toggle-rg-passthrough {
+	if grep -q "passthrough" "$tmpdir/rg_flags"; then
+		echo "" >"$tmpdir/rg_flags"
+	else
+		echo "--passthrough" >"$tmpdir/rg_flags"
+	fi
+}
+
+export -f toggle-rg-passthrough
+
 # Note: skipping pullRequest.comments, these are included in timeline.
 pr_query="$(
 	cat <<-'EOF'
@@ -308,9 +332,10 @@ function gh-view {
 	set -euo pipefail
 
 	number="$1"
+	query="$2"
 
 	if [ "$number" == "" ]; then
-		echo "usage: gh-view {number}"
+		echo "usage: gh-view {number} {query}"
 		exit 1
 	fi
 
@@ -335,14 +360,16 @@ function gh-view {
 		wait
 
 		gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
-			render-markdown
+			render-markdown |
+			ripgrep "$query"
 
 		comments="$(gojq '[ .comments[] ]' <"$issue_pr_path")"
 
 		cat <(echo "$comments") "$timeline_path" |
 			gojq -s 'add | sort_by(.createdAt)' |
 			gh-tpl "$issue_pr_comments_go_template" |
-			render-markdown
+			render-markdown |
+			ripgrep "$query"
 	elif [ "$target" == "issues" ]; then
 		gh api graphql \
 			-F owner='{owner}' \
@@ -354,11 +381,13 @@ function gh-view {
 		wait
 
 		gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
-			render-markdown
+			render-markdown |
+			ripgrep "$query"
 
 		gojq -s 'add | sort_by(.createdAt)' <"$timeline_path" |
 			gh-tpl "$issue_pr_comments_go_template" |
-			render-markdown
+			render-markdown |
+			ripgrep "$query"
 	fi
 }
 
@@ -378,19 +407,20 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
 		--bind "shift-up:preview-top,shift-down:preview-bottom"
 		--bind "ctrl-l:execute-silent(gh browse {1})"
-		--preview 'bash -c "gh-view {1}" | rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always --passthru {q}'
+		--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+refresh-preview"
+		--preview 'bash -c "gh-view {1} {q}"'
 		--preview-window=right:wrap
 		--prompt "$target> "
 	)
 
 	if [ "$target" == "prs" ]; then
 		args+=(
-			--header "Ctrl-L: web browser, Ctrl-O: diff"
+			--header "Ctrl-L: web browser, Ctrl-O: diff, Ctrl-P: toggle pinpoint mode"
 			--bind "ctrl-o:execute(gh pr diff {1} | delta)"
 		)
 	elif [ "$target" == "issues" ]; then
 		args+=(
-			--header "Ctrl-L: web browser"
+			--header "Ctrl-L: web browser, Ctrl-P: toggle pinpoint mode"
 		)
 	fi
 

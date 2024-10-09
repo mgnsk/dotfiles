@@ -208,6 +208,8 @@ issue_pr_header_go_template="$(
 		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
 		{{.url}}
 
+		---
+
 		{{.body}}
 	EOF
 )"
@@ -270,7 +272,7 @@ export issue_pr_list_go_template
 function render-markdown {
 	set -euo pipefail
 
-	glow --style auto --width "$FZF_PREVIEW_COLUMNS"
+	glow --style=auto --width="$FZF_PREVIEW_COLUMNS"
 
 	# Other options.
 	# mdcat --ansi --columns "$FZF_PREVIEW_COLUMNS"
@@ -434,17 +436,17 @@ event_list_go_template="$(
 		{{- range . -}}
 			{{" "}}{{.id | autocolor "yellow" -}}
 			{{" "}}{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
-			{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end -}}
-			{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end -}}
-			{{- if .payload.ref}}
-				{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref))}}
-					{{- (printf " (%s)" .payload.ref) | autocolor "red" -}}
-				{{else}}
-					{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
-				{{end -}}
-			{{end -}}
 			{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
 			{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
+			{{- if .payload.ref -}}
+				{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref)) -}}
+					{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "red" -}}
+				{{- else -}}
+					{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
+				{{- end -}}
+			{{- end -}}
+			{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number (truncate 25 .payload.pull_request.title) | autocolor "cyan"}}{{end -}}
+			{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number (truncate 25 .payload.issue.title) | autocolor "cyan"}}{{end -}}
 
 			{{- if .payload.pull_request.merged  -}}
 				{{- " (merged)" | autocolor "red" -}}
@@ -474,6 +476,8 @@ event_list_go_template="$(
 				{{- printf " %s" .payload.issue.html_url -}}
 			{{- else if .payload.release.html_url -}}
 				{{- printf " %s" .payload.release.html_url -}}
+			{{- else -}}
+				{{- printf " no-url-found" -}}
 			{{- end -}}
 
 			{{- "\n" -}}
@@ -484,6 +488,15 @@ event_list_go_template="$(
 event_view_go_template="$(
 	cat <<-'EOF'
 		## *{{.created_at | toDate "2006-01-02T15:04:05Z07:00" | date "2006-01-02 15:04:05" | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" }}*
+
+		{{$issue := coalesce .payload.pull_request .payload.issue}}
+		{{if $issue}}
+			# #{{$issue.number}} {{$issue.title}} {{if $issue.stateReason}}{{(printf "(%s: %s)" $issue.state $issue.stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" $issue.state) | autocolor "red"}}{{end}}
+		{{end}}
+		{{if .payload.release}}
+			# {{printf "%s" .payload.release.name | autocolor "cyan"}}
+		{{end}}
+
 		{{if .payload.comment.html_url}}
 			{{.payload.comment.html_url}}
 		{{else if .payload.review.html_url}}
@@ -497,15 +510,18 @@ event_view_go_template="$(
 		{{end}}
 
 		---
-		{{if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number .payload.pull_request.title | autocolor "cyan"}}{{end}}
-		{{if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number .payload.issue.title | autocolor "cyan"}}{{end}}
-		{{if .payload.release}} {{printf "%s" .payload.release.name | autocolor "cyan"}}{{end}}
 
 		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
 		{{if .payload.review.body}} {{.payload.review.body}}{{end}}
-		{{if .payload.pull_request.body}} {{.payload.pull_request.body}}{{end}}
-		{{if .payload.issue.body}} {{.payload.issue.body}}{{end}}
 		{{if .payload.release.body}} {{.payload.release.body}}{{end}}
+
+		{{if eq .payload.type "PullRequest"}}
+			{{if .payload.pull_request.body}} {{.payload.pull_request.body}}{{end}}
+		{{end}}
+
+		{{if eq .payload.type "Issues"}}
+			{{if .payload.issue.body}} {{.payload.issue.body}}{{end}}
+		{{end}}
 
 		{{if .payload.commits}}
 			{{range .payload.commits}}
@@ -567,7 +583,7 @@ if [ "$target" == "events" ]; then
 			--bind "ctrl-l:execute-silent(xdg-open {-1})" \
 			--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+refresh-preview" \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} {q}\"" \
-			--preview-window=right:wrap \
+			--preview-window=down:wrap \
 			--prompt "$target> "
 
 	exit

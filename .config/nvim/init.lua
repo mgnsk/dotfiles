@@ -31,12 +31,22 @@ vim.cmd("set lcs+=space:·")
 vim.cmd("set switchbuf+=newtab")
 vim.cmd("syntax on")
 vim.cmd("set t_ut=")
+
 -- TODO what does this do?
 --vim.cmd("set noruler")
 --
 
-vim.opt.foldmethod = "expr"
-vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.api.nvim_create_autocmd("BufReadPost", {
+	callback = function()
+		vim.schedule(function()
+			vim.opt.foldmethod = "expr"
+			vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+			vim.opt.foldnestmax = 3
+			vim.opt.foldlevel = 99
+			vim.opt.foldlevelstart = 99
+		end)
+	end,
+})
 
 vim.g.netrw_banner = 0
 -- Tree view.

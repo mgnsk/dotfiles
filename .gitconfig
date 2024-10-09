@@ -10,7 +10,10 @@
 	reflogs = !git-fzf reflog
 	prs = !gh-fzf prs
 	issues = !gh-fzf issues
-	events =!gh-fzf events
+	events = !gh-fzf events
+
+	# Run nvim from the current dir. Used for the `config` fish alias.
+	nvim = "!f() { cd ${GIT_PREFIX:-./}; nvim; }; f"
 
 [mergetool]
 	keepBackup = false

@@ -5,7 +5,9 @@ vim.bo.tabstop = 2
 
 require("file_actions").configureFormatBeforeSave({ "prettier" })
 
--- show json path in the winbar
-if vim.fn.exists("+winbar") == 1 then
-	vim.opt_local.winbar = "%{%v:lua.require'jsonpath'.get()%}"
-end
+vim.api.nvim_create_autocmd("CursorMoved", {
+	group = vim.api.nvim_create_augroup("jsonpath_winbar", {}),
+	callback = function()
+		vim.opt_local.winbar = require("jsonpath").get(nil, 0)
+	end,
+})

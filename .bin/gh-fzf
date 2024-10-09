@@ -442,9 +442,12 @@ event_list_go_template="$(
 				{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref)) -}}
 					{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "red" -}}
 				{{- else -}}
-					{{- (printf " (%s)" .payload.ref) | autocolor "cyan" -}}
+					{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "cyan" -}}
 				{{- end -}}
 			{{- end -}}
+			{{- if .payload.forkee -}}
+				{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
+			{{- end }}
 			{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number (truncate 25 .payload.pull_request.title) | autocolor "cyan"}}{{end -}}
 			{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number (truncate 25 .payload.issue.title) | autocolor "cyan"}}{{end -}}
 
@@ -476,6 +479,8 @@ event_list_go_template="$(
 				{{- printf " %s" .payload.issue.html_url -}}
 			{{- else if .payload.release.html_url -}}
 				{{- printf " %s" .payload.release.html_url -}}
+			{{- else if .payload.forkee -}}
+				{{- printf " https://github.com/%s" .payload.forkee.full_name -}}
 			{{- else -}}
 				{{- printf " no-url-found" -}}
 			{{- end -}}
@@ -507,6 +512,10 @@ event_view_go_template="$(
 			{{.payload.issue.html_url}}
 		{{else if .payload.release.html_url}}
 			{{.payload.release.html_url}}
+		{{end}}
+
+		{{if .payload.forkee}}
+			{{ printf "https://github.com/%s" .payload.forkee.full_name }}
 		{{end}}
 
 		---

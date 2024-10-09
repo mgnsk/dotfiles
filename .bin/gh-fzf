@@ -535,12 +535,10 @@ export event_view_go_template
 
 function view-event {
 	id="$(echo "$1" | tr -d "'")"
-	query="$2"
 
 	gojq ".[] | select(.id == \"$id\")" |
 		gh-tpl "$event_view_go_template" |
-		render-markdown |
-		ripgrep "$query"
+		render-markdown
 }
 
 export -f view-event
@@ -579,10 +577,9 @@ if [ "$target" == "events" ]; then
 			-i \
 			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 			--bind shift-up:preview-top,shift-down:preview-bottom \
-			--header "Ctrl-L: web browser, Ctrl-P: toggle pinpoint mode" \
+			--header "Ctrl-L: web browser" \
 			--bind "ctrl-l:execute-silent(xdg-open {-1})" \
-			--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+refresh-preview" \
-			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} {q}\"" \
+			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1}\"" \
 			--preview-window=down:wrap \
 			--prompt "$target> "
 

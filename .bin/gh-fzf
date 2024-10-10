@@ -469,23 +469,28 @@ event_list_go_template="$(
 				{{- end -}}
 			{{- end -}}
 
+			{{- $urls := dict -}}
+
 			{{- if .payload.comment.html_url -}}
-				{{- printf " %s" .payload.comment.html_url -}}
+				{{- $_ := set $urls "html_url" .payload.comment.html_url -}}
 			{{- else if .payload.review.html_url -}}
-				{{- printf " %s" .payload.review.html_url -}}
+				{{- $_ := set $urls "html_url" .payload.review.html_url -}}
 			{{- else if .payload.pull_request.html_url -}}
 				{{- printf " %s" .payload.pull_request.html_url -}}
+				{{- $_ := set $urls "html_url" .payload.pull_request.html_url -}}
+				{{- $_ := set $urls "pr" (dict "repo" .repo.name "number" .payload.pull_request.number) -}}
 			{{- else if .payload.issue.html_url -}}
-				{{- printf " %s" .payload.issue.html_url -}}
+				{{- $_ := set $urls "html_url" .payload.issue.html_url -}}
 			{{- else if .payload.release.html_url -}}
-				{{- printf " %s" .payload.release.html_url -}}
+				{{- $_ := set $urls "html_url" .payload.release.html_url -}}
 			{{- else if .payload.forkee -}}
-				{{- printf " https://github.com/%s" .payload.forkee.full_name -}}
+				{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .payload.forkee.full_name) -}}
 			{{- else if and .payload.head .payload.before -}}
-				{{- printf " https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head -}}
-			{{- else -}}
-				{{- printf " no-url-found" -}}
+				{{- $_ := set $urls "html_url" (printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head) -}}
+				{{- /* TODO: data for diff view */ -}}
 			{{- end -}}
+
+			{{- printf " %s" (mustToJson $urls | b64enc) -}}
 
 			{{- "\n" -}}
 		{{- end -}}
@@ -558,6 +563,27 @@ function view-event {
 
 export -f view-event
 
+function open-event-link {
+	echo "\"$1\"" |
+		gh-tpl "{{b64dec .}}" |
+		gojq '.html_url' |
+		xargs xdg-open
+}
+
+export -f open-event-link
+
+# View diff for PR.
+function view-event-diff {
+	v=$(echo "\"$1\"" | gh-tpl "{{b64dec .}}")
+
+	repo=$(echo "$v" | gojq -r '.pr.repo')
+	number=$(echo "$v" | gojq -r '.pr.number')
+
+	gh pr diff "$number" --repo "$repo" | delta
+}
+
+export -f view-event-diff
+
 # Events uses fzf filtering.
 if [ "$target" == "events" ]; then
 	user=$(gh api user --jq '.login')
@@ -581,6 +607,8 @@ if [ "$target" == "events" ]; then
 
 	wait
 
+	# 2..-2 displays list item from 2nd column and excludes the last column.
+	# The last column is a base64-encoded JSON payload containing links.
 	cat "$events_path" "$received_events_path" |
 		gojq -s 'add | sort_by(.created_at) | reverse' |
 		gh-tpl --color "$event_list_go_template" |
@@ -592,8 +620,9 @@ if [ "$target" == "events" ]; then
 			-i \
 			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 			--bind shift-up:preview-top,shift-down:preview-bottom \
-			--header "Ctrl-L: web browser" \
-			--bind "ctrl-l:execute-silent(xdg-open {-1})" \
+			--header "Ctrl-L: web browser, Ctrl-O: diff (for Push and PullRequest)" \
+			--bind "ctrl-l:execute-silent(bash -c 'open-event-link {-1}')" \
+			--bind "ctrl-o:execute(bash -c 'view-event-diff {-1}')" \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1}\"" \
 			--preview-window=down:wrap,70% \
 			--prompt "$target> "

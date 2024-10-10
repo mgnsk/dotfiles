@@ -452,6 +452,9 @@ event_list_go_template="$(
 					{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "cyan" -}}
 				{{- end -}}
 			{{- end -}}
+			{{- if .payload.pages -}}
+				{{- (printf " (%s)" (index .payload.pages 0).page_name) | autocolor "cyan" -}}
+			{{- end -}}
 			{{- if .payload.forkee -}}
 				{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
 			{{- end -}}
@@ -462,6 +465,7 @@ event_list_go_template="$(
 				{{- " (merged)" | autocolor "red" -}}
 			{{- else -}}
 				{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
+				{{- if .payload.pages}} {{(printf "(%s)" (index .payload.pages 0).action) | autocolor "red"}}{{end -}}
 			{{- end -}}
 
 			{{- if .payload.review.state}} {{(printf " (%s)" .payload.review.state) | autocolor "red"}}{{end -}}
@@ -490,6 +494,8 @@ event_list_go_template="$(
 				{{- $_ := set $urls "html_url" .payload.issue.html_url -}}
 			{{- else if .payload.release.html_url -}}
 				{{- $_ := set $urls "html_url" .payload.release.html_url -}}
+			{{- else if .payload.pages -}}
+				{{- $_ := set $urls "html_url" (printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha) }}
 			{{- else if .payload.forkee -}}
 				{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .payload.forkee.full_name) -}}
 			{{- else if and .payload.head .payload.before -}}
@@ -516,6 +522,7 @@ event_view_go_template="$(
 			# {{printf "%s" .payload.release.name | autocolor "cyan"}}
 		{{end}}
 
+		{{/* TODO: clean up */}}
 		{{if .payload.comment.html_url}}
 			{{.payload.comment.html_url}}
 		{{else if .payload.review.html_url}}
@@ -536,6 +543,10 @@ event_view_go_template="$(
 			{{ printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head }}
 		{{end}}
 
+		{{if .payload.pages}}
+			{{ printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha }}
+		{{end}}
+
 		---
 
 		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
@@ -553,6 +564,12 @@ event_view_go_template="$(
 		{{if .payload.commits}}
 			{{range .payload.commits}}
 				* {{.sha | trunc 7 | autocolor "yellow"}} {{.message}}
+			{{end}}
+		{{end}}
+
+		{{if .payload.pages}}
+			{{range .payload.pages}}
+				* {{.sha | trunc 7 | autocolor "yellow"}} {{.title}}{{if .summary}} {{.summary}}{{end}}
 			{{end}}
 		{{end}}
 	EOF

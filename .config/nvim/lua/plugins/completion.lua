@@ -6,7 +6,6 @@ return {
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-nvim-lsp-signature-help",
-			"hrsh7th/cmp-nvim-lua",
 			{
 				"hrsh7th/vim-vsnip",
 				init = function()
@@ -46,7 +45,6 @@ return {
 					{ name = "vsnip", priority = 1000 },
 					{ name = "nvim_lsp", priority = 900 },
 					{ name = "nvim_lsp_signature_help", priority = 800 },
-					{ name = "nvim_lua", priority = 700 },
 				}, {
 					{
 						name = "buffer",

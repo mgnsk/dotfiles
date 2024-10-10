@@ -19,29 +19,13 @@ end
 --- @type LazySpec[]
 return {
 	{
-		"simrat39/symbols-outline.nvim",
-		lazy = true,
-		init = function()
-			vim.keymap.set("n", "<leader>V", function()
-				return require("symbols-outline").toggle_outline()
-			end, { desc = "Toggle LSP symbols outline tree" })
-		end,
-		config = function()
-			require("symbols-outline").setup()
-		end,
+		"Bilal2453/luvit-meta", -- optional `vim.uv` typings
+		-- ft = "lua",
 	},
 	{
 		"neovim/nvim-lspconfig",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = { "BufEnter" },
-		dependencies = {
-			{
-				"folke/neodev.nvim",
-				config = function()
-					require("neodev").setup({})
-				end,
-			},
-		},
 		init = function()
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })

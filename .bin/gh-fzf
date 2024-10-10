@@ -580,9 +580,22 @@ export event_view_go_template
 function view-event {
 	id="$(echo "$1" | tr -d "'")"
 
-	gojq ".[] | select(.id == \"$id\")" |
+	event=$(gojq ".[] | select(.id == \"$id\")")
+
+	echo "$event" |
 		gh-tpl "$event_view_go_template" |
 		render-markdown
+
+	# Display repo if fork event.
+	forkee=$(echo "$event" | gojq '.payload.forkee')
+
+	if [ "$forkee" != "null" ]; then
+		repo=$(echo "$forkee" | gojq -r '.full_name')
+
+		export GH_FORCE_TTY="$FZF_PREVIEW_COLUMNS"
+		gh repo view "$repo"
+	fi
+
 }
 
 export -f view-event

@@ -42,9 +42,10 @@ return {
 				return require("fzf-lua").git_commits()
 			end, { desc = "FZF commits" })
 
-			vim.keymap.set("n", "<leader>B", function()
-				local lineArg =
-					string.format([[ -L %s,%s:%s]], vim.fn.line("."), vim.fn.line("."), vim.fn.expand("%:p"))
+			vim.keymap.set("v", "<leader>B", function()
+				local start_line, end_line = unpack(require("util").selection())
+				local lineArg = string.format([[ -L %d,%d:%s]], start_line, end_line, vim.fn.expand("%:p"))
+
 				local gitCmd = require("fzf-lua").defaults.git.commits.cmd
 				local contentsCmd = gitCmd .. " --no-patch" .. lineArg .. " | nl -ba" -- Add line numbers.
 

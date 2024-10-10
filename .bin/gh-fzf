@@ -447,7 +447,7 @@ event_list_go_template="$(
 			{{- end -}}
 			{{- if .payload.forkee -}}
 				{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
-			{{- end }}
+			{{- end -}}
 			{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number (truncate 25 .payload.pull_request.title) | autocolor "cyan"}}{{end -}}
 			{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number (truncate 25 .payload.issue.title) | autocolor "cyan"}}{{end -}}
 
@@ -462,12 +462,12 @@ event_list_go_template="$(
 			{{- if .payload.review.commit_id}} {{.payload.review.commit_id | trunc 7 | autocolor "yellow"}}{{end -}}
 			{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
 			{{- if .payload.comment.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.comment.body " ")}}{{end -}}
-			{{- if .payload.commits}}
+			{{- if .payload.commits -}}
 				{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
 				{{- range .payload.commits -}}
 					{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
 				{{- end -}}
-			{{end -}}
+			{{- end -}}
 
 			{{- if .payload.comment.html_url -}}
 				{{- printf " %s" .payload.comment.html_url -}}
@@ -481,6 +481,8 @@ event_list_go_template="$(
 				{{- printf " %s" .payload.release.html_url -}}
 			{{- else if .payload.forkee -}}
 				{{- printf " https://github.com/%s" .payload.forkee.full_name -}}
+			{{- else if and .payload.head .payload.before -}}
+				{{- printf " https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head -}}
 			{{- else -}}
 				{{- printf " no-url-found" -}}
 			{{- end -}}
@@ -516,6 +518,10 @@ event_view_go_template="$(
 
 		{{if .payload.forkee}}
 			{{ printf "https://github.com/%s" .payload.forkee.full_name }}
+		{{end}}
+
+		{{if and .payload.head .payload.before}}
+			{{ printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head }}
 		{{end}}
 
 		---
@@ -589,7 +595,7 @@ if [ "$target" == "events" ]; then
 			--header "Ctrl-L: web browser" \
 			--bind "ctrl-l:execute-silent(xdg-open {-1})" \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1}\"" \
-			--preview-window=down:wrap \
+			--preview-window=down:wrap,70% \
 			--prompt "$target> "
 
 	exit

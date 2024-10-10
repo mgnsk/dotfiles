@@ -47,6 +47,13 @@ function toggle-rg-passthrough {
 
 export -f toggle-rg-passthrough
 
+function deltadiff {
+	# Manually override pager to prevent --quit-if-one-screen on short diffs.
+	delta --pager="less -R"
+}
+
+export -f deltadiff
+
 # Note: skipping pullRequest.comments, these are included in timeline.
 pr_query="$(
 	cat <<-'EOF'
@@ -418,7 +425,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	if [ "$target" == "prs" ]; then
 		args+=(
 			--header "Ctrl-L: web browser, Ctrl-O: diff, Ctrl-P: toggle pinpoint mode"
-			--bind "ctrl-o:execute(gh pr diff {1} | delta)"
+			--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltadiff')"
 		)
 	elif [ "$target" == "issues" ]; then
 		args+=(
@@ -487,7 +494,7 @@ event_list_go_template="$(
 				{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .payload.forkee.full_name) -}}
 			{{- else if and .payload.head .payload.before -}}
 				{{- $_ := set $urls "html_url" (printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head) -}}
-				{{- /* TODO: data for diff view */ -}}
+				{{- $_ := set $urls "diff" (dict "repo" .repo.name "before" .payload.before "head" .payload.head) -}}
 			{{- end -}}
 
 			{{- printf " %s" (mustToJson $urls | b64enc) -}}
@@ -576,10 +583,26 @@ export -f open-event-link
 function view-event-diff {
 	v=$(echo "\"$1\"" | gh-tpl "{{b64dec .}}")
 
-	repo=$(echo "$v" | gojq -r '.pr.repo')
-	number=$(echo "$v" | gojq -r '.pr.number')
+	pr=$(echo "$v" | gojq '.pr')
+	diff=$(echo "$v" | gojq '.diff')
 
-	gh pr diff "$number" --repo "$repo" | delta
+	if [ "$pr" != "null" ]; then
+		repo=$(echo "$pr" | gojq -r '.repo')
+		number=$(echo "$pr" | gojq -r '.number')
+
+		gh pr diff "$number" --repo "$repo" |
+			deltadiff
+	elif [ "$diff" != "null" ]; then
+		repo=$(echo "$diff" | gojq -r '.repo')
+		before=$(echo "$diff" | gojq -r '.before')
+		head=$(echo "$diff" | gojq -r '.head')
+
+		gh api "https://github.com/$repo/compare/$before...$head.diff" |
+			deltadiff
+	else
+		echo "No data found for diff"
+		exit 1
+	fi
 }
 
 export -f view-event-diff

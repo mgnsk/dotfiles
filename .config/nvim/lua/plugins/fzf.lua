@@ -19,28 +19,32 @@ return {
 			-- Grep a single pattern.
 			vim.keymap.set("n", "<leader>g", function()
 				return require("fzf-lua").live_grep()
-			end, { desc = "FZF live_grep" })
+			end, { desc = "FZF grep inside files" })
 
 			-- Grep all words separately, including filename.
 			vim.keymap.set("n", "<leader>a", function()
 				return require("fzf-lua").grep_project({ fzf_opts = { ["--nth"] = false } })
-			end, { desc = "FZF grep_project" })
+			end, { desc = "FZF powerful grep including file paths" })
 
 			vim.keymap.set("n", "<leader>o", function()
 				return require("fzf-lua").files()
 			end, { desc = "FZF files" })
 
 			vim.keymap.set("n", "<leader>f", function()
+				return require("fzf-lua").lsp_document_symbols()
+			end, { desc = "FZF LSP document symbols" })
+
+			vim.keymap.set("n", "<leader>F", function()
 				return require("fzf-lua").lsp_live_workspace_symbols()
-			end, { desc = "FZF lsp_live_workspace_symbols" })
+			end, { desc = "FZF LSP live workspace symbols" })
 
 			vim.keymap.set("n", "<leader>h", function()
 				return require("fzf-lua").git_bcommits()
-			end, { desc = "FZF git_bcommits" })
+			end, { desc = "FZF buffer commits" })
 
 			vim.keymap.set("n", "<leader>H", function()
 				return require("fzf-lua").git_commits()
-			end, { desc = "FZF commits" })
+			end, { desc = "FZF repo commits" })
 
 			vim.keymap.set("v", "<leader>B", function()
 				local start_line, end_line = unpack(require("util").selection())
@@ -65,7 +69,7 @@ return {
 						end,
 					},
 				})
-			end, { desc = "FZF blame current line" })
+			end, { desc = "FZF blame selected lines" })
 		end,
 		config = function()
 			require("fzf-lua").setup({

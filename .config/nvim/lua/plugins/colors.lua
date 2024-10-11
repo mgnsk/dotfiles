@@ -19,6 +19,10 @@ return {
 				},
 
 				group_overrides = {
+					SpellBad = { fg = c.vscRed, underline = true },
+					SpellCap = { link = "SpellBad" },
+					SpellRare = { link = "SpellBad" },
+					SpellLocal = { link = "SpellBad" },
 					CSpellBad = { link = "SpellBad" },
 					TabLine = { fg = c.vscGray, bg = bg },
 					TabLineFill = { fg = c.vscGray, bg = bg },

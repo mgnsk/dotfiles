@@ -10,7 +10,7 @@ return {
 	},
 	{
 		"ryuichiroh/vim-cspell",
-		cmd = "CSpell",
+		event = "BufEnter",
 		init = function()
 			vim.g.cspell_disable_autogroup = true
 

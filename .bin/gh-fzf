@@ -627,7 +627,9 @@ function view-event-diff {
 		before=$(echo "$diff" | gojq -r '.before')
 		head=$(echo "$diff" | gojq -r '.head')
 
-		gh api "https://github.com/$repo/compare/$before...$head.diff" |
+		gh api \
+			-H "Accept: application/vnd.github.v3.diff" \
+			"/repos/$repo/compare/$before...$head" |
 			deltadiff
 	else
 		echo "No data found for diff"

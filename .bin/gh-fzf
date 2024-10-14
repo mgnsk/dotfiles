@@ -215,8 +215,6 @@ issue_pr_header_go_template="$(
 		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
 		{{.url}}
 
-		---
-
 		{{.body}}
 	EOF
 )"
@@ -546,8 +544,6 @@ event_view_go_template="$(
 		{{if .payload.pages}}
 			{{ printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha }}
 		{{end}}
-
-		---
 
 		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
 		{{if .payload.review.body}} {{.payload.review.body}}{{end}}

@@ -30,4 +30,7 @@ return {
 			})
 		end,
 	},
+	{
+		"chaoren/vim-wordmotion",
+	},
 }

@@ -54,226 +54,6 @@ function deltadiff {
 
 export -f deltadiff
 
-# Note: skipping pullRequest.comments, these are included in timeline.
-pr_query="$(
-	cat <<-'EOF'
-		query($name: String!, $owner: String!, $number: Int!) {
-			repository(owner: $owner, name: $name) {
-				pullRequest(number: $number) {
-					number,
-					title,
-					url,
-					updatedAt,
-					createdAt,
-					state,
-					author {
-						login
-					},
-					body,
-					reviews(last: 100) {
-						nodes {
-							updatedAt,
-							createdAt,
-							url,
-							state,
-							author {
-								login
-							},
-							minimizedReason,
-							body,
-							comments(last: 100) {
-								nodes {
-									updatedAt,
-									createdAt,
-									url,
-									author {
-										login
-									},
-									minimizedReason,
-									position,
-									startLine,
-									line,
-									originalStartLine,
-									originalLine,
-									diffHunk,
-									body
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	EOF
-)"
-
-export pr_query
-
-pr_jq_template="$(
-	cat <<-'EOF'
-		.data.repository.pullRequest | .comments = ([
-			# Reviews.
-			(.reviews.nodes[] | select(.body != "") | .html_url = .url), # Skip placeholder reviews.
-
-			# Review comments.
-			(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | .state = $review.state | .diffHunk = ([
-				(.diffHunk | split("\n") | . as $arr | to_entries[] |
-				# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
-				if $comment.originalStartLine == null and $comment.originalLine != null then
-					# Show 4 lines like github does.
-					select(.key > ($arr|length)-5)
-				else
-					select(true)
-				end
-				| .value)
-			] | join("\n")) | .html_url = .url)
-		] | sort_by(.createdAt))
-	EOF
-)"
-
-export pr_jq_template
-
-issue_query="$(
-	cat <<-'EOF'
-		query($name: String!, $owner: String!, $number: Int!) {
-			repository(owner: $owner, name: $name) {
-				issue(number: $number) {
-					number,
-					title,
-					url,
-					updatedAt,
-					createdAt,
-					state,
-					stateReason,
-					author {
-						login
-					},
-					body,
-					comments(last: 100) {
-						nodes {
-							updatedAt,
-							createdAt,
-							url,
-							author {
-								login
-							},
-							minimizedReason,
-							body
-						}
-					}
-				}
-			}
-		}
-	EOF
-)"
-
-export issue_query
-
-issue_jq_template="$(
-	cat <<-'EOF'
-		.data.repository.issue | .comments = .comments.nodes
-	EOF
-)"
-
-export issue_jq_template
-
-issue_timeline_jq_template="$(
-	cat <<-'EOF'
-		[
-			.[] | .createdAt = (
-				if has("created_at") then
-					.created_at
-				elif has("submitted_at") then
-					.submitted_at
-				elif has("committer") then
-					.committer.date
-				end
-			) | .author.login = (
-				if has("author") then
-					.author.name
-				elif has("actor") then
-					.actor.login
-				elif has("user") then
-					.user.login
-				end
-			) | .url = (
-				if has("html_url") then
-					.html_url
-				else
-					null
-				end
-			) | select(.event != "subscribed" and .event != "unsubscribed" and .event != "mentioned")
-		]
-	EOF
-)"
-
-export issue_timeline_jq_template
-
-issue_pr_header_go_template="$(
-	cat <<-'EOF'
-		# #{{.number}} {{.title}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}
-		## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
-		{{.url}}
-
-		{{.body}}
-	EOF
-)"
-
-export issue_pr_header_go_template
-
-issue_pr_comments_go_template="$(
-	cat <<-'EOF'
-		{{range .}}
-			---
-
-			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}*
-			{{if .html_url}}{{.html_url}}{{end}}
-
-			{{if .minimizedReason}}***minimized: {{.minimizedReason}}***{{end}}
-			{{if .path}}***path: {{.path}}***{{end}}
-			{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
-			{{if .body}}{{.body}}{{end}}
-			{{if .sha}}{{.sha | trunc 7 | autocolor "yellow"}}{{- printf " %s" .message}}{{end}}
-			{{if .assignee}}***{{.assignee.login}}***{{end}}
-			{{if .label}}***{{.label.name}}***{{end}}
-			{{if .rename}}***{{printf "~~%s~~ %s" .rename.from .rename.to}}***{{end}}
-			{{if .source.issue}}
-				***{{printf "#%v" .source.issue.number}} {{.source.issue.title}}***
-
-				{{.source.issue.html_url}}
-			{{end}}
-			{{if .source.pull_request}}
-				***{{printf "#%v" .source.pull_request.number}} {{.source.pull_request.title}}***
-
-				{{.source.pull_request.html_url}}
-			{{end}}
-			{{if .project_id}}***project: {{.project_id}}***{{end}}
-			{{if .column}}***{{.column}}***{{end}}
-			{{if .project_card.previous_column_name}}
-				***{{printf "%s -> %s" .project_card.previous_column_name .project_card.column_name}}***
-			{{else if .project_card.column_name}}
-				***{{.project_card.column_name}}***
-			{{end}}
-			{{if .lock_reason}}***{{.lock_reason}}***{{end}}
-			{{if .state_reason}}***{{.state_reason}}***{{end}}
-			{{if .milestone}}***{{.milestone.title}}***{{end}}
-			{{if .dismissed_review}}{{.dismissed_review.dismissal_message}}{{end}}
-			{{if .requested_reviewer}}***{{.requested_reviewer.login}}***{{end}}
-			{{if .requested_team}}***{{.requested_team.name}}***{{end}}
-		{{end}}
-	EOF
-)"
-
-export issue_pr_comments_go_template
-
-issue_pr_list_go_template="$(
-	cat <<-'EOF'
-		{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}{{"\n"}}{{end -}}
-	EOF
-)"
-
-export issue_pr_list_go_template
-
 function render-markdown {
 	set -euo pipefail
 
@@ -296,44 +76,198 @@ function gh-search {
 	repo="$1"
 	query="$2"
 
-	if [ "$target" == "prs" ]; then
-		# Handle empty query.
-		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-			gh "${target::-1}" list \
-				--state=all \
-				--json number,title,state,createdAt,updatedAt,author \
-				--jq 'sort_by(.updatedAt) | reverse' |
-				gh-tpl --color "$issue_pr_list_go_template"
-			exit
-		fi
+	issue_pr_list_go_template="$(
+		cat <<-'EOF'
+			{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}{{"\n"}}{{end -}}
+		EOF
+	)"
 
-		gh search "$target" \
-			--repo "$repo" \
-			--sort updated \
-			--json number,title,state,createdAt,author \
-			"$query" |
+	# Handle empty query.
+	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+		gh "${target::-1}" list \
+			--state=all \
+			--json number,title,state,createdAt,updatedAt,author \
+			--jq 'sort_by(.updatedAt) | reverse' |
 			gh-tpl --color "$issue_pr_list_go_template"
-	elif [ "$target" == "issues" ]; then
-		# Handle empty query.
-		if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-			gh "${target::-1}" list \
-				--state=all \
-				--json number,title,state,createdAt,updatedAt,author \
-				--jq 'sort_by(.updatedAt) | reverse' |
-				gh-tpl --color "$issue_pr_list_go_template"
-			exit
-		fi
-
-		gh search "$target" \
-			--repo "$repo" \
-			--sort updated \
-			--json number,title,state,createdAt,author \
-			"$query" |
-			gh-tpl --color "$issue_pr_list_go_template"
+		exit
 	fi
+
+	gh search "$target" \
+		--repo "$repo" \
+		--sort updated \
+		--json number,title,state,createdAt,updatedAt,author \
+		--jq 'sort_by(.updatedAt) | reverse' \
+		"$query" |
+		gh-tpl --color "$issue_pr_list_go_template"
 }
 
 export -f gh-search
+
+function get-issue-pr-timeline {
+	issue_timeline_jq_template="$(
+		cat <<-'EOF'
+			[
+				.[] | .createdAt = (
+					if has("created_at") then
+						.created_at
+					elif has("submitted_at") then
+						.submitted_at
+					elif has("committer") then
+						.committer.date
+					end
+				) | .author.login = (
+					if has("author") then
+						.author.name
+					elif has("actor") then
+						.actor.login
+					elif has("user") then
+						.user.login
+					end
+				) | .url = (
+					if has("html_url") then
+						.html_url
+					else
+						null
+					end
+				) | select(.event != "subscribed" and .event != "unsubscribed" and .event != "mentioned")
+			]
+		EOF
+	)"
+
+	gh api \
+		-H "Accept: application/vnd.github+json" \
+		-H "X-GitHub-Api-Version: 2022-11-28" \
+		--paginate \
+		"/repos/{owner}/{repo}/issues/$1/timeline" |
+		gojq "$issue_timeline_jq_template"
+}
+
+export -f get-issue-pr-timeline
+
+function get-pr {
+	# Note: skipping pullRequest.comments, these are included in timeline.
+	pr_query="$(
+		cat <<-'EOF'
+			query($name: String!, $owner: String!, $number: Int!) {
+				repository(owner: $owner, name: $name) {
+					pullRequest(number: $number) {
+						number,
+						title,
+						url,
+						updatedAt,
+						createdAt,
+						state,
+						author {
+							login
+						},
+						body,
+						reviews(last: 100) {
+							nodes {
+								updatedAt,
+								createdAt,
+								url,
+								state,
+								author {
+									login
+								},
+								minimizedReason,
+								body,
+								comments(last: 100) {
+									nodes {
+										updatedAt,
+										createdAt,
+										url,
+										author {
+											login
+										},
+										minimizedReason,
+										position,
+										startLine,
+										line,
+										originalStartLine,
+										originalLine,
+										diffHunk,
+										body
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		EOF
+	)"
+
+	pr_jq_template="$(
+		cat <<-'EOF'
+			.data.repository.pullRequest | .comments = ([
+				# Reviews.
+				(.reviews.nodes[] | select(.body != "") | .html_url = .url), # Skip placeholder reviews.
+
+				# Review comments.
+				(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | .state = $review.state | .diffHunk = ([
+					(.diffHunk | split("\n") | . as $arr | to_entries[] |
+					# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
+					if $comment.originalStartLine == null and $comment.originalLine != null then
+						# Show 4 lines like github does.
+						select(.key > ($arr|length)-5)
+					else
+						select(true)
+					end
+					| .value)
+				] | join("\n")) | .html_url = .url)
+			] | sort_by(.createdAt))
+		EOF
+	)"
+
+	gh api graphql \
+		-F owner='{owner}' \
+		-F name='{repo}' \
+		-F number="$1" \
+		-f query="$pr_query" \
+		--jq "$pr_jq_template"
+}
+
+export -f get-pr
+
+function get-issue {
+	issue_query="$(
+		cat <<-'EOF'
+			query($name: String!, $owner: String!, $number: Int!) {
+				repository(owner: $owner, name: $name) {
+					issue(number: $number) {
+						number,
+						title,
+						url,
+						updatedAt,
+						createdAt,
+						state,
+						stateReason,
+						author {
+							login
+						},
+						body,
+					}
+				}
+			}
+		EOF
+	)"
+
+	issue_jq_template="$(
+		cat <<-'EOF'
+			.data.repository.issue
+		EOF
+	)"
+
+	gh api graphql \
+		-F owner='{owner}' \
+		-F name='{repo}' \
+		-F number="$1" \
+		-f query="$issue_query" \
+		--jq "$issue_jq_template"
+}
+
+export -f get-issue
 
 function gh-view {
 	set -euo pipefail
@@ -349,53 +283,88 @@ function gh-view {
 	timeline_path="$tmpdir/timeline"
 	issue_pr_path="$tmpdir/issue"
 
-	gh api \
-		-H "Accept: application/vnd.github+json" \
-		-H "X-GitHub-Api-Version: 2022-11-28" \
-		--paginate \
-		"/repos/{owner}/{repo}/issues/$number/timeline" |
-		gojq "$issue_timeline_jq_template" >"$timeline_path" &
+	get-issue-pr-timeline "$number" >"$timeline_path" &
 
 	if [ "$target" == "prs" ]; then
-		gh api graphql \
-			-F owner='{owner}' \
-			-F name='{repo}' \
-			-F number="$number" \
-			-f query="$pr_query" \
-			--jq "$pr_jq_template" >"$issue_pr_path" &
+		get-pr "$number" >"$issue_pr_path" &
 
 		wait
 
-		gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
-			render-markdown |
-			ripgrep "$query"
-
+		# Get review comments from PR.
 		comments="$(gojq '[ .comments[] ]' <"$issue_pr_path")"
 
-		cat <(echo "$comments") "$timeline_path" |
-			gojq -s 'add | sort_by(.createdAt)' |
-			gh-tpl "$issue_pr_comments_go_template" |
-			render-markdown |
-			ripgrep "$query"
+		# Append review comments to timeline.
+		echo "$comments" >>"$timeline_path"
+
 	elif [ "$target" == "issues" ]; then
-		gh api graphql \
-			-F owner='{owner}' \
-			-F name='{repo}' \
-			-F number="$number" \
-			-f query="$issue_query" \
-			--jq "$issue_jq_template" >"$issue_pr_path" &
+		get-issue "$number" >"$issue_pr_path" &
 
 		wait
-
-		gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
-			render-markdown |
-			ripgrep "$query"
-
-		gojq -s 'add | sort_by(.createdAt)' <"$timeline_path" |
-			gh-tpl "$issue_pr_comments_go_template" |
-			render-markdown |
-			ripgrep "$query"
 	fi
+
+	issue_pr_header_go_template="$(
+		cat <<-'EOF'
+			# #{{.number}} {{.title}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}
+			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
+			{{.url}}
+
+			{{.body}}
+		EOF
+	)"
+
+	# Render header.
+	gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
+		render-markdown |
+		ripgrep "$query"
+
+	issue_pr_timeline_go_template="$(
+		cat <<-'EOF'
+			{{range .}}
+				---
+
+				## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}*
+				{{if .html_url}}{{.html_url}}{{end}}
+
+				{{if .minimizedReason}}***minimized: {{.minimizedReason}}***{{end}}
+				{{if .path}}***path: {{.path}}***{{end}}
+				{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
+				{{if .body}}{{.body}}{{end}}
+				{{if .sha}}{{.sha | trunc 7 | autocolor "yellow"}}{{- printf " %s" .message}}{{end}}
+				{{if .assignee}}***{{.assignee.login}}***{{end}}
+				{{if .label}}***{{.label.name}}***{{end}}
+				{{if .rename}}***{{printf "~~%s~~ %s" .rename.from .rename.to}}***{{end}}
+				{{if .source.issue}}
+					***{{printf "#%v" .source.issue.number}} {{.source.issue.title}}***
+
+					{{.source.issue.html_url}}
+				{{end}}
+				{{if .source.pull_request}}
+					***{{printf "#%v" .source.pull_request.number}} {{.source.pull_request.title}}***
+
+					{{.source.pull_request.html_url}}
+				{{end}}
+				{{if .project_id}}***project: {{.project_id}}***{{end}}
+				{{if .column}}***{{.column}}***{{end}}
+				{{if .project_card.previous_column_name}}
+					***{{printf "%s -> %s" .project_card.previous_column_name .project_card.column_name}}***
+				{{else if .project_card.column_name}}
+					***{{.project_card.column_name}}***
+				{{end}}
+				{{if .lock_reason}}***{{.lock_reason}}***{{end}}
+				{{if .state_reason}}***{{.state_reason}}***{{end}}
+				{{if .milestone}}***{{.milestone.title}}***{{end}}
+				{{if .dismissed_review}}{{.dismissed_review.dismissal_message}}{{end}}
+				{{if .requested_reviewer}}***{{.requested_reviewer.login}}***{{end}}
+				{{if .requested_team}}***{{.requested_team.name}}***{{end}}
+			{{end}}
+		EOF
+	)"
+
+	# Render timeline.
+	gojq -s 'add | sort_by(.createdAt)' <"$timeline_path" |
+		gh-tpl "$issue_pr_timeline_go_template" |
+		render-markdown |
+		ripgrep "$query"
 }
 
 export -f gh-view
@@ -436,147 +405,73 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	exit
 fi
 
-event_list_go_template="$(
-	cat <<-'EOF'
-		{{- range . -}}
-			{{" "}}{{.id | autocolor "yellow" -}}
-			{{" "}}{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
-			{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
-			{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
-			{{- if .payload.ref -}}
-				{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref)) -}}
-					{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "red" -}}
-				{{- else -}}
-					{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "cyan" -}}
-				{{- end -}}
-			{{- end -}}
-			{{- if .payload.pages -}}
-				{{- (printf " (%s)" (index .payload.pages 0).page_name) | autocolor "cyan" -}}
-			{{- end -}}
-			{{- if .payload.forkee -}}
-				{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
-			{{- end -}}
-			{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number (truncate 25 .payload.pull_request.title) | autocolor "cyan"}}{{end -}}
-			{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number (truncate 25 .payload.issue.title) | autocolor "cyan"}}{{end -}}
-
-			{{- if .payload.pull_request.merged  -}}
-				{{- " (merged)" | autocolor "red" -}}
-			{{- else -}}
-				{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
-				{{- if .payload.pages}} {{(printf "(%s)" (index .payload.pages 0).action) | autocolor "red"}}{{end -}}
-			{{- end -}}
-
-			{{- if .payload.review.state}} {{(printf " (%s)" .payload.review.state) | autocolor "red"}}{{end -}}
-
-			{{- if .payload.review.commit_id}} {{.payload.review.commit_id | trunc 7 | autocolor "yellow"}}{{end -}}
-			{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
-			{{- if .payload.comment.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.comment.body " ")}}{{end -}}
-			{{- if .payload.commits -}}
-				{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
-				{{- range .payload.commits -}}
-					{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
-				{{- end -}}
-			{{- end -}}
-
-			{{- $urls := dict -}}
-
-			{{- if .payload.comment.html_url -}}
-				{{- $_ := set $urls "html_url" .payload.comment.html_url -}}
-			{{- else if .payload.review.html_url -}}
-				{{- $_ := set $urls "html_url" .payload.review.html_url -}}
-			{{- else if .payload.pull_request.html_url -}}
-				{{- printf " %s" .payload.pull_request.html_url -}}
-				{{- $_ := set $urls "html_url" .payload.pull_request.html_url -}}
-				{{- $_ := set $urls "pr" (dict "repo" .repo.name "number" .payload.pull_request.number) -}}
-			{{- else if .payload.issue.html_url -}}
-				{{- $_ := set $urls "html_url" .payload.issue.html_url -}}
-			{{- else if .payload.release.html_url -}}
-				{{- $_ := set $urls "html_url" .payload.release.html_url -}}
-			{{- else if .payload.pages -}}
-				{{- $_ := set $urls "html_url" (printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha) }}
-			{{- else if .payload.forkee -}}
-				{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .payload.forkee.full_name) -}}
-			{{- else if and .payload.head .payload.before -}}
-				{{- $_ := set $urls "html_url" (printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head) -}}
-				{{- $_ := set $urls "diff" (dict "repo" .repo.name "before" .payload.before "head" .payload.head) -}}
-			{{- end -}}
-
-			{{- printf " %s" (mustToJson $urls | b64enc) -}}
-
-			{{- "\n" -}}
-		{{- end -}}
-	EOF
-)"
-
-event_view_go_template="$(
-	cat <<-'EOF'
-		## *{{.created_at | toDate "2006-01-02T15:04:05Z07:00" | date "2006-01-02 15:04:05" | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" }}*
-
-		{{$issue := coalesce .payload.pull_request .payload.issue}}
-		{{if $issue}}
-			# #{{$issue.number}} {{$issue.title}} {{if $issue.stateReason}}{{(printf "(%s: %s)" $issue.state $issue.stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" $issue.state) | autocolor "red"}}{{end}}
-		{{end}}
-		{{if .payload.release}}
-			# {{printf "%s" .payload.release.name | autocolor "cyan"}}
-		{{end}}
-
-		{{/* TODO: clean up */}}
-		{{if .payload.comment.html_url}}
-			{{.payload.comment.html_url}}
-		{{else if .payload.review.html_url}}
-			{{.payload.review.html_url}}
-		{{else if .payload.pull_request.html_url}}
-			{{.payload.pull_request.html_url}}
-		{{else if .payload.issue.html_url}}
-			{{.payload.issue.html_url}}
-		{{else if .payload.release.html_url}}
-			{{.payload.release.html_url}}
-		{{end}}
-
-		{{if .payload.forkee}}
-			{{ printf "https://github.com/%s" .payload.forkee.full_name }}
-		{{end}}
-
-		{{if and .payload.head .payload.before}}
-			{{ printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head }}
-		{{end}}
-
-		{{if .payload.pages}}
-			{{ printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha }}
-		{{end}}
-
-		{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
-		{{if .payload.review.body}} {{.payload.review.body}}{{end}}
-		{{if .payload.release.body}} {{.payload.release.body}}{{end}}
-
-		{{if eq .payload.type "PullRequest"}}
-			{{if .payload.pull_request.body}} {{.payload.pull_request.body}}{{end}}
-		{{end}}
-
-		{{if eq .payload.type "Issues"}}
-			{{if .payload.issue.body}} {{.payload.issue.body}}{{end}}
-		{{end}}
-
-		{{if .payload.commits}}
-			{{range .payload.commits}}
-				* {{.sha | trunc 7 | autocolor "yellow"}} {{.message}}
-			{{end}}
-		{{end}}
-
-		{{if .payload.pages}}
-			{{range .payload.pages}}
-				* {{.sha | trunc 7 | autocolor "yellow"}} {{.title}}{{if .summary}} {{.summary}}{{end}}
-			{{end}}
-		{{end}}
-	EOF
-)"
-
-export event_view_go_template
-
 function view-event {
 	id="$(echo "$1" | tr -d "'")"
 
 	event=$(gojq ".[] | select(.id == \"$id\")")
+
+	event_view_go_template="$(
+		cat <<-'EOF'
+			## *{{.created_at | toDate "2006-01-02T15:04:05Z07:00" | date "2006-01-02 15:04:05" | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" }}*
+
+			{{$issue := coalesce .payload.pull_request .payload.issue}}
+			{{if $issue}}
+				# #{{$issue.number}} {{$issue.title}} {{if $issue.stateReason}}{{(printf "(%s: %s)" $issue.state $issue.stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" $issue.state) | autocolor "red"}}{{end}}
+			{{end}}
+			{{if .payload.release}}
+				# {{printf "%s" .payload.release.name | autocolor "cyan"}}
+			{{end}}
+
+			{{/* TODO: clean up */}}
+			{{if .payload.comment.html_url}}
+				{{.payload.comment.html_url}}
+			{{else if .payload.review.html_url}}
+				{{.payload.review.html_url}}
+			{{else if .payload.pull_request.html_url}}
+				{{.payload.pull_request.html_url}}
+			{{else if .payload.issue.html_url}}
+				{{.payload.issue.html_url}}
+			{{else if .payload.release.html_url}}
+				{{.payload.release.html_url}}
+			{{end}}
+
+			{{if .payload.forkee}}
+				{{ printf "https://github.com/%s" .payload.forkee.full_name }}
+			{{end}}
+
+			{{if and .payload.head .payload.before}}
+				{{ printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head }}
+			{{end}}
+
+			{{if .payload.pages}}
+				{{ printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha }}
+			{{end}}
+
+			{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
+			{{if .payload.review.body}} {{.payload.review.body}}{{end}}
+			{{if .payload.release.body}} {{.payload.release.body}}{{end}}
+
+			{{if eq .payload.type "PullRequest"}}
+				{{if .payload.pull_request.body}} {{.payload.pull_request.body}}{{end}}
+			{{end}}
+
+			{{if eq .payload.type "Issues"}}
+				{{if .payload.issue.body}} {{.payload.issue.body}}{{end}}
+			{{end}}
+
+			{{if .payload.commits}}
+				{{range .payload.commits}}
+					* {{.sha | trunc 7 | autocolor "yellow"}} {{.message}}
+				{{end}}
+			{{end}}
+
+			{{if .payload.pages}}
+				{{range .payload.pages}}
+					* {{.sha | trunc 7 | autocolor "yellow"}} {{.title}}{{if .summary}} {{.summary}}{{end}}
+				{{end}}
+			{{end}}
+		EOF
+	)"
 
 	echo "$event" |
 		gh-tpl "$event_view_go_template" |
@@ -657,6 +552,78 @@ if [ "$target" == "events" ]; then
 		"/users/$user/received_events" >"$received_events_path" &
 
 	wait
+
+	event_list_go_template="$(
+		cat <<-'EOF'
+			{{- range . -}}
+				{{" "}}{{.id | autocolor "yellow" -}}
+				{{" "}}{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
+				{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
+				{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
+				{{- if .payload.ref -}}
+					{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref)) -}}
+						{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "red" -}}
+					{{- else -}}
+						{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "cyan" -}}
+					{{- end -}}
+				{{- end -}}
+				{{- if .payload.pages -}}
+					{{- (printf " (%s)" (index .payload.pages 0).page_name) | autocolor "cyan" -}}
+				{{- end -}}
+				{{- if .payload.forkee -}}
+					{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
+				{{- end -}}
+				{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number (truncate 25 .payload.pull_request.title) | autocolor "cyan"}}{{end -}}
+				{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number (truncate 25 .payload.issue.title) | autocolor "cyan"}}{{end -}}
+
+				{{- if .payload.pull_request.merged  -}}
+					{{- " (merged)" | autocolor "red" -}}
+				{{- else -}}
+					{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
+					{{- if .payload.pages}} {{(printf "(%s)" (index .payload.pages 0).action) | autocolor "red"}}{{end -}}
+				{{- end -}}
+
+				{{- if .payload.review.state}} {{(printf " (%s)" .payload.review.state) | autocolor "red"}}{{end -}}
+
+				{{- if .payload.review.commit_id}} {{.payload.review.commit_id | trunc 7 | autocolor "yellow"}}{{end -}}
+				{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
+				{{- if .payload.comment.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.comment.body " ")}}{{end -}}
+				{{- if .payload.commits -}}
+					{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
+					{{- range .payload.commits -}}
+						{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
+					{{- end -}}
+				{{- end -}}
+
+				{{- $urls := dict -}}
+
+				{{- if .payload.comment.html_url -}}
+					{{- $_ := set $urls "html_url" .payload.comment.html_url -}}
+				{{- else if .payload.review.html_url -}}
+					{{- $_ := set $urls "html_url" .payload.review.html_url -}}
+				{{- else if .payload.pull_request.html_url -}}
+					{{- printf " %s" .payload.pull_request.html_url -}}
+					{{- $_ := set $urls "html_url" .payload.pull_request.html_url -}}
+					{{- $_ := set $urls "pr" (dict "repo" .repo.name "number" .payload.pull_request.number) -}}
+				{{- else if .payload.issue.html_url -}}
+					{{- $_ := set $urls "html_url" .payload.issue.html_url -}}
+				{{- else if .payload.release.html_url -}}
+					{{- $_ := set $urls "html_url" .payload.release.html_url -}}
+				{{- else if .payload.pages -}}
+					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha) }}
+				{{- else if .payload.forkee -}}
+					{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .payload.forkee.full_name) -}}
+				{{- else if and .payload.head .payload.before -}}
+					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head) -}}
+					{{- $_ := set $urls "diff" (dict "repo" .repo.name "before" .payload.before "head" .payload.head) -}}
+				{{- end -}}
+
+				{{- printf " %s" (mustToJson $urls | b64enc) -}}
+
+				{{- "\n" -}}
+			{{- end -}}
+		EOF
+	)"
 
 	# 2..-2 displays list item from 2nd column and excludes the last column.
 	# The last column is a base64-encoded JSON payload containing links.

@@ -135,6 +135,7 @@ function get-issue-pr-timeline {
 	)"
 
 	gh api \
+		--cache="1m" \
 		-H "Accept: application/vnd.github+json" \
 		-H "X-GitHub-Api-Version: 2022-11-28" \
 		--paginate \
@@ -220,7 +221,9 @@ function get-pr {
 		EOF
 	)"
 
-	gh api graphql \
+	gh api \
+		--cache="1m" \
+		graphql \
 		-F owner='{owner}' \
 		-F name='{repo}' \
 		-F number="$1" \
@@ -259,7 +262,9 @@ function get-issue {
 		EOF
 	)"
 
-	gh api graphql \
+	gh api \
+		--cache="1m" \
+		graphql \
 		-F owner='{owner}' \
 		-F name='{repo}' \
 		-F number="$1" \
@@ -519,6 +524,7 @@ function view-event-diff {
 		head=$(echo "$diff" | gojq -r '.head')
 
 		gh api \
+			--cache="1m" \
 			-H "Accept: application/vnd.github.v3.diff" \
 			"/repos/$repo/compare/$before...$head" |
 			deltadiff
@@ -532,13 +538,14 @@ export -f view-event-diff
 
 # Events uses fzf filtering.
 if [ "$target" == "events" ]; then
-	user=$(gh api user --jq '.login')
+	user=$(gh api --cache="1m" user --jq '.login')
 
 	events_path="$tmpdir/events"
 	received_events_path="$tmpdir/received_events"
 
 	# List events for the authenticated user.
 	gh api \
+		--cache="10m" \
 		-H "Accept: application/vnd.github+json" \
 		-H "X-GitHub-Api-Version: 2022-11-28" \
 		--paginate \
@@ -546,6 +553,7 @@ if [ "$target" == "events" ]; then
 
 	# List events received by the authenticated user.
 	gh api \
+		--cache="10m" \
 		-H "Accept: application/vnd.github+json" \
 		-H "X-GitHub-Api-Version: 2022-11-28" \
 		--paginate \

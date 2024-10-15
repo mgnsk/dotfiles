@@ -23,10 +23,30 @@ function _G.file_size()
 	return string.format(format, size, unit)
 end
 
+--- @return string
+function _G.num_selected()
+	if vim.fn.mode() == "V" then
+		local count = math.abs(vim.fn.line(".") - vim.fn.line("v")) + 1
+
+		return string.format("%d", count)
+	end
+
+	return ""
+end
+
+---@return string
+function _G.git_branch()
+	local data = vim.api.nvim_call_function("fugitive#statusline", {})
+	local branch = string.sub(data, 5, -2)
+
+	return branch
+end
+
 vim.opt.statusline = table.concat({
 	"%#LineNr#",
+	"%{v:lua.git_branch()}",
 	" %m%f",
-	" %{%v:lua.require'util'.num_selected()%}",
+	" %{%v:lua.num_selected()%}",
 	"%=",
 	"%#LineNr#",
 	" %y",

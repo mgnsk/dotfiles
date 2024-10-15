@@ -376,7 +376,13 @@ export -f gh-view
 
 # PRs and issues use github's search.
 if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
-	repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+	# Slow:
+	# repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+
+	# Fast:
+	# Adapted from https://stackoverflow.com/questions/15715825/how-do-you-get-the-git-repositorys-name-in-some-git-repository#comment112361514_58843794.
+	repo=$(git config --get remote.origin.url | sed -r 's/.*(\@|\/\/)(.*)(\:|\/)([^:\/]*)\/([^\/\.]*)\.git/\4\/\5/')
+
 	export FZF_DEFAULT_COMMAND="bash -c \"gh-search $repo {q} 2>&1\""
 
 	args=(

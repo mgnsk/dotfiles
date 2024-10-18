@@ -450,6 +450,10 @@ function view-event {
 				{{ printf "https://github.com/%s" .payload.forkee.full_name }}
 			{{end}}
 
+			{{if eq .type "WatchEvent"}}
+				{{ printf "https://github.com/%s" .repo.name }}
+			{{end}}
+
 			{{if and .payload.head .payload.before}}
 				{{ printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head }}
 			{{end}}
@@ -587,6 +591,9 @@ if [ "$target" == "events" ]; then
 				{{- if .payload.forkee -}}
 					{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
 				{{- end -}}
+				{{- if eq .type "WatchEvent" -}}
+					{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
+				{{- end -}}
 				{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number (truncate 25 .payload.pull_request.title) | autocolor "cyan"}}{{end -}}
 				{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number (truncate 25 .payload.issue.title) | autocolor "cyan"}}{{end -}}
 
@@ -630,6 +637,8 @@ if [ "$target" == "events" ]; then
 				{{- else if and .payload.head .payload.before -}}
 					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head) -}}
 					{{- $_ := set $urls "diff" (dict "repo" .repo.name "before" .payload.before "head" .payload.head) -}}
+				{{- else if eq .type "WatchEvent" -}}
+					{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .repo.name) -}}
 				{{- end -}}
 
 				{{- printf " %s" (mustToJson $urls | b64enc) -}}

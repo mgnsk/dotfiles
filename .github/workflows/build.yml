@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install tusk
-      - run: curl -sL https://git.io/tusk | bash -s -- -b . latest
+        run: curl -sL https://git.io/tusk | bash -s -- -b . latest
 
       - name: Build the toolbox
-      - run: cd toolbox; ../tusk build --dev
+        run: cd toolbox; ../tusk build --dev

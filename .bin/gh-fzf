@@ -92,12 +92,14 @@ function gh-search {
 		exit
 	fi
 
+	# Note: we need word splitting.
+	# shellcheck disable=SC2086
 	gh search "$target" \
 		--repo "$repo" \
 		--sort updated \
 		--json number,title,state,createdAt,updatedAt,author \
 		--jq 'sort_by(.updatedAt) | reverse' \
-		"$query" |
+		$query |
 		gh-tpl --color "$issue_pr_list_go_template"
 }
 
@@ -278,6 +280,7 @@ function gh-view {
 	set -euo pipefail
 
 	number="$1"
+	# TODO: $query is multple words
 	query="$2"
 
 	if [ "$number" == "" ]; then

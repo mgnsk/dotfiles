@@ -6,7 +6,7 @@ fish_add_path ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin
 fish_add_path ~/.luarocks/bin
 fish_add_path ~/.tools/vendor/bin
 fish_add_path ~/.tools/node_modules/.bin
-fish_add_path ~/toolbox/bin
+fish_add_path ~/ide/bin
 
 set -gx LC_ALL en_US.UTF-8
 set -gx LANG en_US.UTF-8

@@ -29,7 +29,7 @@ RUN pacman -Syy \
 
 
 # System packages.
-FROM system-base AS toolbox-system-packages
+FROM system-base AS ide-system-packages
 
 ARG user
 USER ${user}
@@ -44,7 +44,7 @@ RUN bash install-system.sh \
 
 
 # AUR packages.
-FROM toolbox-system-packages AS toolbox-base-system
+FROM ide-system-packages AS ide-base-system
 
 ARG user
 USER ${user}
@@ -59,7 +59,7 @@ RUN bash install-aur.sh \
 
 
 # Go packages.
-FROM toolbox-base-system AS go-tools
+FROM ide-base-system AS go-tools
 
 ARG user
 USER ${user}
@@ -74,7 +74,7 @@ RUN bash install-go.sh \
 
 
 # Rust packages.
-FROM toolbox-base-system AS rust-tools
+FROM ide-base-system AS rust-tools
 
 ARG user
 USER ${user}
@@ -90,7 +90,7 @@ RUN bash install-rust.sh \
 
 
 # PHP packages.
-FROM toolbox-base-system AS php-tools
+FROM ide-base-system AS php-tools
 
 ARG user
 USER ${user}
@@ -106,7 +106,7 @@ RUN bash install-php.sh \
 
 
 # Javascript packages.
-FROM toolbox-base-system AS js-tools
+FROM ide-base-system AS js-tools
 
 ARG user
 USER ${user}
@@ -122,7 +122,7 @@ RUN bash install-js.sh \
 
 
 # Neovim packages.
-FROM toolbox-base-system AS nvim-tools
+FROM ide-base-system AS nvim-tools
 
 ARG user
 USER ${user}
@@ -137,7 +137,7 @@ RUN bash install-nvim.sh \
 
 
 # Final image.
-FROM toolbox-base-system
+FROM ide-base-system
 
 ARG uid
 ARG gid

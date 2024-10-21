@@ -1,0 +1,41 @@
+---
+volumes:
+  ide-state:
+  ide-cache:
+  ide-cargo:
+  ide-go:
+  ide-fish:
+
+
+services:
+  ide:
+    image: ghcr.io/mgnsk/ide:master
+    environment:
+      TERM: ${TERM}
+      # TODO: TZ
+      # tz=$(timedatectl show | grep Timezone | cut -d= -f2)
+      TZ: ${TZ}
+      TOOLBOX_ENV: true
+    stdin_open: true
+    tty: true
+    hostname: ide
+    network_mode: host
+    command: fish
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,mode=777
+    volumes:
+      - ide-state:/home/ide/.local/state
+      - ide-cache:/home/ide/.cache
+      - ide-cargo:/home/ide/.cargo
+      - ide-cache:/cache
+      - ide-go:/home/ide/go
+      - ide-fish:/home/ide/.local/share/fish
+      - ${PWD}:${PWD}:Z
+    working_dir: ${PWD}
+    memswap_limit: 4G
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 2G

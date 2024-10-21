@@ -1,4 +1,4 @@
-name: Build and publish toolbox Docker image
+name: Build and publish Docker image
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-toolbox
+  IMAGE_NAME: mgnsk/ide
 
 permissions:
   contents: read
@@ -16,14 +16,14 @@ permissions:
 
 jobs:
   build:
-    name: Build and publish toolbox Docker image
+    name: Build and publish  Docker image
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Copy dotfiles to build context
-        run: mkdir -p toolbox/dotfiles; git ls-files | tar Tc - | tar Cx toolbox/dotfiles
+        run: mkdir -p /dotfiles; git ls-files | tar Tc - | tar Cx ide/dotfiles
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
@@ -42,15 +42,15 @@ jobs:
         id: push
         uses: docker/build-push-action@v6
         with:
-          context: toolbox
+          context:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             "uid=1000"
             "gid=1000"
-            "user=${{ github.actor }}"
-            "group=${{ github.actor }}"
+            "user=ide"
+            "group=ide"
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1

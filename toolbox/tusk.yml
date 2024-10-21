@@ -34,19 +34,34 @@ tasks:
       - command: mkdir -p dotfiles
       - command: cd ${host-home}; git --git-dir=${host-home}/.dotfiles --work-tree=${host-home} ls-files | tar Tc - | tar Cx ${host-home}/toolbox/dotfiles
 
+  _dotfiles.ci:
+    private: true
+    run:
+      - command: rm -rf dotfiles
+      - command: mkdir -p dotfiles
+      - command: cd ../; git ls-files | tar Tc - | tar Cx ./toolbox/dotfiles
+
   build:
     usage: Build the production toolbox image.
     options:
-      dev:
-        type: bool
+      mode:
+        default: prod
+        values:
+          - prod
+          - dev
+          - ci
     run:
       - when:
-          equal: {dev: true}
+          equal: {mode: prod}
+        task: _dotfiles.prod
+
+      - when:
+          equal: {mode: dev}
         task: _dotfiles.dev
 
       - when:
-          equal: {dev: false}
-        task: _dotfiles.prod
+          equal: {mode: ci}
+        task: _dotfiles.ci
 
       # Note: setting ulimit fixes the fakeroot slowness issue.
       # https://github.com/greyltc-org/docker-archlinux-aur/issues/7#issuecomment-1516028357

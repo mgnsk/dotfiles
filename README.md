@@ -12,14 +12,11 @@ $ config config status.showUntrackedFiles no
 $ config reset --hard origin/master
 ```
 
-# Neovim keymap
-
-[Neovim keymap](.config/nvim/README.md)
-
 # Toolbox
 
 The toolbox is an immutable development environment container.
 It's main application is running neovim.
+
 The following is a guide on how to run the toolbox without installing the dotfiles
 onto the host machine.
 

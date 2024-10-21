@@ -16,4 +16,4 @@ jobs:
         run: curl -sL https://git.io/tusk | bash -s -- -b . latest
 
       - name: Build the toolbox
-        run: cd toolbox; ../tusk build --dev
+        run: cd toolbox; ../tusk build --mode=ci

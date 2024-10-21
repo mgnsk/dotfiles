@@ -1,0 +1,19 @@
+name: build
+
+on:
+  push:
+    branches: ['master']
+
+jobs:
+  build:
+    name: Build the toolbox
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install tusk
+      - run: curl -sL https://git.io/tusk | bash -s -- -b . latest
+
+      - name: Build the toolbox
+      - run: cd toolbox; ../tusk build --dev

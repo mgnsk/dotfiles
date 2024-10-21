@@ -416,6 +416,39 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	exit
 fi
 
+# View diff for PR or commits.
+function view-event-diff {
+	v=$(echo "\"$1\"" | gh-tpl "{{b64dec .}}")
+
+	pr=$(echo "$v" | gojq '.pr')
+	diff=$(echo "$v" | gojq '.diff')
+
+	if [ "$pr" != "null" ]; then
+		repo=$(echo "$pr" | gojq -r '.repo')
+		number=$(echo "$pr" | gojq -r '.number')
+
+		gh api \
+			--cache="1m" \
+			-H "Accept: application/vnd.github.v3.diff" \
+			"/repos/$repo/pulls/$number" |
+			deltadiff
+	elif [ "$diff" != "null" ]; then
+		repo=$(echo "$diff" | gojq -r '.repo')
+		before=$(echo "$diff" | gojq -r '.before')
+		head=$(echo "$diff" | gojq -r '.head')
+
+		gh api \
+			--cache="1m" \
+			-H "Accept: application/vnd.github.v3.diff" \
+			"/repos/$repo/compare/$before...$head" |
+			deltadiff
+	else
+		exit 1
+	fi
+}
+
+export -f view-event-diff
+
 function view-event {
 	id="$(echo "$1" | tr -d "'")"
 
@@ -494,7 +527,6 @@ function view-event {
 
 	# Display repo if fork event.
 	forkee=$(echo "$event" | gojq '.payload.forkee')
-
 	if [ "$forkee" != "null" ]; then
 		repo=$(echo "$forkee" | gojq -r '.full_name')
 
@@ -502,6 +534,8 @@ function view-event {
 		gh repo view "$repo"
 	fi
 
+	# Display inline diff for PullRequest and Push events.
+	view-event-diff "$2"
 }
 
 export -f view-event
@@ -514,37 +548,6 @@ function open-event-link {
 }
 
 export -f open-event-link
-
-# View diff for PR.
-function view-event-diff {
-	v=$(echo "\"$1\"" | gh-tpl "{{b64dec .}}")
-
-	pr=$(echo "$v" | gojq '.pr')
-	diff=$(echo "$v" | gojq '.diff')
-
-	if [ "$pr" != "null" ]; then
-		repo=$(echo "$pr" | gojq -r '.repo')
-		number=$(echo "$pr" | gojq -r '.number')
-
-		gh pr diff "$number" --repo "$repo" |
-			deltadiff
-	elif [ "$diff" != "null" ]; then
-		repo=$(echo "$diff" | gojq -r '.repo')
-		before=$(echo "$diff" | gojq -r '.before')
-		head=$(echo "$diff" | gojq -r '.head')
-
-		gh api \
-			--cache="1m" \
-			-H "Accept: application/vnd.github.v3.diff" \
-			"/repos/$repo/compare/$before...$head" |
-			deltadiff
-	else
-		echo "No data found for diff"
-		exit 1
-	fi
-}
-
-export -f view-event-diff
 
 # Events uses fzf filtering.
 if [ "$target" == "events" ]; then
@@ -623,7 +626,6 @@ if [ "$target" == "events" ]; then
 				{{- else if .payload.review.html_url -}}
 					{{- $_ := set $urls "html_url" .payload.review.html_url -}}
 				{{- else if .payload.pull_request.html_url -}}
-					{{- printf " %s" .payload.pull_request.html_url -}}
 					{{- $_ := set $urls "html_url" .payload.pull_request.html_url -}}
 					{{- $_ := set $urls "pr" (dict "repo" .repo.name "number" .payload.pull_request.number) -}}
 				{{- else if .payload.issue.html_url -}}
@@ -664,7 +666,7 @@ if [ "$target" == "events" ]; then
 			--header "Ctrl-L: web browser, Ctrl-O: diff (for Push and PullRequest)" \
 			--bind "ctrl-l:execute-silent(bash -c 'open-event-link {-1}')" \
 			--bind "ctrl-o:execute(bash -c 'view-event-diff {-1}')" \
-			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1}\"" \
+			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} {-1}\"" \
 			--preview-window=down:wrap,70% \
 			--prompt "$target> "
 

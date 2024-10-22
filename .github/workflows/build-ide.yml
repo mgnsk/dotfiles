@@ -61,12 +61,10 @@ jobs:
           push-to-registry: true
 
   clean:
-    runs-on: ubuntu-latest
-    name: Delete old images
-    steps:
-      - uses: snok/container-retention-policy@v3.0.0
-        with:
-          account: ${{ github.actor }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          image-names: ${{ env.IMAGE_NAME }}
-          keep-n-most-recent: 2
+    uses: vlaurin/action-ghcr-prune@v0.6.0
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      user: ${{ github.actor }}
+      container: ${{ env.IMAGE_NAME }}
+      keep-last: 2
+      prune-untagged: true

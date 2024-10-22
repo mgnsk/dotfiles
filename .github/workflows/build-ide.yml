@@ -63,6 +63,7 @@ jobs:
   clean:
     runs-on: ubuntu-latest
     name: Prune old images
+    needs: build
     steps:
       - uses: snok/container-retention-policy@v3.0.0
         with:

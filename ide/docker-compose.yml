@@ -1,10 +1,10 @@
 ---
 volumes:
-  ide-state:
-  ide-cache:
-  ide-cargo:
-  ide-go:
-  ide-fish:
+  state:
+  cache:
+  cargo:
+  go:
+  fish:
 
 
 services:
@@ -24,12 +24,12 @@ services:
     tmpfs:
       - /tmp:rw,exec,nosuid,nodev,mode=777
     volumes:
-      - ide-state:/home/ide/.local/state
-      - ide-cache:/home/ide/.cache
-      - ide-cargo:/home/ide/.cargo
-      - ide-cache:/cache
-      - ide-go:/home/ide/go
-      - ide-fish:/home/ide/.local/share/fish
+      - state:/home/ide/.local/state
+      - cache:/home/ide/.cache
+      - cargo:/home/ide/.cargo
+      - cache:/cache
+      - go:/home/ide/go
+      - fish:/home/ide/.local/share/fish
       - ${PWD}:${PWD}:Z
     working_dir: ${PWD}
     memswap_limit: 4G

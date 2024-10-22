@@ -12,8 +12,6 @@ services:
     image: ghcr.io/mgnsk/ide:master
     environment:
       TERM: ${TERM}
-      # TODO: TZ
-      # tz=$(timedatectl show | grep Timezone | cut -d= -f2)
       TZ: ${TZ}
       TOOLBOX_ENV: true
     stdin_open: true

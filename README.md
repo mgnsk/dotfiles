@@ -20,6 +20,11 @@ It's main application is running neovim.
 The following is a guide on how to run the container by using a pre-built Docker image
 hosted on Github Container Registry.
 
+## Install Docker and the Compose plugin
+
+https://docs.docker.com/engine/install/
+https://docs.docker.com/compose/install/linux/
+
 ## Clone the repository
 
 ```sh

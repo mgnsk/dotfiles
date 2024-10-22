@@ -13,7 +13,7 @@ services:
     environment:
       TERM: ${TERM}
       TZ: ${TZ}
-      TOOLBOX_ENV: true
+      userhost_color: yellow
     stdin_open: true
     tty: true
     hostname: ide

@@ -5,9 +5,7 @@ function fish_prompt
     set -l pipestatus_string (__fish_print_pipestatus "[" "] " "|" (set_color $fish_color_status) \
                                                                    (set_color --bold $fish_color_status) $last_pipestatus)
 
-    if test -n "$TOOLBOX_ENV"
-        set userhost_color yellow
-    else
+    if ! set -q userhost_color
         set userhost_color brblue
     end
 

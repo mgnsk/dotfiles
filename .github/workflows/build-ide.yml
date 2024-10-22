@@ -68,6 +68,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           user: ${{ github.actor }}
-          container: ${{ env.IMAGE_NAME }}
+          container: ide
           keep-last: 2
           prune-untagged: true

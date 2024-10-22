@@ -63,7 +63,7 @@ jobs:
   clean:
     name: Prune old images
     runs-on: ubuntu-latest
-    needs: build
+    # needs: build
     steps:
       - uses: vlaurin/action-ghcr-prune@v0.6.0
         with:
@@ -71,4 +71,3 @@ jobs:
           user: ${{ github.actor }}
           container: ide
           keep-last: 2
-          prune-untagged: true

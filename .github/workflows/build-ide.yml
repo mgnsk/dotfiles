@@ -61,10 +61,13 @@ jobs:
           push-to-registry: true
 
   clean:
-    uses: vlaurin/action-ghcr-prune@v0.6.0
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      user: ${{ github.actor }}
-      container: ${{ env.IMAGE_NAME }}
-      keep-last: 2
-      prune-untagged: true
+    name: Prune old images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: vlaurin/action-ghcr-prune@v0.6.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          user: ${{ github.actor }}
+          container: ${{ env.IMAGE_NAME }}
+          keep-last: 2
+          prune-untagged: true

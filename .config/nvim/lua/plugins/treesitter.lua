@@ -24,6 +24,7 @@ vim.g.ts_langs = {
 	"typescript",
 	"tsx",
 	"yaml",
+	"authzed",
 }
 
 ---@param lang string

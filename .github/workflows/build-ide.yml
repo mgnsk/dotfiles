@@ -68,6 +68,6 @@ jobs:
         with:
           account: ${{ github.actor }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          image-names: ide
+          image-names: ${{ env.IMAGE_NAME }}
           cut-off: 1h
           keep-n-most-recent: 2

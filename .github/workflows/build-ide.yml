@@ -1,3 +1,4 @@
+---
 name: Build and publish Docker image
 
 on:
@@ -58,3 +59,14 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+  clean:
+    runs-on: ubuntu-latest
+    name: Delete old images
+    steps:
+      - uses: snok/container-retention-policy@v3.0.0
+        with:
+          account: ${{ github.user }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: ${{ env.IMAGE_NAME }}
+          keep-n-most-recent: 2

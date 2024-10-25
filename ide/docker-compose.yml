@@ -9,7 +9,7 @@ volumes:
 
 services:
   ide:
-    image: ghcr.io/mgnsk/ide:master
+    image: ghcr.io/mgnsk/ide:edge
     environment:
       TERM: ${TERM}
       TZ: ${TZ}

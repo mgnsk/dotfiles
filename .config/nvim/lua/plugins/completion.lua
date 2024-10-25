@@ -8,7 +8,7 @@ return {
 			"hrsh7th/cmp-nvim-lsp-signature-help",
 			{
 				"hrsh7th/vim-vsnip",
-				init = function()
+				config = function()
 					vim.g.vsnip_snippet_dir = vim.fn.resolve(vim.fn.stdpath("config") .. "/snippets")
 				end,
 			},
@@ -104,6 +104,8 @@ return {
 						behavior = cmp.ConfirmBehavior.Insert,
 						select = false,
 					}),
+
+					["<C-Space>"] = cmp.mapping.complete(),
 				},
 			})
 		end,

@@ -71,7 +71,6 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufEnter" },
-		init = function() end,
 		-- Note: would like to use a function but TSUpdateSync command is not available then (lazy bug?). Instead, need to use a ':' command.
 		build = ":lua _G.install_ts_langs(vim.g.ts_langs)",
 		config = function()

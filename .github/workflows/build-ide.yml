@@ -71,4 +71,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           image-names: ide
           cut-off: 1s
-          keep-n-most-recent: 2
+          keep-n-most-recent: 4

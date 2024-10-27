@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-sudo pacman -Syy
-
-sudo pacman -S --noconfirm --needed archlinux-keyring
-
 sudo pacman -S --noconfirm --needed \
 	git \
 	git-delta \

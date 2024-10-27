@@ -156,7 +156,6 @@ COPY --chown=${uid}:${gid} /dotfiles/.tools/configure-system.sh /home/${user}/.t
 WORKDIR /home/${user}/.tools
 
 RUN bash configure-system.sh \
-    && bash install-fish.sh \
     && sudo gpasswd -d ${user} wheel \
     && sudo rm /etc/sudoers.d/01-wheel \
     && mkdir -p \

@@ -32,12 +32,20 @@ return {
 		event = { "BufEnter" },
 		init = function()
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
+			vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature" })
+
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })
-			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "List implementations" })
 			vim.keymap.set("n", "go", vim.lsp.buf.type_definition, { desc = "Goto definition" })
-			vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "List references" })
-			vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature" })
+
+			vim.keymap.set("n", "gi", function()
+				return require("fzf-lua").lsp_implementations()
+			end, { desc = "List implementations" })
+
+			vim.keymap.set("n", "gr", function()
+				return require("fzf-lua").lsp_references()
+			end, { desc = "List references" })
+
 			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
 			vim.keymap.set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
 		end,

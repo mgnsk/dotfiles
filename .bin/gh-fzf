@@ -482,6 +482,10 @@ function view-event {
 				{{.payload.release.html_url}}
 			{{end}}
 
+			{{if eq .payload.ref_type "tag" }}
+				{{ printf "https://github.com/%s/releases/tag/%s" .repo.name .payload.ref }}
+			{{end}}
+
 			{{if .payload.forkee}}
 				{{ printf "https://github.com/%s" .payload.forkee.full_name }}
 			{{end}}
@@ -635,8 +639,10 @@ if [ "$target" == "events" ]; then
 					{{- $_ := set $urls "html_url" .payload.issue.html_url -}}
 				{{- else if .payload.release.html_url -}}
 					{{- $_ := set $urls "html_url" .payload.release.html_url -}}
+				{{- else if eq .payload.ref_type "tag" -}}
+					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/releases/tag/%s" .repo.name .payload.ref) -}}
 				{{- else if .payload.pages -}}
-					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha) }}
+					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha) -}}
 				{{- else if .payload.forkee -}}
 					{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .payload.forkee.full_name) -}}
 				{{- else if and .payload.head .payload.before -}}

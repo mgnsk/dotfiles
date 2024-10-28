@@ -1,5 +1,5 @@
 -- location_callback opens all LSP gotos in a new tab
-local location_callback = function(_, result, ctx)
+local goto_callback = function(_, result, ctx)
 	local util = vim.lsp.util
 
 	if result == nil or vim.tbl_isempty(result) then
@@ -10,9 +10,13 @@ local location_callback = function(_, result, ctx)
 	vim.api.nvim_command("tabnew")
 
 	if vim.islist(result) then
-		util.jump_to_location(result[1], "utf-8", false)
+		if #result > 1 then
+			error("expected a single result")
+		end
+
+		util.show_document(result[1], "utf-8", { reuse_win = false, focus = true })
 	else
-		util.jump_to_location(result, "utf-8", false)
+		util.show_document(result, "utf-8", { reuse_win = false, focus = true })
 	end
 end
 
@@ -71,10 +75,11 @@ return {
 				end,
 			})
 
-			vim.lsp.handlers["textDocument/declaration"] = location_callback
-			vim.lsp.handlers["textDocument/definition"] = location_callback
-			vim.lsp.handlers["textDocument/typeDefinition"] = location_callback
-			vim.lsp.handlers["textDocument/implementation"] = location_callback
+			--- Open gotos in new tab.
+			vim.lsp.handlers["textDocument/declaration"] = goto_callback
+			vim.lsp.handlers["textDocument/definition"] = goto_callback
+			vim.lsp.handlers["textDocument/typeDefinition"] = goto_callback
+
 			vim.lsp.handlers["textDocument/publishDiagnostics"] =
 				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
 					update_in_insert = false,

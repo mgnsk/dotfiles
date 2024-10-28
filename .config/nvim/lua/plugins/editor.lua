@@ -8,10 +8,9 @@ return {
 	},
 	{
 		"mgnsk/dumb-autopairs.nvim",
+		dir = "~/workspaces/dumb-autopairs.nvim",
 		event = "InsertEnter",
-		config = function()
-			require("dumb-autopairs").setup()
-		end,
+		opts = {},
 	},
 	{
 		"kevinhwang91/nvim-fundo",

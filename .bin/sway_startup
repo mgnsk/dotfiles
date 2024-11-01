@@ -32,7 +32,11 @@ gsettings set "$gnome_schema" gtk-theme 'oomox-tizix_dark'
 gsettings set "$gnome_schema" icon-theme 'oomox-tizix_dark'
 gsettings set "$gnome_schema" font-name 'Cantarell 11'
 
-sway-fader --app_id="foot:0.7:0.97" &
+sway-fader \
+	--app_id="foot:0.7:0.97" \
+	--app_id="kitty:0.7:0.97" \
+	--app_id="Alacritty:0.7:0.97" \
+	--class="XTerm:0.7:0.97" &
 lxsession &
 lxpolkit &
 /usr/libexec/geoclue-2.0/demos/agent &

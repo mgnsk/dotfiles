@@ -73,6 +73,9 @@ fi
 
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 
+shopt -s histappend
+PROMPT_COMMAND="history -a;history -c;history -r;$PROMPT_COMMAND"
+
 __prompt_command() {
 	local EXIT="$?" # This needs to be first
 	PS1=""

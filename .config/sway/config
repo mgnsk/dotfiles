@@ -75,13 +75,13 @@ mode Mouse {
 bindsym $mod+m mode Mouse
 
 # start a terminal
-bindsym $mod+Return exec foot
+bindsym $mod+Return exec kitty
 
 # kill focused window
 bindsym $mod+Shift+q kill
 bindsym $mod+q kill
 
-bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='bemenu -i' --term='foot'
+bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='bemenu -i' --term='kitty'
 
 # change focus
 bindsym {

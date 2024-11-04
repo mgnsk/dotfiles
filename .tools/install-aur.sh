@@ -3,7 +3,6 @@
 set -euo pipefail
 
 declare -a packages=(
-	"fish-fzf"
 	"hadolint-bin"
 	"shellcheck-bin"
 	"lscolors-git"

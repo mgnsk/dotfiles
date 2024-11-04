@@ -19,7 +19,7 @@ RUN pacman -Syy \
     fi \
     && useradd \
     -m \
-    -s /usr/bin/fish \
+    -s /usr/bin/bash \
     -g ${group} \
     --uid ${uid} \
     ${user} \
@@ -161,7 +161,7 @@ RUN bash configure-system.sh \
     && mkdir -p \
     /home/${user}/.cache \
     /home/${user}/.cargo \
-    /home/${user}/.local/share/fish \
     /home/${user}/.local/state \
     /home/${user}/go/pkg \
-    /home/${user}/.rustup
+    /home/${user}/.rustup \
+    && touch /home/${user}/.bash_history

@@ -4,7 +4,7 @@ volumes:
   cache:
   cargo:
   go:
-  fish:
+  bash:
 
 
 services:
@@ -18,7 +18,7 @@ services:
     tty: true
     hostname: ide
     network_mode: host
-    command: fish
+    command: bash
     tmpfs:
       - /tmp:rw,exec,nosuid,nodev,mode=777
     volumes:
@@ -27,7 +27,7 @@ services:
       - cargo:/home/ide/.cargo
       - cache:/cache
       - go:/home/ide/go
-      - fish:/home/ide/.local/share/fish
+      - bash:/home/ide/.bash_history
       - ${PWD}:${PWD}:Z
     working_dir: ${PWD}
     memswap_limit: 4G

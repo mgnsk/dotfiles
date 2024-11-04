@@ -8,7 +8,6 @@ sudo pacman -S --noconfirm --needed \
 	unzip \
 	wget \
 	tmux \
-	fish \
 	tree \
 	ripgrep \
 	fd \

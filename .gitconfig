@@ -12,7 +12,7 @@
 	issues = !gh-fzf issues
 	events = !gh-fzf events
 
-	# Run nvim from the current dir. Used for the `config` fish alias.
+	# Run nvim from the current dir. Used for the `config` bash alias.
 	nvim = "!f() { cd ${GIT_PREFIX:-./}; nvim; }; f"
 
 [mergetool]

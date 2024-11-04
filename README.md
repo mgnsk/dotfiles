@@ -38,7 +38,7 @@ After configuring PATH, verify the script is accessible by running `which ide` i
 ## Run the container
 
 Navigate to a project directory and run `ide` to enter the container.
-A fish shell starts in the current directory bind mounted into the container.
+A bash shell starts in the current directory bind mounted into the container.
 
 From there on, for example, you can continue by invoking `nvim`.
 

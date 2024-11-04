@@ -45,6 +45,8 @@ export PKGEXT=".pkg.tar"
 
 export NODE_OPTIONS="--max_old_space_size=4096"
 
+export HISTFILE="$HOME/.local/state/.bash_history"
+
 # Start sway at login
 if test -z "$DISPLAY" -a "$XDG_VTNR" = 1; then
 	export XDG_CONFIG_HOME="$HOME/.config"

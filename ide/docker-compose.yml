@@ -4,7 +4,6 @@ volumes:
   cache:
   cargo:
   go:
-  bash:
 
 
 services:
@@ -27,7 +26,6 @@ services:
       - cargo:/home/ide/.cargo
       - cache:/cache
       - go:/home/ide/go
-      - bash:/home/ide/.bash_history
       - ${PWD}:${PWD}:Z
     working_dir: ${PWD}
     memswap_limit: 4G

@@ -163,5 +163,4 @@ RUN bash configure-system.sh \
     /home/${user}/.cargo \
     /home/${user}/.local/state \
     /home/${user}/go/pkg \
-    /home/${user}/.rustup \
-    && touch /home/${user}/.bash_history
+    /home/${user}/.rustup

@@ -66,6 +66,10 @@ if test -d /usr/share/fzf; then
 	source /usr/share/fzf/key-bindings.bash
 fi
 
+if test -f /usr/share/bash-completion/bash_completion; then
+	. /usr/share/bash-completion/bash_completion
+fi
+
 # TODO
 # if type -p direnv; then
 # 	eval "$(direnv hook bash)"

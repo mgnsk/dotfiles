@@ -3,6 +3,7 @@
 set -euo pipefail
 
 sudo pacman -S --noconfirm --needed \
+	bash-completion \
 	git \
 	git-delta \
 	unzip \

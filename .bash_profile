@@ -38,8 +38,6 @@ export LIBRARY_PATH="$HOME/.local/lib"
 
 export ANSIBLE_NOCOWS=1
 
-export GPG_TTY="$(tty)"
-
 # Disable makepkg compression.
 export PKGEXT=".pkg.tar"
 

@@ -5,6 +5,8 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+export GPG_TTY="$(tty)"
+
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 
 if test -f /usr/share/LS_COLORS/dircolors.sh; then

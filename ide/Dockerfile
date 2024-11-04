@@ -1,5 +1,5 @@
 # Base image for system.
-FROM archlinux:base-devel AS system-base
+FROM archlinux:base-devel AS build-base
 
 ARG uid
 ARG gid
@@ -11,6 +11,11 @@ RUN pacman -Syy \
     && pacman -Syu --noconfirm \
     && pacman -S --noconfirm --needed \
     git \
+    go \
+    rustup \
+    composer \
+    npm \
+    neovim \
     && bash -c "yes | pacman -Scc" \
     && if grep -q "${group}:" /etc/group; then \
     groupmod -o -g ${gid} ${group}; \
@@ -28,38 +33,8 @@ RUN pacman -Syy \
     && gpasswd -a ${user} wheel
 
 
-# System packages.
-FROM system-base AS ide-system-packages
-
-ARG user
-USER ${user}
-
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/
-
-WORKDIR /home/${user}/.tools
-
-RUN bash install-system.sh \
-    && rm -rf /home/${user}/.cache \
-    && sudo bash -c "yes | pacman -Scc"
-
-
-# AUR packages.
-FROM ide-system-packages AS ide-base-system
-
-ARG user
-USER ${user}
-
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-aur.sh /home/${user}/.tools/
-
-WORKDIR /home/${user}/.tools
-
-RUN bash install-aur.sh \
-    && rm -rf /home/${user}/.cache \
-    && sudo bash -c "yes | pacman -Scc"
-
-
 # Go packages.
-FROM ide-base-system AS go-tools
+FROM build-base AS go-tools
 
 ARG user
 USER ${user}
@@ -74,7 +49,7 @@ RUN bash install-go.sh \
 
 
 # Rust packages.
-FROM ide-base-system AS rust-tools
+FROM build-base AS rust-tools
 
 ARG user
 USER ${user}
@@ -90,7 +65,7 @@ RUN bash install-rust.sh \
 
 
 # PHP packages.
-FROM ide-base-system AS php-tools
+FROM build-base AS php-tools
 
 ARG user
 USER ${user}
@@ -106,7 +81,7 @@ RUN bash install-php.sh \
 
 
 # Javascript packages.
-FROM ide-base-system AS js-tools
+FROM build-base AS js-tools
 
 ARG user
 USER ${user}
@@ -122,7 +97,7 @@ RUN bash install-js.sh \
 
 
 # Neovim packages.
-FROM ide-base-system AS nvim-tools
+FROM build-base AS nvim-tools
 
 ARG user
 USER ${user}
@@ -136,8 +111,38 @@ RUN bash install-nvim.sh \
     && rm -rf /home/${user}/.cache
 
 
+# System packages.
+FROM build-base AS system-packages
+
+ARG user
+USER ${user}
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/
+
+WORKDIR /home/${user}/.tools
+
+RUN bash install-system.sh \
+    && rm -rf /home/${user}/.cache \
+    && sudo bash -c "yes | pacman -Scc"
+
+
+# AUR packages.
+FROM system-packages AS aur-packages
+
+ARG user
+USER ${user}
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-aur.sh /home/${user}/.tools/
+
+WORKDIR /home/${user}/.tools
+
+RUN bash install-aur.sh \
+    && rm -rf /home/${user}/.cache \
+    && sudo bash -c "yes | pacman -Scc"
+
+
 # Final image.
-FROM ide-base-system
+FROM aur-packages
 
 ARG uid
 ARG gid

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 function get-build-context {
-	cd "$HOME" && git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" ls-files | tar Tc -
+	cd "$HOME" && git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" archive --format=tar HEAD
 }
 
 rm -rf dotfiles

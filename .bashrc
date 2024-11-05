@@ -21,6 +21,8 @@ if test -f /usr/share/bash-completion/bash_completion; then
 	. /usr/share/bash-completion/bash_completion
 fi
 
+. ~/.local/share/tusk/tusk-completion.bash
+
 # TODO
 # if type -p direnv; then
 # 	eval "$(direnv hook bash)"

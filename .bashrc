@@ -55,6 +55,7 @@ if test -f /usr/share/LS_COLORS/dircolors.sh; then
 fi
 
 if test -d /usr/share/fzf; then
+	source /usr/share/fzf/completion.bash
 	source /usr/share/fzf/key-bindings.bash
 fi
 

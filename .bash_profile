@@ -2,6 +2,8 @@
 # ~/.bash_profile
 #
 
+[[ -f ~/.bashrc ]] && . ~/.bashrc
+
 # Start sway at login
 if test -z "$DISPLAY" -a "$XDG_VTNR" = 1; then
 	export XDG_CONFIG_HOME="$HOME/.config"

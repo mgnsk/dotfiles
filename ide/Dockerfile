@@ -39,9 +39,9 @@ FROM build-base AS go-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-go.sh /home/${user}/.tools/install-go.sh
-
 WORKDIR /home/${user}/.tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-go.sh ./
 
 RUN bash install-go.sh \
     && sudo rm -rf /home/${user}/go/pkg \
@@ -54,9 +54,9 @@ FROM build-base AS rust-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-rust.sh /home/${user}/.tools/install-rust.sh
-
 WORKDIR /home/${user}/.tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-rust.sh ./
 
 RUN bash install-rust.sh \
     && rm -rf \
@@ -70,11 +70,11 @@ FROM build-base AS php-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.json /home/${user}/.tools/composer.json
-COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.lock /home/${user}/.tools/composer.lock
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-php.sh /home/${user}/.tools/install-php.sh
-
 WORKDIR /home/${user}/.tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.json ./
+COPY --chown=${uid}:${gid} /dotfiles/.tools/composer.lock ./
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-php.sh ./
 
 RUN bash install-php.sh \
     && rm -rf /home/${user}/.cache
@@ -86,11 +86,11 @@ FROM build-base AS js-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/package.json /home/${user}/.tools/package.json
-COPY --chown=${uid}:${gid} /dotfiles/.tools/package-lock.json /home/${user}/.tools/package-lock.json
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-js.sh /home/${user}/.tools/install-js.sh
-
 WORKDIR /home/${user}/.tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/package.json ./
+COPY --chown=${uid}:${gid} /dotfiles/.tools/package-lock.json ./
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-js.sh ./
 
 RUN bash install-js.sh \
     && rm -rf /home/${user}/.npm
@@ -102,10 +102,10 @@ FROM build-base AS nvim-tools
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-nvim.sh /home/${user}/.tools/install-nvim.sh
-
 WORKDIR /home/${user}/.tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.config/nvim /home/${user}/.config/nvim
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-nvim.sh ./
 
 RUN bash install-nvim.sh \
     && rm -rf /home/${user}/.cache
@@ -117,9 +117,9 @@ FROM build-base AS system-packages
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh /home/${user}/.tools/
-
 WORKDIR /home/${user}/.tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-system.sh ./
 
 RUN bash install-system.sh \
     && rm -rf /home/${user}/.cache \
@@ -132,9 +132,9 @@ FROM system-packages AS aur-packages
 ARG user
 USER ${user}
 
-COPY --chown=${uid}:${gid} /dotfiles/.tools/install-aur.sh /home/${user}/.tools/
-
 WORKDIR /home/${user}/.tools
+
+COPY --chown=${uid}:${gid} /dotfiles/.tools/install-aur.sh ./
 
 RUN bash install-aur.sh \
     && rm -rf /home/${user}/.cache \

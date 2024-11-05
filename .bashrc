@@ -48,6 +48,8 @@ export HISTFILE="$HOME/.local/state/.bash_history"
 
 export GPG_TTY="$(tty)"
 
+export SHELL="$(which bash)"
+
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 
 if test -f /usr/share/LS_COLORS/dircolors.sh; then

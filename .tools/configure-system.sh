@@ -10,7 +10,7 @@ sudo locale-gen
 install-tusk-completion() {
 	# Prevent tusk from modifying .bashrc.
 	cp "$HOME/.bashrc" "$HOME/.bashrc.bak"
-	tusk --install-completion bash
+	~/go/bin/tusk --install-completion bash
 	mv "$HOME/.bashrc.bak" "$HOME/.bashrc"
 }
 

@@ -57,6 +57,8 @@ jobs:
             "gid=1000"
             "user=ide"
             "group=ide"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # Commented out to avoid creating extra images in registry.
       # - name: Generate artifact attestation

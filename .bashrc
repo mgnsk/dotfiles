@@ -86,7 +86,9 @@ __prompt_command() {
 	local Gre='\[\e[0;32m\]'
 	local BrBlu='\[\e[0;36m\]'
 
-	PS1+="${RCol}[\t] ${BrBlu}\u@\h ${Gre}\w"
+	local userHostColor="${USERHOST_COLOR:-$BrBlu}"
+
+	PS1+="${RCol}[\t] ${userHostColor}\u@\h ${Gre}\w"
 
 	if [ $EXIT != 0 ]; then
 		PS1+=" ${Red}[${EXIT}]"

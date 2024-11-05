@@ -12,7 +12,8 @@ services:
     environment:
       TERM: ${TERM}
       TZ: ${TZ}
-      userhost_color: yellow
+      # yellow
+      USERHOST_COLOR: '\[\e[0;33m\]'
     stdin_open: true
     tty: true
     hostname: ide

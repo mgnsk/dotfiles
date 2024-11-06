@@ -4,4 +4,4 @@ vim.bo.softtabstop = 2
 vim.bo.tabstop = 2
 
 require("file_actions").configureFormatBeforeSave({ "prettier" })
-require("file_actions").configureLintAfterSave({ "tsc", "eslint" })
+require("file_actions").configureLintAfterSave({ "eslint" })

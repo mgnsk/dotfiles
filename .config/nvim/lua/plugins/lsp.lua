@@ -11,6 +11,7 @@ local goto_callback = function(_, result, ctx)
 
 	if vim.islist(result) then
 		if #result > 1 then
+			-- TODO: open multiple
 			error("expected a single result")
 		end
 
@@ -43,6 +44,7 @@ return {
 			end, { desc = "List implementations" })
 
 			vim.keymap.set("n", "gr", function()
+				-- TODO: go: include dependencies
 				return require("fzf-lua").lsp_references()
 			end, { desc = "List references" })
 
@@ -179,6 +181,9 @@ return {
 				capabilities = capabilities,
 			})
 			lsp.docker_compose_language_service.setup({
+				capabilities = capabilities,
+			})
+			lsp.buf_ls.setup({
 				capabilities = capabilities,
 			})
 		end,

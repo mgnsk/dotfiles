@@ -99,7 +99,7 @@ vim.g.clipboard = {
 	},
 }
 
-vim.keymap.set("v", "Y", [["+y<CR>]], { desc = "Big yank (system clipboard)" })
+vim.keymap.set("v", "Y", [["+y<CR><Up>]], { desc = "Big yank (system clipboard)" })
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape from insert mode" })
 vim.keymap.set("t", "jj", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { desc = "Escape from terminal mode" })

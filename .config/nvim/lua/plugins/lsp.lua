@@ -7,16 +7,20 @@ local goto_callback = function(_, result, ctx)
 		return nil
 	end
 
-	vim.api.nvim_command("tabnew")
-
 	if vim.islist(result) then
 		if #result > 1 then
-			-- TODO: open multiple
-			error("expected a single result")
+			for res in result do
+				vim.api.nvim_command("tabnew")
+				util.show_document(res, "utf-8", { reuse_win = false, focus = false })
+			end
+
+			return nil
 		end
 
+		vim.api.nvim_command("tabnew")
 		util.show_document(result[1], "utf-8", { reuse_win = false, focus = true })
 	else
+		vim.api.nvim_command("tabnew")
 		util.show_document(result, "utf-8", { reuse_win = false, focus = true })
 	end
 end
@@ -37,7 +41,7 @@ return {
 
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Goto definition" })
 			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Goto declaration" })
-			vim.keymap.set("n", "go", vim.lsp.buf.type_definition, { desc = "Goto definition" })
+			vim.keymap.set("n", "go", vim.lsp.buf.type_definition, { desc = "Goto type definition" })
 
 			vim.keymap.set("n", "gi", function()
 				return require("fzf-lua").lsp_implementations()

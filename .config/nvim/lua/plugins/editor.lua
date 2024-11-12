@@ -31,4 +31,18 @@ return {
 	{
 		"chaoren/vim-wordmotion",
 	},
+	{
+		"rlane/pounce.nvim",
+		event = "VeryLazy",
+		keys = {
+			{
+				"s",
+				mode = { "n", "x", "o" },
+				function()
+					require("pounce").pounce({})
+				end,
+				desc = "Pounce",
+			},
+		},
+	},
 }

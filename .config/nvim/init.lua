@@ -59,18 +59,6 @@ vim.g.netrw_preview = 1
 vim.g.netrw_alto = 0
 vim.g.netrw_winsize = 30
 
-vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave" }, {
-	callback = function()
-		vim.o.relativenumber = true
-	end,
-})
-
-vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter" }, {
-	callback = function()
-		vim.o.relativenumber = false
-	end,
-})
-
 vim.api.nvim_create_autocmd("TermOpen", {
 	command = [[ startinsert ]],
 })

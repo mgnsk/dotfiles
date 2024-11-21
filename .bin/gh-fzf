@@ -25,7 +25,11 @@ trap cleanup EXIT
 
 function ripgrep {
 	rgflags=$(cat "$tmpdir/rg_flags")
-	query="$1"
+
+	# Github CLI searches words separately.
+	# Build a regex string for ripgrep that highlights any of these words.
+	# shellcheck disable=SC2001
+	query=$(echo "$1" | sed "s/\s\+/|/g")
 
 	# Note: we need rgflags unquoted:
 	# shellcheck disable=SC2086
@@ -92,7 +96,7 @@ function gh-search {
 		exit
 	fi
 
-	# Note: we need word splitting.
+	# Note: we need word splitting - words are passed as separate arguments.
 	# shellcheck disable=SC2086
 	gh search "$target" \
 		--repo "$repo" \

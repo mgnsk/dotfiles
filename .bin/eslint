@@ -2,4 +2,6 @@
 
 set -eo pipefail
 
-npx --offline eslint "$@"
+if test -f "$PWD/eslint.config."* >/dev/null; then
+	npx --offline eslint "$@"
+fi

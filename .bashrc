@@ -50,28 +50,6 @@ export GPG_TTY="$(tty)"
 
 export SHELL="$(which bash)"
 
-[[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
-
-if test -f /usr/share/LS_COLORS/dircolors.sh; then
-	. /usr/share/LS_COLORS/dircolors.sh
-fi
-
-if test -d /usr/share/fzf; then
-	source /usr/share/fzf/completion.bash
-	source /usr/share/fzf/key-bindings.bash
-fi
-
-if test -f /usr/share/bash-completion/bash_completion; then
-	. /usr/share/bash-completion/bash_completion
-fi
-
-. ~/.local/share/tusk/tusk-completion.bash
-
-# TODO
-# if type -p direnv; then
-# 	eval "$(direnv hook bash)"
-# fi
-
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 
 shopt -s histappend
@@ -81,8 +59,8 @@ __prompt_command() {
 	PS1=""
 
 	history -a
-	history -c
-	history -r
+	# history -c
+	# history -r
 
 	local RCol='\[\e[0m\]'
 	local Red='\[\e[0;31m\]'
@@ -99,3 +77,26 @@ __prompt_command() {
 
 	PS1+=" ${RCol}\n> "
 }
+
+[[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
+
+if test -f /usr/share/LS_COLORS/dircolors.sh; then
+	. /usr/share/LS_COLORS/dircolors.sh
+fi
+
+if test -d /usr/share/fzf; then
+	source /usr/share/fzf/completion.bash
+	source /usr/share/fzf/key-bindings.bash
+fi
+
+if test -f /usr/share/bash-completion/bash_completion; then
+	source /usr/share/bash-completion/bash_completion
+fi
+
+if test -f "$HOME/.local/share/tusk/tusk-completion.bash"; then
+	source "$HOME/.local/share/tusk/tusk-completion.bash"
+fi
+
+# if type -p direnv; then
+# 	eval "$(direnv hook bash)"
+# fi

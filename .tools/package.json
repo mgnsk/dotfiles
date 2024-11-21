@@ -11,10 +11,10 @@
   "dependencies": {
     "@microsoft/compose-language-service": "^0.2.0",
     "bash-language-server": "^5.4.2",
-    "cspell": "^8.15.7",
+    "cspell": "^8.16.0",
     "markdownlint-cli": "^0.42.0",
-    "npm-check-updates": "^17.1.10",
-    "pnpm": "^9.12.3",
+    "npm-check-updates": "^17.1.11",
+    "pnpm": "^9.14.2",
     "prettier": "^3.3.3",
     "typescript-language-server": "^4.3.3",
     "vscode-langservers-extracted": "^4.10.0"

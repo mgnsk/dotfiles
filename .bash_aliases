@@ -44,7 +44,7 @@ snag() {
 	fi
 	# avoid checking out branch if files aren't specified
 	if test -n "$files"; then
-		git checkout -p "$branch" "$files"
+		git checkout -p "$branch" ${files[@]}
 	fi
 }
 

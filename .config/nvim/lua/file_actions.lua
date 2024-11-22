@@ -4,6 +4,10 @@ local M = {}
 ---
 ---@param config conform.FormatterConfigOverride
 function M.registerFormatter(config)
+	if os.getenv("NVIM_DIFF") then
+		return
+	end
+
 	require("conform").formatters[config.command] = config
 end
 
@@ -11,11 +15,19 @@ end
 ---
 ---@param formatters string[]
 function M.configureFormatBeforeSave(formatters)
+	if os.getenv("NVIM_DIFF") then
+		return
+	end
+
 	require("conform").formatters_by_ft[vim.bo.filetype] = formatters
 end
 
 --- Configure retab for the current buffer's filetype to run on BufWritePre.
 function M.configureRetabBeforeSave()
+	if os.getenv("NVIM_DIFF") then
+		return
+	end
+
 	local filetype = vim.bo.filetype
 
 	vim.api.nvim_create_autocmd("BufWritePre", {
@@ -38,6 +50,10 @@ end
 ---
 ---@param config NeomakeLinter
 function M.registerLinter(config)
+	if os.getenv("NVIM_DIFF") then
+		return
+	end
+
 	vim.g["neomake_" .. vim.bo.filetype .. "_" .. config.exe .. "_maker"] = config
 end
 
@@ -45,6 +61,10 @@ end
 ---
 ---@param linters string[]
 function M.configureLintAfterSave(linters)
+	if os.getenv("NVIM_DIFF") then
+		return
+	end
+
 	local filetype = vim.bo.filetype
 
 	vim.g["neomake_" .. filetype .. "_enabled_makers"] = linters

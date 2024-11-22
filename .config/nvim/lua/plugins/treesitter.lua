@@ -70,9 +70,9 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufEnter" },
 		-- Note: would like to use a function but TSUpdateSync command is not available then (lazy bug?). Instead, need to use a ':' command.
 		build = ":lua _G.install_ts_langs(vim.g.ts_langs)",
+		event = "BufEnter",
 		config = function()
 			require("nvim-treesitter.configs").setup({
 				highlight = {
@@ -98,7 +98,7 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter-context",
-		event = { "BufEnter" },
+		event = "VeryLazy",
 		config = function()
 			require("treesitter-context").setup({
 				multiline_threshold = 1, -- Maximum number of lines to show for a single context

@@ -34,7 +34,7 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		cond = not os.getenv("NVIM_DIFF"),
-		event = { "BufEnter" },
+		event = "VeryLazy",
 		init = function()
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
 			vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature" })

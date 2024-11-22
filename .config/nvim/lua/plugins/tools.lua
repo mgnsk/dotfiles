@@ -3,14 +3,14 @@ return {
 	{
 		"neomake/neomake",
 		cond = not os.getenv("NVIM_DIFF"),
-		event = "BufEnter",
+		event = "VeryLazy",
 		config = function()
 			vim.g.neomake_open_list = 2
 		end,
 	},
 	{
 		"ryuichiroh/vim-cspell",
-		event = "BufEnter",
+		event = "VeryLazy",
 		init = function()
 			vim.g.cspell_disable_autogroup = true
 

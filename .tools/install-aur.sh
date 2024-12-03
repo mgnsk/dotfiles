@@ -7,6 +7,7 @@ declare -a packages=(
 	"shellcheck-bin"
 	"lscolors-git"
 	"wl-kbptr"
+	"gojq-bin"
 )
 
 # Disable makepkg compression.

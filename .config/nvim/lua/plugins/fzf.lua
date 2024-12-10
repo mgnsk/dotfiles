@@ -96,6 +96,9 @@ return {
 					git_icons = false,
 					file_icons = false,
 				},
+				lsp = {
+					async_or_timeout = true,
+				},
 			})
 		end,
 	},

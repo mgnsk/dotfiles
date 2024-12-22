@@ -97,6 +97,6 @@ if test -f "$HOME/.local/share/tusk/tusk-completion.bash"; then
 	source "$HOME/.local/share/tusk/tusk-completion.bash"
 fi
 
-# if type -p direnv; then
-# 	eval "$(direnv hook bash)"
-# fi
+if command -v direnv >/dev/null 2>&1; then
+	eval "$(direnv hook bash)"
+fi

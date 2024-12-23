@@ -34,7 +34,9 @@ function ripgrep {
 
 export -f ripgrep
 
-# Default flag.
+# Ripgrep flags.
+# Default flag --passthrough. Ripgrep does not "grep" but only highlights.
+# Without this flag, ripgrep only shows matched lines with search query highlighted.
 echo "--passthrough" >"$tmpdir/rg_flags"
 
 function toggle-rg-passthrough {
@@ -47,6 +49,21 @@ function toggle-rg-passthrough {
 
 export -f toggle-rg-passthrough
 
+# Git flags.
+# The default --grep flag searches from commit messages.
+# The -G flag searches from diff content.
+echo "--grep" >"$tmpdir/git_flags"
+
+function toggle-git-mode {
+	if grep -q "grep" "$tmpdir/git_flags"; then
+		echo "-G" >"$tmpdir/git_flags"
+	else
+		echo "--grep" >"$tmpdir/git_flags"
+	fi
+}
+
+export -f toggle-git-mode
+
 function git-search {
 	set -euo pipefail
 
@@ -58,7 +75,11 @@ function git-search {
 		exit
 	fi
 
-	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -i -G "$query"
+	gitflags=$(cat "$tmpdir/git_flags")
+
+	# Note: we need gitflags unquoted:
+	# shellcheck disable=SC2086
+	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -i $gitflags "$query"
 }
 
 export -f git-search
@@ -66,7 +87,6 @@ export -f git-search
 function git-view {
 	set -euo pipefail
 
-	rgflags=$(cat "$tmpdir/rg_flags")
 	commit="$1"
 	query="$2"
 
@@ -81,7 +101,11 @@ function git-view {
 		exit
 	fi
 
-	git show --color -i -G "$query" "$commit" |
+	gitflags=$(cat "$tmpdir/git_flags")
+
+	# Note: we need gitflags unquoted:
+	# shellcheck disable=SC2086
+	git show --color -i $gitflags "$query" "$commit" |
 		delta |
 		ripgrep "$query"
 }
@@ -96,8 +120,9 @@ fzf \
 	--query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-	--header "Ctrl-L: web browser, Ctrl-P: toggle pinpoint mode" \
+	--header $'Ctrl-L: web browser\nCtrl-F: toggle git search mode (commit message vs diff content)\nCtrl-P: toggle pinpoint mode' \
 	--bind "ctrl-l:execute-silent(gh browse {1})" \
+	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+refresh-preview" \
 	--preview 'bash -c "git-view {1} {q}"' \
 	--preview-window=right:wrap \

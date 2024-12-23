@@ -381,6 +381,29 @@ function gh-view {
 
 export -f gh-view
 
+function prs-issues-fzf-header {
+	rgflags=$(cat "$tmpdir/rg_flags")
+	rgmode=""
+	if [ "$rgflags" == "--passthrough" ]; then
+		rgmode="passthrough"
+	else
+		rgmode="grep"
+	fi
+
+	target="$1"
+	header="Ctrl-L: web browser\n"
+
+	if [ "$target" == "prs" ]; then
+		header+="Ctrl-O: diff\n"
+	fi
+
+	header+="Ctrl-P: toggle pinpoint mode [current: $rgmode]"
+
+	echo -e "${header}"
+}
+
+export -f prs-issues-fzf-header
+
 # PRs and issues use github's search.
 if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	# Slow:
@@ -390,7 +413,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	# Adapted from https://stackoverflow.com/questions/15715825/how-do-you-get-the-git-repositorys-name-in-some-git-repository#comment112361514_58843794.
 	repo=$(git config --get remote.origin.url | sed -r 's/.*(\@|\/\/)(.*)(\:|\/)([^:\/]*)\/([^\/\.]*)\.git/\4\/\5/')
 
-	export FZF_DEFAULT_COMMAND="bash -c \"gh-search $repo {q} 2>&1\""
+	export FZF_DEFAULT_COMMAND="bash -c \"prs-issues-fzf-header $target; gh-search $repo {q} 2>&1\""
 
 	args=(
 		--ansi
@@ -401,7 +424,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
 		--bind "shift-up:preview-top,shift-down:preview-bottom"
 		--bind "ctrl-l:execute-silent(gh browse {1})"
-		--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+refresh-preview"
+		--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+reload($FZF_DEFAULT_COMMAND)"
 		--preview 'bash -c "gh-view {1} {q}"'
 		--preview-window=right:wrap
 		--prompt "$target> "
@@ -409,12 +432,12 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 
 	if [ "$target" == "prs" ]; then
 		args+=(
-			--header $'Ctrl-L: web browser\nCtrl-O: diff\nCtrl-P: toggle pinpoint mode'
+			--header-lines=3
 			--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltadiff')"
 		)
 	elif [ "$target" == "issues" ]; then
 		args+=(
-			--header $'Ctrl-L: web browser\nCtrl-P: toggle pinpoint mode'
+			--header-lines=2
 		)
 	fi
 

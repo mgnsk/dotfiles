@@ -409,12 +409,12 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 
 	if [ "$target" == "prs" ]; then
 		args+=(
-			--header "Ctrl-L: web browser, Ctrl-O: diff, Ctrl-P: toggle pinpoint mode"
+			--header $'Ctrl-L: web browser\nCtrl-O: diff\nCtrl-P: toggle pinpoint mode'
 			--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltadiff')"
 		)
 	elif [ "$target" == "issues" ]; then
 		args+=(
-			--header "Ctrl-L: web browser, Ctrl-P: toggle pinpoint mode"
+			--header $'Ctrl-L: web browser\nCtrl-P: toggle pinpoint mode'
 		)
 	fi
 
@@ -676,7 +676,7 @@ if [ "$target" == "events" ]; then
 			-i \
 			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 			--bind shift-up:preview-top,shift-down:preview-bottom \
-			--header "Ctrl-L: web browser, Ctrl-O: diff (for Push and PullRequest)" \
+			--header $'Ctrl-L: web browser\nCtrl-O: diff (for Push and PullRequest)' \
 			--bind "ctrl-l:execute-silent(bash -c 'open-event-link {-1}')" \
 			--bind "ctrl-o:execute(bash -c 'view-event-diff {-1}')" \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} {-1}\"" \

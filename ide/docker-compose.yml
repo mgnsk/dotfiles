@@ -1,8 +1,9 @@
 ---
 volumes:
-  state:
+  local:
   cache:
   cargo:
+  rustup:
   go:
 
 
@@ -22,9 +23,10 @@ services:
     tmpfs:
       - /tmp:rw,exec,nosuid,nodev,mode=777
     volumes:
-      - state:/home/ide/.local/state
+      - local:/home/ide/.local
       - cache:/home/ide/.cache
       - cargo:/home/ide/.cargo
+      - rustup:/home/ide/.rustup
       - cache:/cache
       - go:/home/ide/go
       - ${PWD}:${PWD}:Z

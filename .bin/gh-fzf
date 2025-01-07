@@ -23,33 +23,34 @@ function cleanup {
 
 trap cleanup EXIT
 
-function ripgrep {
-	rgflags=$(cat "$tmpdir/rg_flags")
+function highlight {
+	grepsuffix=$(cat "$tmpdir/grep_suffix")
 
 	# Github CLI searches words separately.
-	# Build a regex string for ripgrep that highlights any of these words.
+	# Build a regex string for grep that highlights any of these words.
 	# shellcheck disable=SC2001
 	query=$(echo "$1" | sed "s/\s\+/|/g")
 
-	# Note: we need rgflags unquoted:
-	# shellcheck disable=SC2086
-	rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always $rgflags "$query"
+	grep --color=always --perl-regexp -i "$query$grepsuffix"
 }
 
-export -f ripgrep
+export -f highlight
 
-# Default flag.
-echo "--passthrough" >"$tmpdir/rg_flags"
+# Grep mode - default passthrough mode.
+echo "|$" >"$tmpdir/grep_suffix"
 
-function toggle-rg-passthrough {
-	if grep -q "passthrough" "$tmpdir/rg_flags"; then
-		echo "" >"$tmpdir/rg_flags"
+# Toggle the grep passthrough mode.
+# When passthrough is enabled, append "|$" to query - grep highlights the matches but shows all lines.
+# When passthrough is disabled, grep only shows the matched lines.
+function toggle-grep-passthrough {
+	if grep -q "|" "$tmpdir/grep_suffix"; then
+		echo "" >"$tmpdir/grep_suffix"
 	else
-		echo "--passthrough" >"$tmpdir/rg_flags"
+		echo "|$" >"$tmpdir/grep_suffix"
 	fi
 }
 
-export -f toggle-rg-passthrough
+export -f toggle-grep-passthrough
 
 function deltadiff {
 	# Manually override pager to prevent --quit-if-one-screen on short diffs.
@@ -327,7 +328,7 @@ function gh-view {
 	# Render header.
 	gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
 		render-markdown |
-		ripgrep "$query"
+		highlight "$query"
 
 	issue_pr_timeline_go_template="$(
 		cat <<-'EOF'
@@ -376,18 +377,18 @@ function gh-view {
 	gojq -s 'add | sort_by(.createdAt)' <"$timeline_path" |
 		gh-tpl "$issue_pr_timeline_go_template" |
 		render-markdown |
-		ripgrep "$query"
+		highlight "$query"
 }
 
 export -f gh-view
 
 function prs-issues-fzf-header {
-	rgflags=$(cat "$tmpdir/rg_flags")
-	rgmode=""
-	if [ "$rgflags" == "--passthrough" ]; then
-		rgmode="passthrough"
+	grepsuffix=$(cat "$tmpdir/grep_suffix")
+	grepmode=""
+	if [ "$grepsuffix" == "" ]; then
+		grepmode="grep"
 	else
-		rgmode="grep"
+		grepmode="passthrough"
 	fi
 
 	target="$1"
@@ -397,7 +398,7 @@ function prs-issues-fzf-header {
 		header+="Ctrl-O: diff\n"
 	fi
 
-	header+="Ctrl-P: toggle pinpoint mode [current: $rgmode]"
+	header+="Ctrl-P: toggle pinpoint mode [current: $grepmode]"
 
 	echo -e "${header}"
 }
@@ -424,7 +425,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 		--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
 		--bind "shift-up:preview-top,shift-down:preview-bottom"
 		--bind "ctrl-l:execute-silent(gh browse {1})"
-		--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+reload($FZF_DEFAULT_COMMAND)"
+		--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
 		--preview 'bash -c "gh-view {1} {q}"'
 		--preview-window=right:wrap
 		--prompt "$target> "

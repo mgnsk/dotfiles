@@ -29,7 +29,7 @@ function ripgrep {
 
 	# Note: we need rgflags unquoted:
 	# shellcheck disable=SC2086
-	rg -i --colors=match:fg:black --colors=match:bg:yellow --color=always $rgflags "$query"
+	rg --pcre2 -i --colors=match:fg:black --colors=match:bg:yellow --color=always $rgflags "$query"
 }
 
 export -f ripgrep

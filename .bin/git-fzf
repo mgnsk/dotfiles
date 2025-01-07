@@ -26,7 +26,7 @@ trap cleanup EXIT
 function highlight {
 	grepsuffix=$(cat "$tmpdir/grep_suffix")
 
-	grep --color=always --perl-regexp "$1$grepsuffix"
+	grep --color=always --perl-regexp -i "$1$grepsuffix"
 }
 
 export -f highlight

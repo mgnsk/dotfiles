@@ -31,6 +31,9 @@ function highlight {
 	# shellcheck disable=SC2001
 	query=$(echo "$1" | sed "s/\s\+/|/g")
 
+	# Bold black on yellow background.
+	export GREP_COLORS='ms=1;30;103'
+
 	grep --color=always --perl-regexp -i "$query$grepsuffix"
 }
 

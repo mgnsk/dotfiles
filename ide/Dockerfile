@@ -166,6 +166,7 @@ RUN bash configure-system.sh \
     && mkdir -p \
     /home/${user}/.cache \
     /home/${user}/.cargo \
-    /home/${user}/.local \
+    /home/${user}/.local/share \
+    /home/${user}/.local/state \
     /home/${user}/go/pkg \
     /home/${user}/.rustup

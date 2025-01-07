@@ -9,12 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@microsoft/compose-language-service": "^0.2.0",
-    "bash-language-server": "^5.4.2",
-    "cspell": "^8.16.1",
+    "@microsoft/compose-language-service": "^0.3.0",
+    "bash-language-server": "^5.4.3",
+    "cspell": "^8.17.1",
     "markdownlint-cli": "^0.43.0",
-    "npm-check-updates": "^17.1.11",
-    "pnpm": "^9.15.0",
+    "npm-check-updates": "^17.1.13",
+    "pnpm": "^9.15.3",
     "prettier": "^3.4.2",
     "typescript-language-server": "^4.3.3",
     "vscode-langservers-extracted": "^4.10.0"

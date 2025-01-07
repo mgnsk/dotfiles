@@ -23,31 +23,29 @@ function cleanup {
 
 trap cleanup EXIT
 
-function ripgrep {
-	rgflags=$(cat "$tmpdir/rg_flags")
-	query="$1"
+function highlight {
+	grepsuffix=$(cat "$tmpdir/grep_suffix")
 
-	# Note: we need rgflags unquoted:
-	# shellcheck disable=SC2086
-	rg --pcre2 -i --colors=match:fg:black --colors=match:bg:yellow --color=always $rgflags "$query"
+	grep --color=always --perl-regexp "$1$grepsuffix"
 }
 
-export -f ripgrep
+export -f highlight
 
-# Ripgrep flags.
-# Default flag --passthrough. Ripgrep does not "grep" but only highlights.
-# Without this flag, ripgrep only shows matched lines with search query highlighted.
-echo "--passthrough" >"$tmpdir/rg_flags"
+# Grep mode - default passthrough mode.
+echo "|$" >"$tmpdir/grep_suffix"
 
-function toggle-rg-passthrough {
-	if grep -q "passthrough" "$tmpdir/rg_flags"; then
-		echo "" >"$tmpdir/rg_flags"
+# Toggle the grep passthrough mode.
+# When passthrough is enabled, append "|$" to query - grep highlights the matches but shows all lines.
+# When passthrough is disabled, grep only shows the matched lines.
+function toggle-grep-passthrough {
+	if grep -q "|" "$tmpdir/grep_suffix"; then
+		echo "" >"$tmpdir/grep_suffix"
 	else
-		echo "--passthrough" >"$tmpdir/rg_flags"
+		echo "|$" >"$tmpdir/grep_suffix"
 	fi
 }
 
-export -f toggle-rg-passthrough
+export -f toggle-grep-passthrough
 
 # Git flags.
 # The default --grep flag searches from commit messages.
@@ -79,7 +77,7 @@ function git-search {
 
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
-	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -i $gitflags "$query"
+	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -i --perl-regexp $gitflags "$query"
 }
 
 export -f git-search
@@ -105,9 +103,9 @@ function git-view {
 
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
-	git show --color -i $gitflags "$query" "$commit" |
+	git show --color -i --perl-regexp $gitflags "$query" "$commit" |
 		delta |
-		ripgrep "$query"
+		highlight "$query"
 }
 
 export -f git-view
@@ -121,17 +119,17 @@ function fzf-header {
 		gitmode="diff content"
 	fi
 
-	rgflags=$(cat "$tmpdir/rg_flags")
-	rgmode=""
-	if [ "$rgflags" == "--passthrough" ]; then
-		rgmode="passthrough"
+	grepsuffix=$(cat "$tmpdir/grep_suffix")
+	grepmode=""
+	if [ "$grepsuffix" == "" ]; then
+		grepmode="grep"
 	else
-		rgmode="grep"
+		grepmode="passthrough"
 	fi
 
 	header="Ctrl-L: web browser\n"
 	header+="Ctrl-F: toggle git search mode [current: $gitmode]\n"
-	header+="Ctrl-P: toggle pinpoint mode [current: $rgmode]"
+	header+="Ctrl-P: toggle pinpoint mode [current: $grepmode]"
 
 	echo -e "${header}"
 }
@@ -149,7 +147,7 @@ fzf \
 	--header-lines=3 \
 	--bind "ctrl-l:execute-silent(gh browse {1})" \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
-	--bind "ctrl-p:execute-silent(bash -c 'toggle-rg-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
+	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
 	--preview 'bash -c "git-view {1} {q}"' \
 	--preview-window=down:wrap,70% \
 	--prompt "$target> "

@@ -50,6 +50,13 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
+function deltadiff {
+	# Manually override pager to prevent --quit-if-one-screen on short diffs.
+	delta --pager="less -R"
+}
+
+export -f deltadiff
+
 # Git flags.
 # The default --grep flag searches from commit messages.
 # The -G flag searches from diff content.
@@ -98,7 +105,7 @@ function git-view {
 
 	# Handle empty query.
 	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-		git show --color "$commit" | delta
+		git show --color "$commit" | deltadiff
 		exit
 	fi
 
@@ -107,7 +114,7 @@ function git-view {
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
 	git show --color -i --perl-regexp $gitflags "$query" "$commit" |
-		delta |
+		deltadiff |
 		highlight "$query"
 }
 

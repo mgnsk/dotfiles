@@ -52,7 +52,7 @@ export -f toggle-grep-passthrough
 
 function deltadiff {
 	# Manually override pager to prevent --quit-if-one-screen on short diffs.
-	delta --pager="less -R"
+	delta --pager="less -R" --width="$FZF_PREVIEW_COLUMNS"
 }
 
 export -f deltadiff
@@ -138,6 +138,7 @@ function fzf-header {
 	fi
 
 	header="Ctrl-L: web browser\n"
+	header+="Ctrl-O: diff\n"
 	header+="Ctrl-F: toggle git search mode [current: $gitmode]\n"
 	header+="Ctrl-P: toggle pinpoint mode [current: $grepmode]"
 
@@ -154,8 +155,9 @@ fzf \
 	--query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-	--header-lines=3 \
+	--header-lines=4 \
 	--bind "ctrl-l:execute-silent(gh browse {1})" \
+	--bind "ctrl-o:execute(bash -c 'git show --color {1} | deltadiff')" \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
 	--preview 'bash -c "git-view {1} {q}"' \

@@ -57,7 +57,7 @@ export -f toggle-grep-passthrough
 
 function deltadiff {
 	# Manually override pager to prevent --quit-if-one-screen on short diffs.
-	delta --pager="less -R"
+	delta --pager="less -R" --width="$FZF_PREVIEW_COLUMNS"
 }
 
 export -f deltadiff

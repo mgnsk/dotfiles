@@ -55,12 +55,12 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
-function deltadiff {
-	# Manually override pager to prevent --quit-if-one-screen on short diffs.
-	delta --pager="less -R" --width="$FZF_PREVIEW_COLUMNS"
+# deltafull is used for standalone diffs.
+function deltafull {
+	delta --pager="less -R"
 }
 
-export -f deltadiff
+export -f deltafull
 
 function render-markdown {
 	set -euo pipefail
@@ -436,7 +436,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 	if [ "$target" == "prs" ]; then
 		args+=(
 			--header-lines=3
-			--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltadiff')"
+			--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltafull')"
 		)
 	elif [ "$target" == "issues" ]; then
 		args+=(
@@ -464,7 +464,7 @@ function view-event-diff {
 			--cache="1m" \
 			-H "Accept: application/vnd.github.v3.diff" \
 			"/repos/$repo/pulls/$number" |
-			deltadiff
+			deltafull
 	elif [ "$diff" != "null" ]; then
 		repo=$(echo "$diff" | gojq -r '.repo')
 		before=$(echo "$diff" | gojq -r '.before')
@@ -474,7 +474,7 @@ function view-event-diff {
 			--cache="1m" \
 			-H "Accept: application/vnd.github.v3.diff" \
 			"/repos/$repo/compare/$before...$head" |
-			deltadiff
+			deltafull
 	else
 		exit 1
 	fi

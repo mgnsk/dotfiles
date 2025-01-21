@@ -1,113 +1,40 @@
 --- @type LazySpec[]
 return {
 	{
-		"hrsh7th/nvim-cmp",
-		dependencies = {
-			"hrsh7th/cmp-buffer",
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-nvim-lsp-signature-help",
-			{
-				"hrsh7th/vim-vsnip",
-				config = function()
-					vim.g.vsnip_snippet_dir = vim.fn.resolve(vim.fn.stdpath("config") .. "/snippets")
-				end,
-			},
-			"hrsh7th/vim-vsnip-integ",
-			"hrsh7th/cmp-vsnip",
-		},
+		"saghen/blink.cmp",
 		cond = not os.getenv("NVIM_DIFF"),
-		event = { "InsertEnter" },
-		config = function()
-			local has_words_before = function()
-				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-				return col ~= 0
-					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-			end
-
-			local feedkey = function(key, mode)
-				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
-			end
-
-			local cmp = require("cmp")
-
-			cmp.setup({
-				snippet = {
-					expand = function(args)
-						vim.fn["vsnip#anonymous"](args.body)
+		event = "VeryLazy",
+		-- use a release tag to download pre-built binaries
+		version = "v0.10.0",
+		---@module 'blink.cmp'
+		---@type blink.cmp.Config
+		opts = {
+			keymap = {
+				preset = "none",
+				["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+				["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+				["<CR>"] = { "accept", "fallback" },
+				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+			},
+			signature = { enabled = true },
+			completion = {
+				menu = {
+					auto_show = function(ctx)
+						return ctx.mode ~= "cmdline"
 					end,
 				},
-				-- https://github.com/hrsh7th/nvim-cmp/issues/1621
-				completion = {
-					completeopt = "menu,menuone,noinsert", -- remove default noselect
+				documentation = {
+					auto_show = true,
+					-- auto_show_delay_ms = 500,
 				},
-				preselect = cmp.PreselectMode.None,
-				sources = cmp.config.sources({
-					{ name = "vsnip", priority = 1000 },
-					{ name = "nvim_lsp", priority = 900 },
-					{ name = "nvim_lsp_signature_help", priority = 800 },
-				}, {
-					{
-						name = "buffer",
-						priority = 600,
-						option = {
-							get_bufnrs = function()
-								return vim.api.nvim_list_bufs()
-							end,
-						},
-					},
-				}),
-				matching = {
-					disallow_fuzzy_matching = false,
-					disallow_fullfuzzy_matching = false,
-					disallow_partial_fuzzy_matching = false,
-					disallow_partial_matching = false,
-					disallow_prefix_unmatching = false,
-					disallow_symbol_nonprefix_matching = false,
-				},
-				sorting = {
-					priority_weight = 2,
-					comparators = {
-						cmp.config.compare.locality,
-						cmp.config.compare.order,
-						cmp.config.compare.offset,
-						cmp.config.compare.exact,
-						-- compare.scopes,
-						cmp.config.compare.score,
-						cmp.config.compare.recently_used,
-						-- cmp.config.compare.length,
-						cmp.config.compare.kind,
-						-- compare.sort_text,
-					},
-				},
-				mapping = {
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif vim.fn["vsnip#available"](1) == 1 then
-							feedkey("<Plug>(vsnip-expand-or-jump)", "")
-						elseif has_words_before() then
-							cmp.complete()
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-
-					["<S-Tab>"] = cmp.mapping(function()
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif vim.fn["vsnip#jumpable"](-1) == 1 then
-							feedkey("<Plug>(vsnip-jump-prev)", "")
-						end
-					end, { "i", "s" }),
-
-					["<CR>"] = cmp.mapping.confirm({
-						behavior = cmp.ConfirmBehavior.Insert,
-						select = false,
-					}),
-
-					["<C-Space>"] = cmp.mapping.complete(),
-				},
-			})
-		end,
+			},
+			appearance = {
+				nerd_font_variant = "mono",
+			},
+			sources = {
+				default = { "lsp", "path", "snippets", "buffer" },
+			},
+		},
+		opts_extend = { "sources.default" },
 	},
 }

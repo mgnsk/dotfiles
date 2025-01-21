@@ -55,6 +55,15 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
+# deltainline is used for inline fzf diff previews.
+function deltainline {
+	# Manually override pager to prevent --quit-if-one-screen on short diffs.
+	delta --pager="less -R" --width="$FZF_PREVIEW_COLUMNS"
+}
+
+# deltafull is used for standalone diffs.
+export -f deltainline
+
 # deltafull is used for standalone diffs.
 function deltafull {
 	delta --pager="less -R"
@@ -450,7 +459,7 @@ if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
 fi
 
 # View diff for PR or commits.
-function view-event-diff {
+function get-event-diff {
 	v=$(echo "\"$1\"" | gh-tpl "{{b64dec .}}")
 
 	pr=$(echo "$v" | gojq '.pr')
@@ -473,14 +482,13 @@ function view-event-diff {
 		gh api \
 			--cache="1m" \
 			-H "Accept: application/vnd.github.v3.diff" \
-			"/repos/$repo/compare/$before...$head" |
-			deltafull
+			"/repos/$repo/compare/$before...$head"
 	else
 		exit 1
 	fi
 }
 
-export -f view-event-diff
+export -f get-event-diff
 
 function view-event {
 	id="$(echo "$1" | tr -d "'")"
@@ -572,7 +580,7 @@ function view-event {
 	fi
 
 	# Display inline diff for PullRequest and Push events.
-	view-event-diff "$2"
+	get-event-diff "$2" | deltainline
 }
 
 export -f view-event
@@ -704,7 +712,7 @@ if [ "$target" == "events" ]; then
 			--bind shift-up:preview-top,shift-down:preview-bottom \
 			--header $'Ctrl-L: web browser\nCtrl-O: diff (for Push and PullRequest)' \
 			--bind "ctrl-l:execute-silent(bash -c 'open-event-link {-1}')" \
-			--bind "ctrl-o:execute(bash -c 'view-event-diff {-1}')" \
+			--bind "ctrl-o:execute(bash -c 'get-event-diff {-1} | deltafull')" \
 			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} {-1}\"" \
 			--preview-window=down:wrap,70% \
 			--prompt "$target> "

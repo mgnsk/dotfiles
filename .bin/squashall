@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Squash all commits into a single commit.
+
+read -rp "Enter commit message: " message
+
+git reset "$(git commit-tree 'HEAD^{tree}' -m "$message")"

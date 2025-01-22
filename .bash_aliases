@@ -50,7 +50,7 @@ snag() {
 
 # Squash all commits into a single commit.
 squashall() {
-	read -rP "Enter commit message: " message
+	read -rp "Enter commit message: " message
 
 	git reset "$(git commit-tree 'HEAD^{tree}' -m "$message")"
 }

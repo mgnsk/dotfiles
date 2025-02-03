@@ -5,7 +5,7 @@ return {
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "VeryLazy",
 		-- use a release tag to download pre-built binaries
-		version = "v0.10.0",
+		version = "v0.11.0",
 		---@module 'blink.cmp'
 		---@type blink.cmp.Config
 		opts = {

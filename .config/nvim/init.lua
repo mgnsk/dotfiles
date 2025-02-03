@@ -36,17 +36,24 @@ vim.cmd("set t_ut=")
 --vim.cmd("set noruler")
 --
 
+function _G.get_fold_expr(lnum)
+	local ok, result = pcall(vim.treesitter.foldexpr, lnum)
+	if not ok then
+		return "0"
+	end
+
+	return result
+end
+
 vim.api.nvim_create_autocmd("BufReadPost", {
-	callback = function()
-		-- Important to schedule this function for performance.
-		vim.schedule(function()
-			vim.opt.foldmethod = "expr"
-			vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-			vim.opt.foldnestmax = 3
-			vim.opt.foldlevel = 99
-			vim.opt.foldlevelstart = 99
-		end)
-	end,
+	-- Important to schedule this function for performance.
+	callback = vim.schedule_wrap(function()
+		vim.opt.foldmethod = "expr"
+		vim.wo.foldexpr = "v:lua.get_fold_expr()"
+		vim.opt.foldnestmax = 3
+		vim.opt.foldlevel = 99
+		vim.opt.foldlevelstart = 99
+	end),
 })
 
 vim.g.netrw_banner = 0

@@ -2,7 +2,7 @@
 # ~/.bash_aliases
 #
 
-alias ls='ls --color=auto'
+alias ls='ls -hv --group-directories-first --color=auto'
 alias l='ls -Alhv --group-directories-first'
 alias ltr='ls -latr'
 alias ..='cd ..'

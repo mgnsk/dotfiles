@@ -25,6 +25,28 @@ local goto_callback = function(_, result, ctx)
 	end
 end
 
+local function organize_go_imports(client, bufnr)
+	local params = vim.lsp.util.make_range_params(nil, vim.lsp.util._get_offset_encoding(0))
+	params.context = { only = { "source.organizeImports" } }
+
+	local resp = client.request_sync("textDocument/codeAction", params, 3000, bufnr)
+	for _, r in pairs(resp and resp.result or {}) do
+		if r.edit then
+			vim.lsp.util.apply_workspace_edit(r.edit, vim.lsp.util._get_offset_encoding(0))
+		else
+			print(r.command)
+			vim.lsp.buf.execute_command(r.command)
+		end
+	end
+end
+
+local function lsp_format(bufnr)
+	if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+		return
+	end
+	require("conform").format({ lsp_fallback = true })
+end
+
 --- @type LazySpec[]
 return {
 	{
@@ -103,6 +125,15 @@ return {
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 			lsp.gopls.setup({
+				on_attach = function(client, bufnr)
+					vim.api.nvim_create_autocmd("BufWritePre", {
+						buffer = bufnr,
+						callback = function()
+							organize_go_imports(client, bufnr)
+							lsp_format(bufnr)
+						end,
+					})
+				end,
 				capabilities = capabilities,
 				settings = {
 					gopls = {

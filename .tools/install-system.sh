@@ -22,7 +22,6 @@ sudo pacman -S --noconfirm --needed \
 	npm \
 	go \
 	gopls \
-	go-tools \
 	revive \
 	shfmt \
 	github-cli \

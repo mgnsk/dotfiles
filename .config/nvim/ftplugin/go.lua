@@ -1,1 +1,1 @@
-require("file_actions").configureLintAfterSave({ "govet", "golint" })
+require("file_actions").configureLintAfterSave({ "go", "govet", "golint" })

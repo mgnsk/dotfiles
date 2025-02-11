@@ -73,6 +73,8 @@ return {
 						{ "name", "asc" },
 					},
 				},
+				-- Don't disable netrw.
+				default_file_explorer = false,
 			})
 		end,
 		-- -- Optional dependencies

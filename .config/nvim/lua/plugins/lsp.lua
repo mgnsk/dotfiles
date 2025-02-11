@@ -40,13 +40,6 @@ local function organize_go_imports(client, bufnr)
 	end
 end
 
-local function lsp_format(bufnr)
-	if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-		return
-	end
-	require("conform").format({ lsp_fallback = true })
-end
-
 --- @type LazySpec[]
 return {
 	{
@@ -129,8 +122,12 @@ return {
 					vim.api.nvim_create_autocmd("BufWritePre", {
 						buffer = bufnr,
 						callback = function()
+							if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+								return
+							end
+
 							organize_go_imports(client, bufnr)
-							lsp_format(bufnr)
+							require("conform").format({ lsp_fallback = true })
 						end,
 					})
 				end,

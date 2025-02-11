@@ -472,8 +472,7 @@ function get-event-diff {
 		gh api \
 			--cache="1m" \
 			-H "Accept: application/vnd.github.v3.diff" \
-			"/repos/$repo/pulls/$number" |
-			deltafull
+			"/repos/$repo/pulls/$number"
 	elif [ "$diff" != "null" ]; then
 		repo=$(echo "$diff" | gojq -r '.repo')
 		before=$(echo "$diff" | gojq -r '.before')

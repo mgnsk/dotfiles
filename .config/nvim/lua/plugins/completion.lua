@@ -28,9 +28,9 @@ return {
 						-- auto_show_delay_ms = 500,
 						-- treesitter_highlighting = false,
 					},
-					ghost_text = {
-						enabled = true,
-					},
+					-- ghost_text = {
+					-- 	enabled = true,
+					-- },
 				},
 				appearance = {
 					nerd_font_variant = "mono",

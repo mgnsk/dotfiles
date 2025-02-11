@@ -13,6 +13,7 @@ return {
 					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
 					["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
 					["<CR>"] = { "accept", "fallback" },
+					["<C-x>"] = { "accept", "fallback" },
 					["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 				},
 				signature = { enabled = true },
@@ -26,6 +27,9 @@ return {
 						auto_show = true,
 						-- auto_show_delay_ms = 500,
 						-- treesitter_highlighting = false,
+					},
+					ghost_text = {
+						enabled = true,
 					},
 				},
 				appearance = {

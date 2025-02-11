@@ -59,8 +59,8 @@ __prompt_command() {
 	PS1=""
 
 	history -a
-	# history -c
-	# history -r
+	history -c
+	history -r
 
 	local RCol='\[\e[0m\]'
 	local Red='\[\e[0;31m\]'

@@ -2,18 +2,20 @@
 return {
 	{
 		"mgnsk/autotabline.nvim",
+		event = "VeryLazy",
 		config = function()
 			require("autotabline").setup()
 		end,
 	},
 	{
 		"mgnsk/dumb-autopairs.nvim",
+		dir = "~/workspaces/dumb-autopairs.nvim",
 		event = "InsertEnter",
 		opts = {},
 	},
 	{
 		"kevinhwang91/nvim-fundo",
-		event = "BufEnter",
+		event = "VeryLazy",
 		dependencies = {
 			"kevinhwang91/promise-async",
 		},

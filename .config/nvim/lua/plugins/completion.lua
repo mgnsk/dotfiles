@@ -3,12 +3,10 @@ return {
 	{
 		"saghen/blink.cmp",
 		cond = not os.getenv("NVIM_DIFF"),
-		event = "VeryLazy",
+		event = "InsertEnter",
 		-- use a release tag to download pre-built binaries
 		version = "v0.11.0",
 		config = function()
-			vim.treesitter.language.register("blink-cmp-documentation", "")
-
 			require("blink-cmp").setup({
 				keymap = {
 					preset = "none",
@@ -27,6 +25,7 @@ return {
 					documentation = {
 						auto_show = true,
 						-- auto_show_delay_ms = 500,
+						-- treesitter_highlighting = false,
 					},
 				},
 				appearance = {

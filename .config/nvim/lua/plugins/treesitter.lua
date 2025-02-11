@@ -72,7 +72,7 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		-- Note: would like to use a function but TSUpdateSync command is not available then (lazy bug?). Instead, need to use a ':' command.
 		build = ":lua _G.install_ts_langs(vim.g.ts_langs)",
-		event = "BufEnter",
+		event = "VeryLazy",
 		config = function()
 			require("nvim-treesitter.configs").setup({
 				highlight = {

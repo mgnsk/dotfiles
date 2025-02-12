@@ -9,7 +9,6 @@ return {
 	},
 	{
 		"mgnsk/dumb-autopairs.nvim",
-		dir = "~/workspaces/dumb-autopairs.nvim",
 		event = "InsertEnter",
 		opts = {},
 	},

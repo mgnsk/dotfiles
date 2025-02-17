@@ -30,6 +30,10 @@ return {
 				return require("fzf-lua").files()
 			end, { desc = "FZF files" })
 
+			vim.keymap.set("n", "<leader>O", function()
+				return require("fzf-lua").oldfiles()
+			end, { desc = "FZF recent files" })
+
 			vim.keymap.set("n", "<leader>f", function()
 				return require("fzf-lua").lsp_document_symbols()
 			end, { desc = "FZF LSP document symbols" })

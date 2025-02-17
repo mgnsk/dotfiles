@@ -141,6 +141,20 @@ vim.keymap.set("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buff
 vim.keymap.set("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
 vim.keymap.set("n", "<leader>w", ":set wrap!<CR>", { desc = "Toggle word wrap" })
 
+vim.keymap.set(
+	"n",
+	"<leader>D",
+	[[:let b = bufnr("%") | vnew | execute 'buffer' b<CR>]],
+	{ silent = true, desc = "Duplicate current buffer to a new vertical window" }
+)
+
+vim.keymap.set(
+	"n",
+	"<leader>T",
+	[[:let b = bufnr("%") | tabnew | execute 'buffer' b<CR>]],
+	{ silent = true, desc = "Duplicate current buffer to a new tab" }
+)
+
 vim.keymap.set("n", "<leader>l", function()
 	if vim.wo.scrolloff > 0 then
 		vim.wo.scrolloff = 0

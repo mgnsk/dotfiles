@@ -5,7 +5,7 @@ return {
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "InsertEnter",
 		-- use a release tag to download pre-built binaries
-		version = "v0.11.0",
+		version = "v0.12.4",
 		config = function()
 			require("blink-cmp").setup({
 				keymap = {
@@ -18,6 +18,9 @@ return {
 				},
 				signature = { enabled = true },
 				completion = {
+					trigger = {
+						show_on_insert_on_trigger_character = false,
+					},
 					menu = {
 						auto_show = function(ctx)
 							return ctx.mode ~= "cmdline"
@@ -25,12 +28,7 @@ return {
 					},
 					documentation = {
 						auto_show = true,
-						-- auto_show_delay_ms = 500,
-						-- treesitter_highlighting = false,
 					},
-					-- ghost_text = {
-					-- 	enabled = true,
-					-- },
 				},
 				appearance = {
 					nerd_font_variant = "mono",

@@ -8,17 +8,11 @@ local goto_callback = function(_, result, ctx)
 	end
 
 	if vim.islist(result) then
-		if #result > 1 then
-			for res in result do
-				vim.api.nvim_command("tabnew")
-				util.show_document(res, "utf-8", { reuse_win = false, focus = false })
-			end
-
-			return nil
+		if #result > 0 then
+			-- Take the first result.
+			vim.api.nvim_command("tabnew")
+			util.show_document(result[1], "utf-8", { reuse_win = false, focus = true })
 		end
-
-		vim.api.nvim_command("tabnew")
-		util.show_document(result[1], "utf-8", { reuse_win = false, focus = true })
 	else
 		vim.api.nvim_command("tabnew")
 		util.show_document(result, "utf-8", { reuse_win = false, focus = true })

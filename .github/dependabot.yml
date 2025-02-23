@@ -8,6 +8,7 @@ updates:
       interval: "weekly"
     groups:
       dependencies:
+        applies-to: version-updates
 
   - package-ecosystem: "composer"
     directory: "/.tools"
@@ -15,10 +16,9 @@ updates:
       interval: "weekly"
     groups:
       dependencies:
+        applies-to: version-updates
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    groups:
-      dependencies:

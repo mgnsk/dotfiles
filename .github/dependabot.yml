@@ -7,18 +7,24 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
-        applies-to: version-updates
+      npm-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "composer"
     directory: "/.tools"
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
-        applies-to: version-updates
+      composer-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      actions-deps:
+        patterns:
+          - "*"

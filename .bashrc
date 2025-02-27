@@ -45,6 +45,9 @@ export PKGEXT=".pkg.tar"
 export NODE_OPTIONS="--max_old_space_size=4096"
 
 export HISTFILE="$HOME/.local/state/.bash_history"
+export HISTFILESIZE=
+export HISTSIZE=
+export HISTTIMEFORMAT="[%F %T] "
 
 export GPG_TTY="$(tty)"
 
@@ -59,8 +62,6 @@ __prompt_command() {
 	PS1=""
 
 	history -a
-	history -c
-	history -r
 
 	local RCol='\[\e[0m\]'
 	local Red='\[\e[0;31m\]'

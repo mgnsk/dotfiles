@@ -7,7 +7,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      npm-deps:
+      npm:
         patterns:
           - "*"
 
@@ -16,7 +16,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      composer-deps:
+      composer:
         patterns:
           - "*"
 
@@ -25,6 +25,6 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      actions-deps:
+      actions:
         patterns:
           - "*"

@@ -24,6 +24,10 @@
 	keepBackup = false
 [diff]
 	tool = nvim
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+	renames = true
 [mergetool "nvim"]
 	; cmd = NVIM_DIFF=1 nvim -d -c \"norm ]c\" \"$LOCAL\" \"$MERGED\" \"$REMOTE\" ; Native functionality
 	cmd = NVIM_DIFF=1 nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
@@ -31,6 +35,7 @@
 	tool = nvim
 [commit]
 	gpgSign = true
+	verbose = true
 [include]
 	path = ~/.gitconfig_local
 [pull]
@@ -43,4 +48,21 @@
 	navigate = true
 	light = false
 	line-numbers = true
-	side-by-side = true
+	side-by-side = false
+[tag]
+	sort = version:refname
+[branch]
+	sort = -committerdate
+[init]
+	defaultBranch = main
+[push]
+	default = simple # (default since 2.0)
+	autoSetupRemote = true
+	followTags = true
+[fetch]
+	prune = true
+	pruneTags = true
+	all = true
+[rerere]
+	enabled = true
+	autoupdate = true

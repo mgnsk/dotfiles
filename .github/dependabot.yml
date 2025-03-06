@@ -28,3 +28,12 @@ updates:
       actions:
         patterns:
           - "*"
+
+  - package-ecosystem: "docker"
+    directory: "/ide"
+    schedule:
+      interval: "weekly"
+    groups:
+      docker:
+        patterns:
+          - "*"

@@ -1,5 +1,5 @@
 # Base image for system.
-FROM archlinux:base-devel AS build-base
+FROM archlinux:base-devel@sha256:61b9b05cf6a7a42aa1a32f0b00c92dcfc0b6acf3af2db1b86ab29f6605b21401 AS build-base
 
 ARG uid
 ARG gid
@@ -41,6 +41,8 @@ USER ${user}
 
 WORKDIR /home/${user}/.tools
 
+COPY --chown=${uid}:${gid} /dotfiles/.tools/go.mod ./
+COPY --chown=${uid}:${gid} /dotfiles/.tools/go.sum ./
 COPY --chown=${uid}:${gid} /dotfiles/.tools/install-go.sh ./
 
 RUN bash install-go.sh \

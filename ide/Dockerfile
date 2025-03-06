@@ -154,7 +154,7 @@ USER ${user}
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 COPY --from=go-tools --chown=${uid}:${gid} /home/${user}/go/bin /home/${user}/go/bin
 COPY --from=rust-tools --chown=${uid}:${gid} /home/${user}/.rustup /home/${user}/.rustup
-COPY --from=php-tools --chown=${uid}:${gid} /home/${user}/.tools/vendor /home/${user}/.tools/vendor
+COPY --from=php-tools --chown=${uid}:${gid} /home/${user}/.tools/composer_vendor /home/${user}/.tools/composer_vendor
 COPY --from=php-tools /etc/php/conf.d /etc/php/conf.d
 COPY --from=js-tools --chown=${uid}:${gid} /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
 COPY --from=nvim-tools --chown=${uid}:${gid} /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim

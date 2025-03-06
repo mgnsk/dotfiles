@@ -1,5 +1,8 @@
 {
   "name": "mgnsk/tools",
+  "config": {
+    "vendor-dir": "composer_vendor/"
+  },
   "require": {
     "phpactor/phpactor": "^0.18.1",
     "phpstan/phpstan": "^2.1",

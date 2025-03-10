@@ -37,3 +37,12 @@ updates:
       docker:
         patterns:
           - "*"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      gitsubmodule:
+        patterns:
+          - "*"

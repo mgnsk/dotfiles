@@ -48,6 +48,7 @@ end
 return {
 	{
 		"mgnsk/tree-sitter-balafon",
+		dir = vim.fn.stdpath("config") .. "/plugins/tree-sitter-balafon",
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 		},
@@ -70,6 +71,7 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
+		dir = vim.fn.stdpath("config") .. "/plugins/nvim-treesitter",
 		-- Note: would like to use a function but TSUpdateSync command is not available then (lazy bug?). Instead, need to use a ':' command.
 		build = ":lua _G.install_ts_langs(vim.g.ts_langs)",
 		event = "VeryLazy",
@@ -98,6 +100,7 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter-context",
+		dir = vim.fn.stdpath("config") .. "/plugins/nvim-treesitter-context",
 		event = "VeryLazy",
 		config = function()
 			require("treesitter-context").setup({
@@ -107,6 +110,7 @@ return {
 	},
 	{
 		"folke/ts-comments.nvim",
+		dir = vim.fn.stdpath("config") .. "/plugins/ts-comments.nvim",
 		opts = {},
 		event = "VeryLazy",
 	},

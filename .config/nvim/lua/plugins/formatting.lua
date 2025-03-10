@@ -2,6 +2,7 @@
 return {
 	{
 		"stevearc/conform.nvim",
+		dir = vim.fn.stdpath("config") .. "/plugins/conform.nvim",
 		lazy = true,
 		init = function()
 			vim.api.nvim_create_user_command("FormatDisable", function(args)

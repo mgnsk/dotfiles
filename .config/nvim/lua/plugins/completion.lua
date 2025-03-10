@@ -2,10 +2,9 @@
 return {
 	{
 		"saghen/blink.cmp",
+		dir = vim.fn.stdpath("config") .. "/plugins/blink.cmp",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "InsertEnter",
-		-- use a release tag to download pre-built binaries
-		version = "v0.12.4",
 		config = function()
 			require("blink-cmp").setup({
 				keymap = {

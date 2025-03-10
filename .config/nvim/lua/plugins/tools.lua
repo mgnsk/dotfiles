@@ -2,6 +2,7 @@
 return {
 	{
 		"neomake/neomake",
+		dir = vim.fn.stdpath("config") .. "/plugins/neomake",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "VeryLazy",
 		config = function()
@@ -10,6 +11,7 @@ return {
 	},
 	{
 		"ryuichiroh/vim-cspell",
+		dir = vim.fn.stdpath("config") .. "/plugins/vim-cspell",
 		event = "VeryLazy",
 		init = function()
 			vim.g.cspell_disable_autogroup = true
@@ -21,6 +23,7 @@ return {
 	},
 	{
 		"phelipetls/jsonpath.nvim",
+		dir = vim.fn.stdpath("config") .. "/plugins/jsonpath.nvim",
 		lazy = true,
 		init = function()
 			vim.api.nvim_create_user_command("JSONPath", function()
@@ -33,6 +36,7 @@ return {
 	},
 	{
 		"stevearc/oil.nvim",
+		dir = vim.fn.stdpath("config") .. "/plugins/oil.nvim",
 		cmd = "Oil",
 		config = function()
 			-- Confirm file operations with <CR>.

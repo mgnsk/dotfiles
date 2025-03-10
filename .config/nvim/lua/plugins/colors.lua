@@ -2,6 +2,7 @@
 return {
 	{
 		"Mofiqul/vscode.nvim",
+		dir = vim.fn.stdpath("config") .. "/plugins/vscode.nvim",
 		config = function()
 			vim.o.background = "dark"
 
@@ -62,6 +63,7 @@ return {
 	},
 	{
 		"norcalli/nvim-colorizer.lua",
+		dir = vim.fn.stdpath("config") .. "/plugins/nvim-colorizer.lua",
 		ft = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml" },
 		config = function()
 			require("colorizer").setup({

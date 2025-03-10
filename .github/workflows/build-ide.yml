@@ -29,7 +29,7 @@ jobs:
       #   uses: docker/setup-buildx-action@v3
 
       - name: Copy dotfiles to build context
-        run: mkdir -p ide/dotfiles; git archive --format=tar HEAD | tar Cx ide/dotfiles
+        run: mkdir -p ide/dotfiles; git ls-files --recurse-submodules | tar Tc - | tar Cx ide/dotfiles
 
       - name: Log in to the Container registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567

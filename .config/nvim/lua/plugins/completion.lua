@@ -7,6 +7,11 @@ return {
 		event = "InsertEnter",
 		config = function()
 			require("blink-cmp").setup({
+				fuzzy = {
+					prebuilt_binaries = {
+						force_version = "v0.13.1",
+					},
+				},
 				keymap = {
 					preset = "none",
 					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },

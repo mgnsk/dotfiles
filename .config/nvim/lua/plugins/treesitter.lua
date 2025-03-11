@@ -9,6 +9,7 @@ vim.g.ts_langs = {
 	"gomod",
 	"gosum",
 	"gowork",
+	"gotmpl",
 	"html",
 	"javascript",
 	"json",
@@ -25,6 +26,7 @@ vim.g.ts_langs = {
 	"tsx",
 	"yaml",
 	"authzed",
+	"nix",
 }
 
 ---@param lang string

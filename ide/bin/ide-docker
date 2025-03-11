@@ -40,4 +40,4 @@ select opt in "${options[@]}"; do
 	esac
 done
 
-nix develop "$HOME/ide#$opt"
+docker compose -f "$(dirname "$0")/../docker-compose.yml" run --rm "ide-$opt"

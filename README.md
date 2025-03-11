@@ -31,7 +31,7 @@ https://docs.docker.com/compose/install/
 ## Clone the repository
 
 ```sh
-git clone git@github.com:mgnsk/dotfiles.git dotfiles
+git clone --recurse-submodules https://github.com/mgnsk/dotfiles.git dotfiles
 cd dotfiles/ide
 ```
 

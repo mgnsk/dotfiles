@@ -14,7 +14,6 @@ __prepend_path ~/.bin
 __prepend_path ~/go/bin
 __prepend_path ~/.cargo/bin
 __prepend_path ~/ide/bin
-__prepend_path ~/ide2/bin
 
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"

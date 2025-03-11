@@ -38,12 +38,12 @@ end
 return {
 	{
 		"Bilal2453/luvit-meta", -- optional `vim.uv` typings
-		dir = vim.fn.stdpath("config") .. "/plugins/luvit-meta",
+		dir = vim.fn.stdpath("data") .. "/plugins/luvit-meta",
 		-- ft = "lua",
 	},
 	{
 		"neovim/nvim-lspconfig",
-		dir = vim.fn.stdpath("config") .. "/plugins/nvim-lspconfig",
+		dir = vim.fn.stdpath("data") .. "/plugins/nvim-lspconfig",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "VeryLazy",
 		init = function()

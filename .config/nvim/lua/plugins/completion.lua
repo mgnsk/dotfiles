@@ -2,7 +2,7 @@
 return {
 	{
 		"saghen/blink.cmp",
-		dir = vim.fn.stdpath("config") .. "/plugins/blink.cmp",
+		dir = vim.fn.stdpath("data") .. "/plugins/blink.cmp",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "InsertEnter",
 		build = "nix run .#build-plugin",

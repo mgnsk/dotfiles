@@ -1,0 +1,40 @@
+---
+volumes:
+  local:
+  cache:
+  cargo:
+  rustup:
+  go:
+
+
+services:
+  ide2:
+    image: ghcr.io/mgnsk/ide2:edge
+    environment:
+      TERM: ${TERM}
+      TZ: ${TZ}
+      # yellow
+      USERHOST_COLOR: '\[\e[0;33m\]'
+    stdin_open: true
+    tty: true
+    hostname: ide
+    network_mode: host
+    command: nix --extra-experimental-features "nix-command flakes" --option filter-syscalls false develop /build
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,mode=777
+    volumes:
+      - local:/home/ide/.local
+      - cache:/home/ide/.cache
+      - cargo:/home/ide/.cargo
+      - rustup:/home/ide/.rustup
+      - cache:/cache
+      - go:/home/ide/go
+      - ${PWD}:${PWD}:Z
+    working_dir: ${PWD}
+    memswap_limit: 4G
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 2G

@@ -18,6 +18,7 @@ __prepend_path ~/.luarocks/bin
 __prepend_path ~/.tools/composer_vendor/bin
 __prepend_path ~/.tools/node_modules/.bin
 __prepend_path ~/ide/bin
+__prepend_path ~/ide2/bin
 
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"

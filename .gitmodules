@@ -67,15 +67,6 @@
 [submodule ".config/nvim/plugins/lazy.nvim"]
 	path = .config/nvim/plugins/lazy.nvim
 	url = https://github.com/folke/lazy.nvim.git
-[submodule ".tools/aur/hadolint-bin"]
-	path = .tools/aur/hadolint-bin
-	url = https://aur.archlinux.org/hadolint-bin.git
-[submodule ".tools/aur/shellcheck-bin"]
-	path = .tools/aur/shellcheck-bin
-	url = https://aur.archlinux.org/shellcheck-bin.git
-[submodule ".tools/aur/gojq-bin"]
-	path = .tools/aur/gojq-bin
-	url = https://aur.archlinux.org/gojq-bin.git
 [submodule ".tools/LS_COLORS"]
 	path = .tools/LS_COLORS
 	url = https://github.com/trapd00r/LS_COLORS.git

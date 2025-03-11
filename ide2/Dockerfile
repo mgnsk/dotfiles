@@ -1,27 +1,54 @@
-FROM nixos/nix:latest AS builder
+# Base image for system.
+FROM archlinux:base-devel@sha256:61b9b05cf6a7a42aa1a32f0b00c92dcfc0b6acf3af2db1b86ab29f6605b21401 AS build-base
+
+ARG uid
+ARG gid
+ARG user
+ARG group
+
+RUN pacman -Syy \
+    && pacman -S --noconfirm --needed archlinux-keyring \
+    && pacman -Syu --noconfirm \
+    && pacman -S --noconfirm --needed \
+    bash \
+    nix \
+    && bash -c "yes | pacman -Scc" \
+    && if grep -q "${group}:" /etc/group; then \
+    groupmod -o -g ${gid} ${group}; \
+    else \
+    groupadd -f -g ${gid} ${group}; \
+    fi \
+    && useradd \
+    -m \
+    -s /usr/bin/bash \
+    -g ${group} \
+    --uid ${uid} \
+    ${user} \
+    && passwd -d ${user} \
+    && echo "en_US.UTF-8 UTF-8" >>/etc/locale.gen \
+    && echo "LANG=en_US.UTF-8" >>/etc/locale.conf \
+    && locale-gen \
+    && gpasswd -a ${user} nix-users \
+    && chown -R ${uid}:${gid} /nix
 
 
-RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable \
-    && nix-channel --update
+# Final image.
+FROM build-base
 
-COPY . /build
-WORKDIR /build
+ARG uid
+ARG gid
+ARG user
+USER ${user}
 
-RUN nix \
-    --extra-experimental-features "nix-command flakes" \
-    --option filter-syscalls false \
-    build
+RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+RUN nix-channel --update
 
-# # Copy the Nix store closure into a directory. The Nix store closure is the
-# # entire set of Nix store values that we need for our build.
-# RUN mkdir /tmp/nix-store-closure
-# RUN cp -R $(nix-store -qR result/) /tmp/nix-store-closure
-#
-#
-# FROM scratch
-#
-# WORKDIR /app
-#
-# COPY --from=builder /tmp/nix-store-closure /nix/store
-# COPY --from=builder /tmp/build/result /app
-# CMD ["/app/bin/bash"]
+COPY --chown=${uid}:${gid} /dotfiles /home/${user}
+
+RUN mkdir -p \
+    /home/${user}/.cache \
+    /home/${user}/.cargo \
+    /home/${user}/.local/share \
+    /home/${user}/.local/state \
+    /home/${user}/go/bin \
+    /home/${user}/go/pkg

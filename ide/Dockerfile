@@ -44,10 +44,9 @@ USER ${user}
 RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable \
     && nix-channel --update \
     && git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles https://github.com/mgnsk/dotfiles.git /home/${user}/dotfiles-tmp \
-    && rm -r /home/${user}/dotfiles-tmp/
-
-RUN git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} config status.showUntrackedFiles no \
-    && git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} reset --hard origin/master
+    && rm -r /home/${user}/dotfiles-tmp/ \
+    && git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} config status.showUntrackedFiles no \
+    && git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} reset --hard --recurse-submodules origin/master
 
 RUN mkdir -p \
     /home/${user}/.cache \

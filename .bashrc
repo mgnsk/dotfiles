@@ -13,10 +13,6 @@ __prepend_path ~/.local/bin
 __prepend_path ~/.bin
 __prepend_path ~/go/bin
 __prepend_path ~/.cargo/bin
-__prepend_path ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin
-__prepend_path ~/.luarocks/bin
-__prepend_path ~/.tools/composer_vendor/bin
-__prepend_path ~/.tools/node_modules/.bin
 __prepend_path ~/ide/bin
 
 export LC_ALL="en_US.UTF-8"
@@ -69,8 +65,9 @@ __prompt_command() {
 	local BrBlu='\[\e[0;36m\]'
 
 	local userHostColor="${USERHOST_COLOR:-$BrBlu}"
+	local customHost="${CUSTOM_HOST:-\h}"
 
-	PS1+="${RCol}[\t] ${userHostColor}\u@\h ${Gre}\w"
+	PS1+="${RCol}[\t] ${userHostColor}\u@${customHost} ${Gre}\w"
 
 	if [ $EXIT != 0 ]; then
 		PS1+=" ${Red}[${EXIT}]"

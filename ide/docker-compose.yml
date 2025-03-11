@@ -1,40 +1,72 @@
 ---
 volumes:
-  local:
   cache:
   cargo:
-  rustup:
+  local:
   go:
+  nix:
 
+x-base: &base
+  image: ghcr.io/mgnsk/ide:edge
+  environment:
+    TERM: ${TERM}
+    TZ: ${TZ}
+    # yellow
+    USERHOST_COLOR: '\[\e[0;33m\]'
+  stdin_open: true
+  tty: true
+  network_mode: host
+  tmpfs:
+    - /tmp:rw,exec,nosuid,nodev,mode=777
+  volumes:
+    - cache:/cache
+    - cache:/home/ide/.cache
+    - cargo:/home/ide/.cargo
+    - local:/home/ide/.local
+    - go:/home/ide/go
+    - nix:/nix
+    - ${PWD}:${PWD}:Z
+  working_dir: ${PWD}
+  memswap_limit: 4G
+  deploy:
+    resources:
+      limits:
+        memory: 3G
+      reservations:
+        memory: 2G
 
 services:
-  ide:
-    image: ghcr.io/mgnsk/ide:edge
-    environment:
-      TERM: ${TERM}
-      TZ: ${TZ}
-      # yellow
-      USERHOST_COLOR: '\[\e[0;33m\]'
-    stdin_open: true
-    tty: true
-    hostname: ide
-    network_mode: host
-    command: bash
-    tmpfs:
-      - /tmp:rw,exec,nosuid,nodev,mode=777
-    volumes:
-      - local:/home/ide/.local
-      - cache:/home/ide/.cache
-      - cargo:/home/ide/.cargo
-      - rustup:/home/ide/.rustup
-      - cache:/cache
-      - go:/home/ide/go
-      - ${PWD}:${PWD}:Z
-    working_dir: ${PWD}
-    memswap_limit: 4G
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-        reservations:
-          memory: 2G
+  ide-base:
+    <<: *base
+    hostname: ide-base
+    command: nix develop /home/ide/ide#base
+
+  ide-go:
+    <<: *base
+    hostname: ide-go
+    command: nix develop /home/ide/ide#go
+
+  ide-lua:
+    <<: *base
+    hostname: ide-lua
+    command: nix develop /home/ide/ide#lua
+
+  ide-rust:
+    <<: *base
+    hostname: ide-rust
+    command: nix develop /home/ide/ide#rust
+
+  ide-php:
+    <<: *base
+    hostname: ide-php
+    command: nix develop /home/ide/ide#php
+
+  ide-python:
+    <<: *base
+    hostname: ide-python
+    command: nix develop /home/ide/ide#python
+
+  ide-webdev:
+    <<: *base
+    hostname: ide-webdev
+    command: nix develop /home/ide/ide#webdev

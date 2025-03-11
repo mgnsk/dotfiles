@@ -10,10 +10,7 @@ rm -rf dotfiles
 mkdir -p dotfiles
 get-build-context | tar Cx dotfiles
 
-# Note: setting ulimit fixes the fakeroot slowness issue.
-# https://github.com/greyltc-org/docker-archlinux-aur/issues/7#issuecomment-1516028357
 docker build \
-	--ulimit nofile=1024:10240 \
 	--build-arg uid=1000 \
 	--build-arg gid=1000 \
 	--build-arg user=ide \

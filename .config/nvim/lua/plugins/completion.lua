@@ -2,14 +2,13 @@
 return {
 	{
 		"saghen/blink.cmp",
-		dir = vim.fn.stdpath("config") .. "/plugins/blink.cmp",
+		dir = vim.fn.stdpath("data") .. "/plugins/blink.cmp",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "InsertEnter",
+		build = "nix run .#build-plugin",
 		config = function()
 			require("blink-cmp").setup({
-				fuzzy = {
-					implementation = "lua",
-				},
+				fuzzy = { implementation = "rust" },
 				keymap = {
 					preset = "none",
 					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },

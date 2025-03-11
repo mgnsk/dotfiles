@@ -14,16 +14,19 @@ $ config reset --hard origin/master
 
 # IDE
 
-`ide` is an immutable development environment container image.
-It's main application is running neovim.
+`ide` is the nix development environment.
+`ide-docker` is the nix in docker development environment.
 
-The following is a guide on how to run the container by using a pre-built Docker image
-hosted on Github Container Registry.
+It's main application is running neovim and companion tools.
 
-## Install Docker and the Compose plugin
+The nix environment needs only the `nix` package manager:
+
+https://nixos.org/download/
+
+The docker environment needs only `docker` with the `compose` plugin:
 
 https://docs.docker.com/engine/install/
-https://docs.docker.com/compose/install/linux/
+https://docs.docker.com/compose/install/
 
 ## Clone the repository
 
@@ -32,13 +35,18 @@ git clone git@github.com:mgnsk/dotfiles.git dotfiles
 cd dotfiles/ide
 ```
 
-Add the absolute path to `dotfiles/ide/bin` directory to your PATH to use the `ide` executable script.
-After configuring PATH, verify the script is accessible by running `which ide` in a new terminal.
+Add the absolute path to `dotfiles/ide/bin` directory to your PATH to use the `ide` and `ide-docker` executable scripts.
 
 ## Run the container
 
-Navigate to a project directory and run `ide` to enter the container.
-A bash shell starts in the current directory bind mounted into the container.
+Navigate to a project directory and run `ide` or `ide-docker` to enter the environment.
+A bash shell starts in the current directory.
+
+In the environment, run `dotfiles/.tools/install-nvim.sh` to set up neovim plugin dependencies.
+
+You may want to install some go tools: `dotfiles/.tools/install-go.sh`.
+
+TODO: automate both of these.
 
 From there on, for example, you can continue by invoking `nvim`.
 

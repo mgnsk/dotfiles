@@ -2,33 +2,6 @@
 # https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
 version: 2
 updates:
-  - package-ecosystem: "gomod"
-    directory: "/.tools"
-    schedule:
-      interval: "weekly"
-    groups:
-      go:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "npm"
-    directory: "/.tools"
-    schedule:
-      interval: "weekly"
-    groups:
-      npm:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "composer"
-    directory: "/.tools"
-    schedule:
-      interval: "weekly"
-    groups:
-      composer:
-        patterns:
-          - "*"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

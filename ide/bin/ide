@@ -40,4 +40,4 @@ select opt in "${options[@]}"; do
 	esac
 done
 
-nix develop "$HOME/ide#$opt"
+nix develop "$(dirname "$0")/../#$opt"

@@ -39,6 +39,7 @@
         pkgs.jsonnet-language-server
         pkgs.docker-compose-language-service
         pkgs.bash-language-server
+        pkgs.nodejs_23
         pkgs.nodePackages.cspell
         pkgs.markdownlint-cli
         pkgs.nodePackages.prettier
@@ -134,7 +135,6 @@
           packages = [
             base_pkgs
             pkgs.html-tidy
-            pkgs.nodejs_23
             pkgs.npm-check-updates
             pkgs.pnpm
             pkgs.typescript

@@ -158,7 +158,7 @@ COPY --from=rust-tools --chown=${uid}:${gid} /home/${user}/.rustup /home/${user}
 COPY --from=php-tools --chown=${uid}:${gid} /home/${user}/.tools/composer_vendor /home/${user}/.tools/composer_vendor
 COPY --from=php-tools /etc/php/conf.d /etc/php/conf.d
 COPY --from=js-tools --chown=${uid}:${gid} /home/${user}/.tools/node_modules /home/${user}/.tools/node_modules
-COPY --from=nvim-tools --chown=${uid}:${gid} /home/${user}/.local/share/nvim /home/${user}/.local/share/nvim
+COPY --from=nvim-tools --chown=${uid}:${gid} /home/${user}/.config/nvim /home/${user}/.config/nvim
 COPY --chown=${uid}:${gid} /dotfiles/.tools/configure-system.sh /home/${user}/.tools/
 
 WORKDIR /home/${user}/.tools

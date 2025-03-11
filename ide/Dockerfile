@@ -11,6 +11,7 @@ RUN pacman -Syy \
     && pacman -Syu --noconfirm \
     && pacman -S --noconfirm --needed \
     bash \
+    git \
     nix \
     && bash -c "yes | pacman -Scc" \
     && if grep -q "${group}:" /etc/group; then \
@@ -41,9 +42,12 @@ ARG user
 USER ${user}
 
 RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable \
-    && nix-channel --update
+    && nix-channel --update \
+    && git clone --recurse-submodules --separate-git-dir=/home/${user}/.dotfiles https://github.com/mgnsk/dotfiles.git /home/${user}/dotfiles-tmp \
+    && rm -r /home/${user}/dotfiles-tmp/
 
-COPY --chown=${uid}:${gid} /dotfiles /home/${user}
+RUN git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} config status.showUntrackedFiles no \
+    && git --git-dir=/home/${user}/.dotfiles/ --work-tree=/home/${user} reset --hard origin/master
 
 RUN mkdir -p \
     /home/${user}/.cache \

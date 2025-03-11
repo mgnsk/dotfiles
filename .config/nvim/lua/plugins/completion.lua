@@ -5,11 +5,9 @@ return {
 		dir = vim.fn.stdpath("config") .. "/plugins/blink.cmp",
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "InsertEnter",
+		build = "nix run .#build-plugin",
 		config = function()
 			require("blink-cmp").setup({
-				fuzzy = {
-					implementation = "lua",
-				},
 				keymap = {
 					preset = "none",
 					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },

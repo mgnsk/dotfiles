@@ -53,6 +53,7 @@
           ];
 
           shellHook = ''
+            export CUSTOM_HOST="ide-base"
             exec bash
           '';
         };
@@ -66,6 +67,7 @@
           ];
 
           shellHook = ''
+            export CUSTOM_HOST="ide-go"
             exec bash
           '';
         };
@@ -79,6 +81,7 @@
           ];
 
           shellHook = ''
+            export CUSTOM_HOST="ide-lua"
             exec bash
           '';
         };
@@ -93,6 +96,7 @@
           ];
 
           shellHook = ''
+            export CUSTOM_HOST="ide-rust"
             exec bash
           '';
         };
@@ -109,6 +113,7 @@
           ];
 
           shellHook = ''
+            export CUSTOM_HOST="ide-php"
             exec bash
           '';
         };
@@ -120,6 +125,7 @@
           ];
 
           shellHook = ''
+            export CUSTOM_HOST="ide-python"
             exec bash
           '';
         };
@@ -137,6 +143,7 @@
           ];
 
           shellHook = ''
+            export CUSTOM_HOST="ide-webdev"
             exec bash
           '';
         };

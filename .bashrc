@@ -65,8 +65,9 @@ __prompt_command() {
 	local BrBlu='\[\e[0;36m\]'
 
 	local userHostColor="${USERHOST_COLOR:-$BrBlu}"
+	local customHost="${CUSTOM_HOST:-\h}"
 
-	PS1+="${RCol}[\t] ${userHostColor}\u@\h ${Gre}\w"
+	PS1+="${RCol}[\t] ${userHostColor}\u@${customHost} ${Gre}\w"
 
 	if [ $EXIT != 0 ]; then
 		PS1+=" ${Red}[${EXIT}]"

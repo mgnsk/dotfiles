@@ -42,6 +42,12 @@ Add the absolute path to `dotfiles/ide/bin` directory to your PATH to use the `i
 Navigate to a project directory and run `ide` or `ide-docker` to enter the environment.
 A bash shell starts in the current directory.
 
+In the environment, run `dotfiles/.tools/install-nvim.sh` to set up neovim plugin dependencies.
+
+You may want to install some go tools: `dotfiles/.tools/install-go.sh`.
+
+TODO: automate both of these.
+
 From there on, for example, you can continue by invoking `nvim`.
 
 ```sh

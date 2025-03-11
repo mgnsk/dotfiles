@@ -8,9 +8,7 @@ return {
 		config = function()
 			require("blink-cmp").setup({
 				fuzzy = {
-					prebuilt_binaries = {
-						force_version = "v0.13.1",
-					},
+					implementation = "lua",
 				},
 				keymap = {
 					preset = "none",

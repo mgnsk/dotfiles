@@ -1,6 +1,12 @@
 vim.g.ts_langs = {
 	"beancount",
 	"comment",
+	"bash",
+	"c",
+	"lua",
+	"markdown",
+	"markdown_inline",
+	"python",
 	"cpp",
 	"css",
 	"dockerfile",
@@ -27,6 +33,8 @@ vim.g.ts_langs = {
 	"yaml",
 	"authzed",
 	"nix",
+	"vim",
+	"vimdoc",
 }
 
 ---@param lang string

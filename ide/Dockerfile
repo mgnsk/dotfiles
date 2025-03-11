@@ -40,8 +40,8 @@ ARG gid
 ARG user
 USER ${user}
 
-RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-RUN nix-channel --update
+RUN nix-channel --add https://nixos.org/channels/nixpkgs-unstable \
+    && nix-channel --update
 
 COPY --chown=${uid}:${gid} /dotfiles /home/${user}
 

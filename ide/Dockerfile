@@ -136,6 +136,7 @@ USER ${user}
 
 WORKDIR /home/${user}/.tools
 
+COPY --chown=${uid}:${gid} /dotfiles/.tools/aur /home/${user}/.tools/aur
 COPY --chown=${uid}:${gid} /dotfiles/.tools/install-aur.sh ./
 
 RUN bash install-aur.sh \

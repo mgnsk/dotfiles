@@ -81,9 +81,7 @@ __prompt_command() {
 
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 
-if test -f /usr/share/LS_COLORS/dircolors.sh; then
-	. /usr/share/LS_COLORS/dircolors.sh
-fi
+source "$HOME/.tools/LS_COLORS/lscolors.sh"
 
 if test -d /usr/share/fzf; then
 	source /usr/share/fzf/completion.bash

@@ -8,10 +8,6 @@ return {
 		build = "nix run .#build-plugin",
 		config = function()
 			require("blink-cmp").setup({
-				fuzzy = {
-					prebuilt_binaries = { download = false },
-					implementation = "rust",
-				},
 				keymap = {
 					preset = "none",
 					["<Tab>"] = { "select_next", "snippet_forward", "fallback" },

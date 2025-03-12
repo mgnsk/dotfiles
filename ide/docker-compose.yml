@@ -36,6 +36,11 @@ x-base: &base
         memory: 2G
 
 services:
+  ide-default:
+    <<: *base
+    hostname: ide-default
+    command: nix develop /home/ide/ide#default
+
   ide-base:
     <<: *base
     hostname: ide-base

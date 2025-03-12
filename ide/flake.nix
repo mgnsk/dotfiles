@@ -10,6 +10,7 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
+
       base_pkgs = [
         pkgs.bash
         pkgs.bash-completion
@@ -44,10 +45,69 @@
         pkgs.markdownlint-cli
         pkgs.nodePackages.prettier
       ];
+
+      go_pkgs = [
+        pkgs.go_1_24
+        pkgs.gopls
+        pkgs.revive
+      ];
+
+      lua_pkgs = [
+        pkgs.go_1_24
+        pkgs.lua-language-server
+        pkgs.luajitPackages.luacheck
+        pkgs.stylua
+      ];
+
+      rust_pkgs = [
+        pkgs.rustc
+        pkgs.rustfmt
+        pkgs.clippy
+        pkgs.rust-analyzer
+      ];
+
+      php_pkgs = [
+        pkgs.php84
+        pkgs.phpactor
+        pkgs.php84Extensions.sqlite3
+        pkgs.php84Packages.composer
+        pkgs.php84Packages.phpstan
+        # TODO: laravel/pint
+      ];
+
+      python_pkgs = [
+        pkgs.pipx
+      ];
+
+      webdev_pkgs = [
+        pkgs.html-tidy
+        pkgs.npm-check-updates
+        pkgs.pnpm
+        pkgs.typescript
+        pkgs.typescript-language-server
+        pkgs.vscode-langservers-extracted
+      ];
     in
     {
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
       devShells.${system} = {
+        default = pkgs.mkShell {
+          packages = [
+            base_pkgs
+            go_pkgs
+            lua_pkgs
+            rust_pkgs
+            php_pkgs
+            python_pkgs
+            webdev_pkgs
+          ];
+
+          shellHook = ''
+            export CUSTOM_HOST="ide-default"
+            exec bash
+          '';
+        };
+
         base = pkgs.mkShell {
           packages = [
             base_pkgs
@@ -62,9 +122,7 @@
         go = pkgs.mkShell {
           packages = [
             base_pkgs
-            pkgs.go_1_24
-            pkgs.gopls
-            pkgs.revive
+            go_pkgs
           ];
 
           shellHook = ''
@@ -76,9 +134,7 @@
         lua = pkgs.mkShell {
           packages = [
             base_pkgs
-            pkgs.lua-language-server
-            pkgs.luajitPackages.luacheck
-            pkgs.stylua
+            lua_pkgs
           ];
 
           shellHook = ''
@@ -90,10 +146,7 @@
         rust = pkgs.mkShell {
           packages = [
             base_pkgs
-            pkgs.rustc
-            pkgs.rustfmt
-            pkgs.clippy
-            pkgs.rust-analyzer
+            rust_pkgs
           ];
 
           shellHook = ''
@@ -105,12 +158,7 @@
         php = pkgs.mkShell {
           packages = [
             base_pkgs
-            pkgs.php84
-            pkgs.phpactor
-            pkgs.php84Extensions.sqlite3
-            pkgs.php84Packages.composer
-            pkgs.php84Packages.phpstan
-            # TODO: laravel/pint
+            php_pkgs
           ];
 
           shellHook = ''
@@ -122,7 +170,7 @@
         python = pkgs.mkShell {
           packages = [
             base_pkgs
-            pkgs.pipx
+            python_pkgs
           ];
 
           shellHook = ''
@@ -134,12 +182,7 @@
         webdev = pkgs.mkShell {
           packages = [
             base_pkgs
-            pkgs.html-tidy
-            pkgs.npm-check-updates
-            pkgs.pnpm
-            pkgs.typescript
-            pkgs.typescript-language-server
-            pkgs.vscode-langservers-extracted
+            webdev_pkgs
           ];
 
           shellHook = ''

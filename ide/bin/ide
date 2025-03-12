@@ -6,9 +6,12 @@ TZ=$(timedatectl show --property=Timezone --value)
 export TZ
 
 PS3='Please enter your choice: '
-options=("base" "go" "lua" "rust" "php" "python" "webdev" "Quit")
+options=("default" "base" "go" "lua" "rust" "php" "python" "webdev" "Quit")
 select opt in "${options[@]}"; do
 	case $opt in
+	"default")
+		break
+		;;
 	"base")
 		break
 		;;

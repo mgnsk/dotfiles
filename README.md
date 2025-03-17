@@ -1,12 +1,14 @@
 # Installation
 
+Modified dotfiles method based on https://www.atlassian.com/git/tutorials/dotfiles
+
 Warning: overwrites the user's files.
 
 ```
-$ git clone --recurse-submodules https://github.com/mgnsk/dotfiles.git $HOME/dotfiles-tmp
-$ rm -r ~/dotfiles-tmp/
-$ git config status.showUntrackedFiles no
-$ git reset --hard --recurse-submodules origin/master
+git clone --recurse-submodules --separate-git-dir=$HOME/.git https://github.com/mgnsk/dotfiles.git $HOME/dotfiles-tmp
+rm -r ~/dotfiles-tmp/
+git config status.showUntrackedFiles no
+git reset --hard --recurse-submodules origin/master
 ```
 
 # IDE

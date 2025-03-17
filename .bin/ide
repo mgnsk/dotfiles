@@ -43,4 +43,4 @@ select opt in "${options[@]}"; do
 	esac
 done
 
-docker compose -f "$(dirname "$0")/../docker-compose.yml" run --rm "ide-$opt"
+nix develop "${HOME}?submodules=true#${opt}"

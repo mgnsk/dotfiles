@@ -214,6 +214,9 @@ return {
 			lsp.buf_ls.setup({
 				capabilities = capabilities,
 			})
+			lsp.nil_ls.setup({
+				capabilities = capabilities,
+			})
 		end,
 	},
 }

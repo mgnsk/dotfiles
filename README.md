@@ -1,15 +1,12 @@
-Dotfiles method based on https://www.atlassian.com/git/tutorials/dotfiles
-
 # Installation
 
 Warning: overwrites the user's files.
 
 ```
-$ git clone --recurse-submodules --separate-git-dir=$HOME/.dotfiles https://github.com/mgnsk/dotfiles.git $HOME/dotfiles-tmp
+$ git clone --recurse-submodules https://github.com/mgnsk/dotfiles.git $HOME/dotfiles-tmp
 $ rm -r ~/dotfiles-tmp/
-$ alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-$ config config status.showUntrackedFiles no
-$ config reset --hard --recurse-submodules origin/master
+$ git config status.showUntrackedFiles no
+$ git reset --hard --recurse-submodules origin/master
 ```
 
 # IDE
@@ -28,25 +25,10 @@ The docker environment needs only `docker` with the `compose` plugin:
 https://docs.docker.com/engine/install/
 https://docs.docker.com/compose/install/
 
-## Clone the repository
-
-```sh
-git clone --recurse-submodules https://github.com/mgnsk/dotfiles.git dotfiles
-cd dotfiles/ide
-```
-
-Add the absolute path to `dotfiles/ide/bin` directory to your PATH to use the `ide` and `ide-docker` executable scripts.
-
 ## Run the container
 
 Navigate to a project directory and run `ide` or `ide-docker` to enter the environment.
 A bash shell starts in the current directory.
-
-In the environment, run `dotfiles/.tools/install-nvim.sh` to set up neovim plugin dependencies.
-
-You may want to install some go tools: `dotfiles/.tools/install-go.sh`.
-
-TODO: automate both of these.
 
 From there on, for example, you can continue by invoking `nvim`.
 

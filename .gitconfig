@@ -16,10 +16,6 @@
 	issues = !gh-fzf issues
 	events = !gh-fzf events
 
-	# Run bash from the current dir. Used for the `config` bash alias.
-	# `config bash` to enter a bash shell so that `git` commands work as `config`.
-	bash = "!f() { cd ${GIT_PREFIX:-./}; bash; }; f"
-
 [mergetool]
 	keepBackup = false
 [diff]

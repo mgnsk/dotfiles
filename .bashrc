@@ -13,10 +13,10 @@ __prepend_path ~/.local/bin
 __prepend_path ~/.bin
 __prepend_path ~/go/bin
 __prepend_path ~/.cargo/bin
-__prepend_path ~/ide/bin
 
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
 
 export GOFLAGS="-modcacherw"
 export GOPATH="$HOME/go"

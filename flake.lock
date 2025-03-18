@@ -22,11 +22,11 @@
     "dotfiles-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1742287589,
-        "narHash": "sha256-uhUdPwOvJyaDAcbtxTSFwWDWpxeo19oLjCw+yfinYZs=",
+        "lastModified": 1742288569,
+        "narHash": "sha256-2kAH3c+gMNKmwLrn7UUdF4zOCQSGkqhLkHzrAz7zQos=",
         "ref": "refs/heads/master",
-        "rev": "1bf401e523a492a49c4250e6b4b805038f2de7ad",
-        "revCount": 1503,
+        "rev": "03c62432921fb5db34923f46a7299fb22e132c5e",
+        "revCount": 1505,
         "submodules": true,
         "type": "git",
         "url": "file:/home/magnus"

@@ -12,21 +12,21 @@
         "rev": "8ca0b8760d93d7aa0f69ccbfe496e2e286c85549",
         "revCount": 1149,
         "type": "git",
-        "url": "file:/home/magnus/.local/share/nvim/plugins/blink.cmp"
+        "url": "file:/home/magnus/.config/nvim/plugins/blink.cmp"
       },
       "original": {
         "type": "git",
-        "url": "file:/home/magnus/.local/share/nvim/plugins/blink.cmp"
+        "url": "file:/home/magnus/.config/nvim/plugins/blink.cmp"
       }
     },
     "dotfiles-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1742288569,
-        "narHash": "sha256-2kAH3c+gMNKmwLrn7UUdF4zOCQSGkqhLkHzrAz7zQos=",
+        "lastModified": 1742290656,
+        "narHash": "sha256-tunSa+ZNT0U8/yLRtOxaA94Cf3lw36OezGqiNMd11vo=",
         "ref": "refs/heads/master",
-        "rev": "03c62432921fb5db34923f46a7299fb22e132c5e",
-        "revCount": 1505,
+        "rev": "f90d2eaab89eddb5fbf67fe4975d866e72a89044",
+        "revCount": 1512,
         "submodules": true,
         "type": "git",
         "url": "file:/home/magnus"

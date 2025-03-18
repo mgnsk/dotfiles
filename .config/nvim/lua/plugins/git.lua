@@ -2,7 +2,7 @@
 return {
 	{
 		"tpope/vim-fugitive",
-		dir = vim.fn.stdpath("data") .. "/plugins/vim-fugitive",
+		dir = vim.fn.stdpath("config") .. "/plugins/vim-fugitive",
 		init = function()
 			vim.keymap.set(
 				"n",

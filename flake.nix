@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    blink-cmp.url = "git+file:/home/magnus/.local/share/nvim/plugins/blink.cmp";
+    blink-cmp.url = "git+file:/home/magnus/.config/nvim/plugins/blink.cmp";
     dotfiles-src = {
       url = "git+file:/home/magnus?submodules=1";
       flake = false;
@@ -139,7 +139,7 @@
 
         copyToRoot = pkgs.buildEnv {
           name = "image-root";
-          paths = base_pkgs;
+          paths = base_pkgs ++ go_pkgs ++ lua_pkgs ++ rust_pkgs ++ php_pkgs ++ python_pkgs ++ webdev_pkgs;
           pathsToLink = [ "/bin" ];
         };
 

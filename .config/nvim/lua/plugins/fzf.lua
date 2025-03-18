@@ -2,7 +2,7 @@
 return {
 	{
 		"ibhagwan/fzf-lua",
-		dir = vim.fn.stdpath("data") .. "/plugins/fzf-lua",
+		dir = vim.fn.stdpath("config") .. "/plugins/fzf-lua",
 		lazy = true,
 		init = function()
 			vim.keymap.set("n", "<leader>p", function()

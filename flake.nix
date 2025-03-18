@@ -71,6 +71,7 @@
         pkgs.buf
         pkgs.man
         pkgs.neovim
+        pkgs.gcc
         pkgs.gojq
         pkgs.hadolint
         pkgs.shellcheck
@@ -172,6 +173,7 @@
           User = "${docker_uid}:${docker_gid}";
           Env = [
             "LUA_CPATH=${blink}/lib/?.so"
+            "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
           ];
         };
       };

@@ -83,7 +83,6 @@
         pkgs.nodePackages.prettier
         pkgs.nil
         pkgs.nixfmt-rfc-style
-        blink
       ];
 
       go_pkgs = [

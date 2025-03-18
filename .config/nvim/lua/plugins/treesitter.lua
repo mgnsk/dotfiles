@@ -1,74 +1,22 @@
-vim.g.ts_langs = {
-	"beancount",
-	"comment",
-	"bash",
-	"c",
-	"lua",
-	"markdown",
-	"markdown_inline",
-	"python",
-	"cpp",
-	"css",
-	"dockerfile",
-	"glsl",
-	"go",
-	"gomod",
-	"gosum",
-	"gowork",
-	"gotmpl",
-	"html",
-	"javascript",
-	"json",
-	"jsonnet",
-	"php",
-	"proto",
-	"query",
-	"rust",
-	"sql",
-	"tlaplus",
-	"toml",
-	"twig",
-	"typescript",
-	"tsx",
-	"yaml",
-	"authzed",
-	"nix",
-	"vim",
-	"vimdoc",
-}
-
----@param lang string
-local function install_ts_lang(lang)
-	-- Note: need to use the vim API since treesitter's lua api doesn't throw errors.
-	local ok, result = pcall(vim.api.nvim_cmd, { cmd = [[TSUpdateSync]], args = { lang } }, { output = true })
-	io.stderr:write(result .. "\n")
-	if not ok then
-		os.exit(1)
-	end
-end
-
----@param langs string[]
-function _G.install_ts_langs(langs)
-	for _, lang in ipairs(langs) do
-		install_ts_lang(lang)
-	end
-end
-
 --- @type LazySpec[]
 return {
 	{
 		"mgnsk/tree-sitter-balafon",
 		dir = vim.fn.stdpath("data") .. "/plugins/tree-sitter-balafon",
+	},
+	{
+		"nvim-treesitter/nvim-treesitter",
+		dir = vim.fn.stdpath("data") .. "/plugins/nvim-treesitter",
 		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
+			"mgnsk/tree-sitter-balafon",
 		},
-		ft = "balafon",
-		build = function(plugin)
+		event = "VeryLazy",
+		config = function()
 			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 
 			parser_config["balafon"] = {
 				install_info = {
-					url = plugin.dir,
+					url = vim.fn.stdpath("data") .. "/plugins/tree-sitter-balafon",
 					files = { "src/parser.c" },
 					generate_requires_npm = true,
 					requires_generate_from_grammar = false,
@@ -76,17 +24,46 @@ return {
 				filetype = "bal",
 			}
 
-			install_ts_lang("balafon")
-		end,
-	},
-	{
-		"nvim-treesitter/nvim-treesitter",
-		dir = vim.fn.stdpath("data") .. "/plugins/nvim-treesitter",
-		-- Note: would like to use a function but TSUpdateSync command is not available then (lazy bug?). Instead, need to use a ':' command.
-		build = ":lua _G.install_ts_langs(vim.g.ts_langs)",
-		event = "VeryLazy",
-		config = function()
 			require("nvim-treesitter.configs").setup({
+				ensure_installed = {
+					"balafon",
+					"beancount",
+					"comment",
+					"bash",
+					"c",
+					"lua",
+					"markdown",
+					"markdown_inline",
+					"python",
+					"cpp",
+					"css",
+					"dockerfile",
+					"glsl",
+					"go",
+					"gomod",
+					"gosum",
+					"gowork",
+					"gotmpl",
+					"html",
+					"javascript",
+					"json",
+					"jsonnet",
+					"php",
+					"proto",
+					"query",
+					"rust",
+					"sql",
+					"tlaplus",
+					"toml",
+					"twig",
+					"typescript",
+					"tsx",
+					"yaml",
+					"authzed",
+					"nix",
+					"vim",
+					"vimdoc",
+				},
 				highlight = {
 					enable = true,
 					disable = function(_, buf)

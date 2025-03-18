@@ -7,10 +7,10 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1741644013,
-        "narHash": "sha256-MFZQ56xu/fK1OxMV8sxJ01oH0Ui+QqWqd2A+cHAI8EI=",
-        "rev": "0075a2d6591dc249d3c149a027cf49fc4754d096",
-        "revCount": 1130,
+        "lastModified": 1742239281,
+        "narHash": "sha256-SzvQyxFH5MmxLWqYGMDxO6YhHYMW5FahzXWrSlhBAmM=",
+        "rev": "8ca0b8760d93d7aa0f69ccbfe496e2e286c85549",
+        "revCount": 1149,
         "type": "git",
         "url": "file:/home/magnus/.local/share/nvim/plugins/blink.cmp"
       },
@@ -22,11 +22,11 @@
     "dotfiles-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1742251442,
-        "narHash": "sha256-b6bxvDQIhSB1hYNytgn1BKqzsV6SmRWeuTnTMTpS6IM=",
+        "lastModified": 1742284163,
+        "narHash": "sha256-Ko/C4na/toxXKLU4W7YaWdDtOrcy0SHaashEhLDeuPQ=",
         "ref": "refs/heads/master",
-        "rev": "1d7dc00ca13d641a36cf46382e412f59ada5d8c8",
-        "revCount": 1500,
+        "rev": "895328ac34e97c70ffefc33dc33f34205781514b",
+        "revCount": 1502,
         "submodules": true,
         "type": "git",
         "url": "file:/home/magnus"

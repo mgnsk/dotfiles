@@ -104,6 +104,7 @@
         pkgs.rustfmt
         pkgs.clippy
         pkgs.rust-analyzer
+        pkgs.cargo
       ];
 
       php_pkgs = [

@@ -22,11 +22,11 @@
     "dotfiles-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1742305078,
-        "narHash": "sha256-tV79cXZCyuHV0G/l24MsOmAis6bQl8Vn7Ikj340aKz4=",
+        "lastModified": 1742492526,
+        "narHash": "sha256-BOUjagGEt4nYH/qP8kdIFZELKqYuXmzaXIARw7TFOMU=",
         "ref": "refs/heads/master",
-        "rev": "1253016bf39e11cfd1aba1efd125785b506c3956",
-        "revCount": 1509,
+        "rev": "4a3b596b7c2c1c6b3a3151336ab03c58c3508eb6",
+        "revCount": 1511,
         "submodules": true,
         "type": "git",
         "url": "file:/home/magnus"
@@ -107,11 +107,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1742069588,
-        "narHash": "sha256-C7jVfohcGzdZRF6DO+ybyG/sqpo1h6bZi9T56sxLy+k=",
+        "lastModified": 1742288794,
+        "narHash": "sha256-Txwa5uO+qpQXrNG4eumPSD+hHzzYi/CdaM80M9XRLCo=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "c80f6a7e10b39afcc1894e02ef785b1ad0b0d7e5",
+        "rev": "b6eaf97c6960d97350c584de1b6dcff03c9daf42",
         "type": "github"
       },
       "original": {

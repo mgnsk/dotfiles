@@ -7,10 +7,10 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1742239281,
-        "narHash": "sha256-SzvQyxFH5MmxLWqYGMDxO6YhHYMW5FahzXWrSlhBAmM=",
-        "rev": "8ca0b8760d93d7aa0f69ccbfe496e2e286c85549",
-        "revCount": 1149,
+        "lastModified": 1742834647,
+        "narHash": "sha256-ywFAPIqWqaz0/EY/qs0tYESEBUhW76AaGByWE6uudbs=",
+        "rev": "21fbc4d161d63b987e901dadc882a61562626050",
+        "revCount": 1208,
         "type": "git",
         "url": "file:/home/magnus/.config/nvim/plugins/blink.cmp"
       },

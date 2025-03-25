@@ -4,10 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     blink-cmp.url = "git+file:/home/magnus/.config/nvim/plugins/blink.cmp";
-    dotfiles-src = {
-      url = "git+file:/home/magnus?submodules=1";
-      flake = false;
-    };
   };
 
   outputs =
@@ -15,7 +11,6 @@
       self,
       nixpkgs,
       blink-cmp,
-      dotfiles-src,
       ...
     }:
     let
@@ -153,7 +148,7 @@
           passwd -d ${docker_user}
 
           shopt -s dotglob
-          cp -r ${dotfiles-src}/* /home/${docker_user}/
+          cp -a ${self}/. /home/${docker_user}/
           chown -R ${docker_user}:${docker_group} /home/${docker_user}/
 
           install -d -m 0755 --owner=${docker_user} --group=${docker_group} \
@@ -165,7 +160,7 @@
               /home/${docker_user}/go/pkg
 
           mkdir -p /usr/lib/locale
-          cp -r ${pkgs.glibcLocalesUtf8}/lib/locale/locale-archive /usr/lib/locale/locale-archive
+          cp -a ${pkgs.glibcLocalesUtf8}/lib/locale/locale-archive /usr/lib/locale/locale-archive
           echo "LANG=en_US.UTF-8" > /etc/locale.conf
         '';
 

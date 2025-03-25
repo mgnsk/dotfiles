@@ -19,24 +19,6 @@
         "url": "file:/home/magnus/.config/nvim/plugins/blink.cmp"
       }
     },
-    "dotfiles-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1742492526,
-        "narHash": "sha256-BOUjagGEt4nYH/qP8kdIFZELKqYuXmzaXIARw7TFOMU=",
-        "ref": "refs/heads/master",
-        "rev": "4a3b596b7c2c1c6b3a3151336ab03c58c3508eb6",
-        "revCount": 1511,
-        "submodules": true,
-        "type": "git",
-        "url": "file:/home/magnus"
-      },
-      "original": {
-        "submodules": true,
-        "type": "git",
-        "url": "file:/home/magnus"
-      }
-    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -124,7 +106,6 @@
     "root": {
       "inputs": {
         "blink-cmp": "blink-cmp",
-        "dotfiles-src": "dotfiles-src",
         "nixpkgs": "nixpkgs_2"
       }
     },

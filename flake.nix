@@ -4,32 +4,31 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     blink-cmp.url = "git+file:/home/magnus/.config/nvim/plugins/blink.cmp";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      blink-cmp,
-      ...
-    }:
+    { self, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+    pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [ inputs.neovim-nightly-overlay.overlays.default ];
+        };
 
       # Create a wrapper derivation for blink-cmp.
       blink = pkgs.stdenv.mkDerivation {
         pname = "blink-cmp-wrapper";
         version = "1.0.0";
 
-        src = blink-cmp;
+        src = inputs.blink-cmp;
 
-        buildInputs = [ blink-cmp.packages.${system}.blink-fuzzy-lib ];
+        buildInputs = [ inputs.blink-cmp.packages.${system}.blink-fuzzy-lib ];
 
         installPhase = ''
           mkdir -p $out/lib
           cp ${
-            blink-cmp.packages.${system}.blink-fuzzy-lib
+            inputs.blink-cmp.packages.${system}.blink-fuzzy-lib
           }/lib/libblink_cmp_fuzzy.so $out/lib/blink_cmp_fuzzy.so
         '';
       };
@@ -88,7 +87,6 @@
       ];
 
       lua_pkgs = [
-        pkgs.go_1_24
         pkgs.lua-language-server
         pkgs.luajitPackages.luacheck
         pkgs.stylua

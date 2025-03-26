@@ -168,6 +168,7 @@ return {
 				capabilities = capabilities,
 			})
 			lsp.lua_ls.setup({
+				cmd = { "lua-language-server", "--force-accept-workspace" },
 				capabilities = capabilities,
 				settings = {
 					Lua = {

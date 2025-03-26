@@ -37,9 +37,6 @@
 [submodule ".config/nvim/plugins/luvit-meta"]
 	path = .config/nvim/plugins/luvit-meta
 	url = https://github.com/Bilal2453/luvit-meta.git
-[submodule ".config/nvim/plugins/nvim-lspconfig"]
-	path = .config/nvim/plugins/nvim-lspconfig
-	url = https://github.com/neovim/nvim-lspconfig.git
 [submodule ".config/nvim/plugins/neomake"]
 	path = .config/nvim/plugins/neomake
 	url = https://github.com/neomake/neomake.git

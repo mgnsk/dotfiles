@@ -195,6 +195,10 @@ vim.api.nvim_create_user_command("GhBrowse", function()
 	vim.fn.system(string.format("gh browse %s --branch $(git rev-parse --abbrev-ref HEAD)", file))
 end, { desc = "Browse current file on Github" })
 
+require("lazy_setup")
 require("diagnostic")
 require("statusline")
-require("lazy_setup")
+
+if not os.getenv("NVIM_DIFF") then
+	require("lsp")
+end

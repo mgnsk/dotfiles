@@ -32,6 +32,7 @@ return {
 					TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
 					QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },
 					StatusLine = { fg = "NONE", bg = "NONE" },
+					WinSeparator = { fg = bg },
 					["@variable.builtin"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@module"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@keyword"] = { fg = c.vscPink, bg = "NONE" },

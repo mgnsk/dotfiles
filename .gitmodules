@@ -22,9 +22,6 @@
 [submodule ".config/nvim/plugins/vim-wordmotion"]
 	path = .config/nvim/plugins/vim-wordmotion
 	url = https://github.com/chaoren/vim-wordmotion.git
-[submodule ".config/nvim/plugins/pounce.nvim"]
-	path = .config/nvim/plugins/pounce.nvim
-	url = https://github.com/rlane/pounce.nvim.git
 [submodule ".config/nvim/plugins/conform.nvim"]
 	path = .config/nvim/plugins/conform.nvim
 	url = https://github.com/stevearc/conform.nvim.git

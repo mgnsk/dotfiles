@@ -39,19 +39,4 @@ return {
 		"chaoren/vim-wordmotion",
 		dir = vim.fn.stdpath("config") .. "/plugins/vim-wordmotion",
 	},
-	{
-		"rlane/pounce.nvim",
-		dir = vim.fn.stdpath("config") .. "/plugins/pounce.nvim",
-		event = "VeryLazy",
-		keys = {
-			{
-				"s",
-				mode = { "n", "x", "o" },
-				function()
-					require("pounce").pounce({})
-				end,
-				desc = "Pounce",
-			},
-		},
-	},
 }

@@ -77,7 +77,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			vim.lsp.inlay_hint.enable(true)
 		end
 
-		if client.supports_method("textDocument/documentHighlight") then
+		if client:supports_method("textDocument/documentHighlight") then
 			local docHighlightGroup = vim.api.nvim_create_augroup("lsp_document_highlight", {})
 
 			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {

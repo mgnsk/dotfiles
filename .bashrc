@@ -80,9 +80,8 @@ __prompt_command() {
 
 source "$HOME/.tools/LS_COLORS/lscolors.sh"
 
-if test -d /usr/share/fzf; then
-	source /usr/share/fzf/completion.bash
-	source /usr/share/fzf/key-bindings.bash
+if command -v fzf &>/dev/null; then
+	eval "$(fzf --bash)"
 fi
 
 if test -f /usr/share/bash-completion/bash_completion; then

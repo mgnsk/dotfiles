@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     blink-cmp.url = "git+file:/home/magnus/.config/nvim/plugins/blink.cmp";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
   outputs =
@@ -13,7 +12,6 @@
       system = "x86_64-linux";
       pkgs = import inputs.nixpkgs {
         inherit system;
-        overlays = [ inputs.neovim-nightly-overlay.overlays.default ];
       };
 
       # Create a wrapper derivation for blink-cmp.
@@ -145,7 +143,6 @@
           useradd -m -s /bin/bash -g ${docker_group} --uid ${docker_uid} ${docker_user}
           passwd -d ${docker_user}
 
-          shopt -s dotglob
           cp -a ${self}/. /home/${docker_user}/
           chown -R ${docker_user}:${docker_group} /home/${docker_user}/
 

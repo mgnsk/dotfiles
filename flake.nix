@@ -40,6 +40,8 @@
 
       base_pkgs = [
         pkgs.glibcLocalesUtf8
+        pkgs.ncurses
+        pkgs.gnugrep
         pkgs.bash
         pkgs.bash-completion
         pkgs.git

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/env bash
 
 # A hack for realtek wifi driver to wake up from suspends.
 # Must run as a minute cron job.

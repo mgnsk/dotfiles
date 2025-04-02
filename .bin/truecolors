@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/env bash
 
 # Author: https://github.com/charmbracelet/lipgloss/issues/176#issue-1609206783
 awk 'BEGIN{

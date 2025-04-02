@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/env bash
 
 systemctl stop bluetooth
 rfkill block bluetooth

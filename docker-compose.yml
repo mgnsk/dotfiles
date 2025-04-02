@@ -3,7 +3,6 @@ volumes:
   cache:
   cargo:
   local:
-  go:
 
 
 x-base: &base
@@ -19,11 +18,10 @@ x-base: &base
   tmpfs:
     - /tmp:rw,exec,nosuid,nodev,mode=777
   volumes:
-    - cache:/cache
     - cache:/home/ide/.cache
     - cargo:/home/ide/.cargo
     - local:/home/ide/.local
-    - go:/home/ide/go
+    - /home/${USER}/go:/home/ide/go
     - ${PWD}:${PWD}:Z
   working_dir: ${PWD}
   memswap_limit: 4G

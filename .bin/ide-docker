@@ -5,4 +5,6 @@ set -euo pipefail
 TZ=$(timedatectl show --property=Timezone --value)
 export TZ
 
+mkdir -p "${HOME}/go"
+
 docker compose -f "${HOME}/docker-compose.yml" -p ide run --rm ide

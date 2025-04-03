@@ -51,6 +51,10 @@ return {
 				return require("fzf-lua").git_commits()
 			end, { desc = "FZF repo commits" })
 
+			vim.keymap.set("n", "<leader>G", function()
+				return require("fzf-lua").git_status()
+			end, { desc = "FZF git status" })
+
 			vim.keymap.set("v", "<leader>B", function()
 				local start_line, end_line = unpack(require("util").selection())
 				local lineArg = string.format([[ -L %d,%d:%s]], start_line, end_line, vim.fn.expand("%:p"))

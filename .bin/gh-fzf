@@ -4,8 +4,8 @@ set -eo pipefail
 
 target="$1"
 
-if [ "$target" != "prs" ] && [ "$target" != "issues" ] && [ "$target" != "events" ]; then
-	echo "usage: gh-fzf {prs|issues|events}"
+if [ "$target" != "prs" ] && [ "$target" != "issues" ]; then
+	echo "usage: gh-fzf {prs|issues}"
 	exit 1
 fi
 
@@ -55,37 +55,12 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
-# deltainline is used for inline fzf diff previews.
-function deltainline {
-	# Manually override pager to prevent --quit-if-one-screen on short diffs.
-	delta --pager="less -R" --width="$FZF_PREVIEW_COLUMNS"
-}
-
-# deltafull is used for standalone diffs.
-export -f deltainline
-
 # deltafull is used for standalone diffs.
 function deltafull {
 	delta --pager="less -R"
 }
 
 export -f deltafull
-
-function render-markdown {
-	set -euo pipefail
-
-	glow --style=auto --width="$FZF_PREVIEW_COLUMNS"
-
-	# Other options.
-	# mdcat --ansi --columns "$FZF_PREVIEW_COLUMNS"
-	# rich --markdown --force-terminal --emoji -
-	#
-	# HTML options.
-	# cmark-gfm --to html --width "$FZF_PREVIEW_COLUMNS" | elinks -dump -dump-color-mode 3
-	# marked --gfm | elinks -dump -dump-color-mode 3
-}
-
-export -f render-markdown
 
 function gh-search {
 	set -euo pipefail
@@ -95,7 +70,7 @@ function gh-search {
 
 	issue_pr_list_go_template="$(
 		cat <<-'EOF'
-			{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}{{"\n"}}{{end -}}
+			{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | lower | autocolor "red"}}{{end}}{{"\n"}}{{end -}}
 		EOF
 	)"
 
@@ -122,177 +97,6 @@ function gh-search {
 
 export -f gh-search
 
-function get-issue-pr-timeline {
-	issue_timeline_jq_template="$(
-		cat <<-'EOF'
-			[
-				.[] | .createdAt = (
-					if has("created_at") then
-						.created_at
-					elif has("submitted_at") then
-						.submitted_at
-					elif has("committer") then
-						.committer.date
-					end
-				) | .author.login = (
-					if has("author") then
-						.author.name
-					elif has("actor") then
-						.actor.login
-					elif has("user") then
-						.user.login
-					end
-				) | .url = (
-					if has("html_url") then
-						.html_url
-					else
-						null
-					end
-				) | select(.event != "subscribed" and .event != "unsubscribed" and .event != "mentioned")
-			]
-		EOF
-	)"
-
-	gh api \
-		--cache="1m" \
-		-H "Accept: application/vnd.github+json" \
-		-H "X-GitHub-Api-Version: 2022-11-28" \
-		--paginate \
-		"/repos/{owner}/{repo}/issues/$1/timeline" |
-		gojq "$issue_timeline_jq_template"
-}
-
-export -f get-issue-pr-timeline
-
-function get-pr {
-	# Note: skipping pullRequest.comments, these are included in timeline.
-	pr_query="$(
-		cat <<-'EOF'
-			query($name: String!, $owner: String!, $number: Int!) {
-				repository(owner: $owner, name: $name) {
-					pullRequest(number: $number) {
-						number,
-						title,
-						url,
-						updatedAt,
-						createdAt,
-						state,
-						author {
-							login
-						},
-						body,
-						reviews(last: 100) {
-							nodes {
-								updatedAt,
-								createdAt,
-								url,
-								state,
-								author {
-									login
-								},
-								minimizedReason,
-								body,
-								comments(last: 100) {
-									nodes {
-										updatedAt,
-										createdAt,
-										url,
-										author {
-											login
-										},
-										minimizedReason,
-										position,
-										startLine,
-										line,
-										originalStartLine,
-										originalLine,
-										diffHunk,
-										body
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		EOF
-	)"
-
-	pr_jq_template="$(
-		cat <<-'EOF'
-			.data.repository.pullRequest | .comments = ([
-				# Reviews.
-				(.reviews.nodes[] | select(.body != "") | .html_url = .url), # Skip placeholder reviews.
-
-				# Review comments.
-				(.reviews.nodes[] | . as $review | .comments.nodes[] | . as $comment | .state = $review.state | .diffHunk = ([
-					(.diffHunk | split("\n") | . as $arr | to_entries[] |
-					# Note: line numbers are for files not diff, can't use them here unless we see all hunks.
-					if $comment.originalStartLine == null and $comment.originalLine != null then
-						# Show 4 lines like github does.
-						select(.key > ($arr|length)-5)
-					else
-						select(true)
-					end
-					| .value)
-				] | join("\n")) | .html_url = .url)
-			] | sort_by(.createdAt))
-		EOF
-	)"
-
-	gh api \
-		--cache="1m" \
-		graphql \
-		-F owner='{owner}' \
-		-F name='{repo}' \
-		-F number="$1" \
-		-f query="$pr_query" \
-		--jq "$pr_jq_template"
-}
-
-export -f get-pr
-
-function get-issue {
-	issue_query="$(
-		cat <<-'EOF'
-			query($name: String!, $owner: String!, $number: Int!) {
-				repository(owner: $owner, name: $name) {
-					issue(number: $number) {
-						number,
-						title,
-						url,
-						updatedAt,
-						createdAt,
-						state,
-						stateReason,
-						author {
-							login
-						},
-						body,
-					}
-				}
-			}
-		EOF
-	)"
-
-	issue_jq_template="$(
-		cat <<-'EOF'
-			.data.repository.issue
-		EOF
-	)"
-
-	gh api \
-		--cache="1m" \
-		graphql \
-		-F owner='{owner}' \
-		-F name='{repo}' \
-		-F number="$1" \
-		-f query="$issue_query" \
-		--jq "$issue_jq_template"
-}
-
-export -f get-issue
-
 function gh-view {
 	set -euo pipefail
 
@@ -304,91 +108,15 @@ function gh-view {
 		exit 1
 	fi
 
-	timeline_path="$tmpdir/timeline"
-	issue_pr_path="$tmpdir/issue"
-
-	get-issue-pr-timeline "$number" >"$timeline_path" &
+	export GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS - 4))
 
 	if [ "$target" == "prs" ]; then
-		get-pr "$number" >"$issue_pr_path" &
-
-		wait
-
-		# Get review comments from PR.
-		comments="$(gojq '[ .comments[] ]' <"$issue_pr_path")"
-
-		# Append review comments to timeline.
-		echo "$comments" >>"$timeline_path"
-
+		gh pr view --comments "$number" |
+			highlight "$query"
 	elif [ "$target" == "issues" ]; then
-		get-issue "$number" >"$issue_pr_path" &
-
-		wait
+		gh issue view --comments "$number" |
+			highlight "$query"
 	fi
-
-	issue_pr_header_go_template="$(
-		cat <<-'EOF'
-			# #{{.number}} {{.title}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | autocolor "red"}}{{end}}
-			## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}}{{printf " (%s)" .author.login}}{{end}}:*
-			{{.url}}
-
-			{{.body}}
-		EOF
-	)"
-
-	# Render header.
-	gh-tpl "$issue_pr_header_go_template" <"$issue_pr_path" |
-		render-markdown |
-		highlight "$query"
-
-	issue_pr_timeline_go_template="$(
-		cat <<-'EOF'
-			{{range .}}
-				---
-
-				## *{{timeago .createdAt}}{{if and .updatedAt (gt .updatedAt .createdAt)}}{{printf " (updated %s)" (timeago .updatedAt) }}{{end}}{{if .author}} {{printf "(%s)" .author.login}}{{end}}{{if .state}} {{.state | lower | autocolor "red"}}{{end}}{{if .event}} {{.event | lower | autocolor "red"}}{{end}}*
-				{{if .html_url}}{{.html_url}}{{end}}
-
-				{{if .minimizedReason}}***minimized: {{.minimizedReason}}***{{end}}
-				{{if .path}}***path: {{.path}}***{{end}}
-				{{if .diffHunk}}{{printf "```diff\n%s\n```" .diffHunk}}{{end}}
-				{{if .body}}{{.body}}{{end}}
-				{{if .sha}}{{.sha | trunc 7 | autocolor "yellow"}}{{- printf " %s" .message}}{{end}}
-				{{if .assignee}}***{{.assignee.login}}***{{end}}
-				{{if .label}}***{{.label.name}}***{{end}}
-				{{if .rename}}***{{printf "~~%s~~ %s" .rename.from .rename.to}}***{{end}}
-				{{if .source.issue}}
-					***{{printf "#%v" .source.issue.number}} {{.source.issue.title}}***
-
-					{{.source.issue.html_url}}
-				{{end}}
-				{{if .source.pull_request}}
-					***{{printf "#%v" .source.pull_request.number}} {{.source.pull_request.title}}***
-
-					{{.source.pull_request.html_url}}
-				{{end}}
-				{{if .project_id}}***project: {{.project_id}}***{{end}}
-				{{if .column}}***{{.column}}***{{end}}
-				{{if .project_card.previous_column_name}}
-					***{{printf "%s -> %s" .project_card.previous_column_name .project_card.column_name}}***
-				{{else if .project_card.column_name}}
-					***{{.project_card.column_name}}***
-				{{end}}
-				{{if .lock_reason}}***{{.lock_reason}}***{{end}}
-				{{if .state_reason}}***{{.state_reason}}***{{end}}
-				{{if .milestone}}***{{.milestone.title}}***{{end}}
-				{{if .dismissed_review}}{{.dismissed_review.dismissal_message}}{{end}}
-				{{if .requested_reviewer}}***{{.requested_reviewer.login}}***{{end}}
-				{{if .requested_team}}***{{.requested_team.name}}***{{end}}
-			{{end}}
-		EOF
-	)"
-
-	# Render timeline.
-	gojq -s 'add | sort_by(.createdAt)' <"$timeline_path" |
-		gh-tpl "$issue_pr_timeline_go_template" |
-		render-markdown |
-		highlight "$query"
 }
 
 export -f gh-view
@@ -416,305 +144,36 @@ function prs-issues-fzf-header {
 
 export -f prs-issues-fzf-header
 
-# PRs and issues use github's search.
-if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
-	# Slow:
-	# repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
 
-	# Fast:
-	# Adapted from https://stackoverflow.com/questions/15715825/how-do-you-get-the-git-repositorys-name-in-some-git-repository#comment112361514_58843794.
-	repo=$(git config --get remote.origin.url | sed -r 's/.*(\@|\/\/)(.*)(\:|\/)([^:\/]*)\/([^\/\.]*)\.git/\4\/\5/')
+export FZF_DEFAULT_COMMAND="bash -c \"prs-issues-fzf-header $target; gh-search $repo {q} 2>&1\""
 
-	export FZF_DEFAULT_COMMAND="bash -c \"prs-issues-fzf-header $target; gh-search $repo {q} 2>&1\""
+args=(
+	--ansi
+	--phony
+	--query ''
+	--no-sort
+	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true"
+	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
+	--bind "shift-up:preview-top,shift-down:preview-bottom"
+	--bind "ctrl-l:execute-silent(gh browse {1})"
+	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
+	--preview 'bash -c "gh-view {1} {q}"'
+	--preview-window=right:nowrap
+	--prompt "$target> "
+)
 
-	args=(
-		--ansi
-		--phony
-		--query ''
-		--no-sort
-		--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true"
-		--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
-		--bind "shift-up:preview-top,shift-down:preview-bottom"
-		--bind "ctrl-l:execute-silent(gh browse {1})"
-		--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
-		--preview 'bash -c "gh-view {1} {q}"'
-		--preview-window=right:wrap
-		--prompt "$target> "
+if [ "$target" == "prs" ]; then
+	args+=(
+		--header-lines=3
+		--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltafull')"
 	)
-
-	if [ "$target" == "prs" ]; then
-		args+=(
-			--header-lines=3
-			--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltafull')"
-		)
-	elif [ "$target" == "issues" ]; then
-		args+=(
-			--header-lines=2
-		)
-	fi
-
-	fzf "${args[@]}"
-
-	exit
+elif [ "$target" == "issues" ]; then
+	args+=(
+		--header-lines=2
+	)
 fi
 
-# View diff for PR or commits.
-function get-event-diff {
-	v=$(echo "\"$1\"" | gh-tpl "{{b64dec .}}")
+fzf "${args[@]}"
 
-	pr=$(echo "$v" | gojq '.pr')
-	diff=$(echo "$v" | gojq '.diff')
-
-	if [ "$pr" != "null" ]; then
-		repo=$(echo "$pr" | gojq -r '.repo')
-		number=$(echo "$pr" | gojq -r '.number')
-
-		gh api \
-			--cache="1m" \
-			-H "Accept: application/vnd.github.v3.diff" \
-			"/repos/$repo/pulls/$number"
-	elif [ "$diff" != "null" ]; then
-		repo=$(echo "$diff" | gojq -r '.repo')
-		before=$(echo "$diff" | gojq -r '.before')
-		head=$(echo "$diff" | gojq -r '.head')
-
-		gh api \
-			--cache="1m" \
-			-H "Accept: application/vnd.github.v3.diff" \
-			"/repos/$repo/compare/$before...$head"
-	else
-		exit 1
-	fi
-}
-
-export -f get-event-diff
-
-function view-event {
-	id="$(echo "$1" | tr -d "'")"
-
-	event=$(gojq ".[] | select(.id == \"$id\")")
-
-	event_view_go_template="$(
-		cat <<-'EOF'
-			## *{{.created_at | toDate "2006-01-02T15:04:05Z07:00" | date "2006-01-02 15:04:05" | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" }}*
-
-			{{$issue := coalesce .payload.pull_request .payload.issue}}
-			{{if $issue}}
-				# #{{$issue.number}} {{$issue.title}} {{if $issue.stateReason}}{{(printf "(%s: %s)" $issue.state $issue.stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" $issue.state) | autocolor "red"}}{{end}}
-			{{end}}
-			{{if .payload.release}}
-				# {{printf "%s" .payload.release.name | autocolor "cyan"}}
-			{{end}}
-
-			{{/* TODO: clean up */}}
-			{{if .payload.comment.html_url}}
-				{{.payload.comment.html_url}}
-			{{else if .payload.review.html_url}}
-				{{.payload.review.html_url}}
-			{{else if .payload.pull_request.html_url}}
-				{{.payload.pull_request.html_url}}
-			{{else if .payload.issue.html_url}}
-				{{.payload.issue.html_url}}
-			{{else if .payload.release.html_url}}
-				{{.payload.release.html_url}}
-			{{end}}
-
-			{{if eq .payload.ref_type "tag" }}
-				{{ printf "https://github.com/%s/releases/tag/%s" .repo.name .payload.ref }}
-			{{end}}
-
-			{{if .payload.forkee}}
-				{{ printf "https://github.com/%s" .payload.forkee.full_name }}
-			{{end}}
-
-			{{if eq .type "WatchEvent"}}
-				{{ printf "https://github.com/%s" .repo.name }}
-			{{end}}
-
-			{{if and .payload.head .payload.before}}
-				{{ printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head }}
-			{{end}}
-
-			{{if .payload.pages}}
-				{{ printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha }}
-			{{end}}
-
-			{{if .payload.comment.body}} {{.payload.comment.body}}{{end}}
-			{{if .payload.review.body}} {{.payload.review.body}}{{end}}
-			{{if .payload.release.body}} {{.payload.release.body}}{{end}}
-
-			{{if eq .payload.type "PullRequest"}}
-				{{if .payload.pull_request.body}} {{.payload.pull_request.body}}{{end}}
-			{{end}}
-
-			{{if eq .payload.type "Issues"}}
-				{{if .payload.issue.body}} {{.payload.issue.body}}{{end}}
-			{{end}}
-
-			{{if .payload.commits}}
-				{{range .payload.commits}}
-					* {{.sha | trunc 7 | autocolor "yellow"}} {{.message}}
-				{{end}}
-			{{end}}
-
-			{{if .payload.pages}}
-				{{range .payload.pages}}
-					* {{.sha | trunc 7 | autocolor "yellow"}} {{.title}}{{if .summary}} {{.summary}}{{end}}
-				{{end}}
-			{{end}}
-		EOF
-	)"
-
-	echo "$event" |
-		gh-tpl "$event_view_go_template" |
-		render-markdown
-
-	# Display repo if fork event.
-	forkee=$(echo "$event" | gojq '.payload.forkee')
-	if [ "$forkee" != "null" ]; then
-		repo=$(echo "$forkee" | gojq -r '.full_name')
-
-		export GH_FORCE_TTY="$FZF_PREVIEW_COLUMNS"
-		gh repo view "$repo"
-	fi
-
-	# Display inline diff for PullRequest and Push events.
-	get-event-diff "$2" | deltainline
-}
-
-export -f view-event
-
-function open-event-link {
-	echo "\"$1\"" |
-		gh-tpl "{{b64dec .}}" |
-		gojq '.html_url' |
-		xargs xdg-open
-}
-
-export -f open-event-link
-
-# Events uses fzf filtering.
-if [ "$target" == "events" ]; then
-	user=$(gh api --cache="1m" user --jq '.login')
-
-	events_path="$tmpdir/events"
-	received_events_path="$tmpdir/received_events"
-
-	# List events for the authenticated user.
-	gh api \
-		--cache="10m" \
-		-H "Accept: application/vnd.github+json" \
-		-H "X-GitHub-Api-Version: 2022-11-28" \
-		--paginate \
-		"/users/$user/events" >"$events_path" &
-
-	# List events received by the authenticated user.
-	gh api \
-		--cache="10m" \
-		-H "Accept: application/vnd.github+json" \
-		-H "X-GitHub-Api-Version: 2022-11-28" \
-		--paginate \
-		"/users/$user/received_events" >"$received_events_path" &
-
-	wait
-
-	event_list_go_template="$(
-		cat <<-'EOF'
-			{{- range . -}}
-				{{" "}}{{.id | autocolor "yellow" -}}
-				{{" "}}{{- timeago .created_at | autocolor "red"}} {{printf "(%s@%s)" .actor.login .repo.name | autocolor "blue" -}}
-				{{- printf " %s" (trimSuffix "Event" .type) | autocolor "yellow" -}}
-				{{- if .payload.ref_type}} {{.payload.ref_type}}{{end -}}
-				{{- if .payload.ref -}}
-					{{- if (or (hasSuffix "main" .payload.ref) (hasSuffix "master" .payload.ref)) -}}
-						{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "red" -}}
-					{{- else -}}
-						{{- (printf " (%s)" (trimPrefix "refs/heads/" .payload.ref)) | autocolor "cyan" -}}
-					{{- end -}}
-				{{- end -}}
-				{{- if .payload.pages -}}
-					{{- (printf " (%s)" (index .payload.pages 0).page_name) | autocolor "cyan" -}}
-				{{- end -}}
-				{{- if .payload.forkee -}}
-					{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
-				{{- end -}}
-				{{- if eq .type "WatchEvent" -}}
-					{{- (printf " (%s)" .repo.name) | autocolor "cyan" -}}
-				{{- end -}}
-				{{- if .payload.pull_request}} {{printf "(#%v) %s" .payload.pull_request.number (truncate 25 .payload.pull_request.title) | autocolor "cyan"}}{{end -}}
-				{{- if .payload.issue}} {{printf "(#%v) %s" .payload.issue.number (truncate 25 .payload.issue.title) | autocolor "cyan"}}{{end -}}
-
-				{{- if .payload.pull_request.merged  -}}
-					{{- " (merged)" | autocolor "red" -}}
-				{{- else -}}
-					{{- if .payload.action}} {{(printf "(%s)" .payload.action) | autocolor "red"}}{{end -}}
-					{{- if .payload.pages}} {{(printf "(%s)" (index .payload.pages 0).action) | autocolor "red"}}{{end -}}
-				{{- end -}}
-
-				{{- if .payload.review.state}} {{(printf " (%s)" .payload.review.state) | autocolor "red"}}{{end -}}
-
-				{{- if .payload.review.commit_id}} {{.payload.review.commit_id | trunc 7 | autocolor "yellow"}}{{end -}}
-				{{- if .payload.review.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.review.body " ")}}{{end -}}
-				{{- if .payload.comment.body}} {{(regexReplaceAllLiteral "[\r\n]+" .payload.comment.body " ")}}{{end -}}
-				{{- if .payload.commits -}}
-					{{- (printf " (%v %s)" .payload.size (int .payload.size | plural "commit" "commits")) | autocolor "red" -}}
-					{{- range .payload.commits -}}
-						{{- printf " %s" (regexReplaceAllLiteral "[\r\n]+" .message " ") -}}
-					{{- end -}}
-				{{- end -}}
-
-				{{- $urls := dict -}}
-
-				{{- if .payload.comment.html_url -}}
-					{{- $_ := set $urls "html_url" .payload.comment.html_url -}}
-				{{- else if .payload.review.html_url -}}
-					{{- $_ := set $urls "html_url" .payload.review.html_url -}}
-				{{- else if .payload.pull_request.html_url -}}
-					{{- $_ := set $urls "html_url" .payload.pull_request.html_url -}}
-					{{- $_ := set $urls "pr" (dict "repo" .repo.name "number" .payload.pull_request.number) -}}
-				{{- else if .payload.issue.html_url -}}
-					{{- $_ := set $urls "html_url" .payload.issue.html_url -}}
-				{{- else if .payload.release.html_url -}}
-					{{- $_ := set $urls "html_url" .payload.release.html_url -}}
-				{{- else if eq .payload.ref_type "tag" -}}
-					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/releases/tag/%s" .repo.name .payload.ref) -}}
-				{{- else if .payload.pages -}}
-					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/wiki/_compare/%s" .repo.name (index .payload.pages 0).sha) -}}
-				{{- else if .payload.forkee -}}
-					{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .payload.forkee.full_name) -}}
-				{{- else if and .payload.head .payload.before -}}
-					{{- $_ := set $urls "html_url" (printf "https://github.com/%s/compare/%s..%s" .repo.name .payload.before .payload.head) -}}
-					{{- $_ := set $urls "diff" (dict "repo" .repo.name "before" .payload.before "head" .payload.head) -}}
-				{{- else if eq .type "WatchEvent" -}}
-					{{- $_ := set $urls "html_url" (printf "https://github.com/%s" .repo.name) -}}
-				{{- end -}}
-
-				{{- printf " %s" (mustToJson $urls | b64enc) -}}
-
-				{{- "\n" -}}
-			{{- end -}}
-		EOF
-	)"
-
-	# 2..-2 displays list item from 2nd column and excludes the last column.
-	# The last column is a base64-encoded JSON payload containing links.
-	cat "$events_path" "$received_events_path" |
-		gojq -s 'add | sort_by(.created_at) | reverse' |
-		gh-tpl --color "$event_list_go_template" |
-		fzf \
-			--with-nth 2..-2 \
-			--ansi \
-			--no-sort \
-			--exact \
-			-i \
-			--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
-			--bind shift-up:preview-top,shift-down:preview-bottom \
-			--header $'Ctrl-L: web browser\nCtrl-O: diff (for Push and PullRequest)' \
-			--bind "ctrl-l:execute-silent(bash -c 'open-event-link {-1}')" \
-			--bind "ctrl-o:execute(bash -c 'get-event-diff {-1} | deltafull')" \
-			--preview "bash -c \"cat \"$events_path\" \"$received_events_path\" | view-event {1} {-1}\"" \
-			--preview-window=down:wrap,70% \
-			--prompt "$target> "
-
-	exit
-fi
+exit

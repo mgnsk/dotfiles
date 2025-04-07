@@ -14,14 +14,13 @@
 	reflogs = !git-fzf reflog
 	prs = !gh-fzf prs
 	issues = !gh-fzf issues
-	events = !gh-fzf events
 
 [mergetool]
 	keepBackup = false
 [diff]
 	tool = nvim
 	algorithm = histogram
-	colorMoved = plain
+	; colorMoved = plain
 	mnemonicPrefix = true
 	renames = true
 [mergetool "nvim"]

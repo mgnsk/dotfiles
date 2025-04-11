@@ -42,6 +42,8 @@
         pkgs.glibcLocalesUtf8
         pkgs.ncurses
         pkgs.gnugrep
+        pkgs.gnused
+        pkgs.gawk
         pkgs.bash
         pkgs.bash-completion
         pkgs.git

@@ -151,10 +151,9 @@
           install -d -m 0755 --owner=${docker_user} --group=${docker_group} \
               /home/${docker_user}/.cache \
               /home/${docker_user}/.cargo \
-              /home/${docker_user}/.local/share/nvim \
-              /home/${docker_user}/.local/state \
-              /home/${docker_user}/go/bin \
-              /home/${docker_user}/go/pkg
+              /home/${docker_user}/.local \
+              /home/${docker_user}/.local/share \
+              /home/${docker_user}/.local/state
 
           mkdir -p /usr/lib/locale
           cp -a ${pkgs.glibcLocalesUtf8}/lib/locale/locale-archive /usr/lib/locale/locale-archive

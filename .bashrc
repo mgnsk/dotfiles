@@ -85,10 +85,6 @@ if test -f /usr/share/bash-completion/bash_completion; then
 	source /usr/share/bash-completion/bash_completion
 fi
 
-if test -f "$HOME/.local/share/tusk/tusk-completion.bash"; then
-	source "$HOME/.local/share/tusk/tusk-completion.bash"
-fi
-
 if command -v direnv &>/dev/null; then
 	eval "$(direnv hook bash)"
 fi

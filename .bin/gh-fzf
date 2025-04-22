@@ -195,5 +195,3 @@ elif [ "$target" == "issues" ]; then
 fi
 
 fzf "${args[@]}"
-
-exit

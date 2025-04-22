@@ -117,10 +117,9 @@ function gh-view {
 		exit 1
 	fi
 
-	# {{- range .commits}}* {{.oid | trunc 7 | autocolor "yellow"}} {{regexReplaceAllLiteral "[\r\n]+" .messageBody " "}}{{"\n"}}{{end -}}
 	commit_list_template="$(
 		cat <<-'EOF'
-			{{- range .commits}}* {{.oid | trunc 7 | autocolor "yellow"}} {{.messageBody}}{{"\n"}}{{end -}}
+			{{- range .commits}}* {{.oid | trunc 7 | autocolor "yellow"}} {{.messageHeadline}}{{"\n"}}{{end -}}
 		EOF
 	)"
 

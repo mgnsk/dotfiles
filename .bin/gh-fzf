@@ -58,7 +58,6 @@ export -f toggle-grep-passthrough
 # deltainline is used for inline diffs.
 function deltainline {
 	# Manually override pager to prevent --quit-if-one-screen on short diffs.
-	# GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS - 4)) gh pr view --comments "$number" |
 	delta --pager="less -R" --width="$((FZF_PREVIEW_COLUMNS - 4))"
 }
 

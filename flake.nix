@@ -113,6 +113,9 @@
 
       python_pkgs = [
         pkgs.pipx
+        pkgs.pipenv
+        pkgs.black
+        pkgs.pylint
       ];
 
       webdev_pkgs = [

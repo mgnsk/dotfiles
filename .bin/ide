@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-TZ=$(timedatectl show --property=Timezone --value)
-export TZ
-
 PS3='Please enter your choice: '
 options=("default" "base" "go" "lua" "rust" "php" "python" "webdev" "Quit")
 select opt in "${options[@]}"; do

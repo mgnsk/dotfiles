@@ -171,6 +171,7 @@
           Env = [
             "LUA_CPATH=${blink}/lib/?.so"
             "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+            "TZDIR=${pkgs.tzdata}/share/zoneinfo"
           ];
         };
       };

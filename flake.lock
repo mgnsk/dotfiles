@@ -7,10 +7,10 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1745118754,
-        "narHash": "sha256-a8OWYMmcTpjc3ir2RVQ1LWWXbu75RpmaXc/js9rno3Q=",
-        "rev": "3ce61ae041927082f962791f59e3aadc774b206c",
-        "revCount": 1316,
+        "lastModified": 1746206240,
+        "narHash": "sha256-bKe8SSg1HPWE7b4iRQJwiOVCrvvgttuHCOIa4U/38AY=",
+        "rev": "4f38ce99a472932d5776337f08f7a8180f1f571a",
+        "revCount": 1361,
         "type": "git",
         "url": "file:/home/magnus/.config/nvim/plugins/blink.cmp"
       },
@@ -89,11 +89,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1744932701,
-        "narHash": "sha256-fusHbZCyv126cyArUwwKrLdCkgVAIaa/fQJYFlCEqiU=",
+        "lastModified": 1746663147,
+        "narHash": "sha256-Ua0drDHawlzNqJnclTJGf87dBmaO/tn7iZ+TCkTRpRc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b024ced1aac25639f8ca8fdfc2f8c4fbd66c48ef",
+        "rev": "dda3dcd3fe03e991015e9a74b22d35950f264a54",
         "type": "github"
       },
       "original": {

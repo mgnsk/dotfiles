@@ -74,7 +74,7 @@
         pkgs.jsonnet-language-server
         pkgs.docker-compose-language-service
         pkgs.bash-language-server
-        pkgs.nodejs_23
+        pkgs.nodejs_22
         pkgs.nodePackages.cspell
         pkgs.markdownlint-cli
         pkgs.nodePackages.prettier

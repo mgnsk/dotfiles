@@ -28,9 +28,6 @@
 [submodule ".config/nvim/plugins/fzf-lua"]
 	path = .config/nvim/plugins/fzf-lua
 	url = https://github.com/ibhagwan/fzf-lua.git
-[submodule ".config/nvim/plugins/vim-fugitive"]
-	path = .config/nvim/plugins/vim-fugitive
-	url = https://github.com/tpope/vim-fugitive.git
 [submodule ".config/nvim/plugins/luvit-meta"]
 	path = .config/nvim/plugins/luvit-meta
 	url = https://github.com/Bilal2453/luvit-meta.git
@@ -64,3 +61,6 @@
 [submodule ".tools/LS_COLORS"]
 	path = .tools/LS_COLORS
 	url = https://github.com/trapd00r/LS_COLORS.git
+[submodule ".config/nvim/plugins/gitsigns.nvim"]
+	path = .config/nvim/plugins/gitsigns.nvim
+	url = https://github.com/lewis6991/gitsigns.nvim.git

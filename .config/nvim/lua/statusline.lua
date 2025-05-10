@@ -35,16 +35,27 @@ function _G.num_selected()
 end
 
 ---@return string
-function _G.git_branch()
-	local data = vim.api.nvim_call_function("fugitive#statusline", {})
-	local branch = string.sub(data, 5, -2)
+function _G.git_status_line()
+	local s = {}
 
-	return branch
+	if vim.b.gitsigns_status_dict then
+		table.insert(s, string.format("(%s)", vim.b.gitsigns_status_dict["head"]))
+	end
+
+	if vim.b.gitsigns_status ~= "" then
+		table.insert(s, vim.b.gitsigns_status)
+	end
+
+	if #s > 0 then
+		return table.concat(s, " ")
+	end
+
+	return ""
 end
 
 vim.opt.statusline = table.concat({
 	"%#LineNr#",
-	"%{v:lua.git_branch()}",
+	"%{v:lua.git_status_line()}",
 	" %m%f",
 	" %{%v:lua.num_selected()%}",
 	"%=",

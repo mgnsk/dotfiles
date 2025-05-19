@@ -64,3 +64,6 @@
 [submodule ".config/nvim/plugins/gitsigns.nvim"]
 	path = .config/nvim/plugins/gitsigns.nvim
 	url = https://github.com/lewis6991/gitsigns.nvim.git
+[submodule ".config/nvim/plugins/nvim-ansible"]
+	path = .config/nvim/plugins/nvim-ansible
+	url = https://github.com/mfussenegger/nvim-ansible.git

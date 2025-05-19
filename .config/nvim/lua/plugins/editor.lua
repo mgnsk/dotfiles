@@ -39,4 +39,8 @@ return {
 		"chaoren/vim-wordmotion",
 		dir = vim.fn.stdpath("config") .. "/plugins/vim-wordmotion",
 	},
+	{
+		"mfussenegger/nvim-ansible",
+		dir = vim.fn.stdpath("config") .. "/plugins/nvim-ansible",
+	},
 }

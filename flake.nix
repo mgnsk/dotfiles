@@ -80,6 +80,9 @@
         pkgs.nodePackages.prettier
         pkgs.nil
         pkgs.nixfmt-rfc-style
+        pkgs.ansible
+        pkgs.ansible-lint
+        pkgs.ansible-language-server
       ];
 
       go_pkgs = [

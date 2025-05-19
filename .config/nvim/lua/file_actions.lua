@@ -1,5 +1,14 @@
 local M = {}
 
+--- Create a neomake-safe filetype string.
+---
+---@param ft string
+---@return string
+local function neomake_filetype(ft)
+	local result = string.gsub(ft, "%.", "_")
+	return result
+end
+
 --- Register a custom formatter. The formatter name is config.command.
 ---
 ---@param config conform.FormatterConfigOverride
@@ -54,7 +63,7 @@ function M.registerLinter(config)
 		return
 	end
 
-	vim.g["neomake_" .. vim.bo.filetype .. "_" .. config.exe .. "_maker"] = config
+	vim.g["neomake_" .. neomake_filetype(vim.bo.filetype) .. "_" .. config.exe .. "_maker"] = config
 end
 
 --- Configure linters for the current buffer's filetype to run on BufWritePost.
@@ -65,9 +74,9 @@ function M.configureLintAfterSave(linters)
 		return
 	end
 
-	local filetype = vim.bo.filetype
+	vim.g["neomake_" .. neomake_filetype(vim.bo.filetype) .. "_enabled_makers"] = linters
 
-	vim.g["neomake_" .. filetype .. "_enabled_makers"] = linters
+	local filetype = vim.bo.filetype
 
 	vim.api.nvim_create_autocmd("BufWritePost", {
 		group = vim.api.nvim_create_augroup(filetype .. "_lint", {}),

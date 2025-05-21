@@ -55,14 +55,6 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
-# deltainline is used for inline diffs.
-function deltainline {
-	# Manually override pager to prevent --quit-if-one-screen on short diffs.
-	delta --pager="less -R" --width="$((FZF_PREVIEW_COLUMNS - 4))"
-}
-
-export -f deltainline
-
 # deltafull is used for standalone diffs.
 function deltafull {
 	delta --pager="less -R"
@@ -129,9 +121,6 @@ function gh-view {
 		gh pr view --json commits "$number" |
 			gh-tpl --color "$commit_list_template" |
 			highlight "$query"
-
-		gh pr diff "$number" | deltainline
-
 	elif [ "$target" == "issues" ]; then
 		GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS - 4)) gh issue view --comments "$number" |
 			highlight "$query"

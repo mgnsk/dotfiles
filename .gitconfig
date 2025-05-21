@@ -42,7 +42,7 @@
 	navigate = true
 	light = false
 	line-numbers = false
-	side-by-side = false
+	side-by-side = true
 	color-only = false
 	keep-plus-minus-markers = true
 [tag]

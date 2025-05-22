@@ -214,6 +214,9 @@
             pkgs.yabridge
             pkgs.yabridgectl
             pkgs.wineWowPackages.yabridge
+            pkgs.zam-plugins
+            pkgs.lsp-plugins
+            pkgs.chow-tape-model
           ];
           shellHook = ''
             export CUSTOM_HOST="ide-audio"

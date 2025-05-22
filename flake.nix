@@ -56,21 +56,24 @@
         pkgs.fd
         pkgs.bat
         pkgs.fzf
-        pkgs.glow
         pkgs.coreutils
         pkgs.moreutils
         pkgs.which
         pkgs.shfmt
-        pkgs.gh
-        pkgs.yamllint
         pkgs.direnv
-        pkgs.buf
         pkgs.man
         pkgs.neovim
-        pkgs.gcc
         pkgs.gojq
-        pkgs.hadolint
         pkgs.shellcheck
+      ];
+
+      dev_pkgs = [
+        pkgs.hadolint
+        pkgs.gcc
+        pkgs.buf
+        pkgs.yamllint
+        pkgs.gh
+        pkgs.glow
         pkgs.jsonnet-language-server
         pkgs.docker-compose-language-service
         pkgs.bash-language-server
@@ -142,7 +145,8 @@
 
         copyToRoot = pkgs.buildEnv {
           name = "image-root";
-          paths = base_pkgs ++ go_pkgs ++ lua_pkgs ++ rust_pkgs ++ php_pkgs ++ python_pkgs ++ webdev_pkgs;
+          paths =
+            base_pkgs ++ dev_pkgs ++ go_pkgs ++ lua_pkgs ++ rust_pkgs ++ php_pkgs ++ python_pkgs ++ webdev_pkgs;
           pathsToLink = [ "/bin" ];
         };
 
@@ -180,19 +184,6 @@
       };
 
       devShells.${system} = {
-        default = pkgs.mkShell {
-          packages = [
-            base_pkgs
-            go_pkgs
-            lua_pkgs
-            rust_pkgs
-            php_pkgs
-            python_pkgs
-            webdev_pkgs
-          ];
-          shellHook = commonShellHook "ide-default";
-        };
-
         base = pkgs.mkShell {
           packages = [
             base_pkgs
@@ -200,52 +191,29 @@
           shellHook = commonShellHook "ide-base";
         };
 
-        go = pkgs.mkShell {
+        dev = pkgs.mkShell {
           packages = [
             base_pkgs
+            dev_pkgs
             go_pkgs
-          ];
-          shellHook = commonShellHook "ide-go";
-        };
-
-        lua = pkgs.mkShell {
-          packages = [
-            base_pkgs
             lua_pkgs
-          ];
-          shellHook = commonShellHook "ide-lua";
-        };
-
-        rust = pkgs.mkShell {
-          packages = [
-            base_pkgs
             rust_pkgs
-          ];
-          shellHook = commonShellHook "ide-rust";
-        };
-
-        php = pkgs.mkShell {
-          packages = [
-            base_pkgs
             php_pkgs
-          ];
-          shellHook = commonShellHook "ide-php";
-        };
-
-        python = pkgs.mkShell {
-          packages = [
-            base_pkgs
             python_pkgs
-          ];
-          shellHook = commonShellHook "ide-python";
-        };
-
-        webdev = pkgs.mkShell {
-          packages = [
-            base_pkgs
             webdev_pkgs
           ];
-          shellHook = commonShellHook "ide-webdev";
+          shellHook = commonShellHook "ide-dev";
+        };
+
+        audio = pkgs.mkShell {
+          packages = [
+            base_pkgs
+            pkgs.reaper
+            pkgs.yabridge
+            pkgs.yabridgectl
+            pkgs.wineWowPackages.yabridge
+          ];
+          shellHook = commonShellHook "ide-audio";
         };
       };
 

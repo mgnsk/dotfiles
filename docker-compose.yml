@@ -35,5 +35,5 @@ x-base: &base
 services:
   ide:
     <<: *base
-    hostname: ide-default
+    hostname: ide-dev
     command: bash

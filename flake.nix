@@ -12,6 +12,7 @@
       system = "x86_64-linux";
       pkgs = import inputs.nixpkgs {
         inherit system;
+        config.allowUnfree = true;
       };
 
       # Create a wrapper derivation for blink-cmp.
@@ -30,13 +31,6 @@
           }/lib/libblink_cmp_fuzzy.so $out/lib/blink_cmp_fuzzy.so
         '';
       };
-
-      # Define common shell hook as a function
-      commonShellHook = customHost: ''
-        export LUA_CPATH="${blink}/lib/?.so"
-        export CUSTOM_HOST="${customHost}"
-        exec bash
-      '';
 
       base_pkgs = [
         pkgs.glibcLocalesUtf8
@@ -62,12 +56,13 @@
         pkgs.shfmt
         pkgs.direnv
         pkgs.man
-        pkgs.neovim
-        pkgs.gojq
-        pkgs.shellcheck
+        pkgs.vim
       ];
 
       dev_pkgs = [
+        pkgs.neovim
+        pkgs.gojq
+        pkgs.shellcheck
         pkgs.hadolint
         pkgs.gcc
         pkgs.buf
@@ -188,7 +183,10 @@
           packages = [
             base_pkgs
           ];
-          shellHook = commonShellHook "ide-base";
+          shellHook = ''
+            export CUSTOM_HOST="ide-base"
+            exec bash
+          '';
         };
 
         dev = pkgs.mkShell {
@@ -202,7 +200,11 @@
             python_pkgs
             webdev_pkgs
           ];
-          shellHook = commonShellHook "ide-dev";
+          shellHook = ''
+            export LUA_CPATH="${blink}/lib/?.so"
+            export CUSTOM_HOST="ide-dev"
+            exec bash
+          '';
         };
 
         audio = pkgs.mkShell {
@@ -213,10 +215,11 @@
             pkgs.yabridgectl
             pkgs.wineWowPackages.yabridge
           ];
-          shellHook = commonShellHook "ide-audio";
+          shellHook = ''
+            export CUSTOM_HOST="ide-audio"
+            exec bash
+          '';
         };
       };
-
-      # packages.${system}.default = pkgs.bash;
     };
 }

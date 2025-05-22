@@ -201,8 +201,8 @@
             webdev_pkgs
           ];
           shellHook = ''
-            export LUA_CPATH="${blink}/lib/?.so"
             export CUSTOM_HOST="ide-dev"
+            export LUA_CPATH="${blink}/lib/?.so"
             exec bash
           '';
         };
@@ -219,11 +219,17 @@
             pkgs.chow-tape-model
           ];
           shellHook = ''
+            export CUSTOM_HOST="ide-audio"
             export CLAP_PATH="${pkgs.zam-plugins}/lib/clap;${pkgs.lsp-plugins}/lib/clap;${pkgs.chow-tape-model}/lib/clap"
             export LD_LIBRARY_PATH="${pkgs.pipewire.jack}/lib;${pkgs.yabridge}/lib"
-            export CUSTOM_HOST="ide-audio"
-            # TODO: upgrade yabridge to make it work:
-            yabridgectl set --path="${pkgs.yabridge}/lib"
+            export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
+            export PATH="${pkgs.yabridge}/bin:$PATH"
+
+            yabridgectl add /home/magnus/.vst2/yabridge
+            yabridgectl add /home/magnus/.vst3/yabridge
+            yabridgectl sync
+            yabridgectl status
+
             exec bash
           '';
         };

@@ -50,21 +50,6 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
-# deltainline is used for inline fzf diff previews.
-function deltainline {
-	# Manually override pager to prevent --quit-if-one-screen on short diffs.
-	delta --pager="less -R" --width="$FZF_PREVIEW_COLUMNS"
-}
-
-# deltafull is used for standalone diffs.
-export -f deltainline
-
-function deltafull {
-	delta --pager="less -R"
-}
-
-export -f deltafull
-
 # Git flags.
 # The default --grep flag searches from commit messages.
 # The -G flag searches from diff content.
@@ -113,7 +98,7 @@ function git-view {
 
 	# Handle empty query.
 	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-		git show --color "$commit" | deltainline
+		git show --color "$commit" | diff-highlight
 		exit
 	fi
 
@@ -122,7 +107,7 @@ function git-view {
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
 	git show --color -i --perl-regexp $gitflags "$query" "$commit" |
-		deltainline |
+		diff-highlight |
 		highlight "$query"
 }
 
@@ -165,9 +150,10 @@ fzf \
 	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
 	--header-lines=4 \
 	--bind "ctrl-l:execute-silent(gh browse {1})" \
-	--bind "ctrl-o:execute(bash -c 'git show --color {1} | deltafull')" \
+	--bind "ctrl-o:execute(bash -c 'git show --color {1}')" \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
 	--preview 'bash -c "git-view {1} {q}"' \
 	--preview-window=down:wrap,70% \
+	--style=minimal \
 	--prompt "$target> "

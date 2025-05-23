@@ -55,13 +55,6 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
-# deltafull is used for standalone diffs.
-function deltafull {
-	delta --pager="less -R"
-}
-
-export -f deltafull
-
 function gh-search {
 	set -euo pipefail
 
@@ -168,13 +161,14 @@ args=(
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
 	--preview 'bash -c "gh-view {1} {q}"'
 	--preview-window=right:wrap
+	--style=minimal
 	--prompt "$target> "
 )
 
 if [ "$target" == "prs" ]; then
 	args+=(
 		--header-lines=3
-		--bind "ctrl-o:execute(bash -c 'gh pr diff {1} | deltafull')"
+		--bind "ctrl-o:execute(bash -c 'gh pr diff --color=always {1} | diff-highlight | less -R')"
 	)
 elif [ "$target" == "issues" ]; then
 	args+=(

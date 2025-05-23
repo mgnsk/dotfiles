@@ -236,6 +236,9 @@
             export LD_LIBRARY_PATH="${pkgs.yabridge}/lib;$LD_LIBRARY_PATH"
             export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
 
+            # TODO: needs a wine build with fsync patch.
+            export WINEFSYNC=1
+
             source ${pkgs.bash-completion}/etc/profile.d/bash_completion.sh
 
             yabridgectl add ~/.vst2/yabridge

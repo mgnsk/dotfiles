@@ -220,6 +220,7 @@
             pkgs.yabridgectl
             pkgs.wineWowPackages.yabridge
             pkgs.winetricks
+            pkgs.cabextract
             pkgs.zam-plugins
             pkgs.lsp-plugins
             pkgs.chow-tape-model

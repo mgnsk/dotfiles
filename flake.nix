@@ -236,8 +236,8 @@
 
             source ${pkgs.bash-completion}/etc/profile.d/bash_completion.sh
 
-            yabridgectl add /home/magnus/.vst2/yabridge
-            yabridgectl add /home/magnus/.vst3/yabridge
+            yabridgectl add ~/.vst2/yabridge
+            yabridgectl add ~/.vst3/yabridge
             yabridgectl sync
             yabridgectl status
 

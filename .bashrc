@@ -81,10 +81,6 @@ if command -v fzf &>/dev/null; then
 	eval "$(fzf --bash)"
 fi
 
-if test -f /usr/share/bash-completion/bash_completion; then
-	source /usr/share/bash-completion/bash_completion
-fi
-
 if command -v direnv &>/dev/null; then
 	eval "$(direnv hook bash)"
 fi

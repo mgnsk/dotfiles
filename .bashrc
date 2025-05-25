@@ -81,9 +81,8 @@ if command -v fzf &>/dev/null; then
 	eval "$(fzf --bash)"
 fi
 
+# TODO: bash-completion if not in nix
+
 if command -v direnv &>/dev/null; then
 	eval "$(direnv hook bash)"
 fi
-
-# Steam Deck rootless nix install.
-if [ -e /home/deck/.nix-profile/etc/profile.d/nix.sh ]; then . /home/deck/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

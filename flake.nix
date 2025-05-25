@@ -241,8 +241,7 @@
 
             source ${pkgs.bash-completion}/etc/profile.d/bash_completion.sh
 
-            yabridgectl add ~/.vst2/yabridge
-            yabridgectl add ~/.vst3/yabridge
+            yabridgectl add ~/.win-plugins
             yabridgectl sync
             yabridgectl status
 

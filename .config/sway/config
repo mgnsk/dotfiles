@@ -180,4 +180,4 @@ for_window [class=".*"] border none
 seat seat0 hide_cursor 3000
 
 # AUTOSTART
-exec $HOME/.bin/sway_startup
+exec bash $HOME/scripts/sway-startup.sh

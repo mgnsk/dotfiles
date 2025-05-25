@@ -1,0 +1,6 @@
+#!/bin/env bash
+
+set -e
+
+# https://github.com/nix-community/nix-user-chroot
+nix-user-chroot ~/.nix bash

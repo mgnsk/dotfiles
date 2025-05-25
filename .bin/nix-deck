@@ -2,7 +2,5 @@
 
 set -e
 
-if [ -e /home/deck/.nix-profile/etc/profile.d/nix.sh ]; then . /home/deck/.nix-profile/etc/profile.d/nix.sh; fi
-
 # https://github.com/nix-community/nix-user-chroot
-nix-user-chroot ~/.nix bash
+nix-user-chroot ~/.nix bash -c 'source /home/deck/.nix-profile/etc/profile.d/nix.sh; exec bash'

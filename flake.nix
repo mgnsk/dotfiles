@@ -32,99 +32,118 @@
         '';
       };
 
-      base_pkgs = [
-        pkgs.glibcLocalesUtf8
-        pkgs.ncurses
-        pkgs.gnugrep
-        pkgs.gnused
-        pkgs.gawk
-        pkgs.bash
-        pkgs.bash-completion
-        pkgs.git
-        pkgs.unzip
-        pkgs.wget
-        pkgs.tmux
-        pkgs.tree
-        pkgs.ripgrep
-        pkgs.fd
-        pkgs.bat
-        pkgs.fzf
-        pkgs.coreutils
-        pkgs.moreutils
-        pkgs.which
-        pkgs.shfmt
-        pkgs.direnv
-        pkgs.man
-        pkgs.vim
+      base_pkgs = with pkgs; [
+        glibcLocalesUtf8
+        ncurses
+        gnugrep
+        gnused
+        gawk
+        bash
+        bash-completion
+        git
+        unzip
+        wget
+        tmux
+        tree
+        ripgrep
+        fd
+        bat
+        fzf
+        coreutils
+        moreutils
+        which
+        shfmt
+        direnv
+        man
+        vim
       ];
 
-      dev_pkgs = [
-        pkgs.neovim
-        pkgs.gojq
-        pkgs.shellcheck
-        pkgs.hadolint
-        pkgs.gcc
-        pkgs.buf
-        pkgs.yamllint
-        pkgs.gh
-        pkgs.glow
-        pkgs.jsonnet-language-server
-        pkgs.docker-compose-language-service
-        pkgs.bash-language-server
-        pkgs.nodejs_22
-        pkgs.nodePackages.cspell
-        pkgs.markdownlint-cli
-        pkgs.nodePackages.prettier
-        pkgs.nil
-        pkgs.nixfmt-rfc-style
-        pkgs.ansible
-        pkgs.ansible-lint
-        pkgs.ansible-language-server
+      dev_pkgs = with pkgs; [
+        neovim
+        gojq
+        shellcheck
+        hadolint
+        gcc
+        buf
+        yamllint
+        gh
+        glow
+        jsonnet-language-server
+        docker-compose-language-service
+        bash-language-server
+        nodejs_22
+        nodePackages.cspell
+        markdownlint-cli
+        nodePackages.prettier
+        nil
+        nixfmt-rfc-style
+        ansible
+        ansible-lint
+        ansible-language-server
       ];
 
-      go_pkgs = [
-        pkgs.go_1_24
-        pkgs.gopls
-        pkgs.revive
+      go_pkgs = with pkgs; [
+        go_1_24
+        gopls
+        revive
       ];
 
-      lua_pkgs = [
-        pkgs.lua-language-server
-        pkgs.luajitPackages.luacheck
-        pkgs.stylua
+      lua_pkgs = with pkgs; [
+        lua-language-server
+        luajitPackages.luacheck
+        stylua
       ];
 
-      rust_pkgs = [
-        pkgs.rustc
-        pkgs.rustfmt
-        pkgs.clippy
-        pkgs.rust-analyzer
-        pkgs.cargo
+      rust_pkgs = with pkgs; [
+        rustc
+        rustfmt
+        clippy
+        rust-analyzer
+        cargo
       ];
 
-      php_pkgs = [
-        pkgs.php84
-        pkgs.phpactor
-        pkgs.php84Extensions.sqlite3
-        pkgs.php84Packages.composer
-        pkgs.php84Packages.phpstan
+      php_pkgs = with pkgs; [
+        php84
+        phpactor
+        php84Extensions.sqlite3
+        php84Packages.composer
+        php84Packages.phpstan
         # TODO: laravel/pint
       ];
 
-      python_pkgs = [
-        pkgs.pipx
-        pkgs.pipenv
-        pkgs.black
-        pkgs.pylint
+      python_pkgs = with pkgs; [
+        pipx
+        pipenv
+        black
+        pylint
       ];
 
-      webdev_pkgs = [
-        pkgs.html-tidy
-        pkgs.npm-check-updates
-        pkgs.pnpm
-        pkgs.typescript
-        pkgs.typescript-language-server
-        pkgs.vscode-langservers-extracted
+      webdev_pkgs = with pkgs; [
+        html-tidy
+        npm-check-updates
+        pnpm
+        typescript
+        typescript-language-server
+        vscode-langservers-extracted
+      ];
+
+      audio_pkgs = with pkgs; [
+        pipewire.jack
+        reaper
+        raysession
+        carla
+        yabridge
+        yabridgectl
+        wineWowPackages.yabridge
+        winetricks
+        cabextract
+        zam-plugins
+        lsp-plugins
+        chow-tape-model
+        fluidsynth
+        libsndfile.out
+        liblo
+        file
       ];
 
       docker_user = "ide";
@@ -179,7 +198,7 @@
 
       devShells.${system} = {
         base = pkgs.mkShell {
-          packages = [
+          buildInputs = [
             base_pkgs
           ];
           shellHook = ''
@@ -193,7 +212,7 @@
         };
 
         dev = pkgs.mkShell {
-          packages = [
+          buildInputs = [
             base_pkgs
             dev_pkgs
             go_pkgs
@@ -213,35 +232,33 @@
         };
 
         audio = pkgs.mkShell {
-          packages = [
+          buildInputs = [
             base_pkgs
-            pkgs.reaper
-            pkgs.yabridge
-            pkgs.yabridgectl
-            pkgs.wineWowPackages.yabridge
-            pkgs.winetricks
-            pkgs.cabextract
-            pkgs.zam-plugins
-            pkgs.lsp-plugins
-            pkgs.chow-tape-model
+            audio_pkgs
           ];
-          shellHook = ''
+          shellHook = with pkgs; ''
             export CUSTOM_HOST="ide-audio"
-            export PATH="${pkgs.git}/share/git/contrib/diff-highlight:$PATH"
-            export PATH="${pkgs.yabridge}/bin:$PATH"
-            export CLAP_PATH="${pkgs.zam-plugins}/lib/clap;$CLAP_PATH"
-            export CLAP_PATH="${pkgs.lsp-plugins}/lib/clap;$CLAP_PATH"
-            export CLAP_PATH="${pkgs.chow-tape-model}/lib/clap;$CLAP_PATH"
-            export LD_LIBRARY_PATH="${pkgs.pipewire.jack}/lib;$LD_LIBRARY_PATH"
-            export LD_LIBRARY_PATH="${pkgs.yabridge}/lib;$LD_LIBRARY_PATH"
-            export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
+
+            export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
+
+            export CLAP_PATH="${zam-plugins}/lib/clap;$CLAP_PATH"
+            export CLAP_PATH="${lsp-plugins}/lib/clap;$CLAP_PATH"
+            export CLAP_PATH="${chow-tape-model}/lib/clap;$CLAP_PATH"
+
+            export LD_LIBRARY_PATH="${lib.makeLibraryPath audio_pkgs}:$LD_LIBRARY_PATH"
+
+            export NIX_PROFILES="${yabridge} $NIX_PROFILES"
 
             # TODO: needs a wine build with fsync patch.
             export WINEFSYNC=1
 
-            source ${pkgs.bash-completion}/etc/profile.d/bash_completion.sh
+            # Note: symlink LV2 plugins. For some reason Reaper only supports loading CLAP plugins via env vars.
+            ln -f -s ${carla}/lib/lv2/* ~/.lv2/
+
+            source ${bash-completion}/etc/profile.d/bash_completion.sh
 
             yabridgectl add ~/win-plugins
+            yabridgectl add ~/.wine/drive_c/Program\ Files/Common\ Files/VST3
             yabridgectl sync
             yabridgectl status
 

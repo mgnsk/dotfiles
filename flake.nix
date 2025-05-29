@@ -152,18 +152,23 @@
       docker_gid = "1000";
     in
     {
-      docker = pkgs.dockerTools.buildImage {
+      docker = pkgs.dockerTools.streamLayeredImage {
         name = "ghcr.io/mgnsk/ide";
         tag = "edge";
 
-        copyToRoot = pkgs.buildEnv {
-          name = "image-root";
-          paths =
-            base_pkgs ++ dev_pkgs ++ go_pkgs ++ lua_pkgs ++ rust_pkgs ++ php_pkgs ++ python_pkgs ++ webdev_pkgs;
-          pathsToLink = [ "/bin" ];
-        };
+        contents = [
+          base_pkgs
+          dev_pkgs
+          go_pkgs
+          lua_pkgs
+          rust_pkgs
+          php_pkgs
+          python_pkgs
+          webdev_pkgs
+        ];
 
-        runAsRoot = ''
+        enableFakechroot = true;
+        fakeRootCommands = ''
           #!${pkgs.runtimeShell}
           ${pkgs.dockerTools.shadowSetup}
           groupadd -f -g ${docker_gid} ${docker_group}
@@ -196,22 +201,22 @@
         };
       };
 
-      devShells.${system} = {
-        base = pkgs.mkShell {
+      devShells.${system} = with pkgs; {
+        base = mkShell {
           buildInputs = [
             base_pkgs
           ];
           shellHook = ''
             export CUSTOM_HOST="ide-base"
-            export PATH="${pkgs.git}/share/git/contrib/diff-highlight:$PATH"
+            export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
 
-            source ${pkgs.bash-completion}/etc/profile.d/bash_completion.sh
+            source ${bash-completion}/etc/profile.d/bash_completion.sh
 
             exec bash
           '';
         };
 
-        dev = pkgs.mkShell {
+        dev = mkShell {
           buildInputs = [
             base_pkgs
             dev_pkgs
@@ -224,19 +229,19 @@
           ];
           shellHook = ''
             export CUSTOM_HOST="ide-dev"
-            export PATH="${pkgs.git}/share/git/contrib/diff-highlight:$PATH"
+            export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
             export LUA_CPATH="${blink}/lib/?.so"
 
             exec bash
           '';
         };
 
-        audio = pkgs.mkShell {
+        audio = mkShell {
           buildInputs = [
             base_pkgs
             audio_pkgs
           ];
-          shellHook = with pkgs; ''
+          shellHook = ''
             export CUSTOM_HOST="ide-audio"
 
             export PATH="${git}/share/git/contrib/diff-highlight:$PATH"

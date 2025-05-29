@@ -3,5 +3,5 @@
 set -euo pipefail
 
 nix build '.?submodules=1#docker'
-docker load <result
+./result | docker load
 rm result

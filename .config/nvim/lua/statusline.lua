@@ -25,10 +25,14 @@ end
 
 --- @return string
 function _G.num_selected()
-	if vim.fn.mode() == "V" then
-		local count = math.abs(vim.fn.line(".") - vim.fn.line("v")) + 1
+	if vim.fn.mode() == "V" then -- Visual by line
+		local line_count = math.abs(vim.fn.line(".") - vim.fn.line("v")) + 1
+		return string.format("%d lines", line_count)
+	end
 
-		return string.format("%d", count)
+	if vim.fn.mode() == "v" then -- Visual by character
+		local col_count = math.abs(vim.fn.col(".") - vim.fn.col("v")) + 1
+		return string.format("%d cols", col_count)
 	end
 
 	return ""

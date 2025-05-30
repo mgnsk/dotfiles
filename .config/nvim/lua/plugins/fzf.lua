@@ -56,7 +56,19 @@ return {
 			end, { desc = "FZF git status" })
 
 			vim.keymap.set("v", "<leader>B", function()
-				local start_line, end_line = unpack(require("util").selection())
+				---@return {start_line: number, end_line: number}
+				local selection = function()
+					local cursor_line = vim.fn.line(".")
+					local end_line = vim.fn.line("v")
+
+					if cursor_line < end_line then
+						return { cursor_line, end_line }
+					else
+						return { end_line, cursor_line }
+					end
+				end
+
+				local start_line, end_line = unpack(selection())
 				local lineArg = string.format([[ -L %d,%d:%s]], start_line, end_line, vim.fn.expand("%:p"))
 
 				local gitCmd = require("fzf-lua").defaults.git.commits.cmd

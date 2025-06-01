@@ -44,8 +44,6 @@ export HISTTIMEFORMAT="[%F %T] "
 
 export GPG_TTY="$(tty)"
 
-export SHELL="$(which bash)"
-
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 
 shopt -s histappend
@@ -79,13 +77,6 @@ source "$HOME/.tools/LS_COLORS/lscolors.sh"
 
 if command -v fzf &>/dev/null; then
 	eval "$(fzf --bash)"
-fi
-
-if [[ -n $BASH_COMPLETION_PATH ]]; then
-	# For nix shell.
-	source "$BASH_COMPLETION_PATH"
-elif test -f /usr/share/bash-completion/bash_completion; then
-	source /usr/share/bash-completion/bash_completion
 fi
 
 if command -v direnv &>/dev/null; then

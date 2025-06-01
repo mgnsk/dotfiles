@@ -197,6 +197,7 @@
             "LUA_CPATH=${blink}/lib/?.so"
             "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
             "TZDIR=${pkgs.tzdata}/share/zoneinfo"
+            "BASH_COMPLETION_PATH=${pkgs.bash-completion}/share/bash_completion"
           ];
         };
       };
@@ -209,8 +210,7 @@
           shellHook = ''
             export CUSTOM_HOST="ide-base"
             export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
-
-            source ${bash-completion}/etc/profile.d/bash_completion.sh
+            export BASH_COMPLETION_PATH="${bash-completion}/share/bash-completion"
 
             exec bash
           '';
@@ -231,6 +231,7 @@
             export CUSTOM_HOST="ide-dev"
             export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
             export LUA_CPATH="${blink}/lib/?.so"
+            export BASH_COMPLETION_PATH="${bash-completion}/share/bash-completion"
 
             exec bash
           '';
@@ -243,8 +244,8 @@
           ];
           shellHook = ''
             export CUSTOM_HOST="ide-audio"
-
             export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
+            export BASH_COMPLETION_PATH="${bash-completion}/share/bash-completion"
 
             export CLAP_PATH="${zam-plugins}/lib/clap;$CLAP_PATH"
             export CLAP_PATH="${lsp-plugins}/lib/clap;$CLAP_PATH"
@@ -259,8 +260,6 @@
 
             # Note: symlink LV2 plugins. For some reason Reaper only supports loading CLAP plugins via env vars.
             ln -f -s ${carla}/lib/lv2/* ~/.lv2/
-
-            source ${bash-completion}/etc/profile.d/bash_completion.sh
 
             yabridgectl add ~/win-plugins
             yabridgectl add ~/.wine/drive_c/Program\ Files/Common\ Files/VST3

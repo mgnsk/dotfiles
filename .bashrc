@@ -81,7 +81,12 @@ if command -v fzf &>/dev/null; then
 	eval "$(fzf --bash)"
 fi
 
-# TODO: bash-completion if not in nix
+if [[ -n $BASH_COMPLETION_PATH ]]; then
+	# For nix shell.
+	source "$BASH_COMPLETION_PATH"
+elif test -f /usr/share/bash-completion/bash_completion; then
+	source /usr/share/bash-completion/bash_completion
+fi
 
 if command -v direnv &>/dev/null; then
 	eval "$(direnv hook bash)"

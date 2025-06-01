@@ -1,0 +1,13 @@
+#!/bin/env bash
+
+set -euo pipefail
+
+oIFS=$IFS
+IFS=$'\n'
+
+for f in $(fdupes -r -f .); do
+	echo "$f"
+	gio trash "$f"
+done
+
+IFS=$oIFS

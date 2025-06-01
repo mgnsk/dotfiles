@@ -42,7 +42,11 @@ export HISTFILESIZE=
 export HISTSIZE=
 export HISTTIMEFORMAT="[%F %T] "
 
-export GPG_TTY="$(tty)"
+GPG_TTY="$(tty)"
+export GPG_TTY
+
+SHELL="$(which bash)"
+export SHELL
 
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 

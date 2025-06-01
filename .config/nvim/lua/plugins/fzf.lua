@@ -51,10 +51,6 @@ return {
 				return require("fzf-lua").git_commits()
 			end, { desc = "FZF repo commits" })
 
-			vim.keymap.set("n", "<leader>G", function()
-				return require("fzf-lua").git_status()
-			end, { desc = "FZF git status" })
-
 			vim.keymap.set("v", "<leader>B", function()
 				---@return {start_line: number, end_line: number}
 				local selection = function()
@@ -86,19 +82,51 @@ return {
 								.. lineArg
 								.. " --max-count=1"
 								.. string.format(" --skip=%d", skip)
-								.. " | delta"
+								.. " | diff-highlight"
 						end,
 					},
 				})
 			end, { desc = "FZF blame selected lines" })
 		end,
 		config = function()
+			local function git_show_in_new_buf(commit)
+				local output = vim.fn.systemlist("git show " .. commit)
+				vim.cmd("tabnew")
+				vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
+				vim.bo.buftype = "nofile"
+				vim.bo.bufhidden = "wipe"
+				vim.bo.modifiable = false
+				vim.bo.filetype = "git"
+			end
+
+			local git_log_actions = {
+				["ctrl-l"] = {
+					fn = function(selected)
+						vim.fn.system(string.format("gh browse %s", selected[1]))
+					end,
+					field_index = "{1}",
+					exec_silent = true,
+				},
+				["ctrl-o"] = {
+					fn = function(selected)
+						vim.schedule(function()
+							git_show_in_new_buf(selected[1])
+						end)
+					end,
+					field_index = "{1}",
+					exec_silent = true,
+				},
+			}
+
 			require("fzf-lua").setup({
 				winopts = {
 					fullscreen = true,
+					border = "none",
 					preview = {
+						border = "none",
 						delay = 0,
 						wrap = "wrap",
+						scrollbar = "none",
 					},
 				},
 				previewers = {
@@ -117,8 +145,26 @@ return {
 					git_icons = false,
 					file_icons = false,
 				},
+				git = {
+					bcommits = {
+						cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' {file}]],
+						preview_pager = "diff-highlight",
+						actions = git_log_actions,
+					},
+					commits = {
+						cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s']],
+						preview_pager = "diff-highlight",
+						actions = git_log_actions,
+					},
+				},
 				lsp = {
 					async_or_timeout = true,
+				},
+				keymap = {
+					fzf = {
+						["ctrl-d"] = "preview-page-down",
+						["ctrl-u"] = "preview-page-up",
+					},
 				},
 			})
 		end,

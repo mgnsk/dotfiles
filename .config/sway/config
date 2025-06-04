@@ -54,7 +54,7 @@ bindsym $mod+Return exec kitty
 bindsym $mod+Shift+q kill
 bindsym $mod+q kill
 
-bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='bemenu -i' --term='kitty'
+bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='wmenu -i' --term='kitty'
 
 # change focus
 bindsym {
@@ -173,6 +173,7 @@ input type:keyboard {
 focus_follows_mouse no
 
 set $wallpapers_path $HOME/wallpapers
+# TODO: only if $wallpapers_path exists, otherwise we get config syntax error.
 output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
 for_window [class=".*"] border none

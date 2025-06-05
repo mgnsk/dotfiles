@@ -61,13 +61,16 @@ sudo pacman -S --needed \
 	tailscale \
 	nix \
 	docker \
-	docker-buildx
+	docker-buildx \
+	docker-compose \
+	thunderbird
 
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime
 
 # Set up docker.
 sudo systemctl enable --now docker
+sudo gpasswd -a "$USER" docker
 
 # Set up nix.
 sudo systemctl enable --now nix-daemon

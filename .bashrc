@@ -14,10 +14,6 @@ __prepend_path ~/.bin
 __prepend_path ~/go/bin
 __prepend_path ~/.cargo/bin
 
-export LC_ALL="en_US.UTF-8"
-export LANG="en_US.UTF-8"
-export LC_CTYPE="en_US.UTF-8"
-
 export EDITOR="nvim"
 export VISUAL="nvim"
 export PAGER="less -R"

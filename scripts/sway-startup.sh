@@ -40,12 +40,12 @@ sway-fader \
 	--class="XTerm:0.7:0.97" &
 lxsession &
 lxpolkit &
-/usr/libexec/geoclue-2.0/demos/agent &
+/usr/lib/geoclue-2.0/demos/agent &
 gammastep-indicator &
 nm-applet --indicator &
 swaync &
 thunar --daemon &
-sway-audio-idle-inhibit &
+swaddle &
 swayidle -w \
 	timeout 600 'swaylock -f -c 000000' \
 	timeout 1200 'swaymsg "output * dpms off"' \

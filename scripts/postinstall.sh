@@ -6,20 +6,23 @@ set -euo pipefail
 
 # Performance settings for LUKS on SSD.
 if sudo cryptsetup status root | grep -q 'discards no_read_workqueue no_write_workqueue'; then
-	echo "LUKS is already set up"
+	true
 else
 	sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh root
+	sudo systemctl enable --now fstrim.timer
 fi
 
 # Disable file access time to improve SSD lifetime.
 sudo sed -i -e 's/relatime/noatime/g' /etc/fstab
 
 # Enable saving the last booted entry in GRUB.
-sudo sed -i -e 's/GRUB_DEFAULT=0/GRUB_DEFAULT=saved/g' /etc/default/grub
-sudo sed -i -e 's/#GRUB_SAVEDEFAULT=true/GRUB_SAVEDEFAULT=true/g' /etc/default/grub
-sudo grub-mkconfig -o /boot/grub/grub.cfg
+if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then
+	sudo sed -i -e 's/GRUB_DEFAULT=0/GRUB_DEFAULT=saved/g' /etc/default/grub
+	sudo sed -i -e 's/#GRUB_SAVEDEFAULT=true/GRUB_SAVEDEFAULT=true/g' /etc/default/grub
+	sudo grub-mkconfig -o /boot/grub/grub.cfg
+fi
 
-sudo pacman -S --needed \
+sudo pacman -S --needed --noconfirm \
 	amd-ucode \
 	base-devel \
 	git \
@@ -83,8 +86,6 @@ if tailscale status --json | grep -q 'NeedsLogin'; then
 	echo "Logging into tailscale"
 	sudo tailscale set --operator="$USER"
 	tailscale up --qr
-else
-	echo "Tailscale is already set up"
 fi
 
 # Set up dotfiles.
@@ -96,8 +97,6 @@ if [[ ! -d "$HOME/.git" ]]; then
 	git config status.showUntrackedFiles no
 	git reset --hard --recurse-submodules origin/master
 	rm -rf "$HOME/dotfiles-tmp"
-else
-	echo "Dotfiles are already set up"
 fi
 
 # Set up yay.
@@ -107,10 +106,9 @@ if [[ ! -d "$yaydir/.git" ]]; then
 	cd "$yaydir"
 	git clone https://aur.archlinux.org/yay-bin.git .
 	makepkg -si
-else
-	echo "Yay AUR packages are already set up"
 fi
 
 # Set up AUR packages.
 yay -S --needed --noconfirm \
-	themix-full-git
+	themix-full-git \
+	swaddle

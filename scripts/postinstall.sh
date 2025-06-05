@@ -66,7 +66,11 @@ sudo pacman -S --needed --noconfirm \
 	docker \
 	docker-buildx \
 	docker-compose \
-	thunderbird
+	thunderbird \
+	xdg-user-dirs
+
+# Create user dirs.
+xdg-user-dirs-update
 
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime

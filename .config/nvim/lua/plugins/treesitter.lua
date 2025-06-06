@@ -31,7 +31,10 @@ return {
 			require("nvim-treesitter.configs").setup({
 				parser_install_dir = parser_install_dir,
 				auto_install = true,
-				ignore_install = { "dockerfile" },
+				ignore_install = {
+					"dockerfile",
+					"gitcommit",
+				},
 				highlight = {
 					enable = true,
 					disable = function(_, buf)

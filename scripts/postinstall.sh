@@ -71,7 +71,8 @@ sudo pacman -S --needed --noconfirm \
 	docker-buildx \
 	docker-compose \
 	thunderbird \
-	snap-pac
+	snap-pac \
+	profile-sync-daemon
 
 # Set up yay.
 yaydir="$HOME/workspaces/yay-bin"
@@ -86,7 +87,9 @@ fi
 yay -S --needed --noconfirm \
 	themix-full-git \
 	swaddle \
-	snap-pac-grub
+	snap-pac-grub \
+	librewolf-bin \
+	profile-sync-daemon-librewolf
 
 # Performance settings for LUKS on SSD.
 if sudo cryptsetup status root | grep -q 'discards no_read_workqueue no_write_workqueue'; then
@@ -171,3 +174,12 @@ cat <<-'EOF' | sudo tee /etc/pam.d/login >/dev/null
 	session    optional     pam_gnome_keyring.so auto_start
 	password   include      system-local-login
 EOF
+
+# Enable profile-sync-daemon.
+line="$USER ALL=(ALL) NOPASSWD: /usr/bin/psd-overlay-helper"
+if sudo grep -q "$line" /etc/sudoers; then
+	true
+else
+	echo "$line" | sudo tee -a /etc/sudoers
+fi
+systemctl --user enable --now psd

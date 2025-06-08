@@ -24,6 +24,7 @@ sudo pacman -S --needed --noconfirm \
 	base-devel \
 	git \
 	less \
+	tree \
 	bash-completion \
 	vim \
 	tmux \

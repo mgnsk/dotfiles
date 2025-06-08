@@ -15,7 +15,10 @@ function set_option() {
 # Install packages.
 sudo pacman -S --needed --noconfirm \
 	amd-ucode \
+	mesa \
 	vulkan-radeon \
+	intel-media-driver \
+	vulkan-intel \
 	mpv \
 	yt-dlp \
 	base-devel \

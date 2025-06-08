@@ -256,6 +256,7 @@
             export WINEFSYNC=1
 
             # Note: symlink LV2 plugins. For some reason Reaper only supports loading CLAP plugins via env vars.
+            mkdir -p ~/.lv2
             ln -f -s ${carla}/lib/lv2/* ~/.lv2/
 
             yabridgectl add ~/win-plugins

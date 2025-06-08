@@ -56,6 +56,7 @@
         direnv
         man
         vim
+        qrcp
       ];
 
       dev_pkgs = with pkgs; [

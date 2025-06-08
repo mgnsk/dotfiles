@@ -2,28 +2,21 @@
 
 set -euo pipefail
 
+function set_option() {
+	file="$1"
+	key="$2"
+	value="$3"
+	script=$(printf 's/#*%s=.*/%s=%s/' "$key" "$key" "$value")
+	sudo sed -i "$script" "$file"
+}
+
 # Run as normal user after booting into an installed system.
 
-# Performance settings for LUKS on SSD.
-if sudo cryptsetup status root | grep -q 'discards no_read_workqueue no_write_workqueue'; then
-	true
-else
-	sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh root
-	sudo systemctl enable --now fstrim.timer
-fi
-
-# Disable file access time to improve SSD lifetime.
-sudo sed -i -e 's/relatime/noatime/g' /etc/fstab
-
-# Enable saving the last booted entry in GRUB.
-if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then
-	sudo sed -i -e 's/GRUB_DEFAULT=0/GRUB_DEFAULT=saved/g' /etc/default/grub
-	sudo sed -i -e 's/#GRUB_SAVEDEFAULT=true/GRUB_SAVEDEFAULT=true/g' /etc/default/grub
-	sudo grub-mkconfig -o /boot/grub/grub.cfg
-fi
-
+# Install packages.
 sudo pacman -S --needed --noconfirm \
 	amd-ucode \
+	vulkan-radeon \
+	mpv \
 	base-devel \
 	git \
 	less \
@@ -33,10 +26,15 @@ sudo pacman -S --needed --noconfirm \
 	realtime-privileges \
 	glances \
 	noto-fonts \
+	noto-fonts-cjk \
+	noto-fonts-emoji \
+	noto-fonts-extra \
 	cantarell-fonts \
 	ttf-font-awesome \
 	xfce4-settings \
 	xdg-desktop-portal-wlr \
+	xdg-desktop-portal-gtk \
+	xdg-user-dirs \
 	flatpak \
 	sway \
 	swaybg \
@@ -67,7 +65,48 @@ sudo pacman -S --needed --noconfirm \
 	docker-buildx \
 	docker-compose \
 	thunderbird \
-	xdg-user-dirs
+	snap-pac
+
+# Set up yay.
+yaydir="$HOME/workspaces/yay-bin"
+mkdir -p "$yaydir"
+if [[ ! -d "$yaydir/.git" ]]; then
+	cd "$yaydir"
+	git clone https://aur.archlinux.org/yay-bin.git .
+	makepkg -si
+fi
+
+# Set up AUR packages.
+yay -S --needed --noconfirm \
+	themix-full-git \
+	swaddle \
+	snap-pac-grub
+
+# Performance settings for LUKS on SSD.
+if sudo cryptsetup status root | grep -q 'discards no_read_workqueue no_write_workqueue'; then
+	true
+else
+	sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh root
+	sudo systemctl enable --now fstrim.timer
+fi
+
+# Disable file access time to improve SSD lifetime.
+sudo sed -i -e 's/relatime/noatime/g' /etc/fstab
+
+# Set up power options.
+cat <<-'EOF' | sudo tee /etc/udev/rules.d/99-lowbat.rules >/dev/null
+	# Suspend the system when battery level drops to 5% or lower
+	SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="[0-5]", RUN+="/usr/bin/systemctl suspend"
+EOF
+
+# Ensure automatic timeline snapshotting is disabled.
+sudo systemctl disable --now snapper-timeline.timer
+
+# Disable snapshots for home subvolume.
+sudo rm -f /etc/snapper/configs/home
+
+# Keep 10 last snapshots.
+set_option /etc/snapper/configs/root NUMBER_LIMIT '"10"'
 
 # Create user dirs.
 xdg-user-dirs-update
@@ -81,8 +120,12 @@ sudo gpasswd -a "$USER" docker
 
 # Set up nix.
 sudo systemctl enable --now nix-daemon
-nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-nix-channel --update
+if nix-channel --list | grep -q 'nixpkgs-unstable'; then
+	true
+else
+	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+	nix-channel --update
+fi
 
 # Set up tailscale.
 sudo systemctl enable --now tailscaled
@@ -103,16 +146,9 @@ if [[ ! -d "$HOME/.git" ]]; then
 	rm -rf "$HOME/dotfiles-tmp"
 fi
 
-# Set up yay.
-yaydir="$HOME/workspaces/yay-bin"
-mkdir -p "$yaydir"
-if [[ ! -d "$yaydir/.git" ]]; then
-	cd "$yaydir"
-	git clone https://aur.archlinux.org/yay-bin.git .
-	makepkg -si
+# Enable saving the last booted entry in GRUB.
+if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then
+	set_option /etc/default/grub GRUB_DEFAULT saved
+	set_option /etc/default/grub GRUB_SAVEDEFAULT true
+	sudo grub-mkconfig -o /boot/grub/grub.cfg
 fi
-
-# Set up AUR packages.
-yay -S --needed --noconfirm \
-	themix-full-git \
-	swaddle

@@ -74,7 +74,8 @@ sudo pacman -S --needed --noconfirm \
 	docker-buildx \
 	docker-compose \
 	thunderbird \
-	profile-sync-daemon
+	profile-sync-daemon \
+	fzf
 
 # Set up yay.
 yaydir="$HOME/workspaces/yay-bin"
@@ -127,6 +128,11 @@ cat <<-'EOF' | sudo tee /etc/udev/rules.d/99-lowbat.rules >/dev/null
 	# Suspend the system when battery level drops to 5% or lower
 	SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="[0-5]", RUN+="/usr/bin/systemctl suspend"
 EOF
+# Note: refer to https://linrunner.de/tlp/settings/processor.html#processor for explanation for different scaling driver modes.
+# Both amd-pstate and intel_pstate with powersave governor may still reach max frequency.
+# This is similar to the ondemand governor in the old acpi-cpufreq driver.
+set_option /etc/default/cpupower governor "'powersave'"
+sudo systemctl enable --now cpupower
 
 # Create user dirs.
 xdg-user-dirs-update

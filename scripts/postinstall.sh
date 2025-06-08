@@ -152,6 +152,10 @@ else
 	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 	nix-channel --update
 fi
+cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
+	build-users-group = nixbld
+	max-jobs = auto
+EOF
 
 # Set up tailscale.
 sudo systemctl enable --now tailscaled

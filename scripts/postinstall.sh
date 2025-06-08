@@ -111,10 +111,11 @@ yay -S --needed --noconfirm \
 	profile-sync-daemon-librewolf
 
 # Performance settings for LUKS on SSD.
-if sudo cryptsetup status root | grep -q 'discards no_read_workqueue no_write_workqueue'; then
+cryptdevice="root"
+if sudo cryptsetup status "$cryptdevice" | grep -q 'discards no_read_workqueue no_write_workqueue'; then
 	true
 else
-	sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh root
+	sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh "$cryptdevice"
 	sudo systemctl enable --now fstrim.timer
 fi
 

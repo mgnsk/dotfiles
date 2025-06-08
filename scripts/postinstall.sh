@@ -17,6 +17,7 @@ sudo pacman -S --needed --noconfirm \
 	amd-ucode \
 	vulkan-radeon \
 	mpv \
+	yt-dlp \
 	base-devel \
 	git \
 	less \
@@ -49,6 +50,8 @@ sudo pacman -S --needed --noconfirm \
 	nm-connection-editor \
 	network-manager-applet \
 	gnome-keyring \
+	libsecret \
+	seahorse \
 	viewnior \
 	grim \
 	slurp \
@@ -58,6 +61,9 @@ sudo pacman -S --needed --noconfirm \
 	wmenu \
 	kitty \
 	thunar \
+	tumbler \
+	ffmpegthumbnailer \
+	gvfs \
 	cpupower \
 	tailscale \
 	nix \
@@ -152,3 +158,16 @@ if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then
 	set_option /etc/default/grub GRUB_SAVEDEFAULT true
 	sudo grub-mkconfig -o /boot/grub/grub.cfg
 fi
+
+# Set up auto unlock option for keyring.
+cat <<-'EOF' | sudo tee /etc/pam.d/login >/dev/null
+	#%PAM-1.0
+
+	auth       requisite    pam_nologin.so
+	auth       include      system-local-login
+	auth       optional     pam_gnome_keyring.so
+	account    include      system-local-login
+	session    include      system-local-login
+	session    optional     pam_gnome_keyring.so auto_start
+	password   include      system-local-login
+EOF

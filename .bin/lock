@@ -1,0 +1,6 @@
+#!/bin/env bash
+
+set -euo pipefail
+
+# Lock the screen.
+swaylock -f -c 000000

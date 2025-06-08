@@ -47,7 +47,7 @@ swaync &
 thunar --daemon &
 swaddle &
 swayidle -w \
-	timeout 600 'swaylock -f -c 000000' \
+	timeout 600 'lock' \
 	timeout 1200 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
-	before-sleep 'swaylock -f -c 000000' &
+	before-sleep 'lock'

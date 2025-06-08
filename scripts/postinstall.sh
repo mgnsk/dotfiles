@@ -74,7 +74,6 @@ sudo pacman -S --needed --noconfirm \
 	docker-buildx \
 	docker-compose \
 	thunderbird \
-	snap-pac \
 	profile-sync-daemon
 
 # Set up yay.
@@ -86,11 +85,28 @@ if [[ ! -d "$yaydir/.git" ]]; then
 	makepkg -si
 fi
 
+# Set up BTRFS snapshots.
+if [[ "$(stat -f -c %T /)" == "btrfs" ]]; then
+	sudo pacman -S --needed --noconfirm \
+		snap-pac
+
+	yay -S --needed --noconfirm \
+		snap-pac-grub
+
+	# Ensure automatic timeline snapshotting is disabled.
+	sudo systemctl disable --now snapper-timeline.timer
+
+	# Disable snapshots for home subvolume.
+	sudo rm -f /etc/snapper/configs/home
+
+	# Keep 10 last snapshots.
+	set_option /etc/snapper/configs/root NUMBER_LIMIT '"10"'
+fi
+
 # Set up AUR packages.
 yay -S --needed --noconfirm \
 	themix-full-git \
 	swaddle \
-	snap-pac-grub \
 	librewolf-bin \
 	profile-sync-daemon-librewolf
 
@@ -110,15 +126,6 @@ cat <<-'EOF' | sudo tee /etc/udev/rules.d/99-lowbat.rules >/dev/null
 	# Suspend the system when battery level drops to 5% or lower
 	SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="[0-5]", RUN+="/usr/bin/systemctl suspend"
 EOF
-
-# Ensure automatic timeline snapshotting is disabled.
-sudo systemctl disable --now snapper-timeline.timer
-
-# Disable snapshots for home subvolume.
-sudo rm -f /etc/snapper/configs/home
-
-# Keep 10 last snapshots.
-set_option /etc/snapper/configs/root NUMBER_LIMIT '"10"'
 
 # Create user dirs.
 xdg-user-dirs-update

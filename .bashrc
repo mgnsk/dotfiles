@@ -9,10 +9,16 @@ __prepend_path() {
 	PATH="$1:$PATH"
 }
 
+__append_path() {
+	PATH="$PATH:$1"
+}
+
 __prepend_path ~/.local/bin
 __prepend_path ~/.bin
 __prepend_path ~/go/bin
 __prepend_path ~/.cargo/bin
+# We append to PATH so that nix can override this by prepending.
+__append_path /usr/share/git/diff-highlight
 
 export EDITOR="nvim"
 export VISUAL="nvim"

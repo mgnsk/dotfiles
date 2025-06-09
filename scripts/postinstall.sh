@@ -76,7 +76,8 @@ sudo pacman -S --needed --noconfirm \
 	docker-compose \
 	thunderbird \
 	profile-sync-daemon \
-	fzf
+	fzf \
+	rsync
 
 # Set up yay.
 yaydir="$HOME/workspaces/yay-bin"
@@ -90,16 +91,50 @@ fi
 # Set up BTRFS snapshots.
 if [[ "$(stat -f -c %T /)" == "btrfs" ]]; then
 	sudo pacman -S --needed --noconfirm \
+		qt6-wayland \
 		snap-pac
 
 	yay -S --needed --noconfirm \
-		snap-pac-grub
+		snap-pac-grub \
+		btrfs-assistant-git
 
 	# Ensure automatic timeline snapshotting is disabled.
 	sudo systemctl disable --now snapper-timeline.timer
 
 	# Keep 10 last snapshots.
 	set_option /etc/snapper/configs/root NUMBER_LIMIT '"10"'
+
+	# Include /boot partition data in snapshots.
+	# https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
+	sudo mkdir -p /etc/pacman.d/hooks
+	cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/55-bootbackup_pre.hook >/dev/null
+		[Trigger]
+		Operation = Upgrade
+		Operation = Install
+		Operation = Remove
+		Type = Path
+		Target = usr/lib/modules/*/vmlinuz
+
+		[Action]
+		Depends = rsync
+		Description = Backing up pre /boot...
+		When = PreTransaction
+		Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_pre"/'
+	EOF
+	cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
+		[Trigger]
+		Operation = Upgrade
+		Operation = Install
+		Operation = Remove
+		Type = Path
+		Target = usr/lib/modules/*/vmlinuz
+
+		[Action]
+		Depends = rsync
+		Description = Backing up post /boot...
+		When = PostTransaction
+		Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
+	EOF
 fi
 
 # Set up AUR packages.

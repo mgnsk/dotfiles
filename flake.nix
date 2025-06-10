@@ -135,6 +135,7 @@
         carla
         yabridge
         yabridgectl
+        tuxguitar
         wineWowPackages.yabridge
         winetricks
         cabextract

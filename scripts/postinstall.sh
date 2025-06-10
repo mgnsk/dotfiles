@@ -146,12 +146,16 @@ yay -S --needed --noconfirm \
 	profile-sync-daemon-librewolf
 
 # Performance settings for LUKS on SSD.
-cryptdevice="root"
-if sudo cryptsetup status "$cryptdevice" | grep -q 'discards no_read_workqueue no_write_workqueue'; then
-	true
-else
-	sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh "$cryptdevice"
-	sudo systemctl enable --now fstrim.timer
+# Determine the LUKS device name.
+cryptdevice=$(lsblk --list | awk '$6 == "crypt" {print $1}')
+# Only enable settings on LUKS2.
+if sudo cryptsetup status "$cryptdevice" | grep -q "LUKS2"; then
+	if sudo cryptsetup status "$cryptdevice" | grep -q 'discards no_read_workqueue no_write_workqueue'; then
+		true
+	else
+		sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh "$cryptdevice"
+		sudo systemctl enable --now fstrim.timer
+	fi
 fi
 
 # Disable file access time to improve SSD lifetime.

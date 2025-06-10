@@ -15,6 +15,7 @@ function set_option() {
 # Install packages.
 sudo pacman -S --needed --noconfirm \
 	amd-ucode \
+	intel-ucode \
 	mesa \
 	vulkan-radeon \
 	intel-media-driver \

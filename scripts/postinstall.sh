@@ -23,6 +23,7 @@ sudo pacman -S --needed --noconfirm \
 	mpv \
 	yt-dlp \
 	base-devel \
+	sshfs \
 	git \
 	less \
 	tree \
@@ -38,6 +39,7 @@ sudo pacman -S --needed --noconfirm \
 	cantarell-fonts \
 	ttf-font-awesome \
 	xfce4-settings \
+	gnome-tweaks \
 	xdg-desktop-portal-wlr \
 	xdg-desktop-portal-gtk \
 	xdg-user-dirs \
@@ -140,7 +142,6 @@ fi
 
 # Set up AUR packages.
 yay -S --needed --noconfirm \
-	themix-full-git \
 	swaddle \
 	librewolf-bin \
 	profile-sync-daemon-librewolf

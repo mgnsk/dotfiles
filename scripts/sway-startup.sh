@@ -26,12 +26,6 @@ while ! dbus-send --session --dest=org.freedesktop.DBus --type=method_call --pri
 	sleep 0.2
 done
 
-# Gnome settings.
-gnome_schema="org.gnome.desktop.interface"
-gsettings set "$gnome_schema" gtk-theme 'oomox-tizix_dark'
-gsettings set "$gnome_schema" icon-theme 'oomox-tizix_dark'
-gsettings set "$gnome_schema" font-name 'Cantarell 11'
-
 sway-fader \
 	--app_id="foot:0.7:0.97" \
 	--app_id="kitty:0.7:0.97" \

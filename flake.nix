@@ -57,6 +57,7 @@
         man
         vim
         qrcp
+        file
       ];
 
       dev_pkgs = with pkgs; [
@@ -145,7 +146,6 @@
         fluidsynth
         libsndfile.out
         liblo
-        file
       ];
 
       docker_user = "ide";
@@ -249,7 +249,13 @@
             export CLAP_PATH="${lsp-plugins}/lib/clap;$CLAP_PATH"
             export CLAP_PATH="${chow-tape-model}/lib/clap;$CLAP_PATH"
 
-            export LD_LIBRARY_PATH="${lib.makeLibraryPath audio_pkgs}:$LD_LIBRARY_PATH"
+            export LD_LIBRARY_PATH="${
+              lib.makeLibraryPath (
+                builtins.concatLists [
+                  audio_pkgs
+                ]
+              )
+            }:$LD_LIBRARY_PATH"
 
             export NIX_PROFILES="${yabridge} $NIX_PROFILES"
 

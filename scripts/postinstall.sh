@@ -62,6 +62,7 @@ sudo pacman -S --needed --noconfirm \
 	viewnior \
 	grim \
 	slurp \
+	zenity \
 	imagemagick \
 	pavucontrol \
 	j4-dmenu-desktop \

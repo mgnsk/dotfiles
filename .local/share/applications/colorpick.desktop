@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+
+Name=Color Picker
+Exec=/usr/bin/bash -c "bash ~/scripts/colorpick.sh"
+
+Categories=Graphics
+Keywords=color;colorpick
+
+NoDisplay=false

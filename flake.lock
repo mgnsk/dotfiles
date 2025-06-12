@@ -12,11 +12,11 @@
         "rev": "94000bd4a18260a37136e012512ae69f57e13c26",
         "revCount": 1430,
         "type": "git",
-        "url": "file:/home/magnus/.config/nvim/plugins/blink.cmp"
+        "url": "file:/home/magnus/nvim-plugins/blink.cmp"
       },
       "original": {
         "type": "git",
-        "url": "file:/home/magnus/.config/nvim/plugins/blink.cmp"
+        "url": "file:/home/magnus/nvim-plugins/blink.cmp"
       }
     },
     "fenix": {

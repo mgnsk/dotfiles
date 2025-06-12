@@ -88,7 +88,7 @@ __prompt_command() {
 
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 
-LS_COLORS="$(vivid generate zenburn)"
+LS_COLORS="$(vivid generate ayu)"
 export LS_COLORS
 
 if command -v fzf &>/dev/null; then

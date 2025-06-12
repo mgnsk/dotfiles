@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    blink-cmp.url = "git+file:/home/magnus/.config/nvim/plugins/blink.cmp";
+    blink-cmp.url = "git+file:/home/magnus/nvim-plugins/blink.cmp";
   };
 
   outputs =

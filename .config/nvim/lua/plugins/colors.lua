@@ -8,16 +8,13 @@ return {
 
 			local vscode = require("vscode")
 			local c = require("vscode.colors").get_colors()
-			local bg = "#101010"
 
-			vscode.setup({
+			local cfg = {
 				transparent = true,
 				-- Enable italic comment
 				italic_comments = true,
 
-				color_overrides = {
-					vscBack = bg,
-				},
+				color_overrides = {},
 
 				group_overrides = {
 					SpellBad = { fg = c.vscRed, underline = true },
@@ -25,17 +22,13 @@ return {
 					SpellRare = { link = "SpellBad" },
 					SpellLocal = { link = "SpellBad" },
 					CSpellBad = { link = "SpellBad" },
-					TabLine = { fg = c.vscGray, bg = bg },
-					TabLineFill = { fg = c.vscGray, bg = bg },
-					TabLineSel = { fg = c.vscFront, bg = bg },
 					Type = { fg = c.vscBlueGreen, bg = "NONE" },
 					TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
 					QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },
 					StatusLine = { fg = "NONE", bg = "NONE" },
-					WinSeparator = { fg = bg },
 					["@variable.builtin"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@module"] = { fg = c.vscLightBlue, bg = "NONE" },
-					["@keyword"] = { fg = c.vscPink, bg = "NONE", bold = true },
+					["@keyword"] = { fg = c.vscPink, bg = "NONE" },
 
 					["@constructor"] = { link = "@function.call" },
 					["@function.macro"] = { fg = c.vscPink, bg = "NONE" },
@@ -59,7 +52,21 @@ return {
 					["typescriptIdentifierName"] = { link = "@variable" }, -- TODO: not working
 					["typescriptNull"] = { link = "@constant.builtin" },
 				},
-			})
+			}
+
+			if vim.o.background == "dark" then
+				local bg = "#101010"
+				cfg.color_overrides.vscBack = bg
+				cfg.group_overrides.TabLine = { fg = c.vscGray, bg = bg }
+				cfg.group_overrides.TabLineFill = { fg = c.vscGray, bg = bg }
+				cfg.group_overrides.TabLineSel = { fg = c.vscGray, bg = bg }
+				cfg.group_overrides.WinSeparator = { fg = bg }
+			else
+				cfg.group_overrides.TabLineFill = { bg = "NONE" }
+				cfg.group_overrides.TabLineSel = { bold = true }
+			end
+
+			vscode.setup(cfg)
 			vscode.load()
 		end,
 	},

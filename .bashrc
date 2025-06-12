@@ -30,6 +30,15 @@ export FZF_DEFAULT_COMMAND="fd --type f --hidden --exclude '.git'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --exclude '.git'"
 
+if [[ "$THEME" == "light" ]]; then
+	# https://github.com/Mofiqul/vscode.nvim/blob/main/extra/fzf/vscode-light
+	export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"'
+  --color=fg:#000000,fg+:#000000,bg:#FFFFFF,bg+:#F3F3F3
+  --color=hl:#008000,hl+:#AF00DB,info:#AF00DB,marker:#AF00DB
+  --color=prompt:#AF00DB,spinner:#AF00DB,pointer:#AF00DB,header:#008000
+  --color=border:#000000,label:#AF00DB,query:#000000'
+fi
+
 export LIBRARY_PATH="$HOME/.local/lib"
 
 export ANSIBLE_NOCOWS=1
@@ -49,8 +58,6 @@ export GPG_TTY
 
 SHELL="$(which bash)"
 export SHELL
-
-export THEME="light"
 
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 

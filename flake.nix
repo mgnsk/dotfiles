@@ -131,9 +131,9 @@
 
       audio_pkgs = with pkgs; [
         pipewire.jack
-        reaper
         raysession
-        carla
+        reaper
+        reaper-reapack-extension
         yabridge
         yabridgectl
         tuxguitar
@@ -262,9 +262,9 @@
             # TODO: needs a wine build with fsync patch.
             export WINEFSYNC=1
 
-            # Note: symlink LV2 plugins. For some reason Reaper only supports loading CLAP plugins via env vars.
-            mkdir -p ~/.lv2
-            ln -f -s ${carla}/lib/lv2/* ~/.lv2/
+            # Make reapack available.
+            mkdir -p ~/.config/REAPER/UserPlugins
+            ln -sf ${reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
 
             yabridgectl add ~/win-plugins
             yabridgectl add ~/.wine/drive_c/Program\ Files/Common\ Files/VST3

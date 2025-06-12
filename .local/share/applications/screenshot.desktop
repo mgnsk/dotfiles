@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+
+Name=Screenshot
+Exec=/usr/bin/bash -c "bash ~/scripts/screenshot.sh"
+
+Categories=Graphics
+Keywords=screenshot
+
+NoDisplay=false

@@ -95,6 +95,8 @@ bindsym $mod+Shift+space floating toggle, sticky toggle
 
 for_window [title="^(Picture in picture)|(Picture-in-Picture)$"] floating enable, sticky enable, border none, move position 1000 0
 for_window [class="REAPER"] floating enable
+for_window [app_id="zenity"] floating enable
+for_window [app_id="xdg-desktop-portal-.*"] floating enable
 
 # focus the parent container
 bindsym $mod+a focus parent

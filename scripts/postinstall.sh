@@ -50,6 +50,7 @@ sudo pacman -S --needed --noconfirm \
 	swayidle \
 	swaync \
 	waybar \
+	wl-clipboard \
 	lxsession \
 	geoclue \
 	gammastep \

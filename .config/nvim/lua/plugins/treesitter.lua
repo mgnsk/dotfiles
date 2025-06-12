@@ -5,11 +5,11 @@ vim.opt.rtp:append(parser_install_dir)
 return {
 	{
 		"mgnsk/tree-sitter-balafon",
-		dir = vim.fn.stdpath("config") .. "/plugins/tree-sitter-balafon",
+		dir = vim.fn.expand("$HOME/nvim-plugins/tree-sitter-balafon"),
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
-		dir = vim.fn.stdpath("config") .. "/plugins/nvim-treesitter",
+		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-treesitter"),
 		dependencies = {
 			"mgnsk/tree-sitter-balafon",
 		},
@@ -20,7 +20,7 @@ return {
 
 			parser_config["balafon"] = {
 				install_info = {
-					url = vim.fn.stdpath("config") .. "/plugins/tree-sitter-balafon",
+					url = vim.fn.expand("$HOME/nvim-plugins/tree-sitter-balafon"),
 					files = { "src/parser.c" },
 					generate_requires_npm = true,
 					requires_generate_from_grammar = false,
@@ -58,7 +58,7 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter-context",
-		dir = vim.fn.stdpath("config") .. "/plugins/nvim-treesitter-context",
+		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-treesitter-context"),
 		event = "VeryLazy",
 		config = function()
 			require("treesitter-context").setup({
@@ -68,7 +68,7 @@ return {
 	},
 	{
 		"folke/ts-comments.nvim",
-		dir = vim.fn.stdpath("config") .. "/plugins/ts-comments.nvim",
+		dir = vim.fn.expand("$HOME/nvim-plugins/ts-comments.nvim"),
 		opts = {},
 		event = "VeryLazy",
 	},

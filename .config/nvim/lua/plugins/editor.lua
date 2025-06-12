@@ -2,7 +2,7 @@
 return {
 	{
 		"mgnsk/autotabline.nvim",
-		dir = vim.fn.stdpath("config") .. "/plugins/autotabline.nvim",
+		dir = vim.fn.expand("$HOME/nvim-plugins/autotabline.nvim"),
 		event = "VeryLazy",
 		config = function()
 			require("autotabline").setup()
@@ -10,18 +10,18 @@ return {
 	},
 	{
 		"mgnsk/dumb-autopairs.nvim",
-		dir = vim.fn.stdpath("config") .. "/plugins/dumb-autopairs.nvim",
+		dir = vim.fn.expand("$HOME/nvim-plugins/dumb-autopairs.nvim"),
 		event = "InsertEnter",
 		opts = {},
 	},
 	{
 		"kevinhwang91/nvim-fundo",
-		dir = vim.fn.stdpath("config") .. "/plugins/nvim-fundo",
+		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-fundo"),
 		event = "VeryLazy",
 		dependencies = {
 			{
 				"kevinhwang91/promise-async",
-				dir = vim.fn.stdpath("config") .. "/plugins/promise-async",
+				dir = vim.fn.expand("$HOME/nvim-plugins/promise-async"),
 			},
 		},
 		config = function()
@@ -37,10 +37,10 @@ return {
 	},
 	{
 		"chaoren/vim-wordmotion",
-		dir = vim.fn.stdpath("config") .. "/plugins/vim-wordmotion",
+		dir = vim.fn.expand("$HOME/nvim-plugins/vim-wordmotion"),
 	},
 	{
 		"mfussenegger/nvim-ansible",
-		dir = vim.fn.stdpath("config") .. "/plugins/nvim-ansible",
+		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-ansible"),
 	},
 }

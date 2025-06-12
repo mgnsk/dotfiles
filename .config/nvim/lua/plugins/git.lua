@@ -2,7 +2,7 @@
 return {
 	{
 		"lewis6991/gitsigns.nvim",
-		dir = vim.fn.stdpath("config") .. "/plugins/gitsigns.nvim",
+		dir = vim.fn.expand("$HOME/nvim-plugins/gitsigns.nvim"),
 		event = "BufEnter",
 		config = function()
 			require("gitsigns").setup({

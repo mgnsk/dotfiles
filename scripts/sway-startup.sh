@@ -26,12 +26,7 @@ while ! dbus-send --session --dest=org.freedesktop.DBus --type=method_call --pri
 	sleep 0.2
 done
 
-sway-fader \
-	--app_id="foot:0.7:0.97" \
-	--app_id="kitty:0.7:0.97" \
-	--app_id="Alacritty:0.7:0.97" \
-	--app_id="com.mitchellh.ghostty:0.7:0.97" \
-	--class="XTerm:0.7:0.97" &
+sway-fader &
 lxsession &
 lxpolkit &
 /usr/lib/geoclue-2.0/demos/agent &

@@ -81,7 +81,8 @@ sudo pacman -S --needed --noconfirm \
 	thunderbird \
 	profile-sync-daemon \
 	fzf \
-	rsync
+	rsync \
+	vivid
 
 # Set up yay.
 yaydir="$HOME/workspaces/yay-bin"

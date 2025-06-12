@@ -3,8 +3,9 @@ return {
 	{
 		"Mofiqul/vscode.nvim",
 		dir = vim.fn.stdpath("config") .. "/plugins/vscode.nvim",
+		-- cond = os.getenv("THEME") == "dark",
 		config = function()
-			vim.o.background = "dark"
+			vim.o.background = os.getenv("THEME")
 
 			local vscode = require("vscode")
 			local c = require("vscode.colors").get_colors()
@@ -35,7 +36,7 @@ return {
 					WinSeparator = { fg = bg },
 					["@variable.builtin"] = { fg = c.vscLightBlue, bg = "NONE" },
 					["@module"] = { fg = c.vscLightBlue, bg = "NONE" },
-					["@keyword"] = { fg = c.vscPink, bg = "NONE" },
+					["@keyword"] = { fg = c.vscPink, bg = "NONE", bold = true },
 
 					["@constructor"] = { link = "@function.call" },
 					["@function.macro"] = { fg = c.vscPink, bg = "NONE" },

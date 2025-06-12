@@ -50,6 +50,8 @@ export GPG_TTY
 SHELL="$(which bash)"
 export SHELL
 
+export THEME="light"
+
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 
 shopt -s histappend
@@ -79,7 +81,8 @@ __prompt_command() {
 
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 
-source "$HOME/.tools/LS_COLORS/lscolors.sh"
+LS_COLORS="$(vivid generate zenburn)"
+export LS_COLORS
 
 if command -v fzf &>/dev/null; then
 	eval "$(fzf --bash)"

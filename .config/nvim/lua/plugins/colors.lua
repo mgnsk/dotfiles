@@ -3,7 +3,6 @@ return {
 	{
 		"Mofiqul/vscode.nvim",
 		dir = vim.fn.stdpath("config") .. "/plugins/vscode.nvim",
-		-- cond = os.getenv("THEME") == "dark",
 		config = function()
 			vim.o.background = os.getenv("THEME")
 

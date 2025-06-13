@@ -1,0 +1,14 @@
+#!/bin/env bash
+
+set -euo pipefail
+
+FILES=$(fzf --multi)
+SUFFIX=$(tailscale status --json | gojq -r '.CurrentTailnet.MagicDNSSuffix')
+PEERS=$(tailscale status --json | gojq -r ".Peer[].DNSName | rtrimstr(\".$SUFFIX.\")" | fzf --multi)
+
+for peer in $PEERS; do
+	for file in $FILES; do
+		echo "Sending $file to $peer"
+		tailscale file cp "$file" "$peer:"
+	done
+done

@@ -124,6 +124,8 @@
         html-tidy
         npm-check-updates
         pnpm
+        eslint
+        stylelint
         typescript
         typescript-language-server
         vscode-langservers-extracted

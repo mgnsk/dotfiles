@@ -1,5 +1,0 @@
-#!/bin/env bash
-
-set -eo pipefail
-
-npx --offline prettier "$@"

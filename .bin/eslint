@@ -1,7 +1,0 @@
-#!/bin/env bash
-
-set -eo pipefail
-
-if test -f "$PWD/eslint.config."* >/dev/null; then
-	npx --offline eslint "$@"
-fi

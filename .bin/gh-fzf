@@ -132,13 +132,13 @@ function prs-issues-fzf-header {
 	fi
 
 	target="$1"
-	header="Ctrl-L: web browser\n"
+	header="<ctrl-l web>"
 
 	if [ "$target" == "prs" ]; then
-		header+="Ctrl-O: diff\n"
+		header+=" <ctrl-o diff>"
 	fi
 
-	header+="Ctrl-P: toggle pinpoint mode [current: $grepmode]"
+	header+=" <ctrl-p pinpoint [current: $grepmode]>"
 
 	echo -e "${header}"
 }
@@ -162,17 +162,13 @@ args=(
 	--preview 'bash -c "gh-view {1} {q}"'
 	--preview-window=right:wrap
 	--style=minimal
+	--header-lines=1
 	--prompt "$target> "
 )
 
 if [ "$target" == "prs" ]; then
 	args+=(
-		--header-lines=3
 		--bind "ctrl-o:execute(bash -c 'gh pr diff --color=always {1} | diff-highlight | less -R')"
-	)
-elif [ "$target" == "issues" ]; then
-	args+=(
-		--header-lines=2
 	)
 fi
 

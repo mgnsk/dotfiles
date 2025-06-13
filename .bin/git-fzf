@@ -151,6 +151,6 @@ fzf \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
 	--preview 'bash -c "git-view {1} {q}"' \
-	--preview-window=right:wrap \
+	--preview-window=down:70%:wrap \
 	--style=minimal \
 	--prompt "$target> "

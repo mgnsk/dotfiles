@@ -160,7 +160,7 @@ args=(
 	--bind "ctrl-l:execute-silent(gh browse {1})"
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
 	--preview 'bash -c "gh-view {1} {q}"'
-	--preview-window=right:wrap
+	--preview-window=down:70%:wrap
 	--style=minimal
 	--header-lines=1
 	--prompt "$target> "

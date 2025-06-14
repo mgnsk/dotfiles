@@ -11,6 +11,7 @@ x-base: &base
     TZ: ${TZ}
     # yellow
     USERHOST_COLOR: '\[\e[0;33m\]'
+    THEME: ${THEME}
   stdin_open: true
   tty: true
   network_mode: host

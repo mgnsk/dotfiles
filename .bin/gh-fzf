@@ -4,8 +4,8 @@ set -eo pipefail
 
 target="$1"
 
-if [ "$target" != "prs" ] && [ "$target" != "issues" ]; then
-	echo "usage: gh-fzf {prs|issues}"
+if [ "$target" != "prs" ] && [ "$target" != "issues" ] && [ "$target" != "code" ]; then
+	echo "usage: gh-fzf {prs|issues|code}"
 	exit 1
 fi
 
@@ -55,7 +55,7 @@ function toggle-grep-passthrough {
 
 export -f toggle-grep-passthrough
 
-function gh-search {
+function gh-list {
 	set -euo pipefail
 
 	repo="$1"
@@ -88,7 +88,48 @@ function gh-search {
 		gh-tpl --color "$issue_pr_list_go_template"
 }
 
-export -f gh-search
+export -f gh-list
+
+function gh-search-code {
+	query="$1"
+
+	# Handle empty query.
+	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+		echo "No search term entered!"
+		exit
+	fi
+
+	RESULTS=$(gh search code --json path,repository,sha,textMatches,url "$query")
+
+	# Store results for preview.
+	echo "$RESULTS" >"$tmpdir/code-result.json"
+
+	echo "$RESULTS" | gh-tpl '{{range .}}{{.repository.nameWithOwner}}/{{.path}}{{"\n"}}{{end}}'
+}
+
+export -f gh-search-code
+
+function gh-view-code {
+	index="$1"
+	query="$2"
+
+	cat "$tmpdir/code-result.json" |
+		gojq -r ".[$index-2] | .matches = [.textMatches[].fragment]" |
+		gh-tpl '{{.url}}{{"\n\n"}}{{.matches | join "\n"}}{{"\n"}}' |
+		highlight "$query"
+}
+
+export -f gh-view-code
+
+function gh-browse-code-result {
+	url=$(cat "$tmpdir/code-result.json" |
+		gojq -r ".[$1-2] | .matches = [.textMatches[].fragment]" |
+		gh-tpl '{{.url}}')
+
+	xdg-open "$url"
+}
+
+export -f gh-browse-code-result
 
 function gh-view {
 	set -euo pipefail
@@ -122,7 +163,7 @@ function gh-view {
 
 export -f gh-view
 
-function prs-issues-fzf-header {
+function fzf-header {
 	grepsuffix=$(cat "$tmpdir/grep_suffix")
 	grepmode=""
 	if [ "$grepsuffix" == "" ]; then
@@ -143,32 +184,44 @@ function prs-issues-fzf-header {
 	echo -e "${header}"
 }
 
-export -f prs-issues-fzf-header
-
-repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
-
-export FZF_DEFAULT_COMMAND="bash -c \"prs-issues-fzf-header $target; gh-search $repo {q} 2>&1\""
+export -f fzf-header
 
 args=(
 	--ansi
 	--phony
 	--query ''
 	--no-sort
-	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true"
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
 	--bind "shift-up:preview-top,shift-down:preview-bottom"
-	--bind "ctrl-l:execute-silent(gh browse {1})"
-	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
-	--preview 'bash -c "gh-view {1} {q}"'
 	--preview-window=down:70%:wrap
 	--style=minimal
 	--header-lines=1
 	--prompt "$target> "
 )
 
-if [ "$target" == "prs" ]; then
+if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
+	repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+	# Note: important to use double-quotes throughout, otherwise {q} will be split.
+	export FZF_DEFAULT_COMMAND="bash -c \"fzf-header $target; gh-list $repo {q} 2>&1\""
+
 	args+=(
+		--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true"
+		--preview 'bash -c "gh-view {1} {q}"'
+		--bind "ctrl-l:execute-silent(gh browse {1})"
 		--bind "ctrl-o:execute(bash -c 'gh pr diff --color=always {1} | diff-highlight | less -R')"
+		--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
+	)
+elif [ "$target" == "code" ]; then
+	# With line numbers.
+	# Note: important to use double-quotes throughout, otherwise {q} will be split.
+	export FZF_DEFAULT_COMMAND="bash -c \"fzf-header $target; gh-search-code {q} 2>&1\" | nl -ba"
+
+	args+=(
+		--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true"
+		--with-nth "2.."                                          # Strip line number.
+		--preview 'bash -c "gh-view-code {1} {q}"'                # Pass line number.
+		--bind "ctrl-l:execute-silent(gh-browse-code-result {1})" # Pass line number.
+		--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)"
 	)
 fi
 

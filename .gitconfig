@@ -10,10 +10,20 @@
 	lg = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --all"
 	lb = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --first-parent $(git branch --show-current)"
 
+	# Git logs.
 	logs = !git-fzf log
 	reflogs = !git-fzf reflog
+
+	# Github CLI.
+
+	# PRs in current repo.
 	prs = !gh-fzf prs
+
+	# Issues in current repo.
 	issues = !gh-fzf issues
+
+	# Search code in all repos.
+	code = !gh-fzf code
 
 [mergetool]
 	keepBackup = false

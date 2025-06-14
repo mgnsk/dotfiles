@@ -137,6 +137,7 @@ function fzf-header {
 
 export -f fzf-header
 
+# Note: important to use double-quotes throughout, otherwise {q} will be split.
 export FZF_DEFAULT_COMMAND="bash -c \"fzf-header; git-search {q} 2>&1\""
 
 fzf \
@@ -144,7 +145,8 @@ fzf \
 	--phony \
 	--query '' \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
-	--bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down \
+	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
+	--bind "shift-up:preview-top,shift-down:preview-bottom" \
 	--header-lines=1 \
 	--bind "ctrl-l:execute-silent(gh browse {1})" \
 	--bind "ctrl-o:execute(bash -c 'git show --color {1}')" \

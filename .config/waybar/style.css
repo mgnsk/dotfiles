@@ -1,12 +1,10 @@
-* {
+window#waybar,
+#workspaces button {
+  background-color: rgba(16, 16, 16, 0.97);
   /* `otf-font-awesome` is required to be installed for icons */
   font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
   color: #d4d4d4;
-}
-
-window#waybar {
-  background-color: rgba(16, 16, 16, 0.97);
 }
 
 button {

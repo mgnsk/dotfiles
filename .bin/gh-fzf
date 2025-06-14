@@ -113,6 +113,12 @@ function gh-view-code {
 	index="$1"
 	query="$2"
 
+	# Handle empty query.
+	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
+		echo "No search term entered!"
+		exit
+	fi
+
 	cat "$tmpdir/code-result.json" |
 		gojq -r ".[$index-2] | .matches = [.textMatches[].fragment]" |
 		gh-tpl '{{.url}}{{"\n\n"}}{{.matches | join "\n"}}{{"\n"}}' |

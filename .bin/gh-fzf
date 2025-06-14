@@ -120,8 +120,8 @@ function gh-view-code {
 	fi
 
 	cat "$tmpdir/code-result.json" |
-		gojq -r ".[$index-2] | .matches = [.textMatches[].fragment]" |
-		gh-tpl '{{.url}}{{"\n\n"}}{{.matches | join "\n"}}{{"\n"}}' |
+		gh-tpl --jq ".[$index-2] | .matches = [.textMatches[].fragment]" \
+			'{{.url}}{{"\n\n"}}{{.matches | join "\n"}}{{"\n"}}' |
 		highlight "$query"
 }
 
@@ -129,8 +129,8 @@ export -f gh-view-code
 
 function gh-browse-code-result {
 	url=$(cat "$tmpdir/code-result.json" |
-		gojq -r ".[$1-2] | .matches = [.textMatches[].fragment]" |
-		gh-tpl '{{.url}}')
+		gh-tpl --jq ".[$1-2] | .matches = [.textMatches[].fragment]" \
+			'{{.url}}')
 
 	xdg-open "$url"
 }

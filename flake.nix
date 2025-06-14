@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    blink-cmp.url = "git+file:/home/magnus/nvim-plugins/blink.cmp";
   };
 
   outputs =
@@ -13,23 +12,6 @@
       pkgs = import inputs.nixpkgs {
         inherit system;
         config.allowUnfree = true;
-      };
-
-      # Create a wrapper derivation for blink-cmp.
-      blink = pkgs.stdenv.mkDerivation {
-        pname = "blink-cmp-wrapper";
-        version = "1.0.0";
-
-        src = inputs.blink-cmp;
-
-        buildInputs = [ inputs.blink-cmp.packages.${system}.blink-fuzzy-lib ];
-
-        installPhase = ''
-          mkdir -p $out/lib
-          cp ${
-            inputs.blink-cmp.packages.${system}.blink-fuzzy-lib
-          }/lib/libblink_cmp_fuzzy.so $out/lib/blink_cmp_fuzzy.so
-        '';
       };
 
       base_pkgs = with pkgs; [
@@ -198,7 +180,6 @@
           Cmd = [ "${pkgs.bash}/bin/bash" ];
           User = "${docker_uid}:${docker_gid}";
           Env = [
-            "LUA_CPATH=${blink}/lib/?.so"
             "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
             "TZDIR=${pkgs.tzdata}/share/zoneinfo"
           ];
@@ -232,7 +213,6 @@
           shellHook = ''
             export CUSTOM_HOST="ide-dev"
             export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
-            export LUA_CPATH="${blink}/lib/?.so"
 
             exec bash
           '';

@@ -5,12 +5,17 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-__prepend_path() {
-	PATH="$1:$PATH"
+# From https://superuser.com/a/39995
+__append_path() {
+	if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+		PATH="${PATH:+"$PATH:"}$1"
+	fi
 }
 
-__append_path() {
-	PATH="$PATH:$1"
+__prepend_path() {
+	if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+		PATH="$1${PATH:+":$PATH"}"
+	fi
 }
 
 __prepend_path ~/.local/bin

@@ -25,4 +25,4 @@ select opt in "${options[@]}"; do
 	esac
 done
 
-nix develop "${HOME}?submodules=1#${opt}"
+nix develop "${HOME}?submodules=1#${opt}" --show-trace

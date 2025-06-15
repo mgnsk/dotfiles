@@ -70,6 +70,8 @@ sudo pacman -S --needed --noconfirm \
 	wmenu \
 	kitty \
 	thunar \
+	thunar-archive-plugin \
+	engrampa \
 	tumbler \
 	ffmpegthumbnailer \
 	gvfs \
@@ -89,9 +91,11 @@ sudo pacman -S --needed --noconfirm \
 yaydir="$HOME/workspaces/yay-bin"
 mkdir -p "$yaydir"
 if [[ ! -d "$yaydir/.git" ]]; then
-	cd "$yaydir"
-	git clone https://aur.archlinux.org/yay-bin.git .
-	makepkg -si
+	{
+		cd "$yaydir"
+		git clone https://aur.archlinux.org/yay-bin.git .
+		makepkg -si --noconfirm --needed
+	}
 fi
 
 # Set up BTRFS snapshots.
@@ -225,6 +229,12 @@ if [[ ! -d "$HOME/.git" ]]; then
 	git reset --hard --recurse-submodules origin/master
 	rm -rf "$HOME/dotfiles-tmp"
 fi
+
+# Install sway-fader.
+{
+	cd "$HOME/.tools/sway-fader"
+	makepkg -si --noconfirm --needed
+}
 
 # Enable saving the last booted entry in GRUB.
 if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then

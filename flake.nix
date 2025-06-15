@@ -23,6 +23,7 @@
         bash
         bash-completion
         git
+        less
         unzip
         wget
         tmux
@@ -228,6 +229,7 @@
           mkdir -p /usr/lib/locale
           cp -a ${pkgs.glibcLocalesUtf8}/lib/locale/locale-archive /usr/lib/locale/locale-archive
           echo "LANG=en_US.UTF-8" > /etc/locale.conf
+          echo 'export PATH="${pkgs.git}/share/git/contrib/diff-highlight:$PATH"' > /etc/bashrc
         '';
 
         config = {

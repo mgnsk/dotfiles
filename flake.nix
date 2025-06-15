@@ -240,18 +240,6 @@
       };
 
       devShells.${system} = with pkgs; {
-        base = mkShell {
-          buildInputs = [
-            base_pkgs
-          ];
-          shellHook = ''
-            export CUSTOM_HOST="ide-base"
-            export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
-
-            exec bash
-          '';
-        };
-
         dev = mkShell {
           buildInputs = [
             base_pkgs

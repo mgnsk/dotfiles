@@ -3,19 +3,13 @@
 set -euo pipefail
 
 PS3='Please enter your choice: '
-options=("base" "dev" "audio" "Quit")
+options=("dev" "audio")
 select opt in "${options[@]}"; do
 	case $opt in
-	"base")
-		break
-		;;
 	"dev")
 		break
 		;;
 	"audio")
-		break
-		;;
-	"Quit")
 		break
 		;;
 	*)

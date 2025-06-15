@@ -92,18 +92,18 @@
         ansible-language-server
       ];
 
-      gocc = pkgs.buildGoModule rec {
+      gocc = pkgs.buildGoModule (finalAttrs: {
         pname = "gocc";
         version = "1.0.2";
         src = pkgs.fetchFromGitHub {
           owner = "goccmack";
           repo = "gocc";
-          rev = "v${version}";
+          rev = "v${finalAttrs.version}";
           sha256 = "sha256-sBpwxpTAh2f74AUQVEEESgyrtJzOraTTBxTTESbYYGc=";
         };
         vendorHash = "sha256-5uV8i+xngxep+2oOwCjddP56Z36ZeL9BbBcFTl/zE3Y=";
         doCheck = false;
-      };
+      });
 
       go_pkgs = with pkgs; [
         go_1_24

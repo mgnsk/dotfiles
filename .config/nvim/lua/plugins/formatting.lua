@@ -3,7 +3,6 @@ return {
 	{
 		"stevearc/conform.nvim",
 		dir = vim.fn.expand("$HOME/nvim-plugins/conform.nvim"),
-		lazy = true,
 		init = function()
 			vim.api.nvim_create_user_command("FormatDisable", function(args)
 				if args.bang then
@@ -24,16 +23,16 @@ return {
 				desc = "Re-enable autoformat-on-save",
 			})
 		end,
-		config = function()
-			require("conform").setup({
-				format_on_save = function(bufnr)
-					-- Disable with a global or buffer-local variable
-					if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-						return
-					end
-					return { timeout_ms = 600000, lsp_format = false }
-				end,
-			})
-		end,
+		---@type conform.setupOpts
+		opts = {
+			format_on_save = function(bufnr)
+				-- Disable with a global or buffer-local variable
+				if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+					return
+				end
+				---@type conform.FormatOpts
+				return { timeout_ms = 600000, lsp_format = "fallback" }
+			end,
+		},
 	},
 }

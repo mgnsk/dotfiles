@@ -29,7 +29,6 @@ return {
 				end
 
 				organize_go_imports(client, bufnr)
-				vim.lsp.buf.format({ async = false })
 			end,
 		})
 	end,

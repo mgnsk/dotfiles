@@ -52,9 +52,6 @@
 [submodule ".config/nvim/plugins/nvim-treesitter-context"]
 	path = nvim-plugins/nvim-treesitter-context
 	url = https://github.com/nvim-treesitter/nvim-treesitter-context.git
-[submodule ".config/nvim/plugins/ts-comments.nvim"]
-	path = nvim-plugins/ts-comments.nvim
-	url = https://github.com/folke/ts-comments.nvim.git
 [submodule ".config/nvim/plugins/lazy.nvim"]
 	path = nvim-plugins/lazy.nvim
 	url = https://github.com/folke/lazy.nvim.git

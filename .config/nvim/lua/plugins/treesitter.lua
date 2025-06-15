@@ -4,14 +4,13 @@ vim.opt.rtp:append(parser_install_dir)
 --- @type LazySpec[]
 return {
 	{
-		"mgnsk/tree-sitter-balafon",
-		dir = vim.fn.expand("$HOME/nvim-plugins/tree-sitter-balafon"),
-	},
-	{
 		"nvim-treesitter/nvim-treesitter",
 		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-treesitter"),
 		dependencies = {
-			"mgnsk/tree-sitter-balafon",
+			{
+				"mgnsk/tree-sitter-balafon",
+				dir = vim.fn.expand("$HOME/nvim-plugins/tree-sitter-balafon"),
+			},
 		},
 		version = nil,
 		event = "VeryLazy",
@@ -60,16 +59,9 @@ return {
 		"nvim-treesitter/nvim-treesitter-context",
 		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-treesitter-context"),
 		event = "VeryLazy",
-		config = function()
-			require("treesitter-context").setup({
-				multiline_threshold = 1, -- Maximum number of lines to show for a single context
-			})
-		end,
-	},
-	{
-		"folke/ts-comments.nvim",
-		dir = vim.fn.expand("$HOME/nvim-plugins/ts-comments.nvim"),
-		opts = {},
-		event = "VeryLazy",
+		---@type TSContext.UserConfig
+		opts = {
+			multiline_threshold = 1, -- Maximum number of lines to show for a single context
+		},
 	},
 }

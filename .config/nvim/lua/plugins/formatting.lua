@@ -3,6 +3,7 @@ return {
 	{
 		"stevearc/conform.nvim",
 		dir = vim.fn.expand("$HOME/nvim-plugins/conform.nvim"),
+		event = "VeryLazy",
 		init = function()
 			vim.api.nvim_create_user_command("FormatDisable", function(args)
 				if args.bang then

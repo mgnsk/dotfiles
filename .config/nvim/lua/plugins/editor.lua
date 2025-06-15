@@ -3,10 +3,7 @@ return {
 	{
 		"mgnsk/autotabline.nvim",
 		dir = vim.fn.expand("$HOME/nvim-plugins/autotabline.nvim"),
-		event = "VeryLazy",
-		config = function()
-			require("autotabline").setup()
-		end,
+		opts = {},
 	},
 	{
 		"mgnsk/dumb-autopairs.nvim",
@@ -24,16 +21,11 @@ return {
 				dir = vim.fn.expand("$HOME/nvim-plugins/promise-async"),
 			},
 		},
-		config = function()
-			vim.o.undofile = true
-			vim.o.swapfile = false
-			vim.o.backup = false
-
-			require("fundo").setup({
-				archives_dir = vim.fn.resolve(vim.fn.stdpath("state") .. "/" .. "fundo"),
-				limit_archives_size = 64, -- 64M
-			})
-		end,
+		---@type FundoConfig
+		opts = {
+			archives_dir = vim.fn.resolve(vim.fn.stdpath("state") .. "/" .. "fundo"),
+			limit_archives_size = 64, -- 64M
+		},
 	},
 	{
 		"chaoren/vim-wordmotion",

@@ -1,3 +1,32 @@
+local function git_show_in_new_buf(commit)
+	local output = vim.fn.systemlist("git show " .. commit)
+	vim.cmd("tabnew")
+	vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
+	vim.bo.buftype = "nofile"
+	vim.bo.bufhidden = "wipe"
+	vim.bo.modifiable = false
+	vim.bo.filetype = "git"
+end
+
+local git_log_actions = {
+	["ctrl-l"] = {
+		fn = function(selected)
+			vim.fn.system(string.format("gh browse %s", selected[1]))
+		end,
+		field_index = "{1}",
+		exec_silent = true,
+	},
+	["ctrl-o"] = {
+		fn = function(selected)
+			vim.schedule(function()
+				git_show_in_new_buf(selected[1])
+			end)
+		end,
+		field_index = "{1}",
+		exec_silent = true,
+	},
+}
+
 --- @type LazySpec[]
 return {
 	{
@@ -88,85 +117,55 @@ return {
 				})
 			end, { desc = "FZF blame selected lines" })
 		end,
-		config = function()
-			local function git_show_in_new_buf(commit)
-				local output = vim.fn.systemlist("git show " .. commit)
-				vim.cmd("tabnew")
-				vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
-				vim.bo.buftype = "nofile"
-				vim.bo.bufhidden = "wipe"
-				vim.bo.modifiable = false
-				vim.bo.filetype = "git"
-			end
-
-			local git_log_actions = {
-				["ctrl-l"] = {
-					fn = function(selected)
-						vim.fn.system(string.format("gh browse %s", selected[1]))
-					end,
-					field_index = "{1}",
-					exec_silent = true,
-				},
-				["ctrl-o"] = {
-					fn = function(selected)
-						vim.schedule(function()
-							git_show_in_new_buf(selected[1])
-						end)
-					end,
-					field_index = "{1}",
-					exec_silent = true,
-				},
-			}
-
-			require("fzf-lua").setup({
-				winopts = {
-					fullscreen = true,
+		---@type fzf-lua.Config
+		opts = {
+			winopts = {
+				fullscreen = true,
+				border = "none",
+				preview = {
 					border = "none",
-					preview = {
-						border = "none",
-						delay = 0,
-						wrap = "wrap",
-						scrollbar = "none",
-					},
+					delay = 0,
+					wrap = "wrap",
+					scrollbar = "none",
 				},
-				previewers = {
-					builtin = {
-						syntax = true,
-						syntax_limit_b = require("const").treesitter_max_filesize,
-					},
+			},
+			previewers = {
+				builtin = {
+					syntax = true,
+					syntax_limit_b = require("const").treesitter_max_filesize,
 				},
-				files = {
-					fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
+			},
+			files = {
+				fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
+			},
+			grep = {
+				rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",
+			},
+			defaults = {
+				git_icons = false,
+				file_icons = false,
+			},
+			git = {
+				bcommits = {
+					cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' {file}]],
+					preview_pager = "diff-highlight",
+					actions = git_log_actions,
 				},
-				grep = {
-					rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/",
+				commits = {
+					cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s']],
+					preview_pager = "diff-highlight",
+					actions = git_log_actions,
 				},
-				defaults = {
-					git_icons = false,
-					file_icons = false,
+			},
+			lsp = {
+				async_or_timeout = true,
+			},
+			keymap = {
+				fzf = {
+					["ctrl-d"] = "preview-page-down",
+					["ctrl-u"] = "preview-page-up",
 				},
-				git = {
-					bcommits = {
-						cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' {file}]],
-						preview_pager = "diff-highlight",
-						actions = git_log_actions,
-					},
-					commits = {
-						cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s']],
-						preview_pager = "diff-highlight",
-						actions = git_log_actions,
-					},
-				},
-				lsp = {
-					async_or_timeout = true,
-				},
-				keymap = {
-					fzf = {
-						["ctrl-d"] = "preview-page-down",
-						["ctrl-u"] = "preview-page-up",
-					},
-				},
-			})
-		end,
+			},
+		},
 	},
 }

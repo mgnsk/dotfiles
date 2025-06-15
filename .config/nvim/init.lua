@@ -34,7 +34,10 @@ vim.cmd("set t_ut=")
 
 -- TODO what does this do?
 --vim.cmd("set noruler")
---
+
+vim.o.undofile = true
+vim.o.swapfile = false
+vim.o.backup = false
 
 function _G.get_fold_expr(lnum)
 	local ok, result = pcall(vim.treesitter.foldexpr, lnum)

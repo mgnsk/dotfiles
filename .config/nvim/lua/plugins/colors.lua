@@ -4,7 +4,7 @@ return {
 		"Mofiqul/vscode.nvim",
 		dir = vim.fn.expand("$HOME/nvim-plugins/vscode.nvim"),
 		config = function()
-			vim.o.background = os.getenv("THEME")
+			vim.o.background = os.getenv("THEME") or "dark"
 
 			local vscode = require("vscode")
 			local c = require("vscode.colors").get_colors()
@@ -74,17 +74,15 @@ return {
 		"norcalli/nvim-colorizer.lua",
 		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-colorizer.lua"),
 		ft = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml" },
-		config = function()
-			require("colorizer").setup({
-				["*"] = {
-					RGB = true,
-					RRGGBB = true,
-					names = true,
-					rgb_fn = true,
-					hsl_fn = true,
-					css = true,
-				},
-			})
-		end,
+		opts = {
+			["*"] = {
+				RGB = true,
+				RRGGBB = true,
+				names = true,
+				rgb_fn = true,
+				hsl_fn = true,
+				css = true,
+			},
+		},
 	},
 }

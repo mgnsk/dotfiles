@@ -14,6 +14,7 @@ function set_option() {
 
 # Install packages.
 sudo pacman -S --needed --noconfirm \
+	man-db \
 	amd-ucode \
 	intel-ucode \
 	mesa \
@@ -29,6 +30,7 @@ sudo pacman -S --needed --noconfirm \
 	tree \
 	bash-completion \
 	vim \
+	neovim \
 	tmux \
 	realtime-privileges \
 	glances \

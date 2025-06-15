@@ -7,7 +7,7 @@ return {
 		event = "VeryLazy",
 		config = function()
 			vim.g.neomake_open_list = 2
-			vim.g.neomake_list_height = 5
+			vim.g.neomake_list_height = 3
 		end,
 	},
 	{

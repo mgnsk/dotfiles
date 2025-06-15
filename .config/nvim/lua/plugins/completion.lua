@@ -47,6 +47,7 @@ return {
 						end
 					end,
 					-- defaults
+					"exact",
 					"score",
 					"sort_text",
 				},

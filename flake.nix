@@ -222,7 +222,8 @@
               /home/${docker_user}/.cargo \
               /home/${docker_user}/.local \
               /home/${docker_user}/.local/share \
-              /home/${docker_user}/.local/state
+              /home/${docker_user}/.local/state \
+              /home/${docker_user}/.npm
 
           mkdir -p /usr/lib/locale
           cp -a ${pkgs.glibcLocalesUtf8}/lib/locale/locale-archive /usr/lib/locale/locale-archive

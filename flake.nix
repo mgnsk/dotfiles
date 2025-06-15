@@ -14,6 +14,13 @@
         config.allowUnfree = true;
       };
 
+      diff-highlight = pkgs.linkFarm "diff-highlight" [
+        {
+          name = "bin/diff-highlight";
+          path = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight";
+        }
+      ];
+
       base_pkgs = with pkgs; [
         glibcLocalesUtf8
         ncurses
@@ -23,6 +30,7 @@
         bash
         bash-completion
         git
+        diff-highlight
         less
         unzip
         wget
@@ -230,8 +238,6 @@
           cp -a ${pkgs.glibcLocalesUtf8}/lib/locale/locale-archive /usr/lib/locale/locale-archive
           echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
-          echo 'export PATH="${pkgs.git}/share/git/contrib/diff-highlight:$PATH"' > /etc/bashrc
-
           # Fixes #!/usr/bin/env shebang in scripts.
           ln -s /bin /usr/bin
         '';
@@ -260,7 +266,6 @@
           ];
           shellHook = ''
             export CUSTOM_HOST="ide-dev"
-            export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
 
             exec bash
           '';
@@ -273,7 +278,6 @@
           ];
           shellHook = ''
             export CUSTOM_HOST="ide-audio"
-            export PATH="${git}/share/git/contrib/diff-highlight:$PATH"
 
             export CLAP_PATH="${zam-plugins}/lib/clap;$CLAP_PATH"
             export CLAP_PATH="${lsp-plugins}/lib/clap;$CLAP_PATH"

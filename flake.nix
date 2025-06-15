@@ -126,13 +126,25 @@
         cargo
       ];
 
+      pint = pkgs.stdenv.mkDerivation {
+        name = "pint";
+        src = pkgs.fetchurl {
+          url = "https://github.com/laravel/pint/releases/download/v1.22.1/pint.phar";
+          sha256 = "b70b0e851f58a0884bda550e1021a63affa869ce399173cbe92c50087c45da07";
+        };
+        phases = [ "installPhase" ]; # Removes all phases except installPhase (no unpackPhase).
+        installPhase = ''
+          install -m755 -D $src $out/bin/pint
+        '';
+      };
+
       php_pkgs = with pkgs; [
         php84
         phpactor
         php84Extensions.sqlite3
         php84Packages.composer
         php84Packages.phpstan
-        # TODO: laravel/pint
+        pint
       ];
 
       python_pkgs = with pkgs; [

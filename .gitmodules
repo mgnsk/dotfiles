@@ -4,9 +4,6 @@
 [submodule ".config/nvim/plugins/nvim-colorizer.lua"]
 	path = nvim-plugins/nvim-colorizer.lua
 	url = https://github.com/norcalli/nvim-colorizer.lua.git
-[submodule ".config/nvim/plugins/blink.cmp"]
-	path = nvim-plugins/blink.cmp
-	url = https://github.com/Saghen/blink.cmp.git
 [submodule ".config/nvim/plugins/autotabline.nvim"]
 	path = nvim-plugins/autotabline.nvim
 	url = https://github.com/mgnsk/autotabline.nvim.git
@@ -61,3 +58,21 @@
 [submodule ".config/nvim/plugins/nvim-ansible"]
 	path = nvim-plugins/nvim-ansible
 	url = https://github.com/mfussenegger/nvim-ansible.git
+[submodule "nvim-plugins/nvim-cmp"]
+	path = nvim-plugins/nvim-cmp
+	url = https://github.com/hrsh7th/nvim-cmp.git
+[submodule "nvim-plugins/cmp-buffer"]
+	path = nvim-plugins/cmp-buffer
+	url = https://github.com/hrsh7th/cmp-buffer.git
+[submodule "nvim-plugins/cmp-nvim-lsp"]
+	path = nvim-plugins/cmp-nvim-lsp
+	url = https://github.com/hrsh7th/cmp-nvim-lsp.git
+[submodule "nvim-plugins/cmp-nvim-lsp-signature-help"]
+	path = nvim-plugins/cmp-nvim-lsp-signature-help
+	url = https://github.com/hrsh7th/cmp-nvim-lsp-signature-help.git
+[submodule "nvim-plugins/vim-vsnip"]
+	path = nvim-plugins/vim-vsnip
+	url = https://github.com/hrsh7th/vim-vsnip.git
+[submodule "nvim-plugins/cmp-vsnip"]
+	path = nvim-plugins/cmp-vsnip
+	url = https://github.com/hrsh7th/cmp-vsnip.git

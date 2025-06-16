@@ -76,6 +76,7 @@ sudo pacman -S --needed --noconfirm \
 	engrampa \
 	tumbler \
 	ffmpegthumbnailer \
+	geany \
 	gvfs \
 	cpupower \
 	tailscale \

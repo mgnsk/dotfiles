@@ -176,21 +176,23 @@
 
       audio_pkgs = with pkgs; [
         pipewire.jack
+        mesa
+        libGL
+
         raysession
         reaper
         reaper-reapack-extension
+        tuxguitar
+
         yabridge
         yabridgectl
-        tuxguitar
         wineWowPackages.yabridge
         winetricks
         cabextract
+
         zam-plugins
         lsp-plugins
         chow-tape-model
-        fluidsynth
-        libsndfile.out
-        liblo
       ];
 
       docker_user = "ide";
@@ -198,6 +200,12 @@
       docker_uid = "1000";
       docker_gid = "1000";
 
+      # makeClapPath creates a CLAP_PATH value for Reaper, separated with semicolons.
+      makeClapPath =
+        subDir: paths:
+        builtins.concatStringsSep ";" (
+          map (path: path + "/" + subDir) (builtins.filter (x: x != null) paths)
+        );
     in
     {
       docker = pkgs.dockerTools.streamLayeredImage {
@@ -279,9 +287,13 @@
           shellHook = ''
             export CUSTOM_HOST="ide-audio"
 
-            export CLAP_PATH="${zam-plugins}/lib/clap;$CLAP_PATH"
-            export CLAP_PATH="${lsp-plugins}/lib/clap;$CLAP_PATH"
-            export CLAP_PATH="${chow-tape-model}/lib/clap;$CLAP_PATH"
+            export CLAP_PATH="${
+              makeClapPath "lib/clap" [
+                zam-plugins
+                lsp-plugins
+                chow-tape-model
+              ]
+            };$CLAP_PATH"
 
             export LD_LIBRARY_PATH="${
               lib.makeLibraryPath (

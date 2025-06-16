@@ -1,3 +1,8 @@
+# Preface
+
+Everything in this README is written with the assumption
+that the machine is set up exactly like the dotfiles.
+
 # Installation
 
 Modified dotfiles method based on https://www.atlassian.com/git/tutorials/dotfiles
@@ -50,6 +55,37 @@ Run `ide` and select audio.
 
 The host system is assumed to run a PipeWire audio server and the operating user is assumed to have realtime privileges.
 Audio applications connect to PipeWire via the JACK API.
+
+## Running Northern Artillery Drums
+
+On wayland, there is a menu flicker bug. Fixed when enabling wine virtual desktop.
+
+On Xorg, there is no flicker. Vulkan is required so that UI update
+does not require moving the window.
+
+### Some solutions to running on Wayland with usable menus
+
+Run a fake X server:
+
+```sh
+Xephyr -br -ac -noreset -screen 1920x1000 :1
+```
+
+Then start reaper in openbox.
+
+```
+DISPLAY=:1 openbox --startup reaper
+```
+
+Vulkan is not supported but at least the menu flicker bug is fixed.
+Due to missing Vulkan, the UI Update needs window movement bug exists.
+
+Also tried with Lavapipe (software Vulkan) but Northern Artillery
+doesn't load at all then.
+
+#### Verdict
+
+Use Sway on TTY1 and Openbox on TTY2.
 
 ## Linux plugins
 

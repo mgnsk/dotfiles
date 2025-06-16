@@ -21,6 +21,13 @@
         }
       ];
 
+      spirv-tools-lib = pkgs.linkFarm "spirv-tools-lib" [
+        {
+          name = "lib/libSPIRV-Tools.so";
+          path = "${pkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
+        }
+      ];
+
       base_pkgs = with pkgs; [
         glibcLocalesUtf8
         ncurses
@@ -176,8 +183,26 @@
 
       audio_pkgs = with pkgs; [
         pipewire.jack
+
+        # For LSP and Zam plugins.
         mesa
         libGL
+
+        # Complete Vulkan setup to fix Northern Artillery Drums plugin GUI not updating until window moved.
+        libdrm
+        llvmPackages_20.libllvm
+        elfutils
+        zstd
+        xorg.libxcb
+        wayland
+        libz
+        xorg.libX11
+        xorg.libxshmfence
+        xorg.xcbutilkeysyms
+        libudev-zero
+        expat
+        spirv-tools-lib
+        pkgs.stdenv.cc.cc.lib
 
         raysession
         reaper
@@ -205,6 +230,15 @@
         subDir: paths:
         builtins.concatStringsSep ";" (
           map (path: path + "/" + subDir) (builtins.filter (x: x != null) paths)
+        );
+
+      ensureYabridgePaths =
+        paths:
+        builtins.concatStringsSep "\n" (
+          map (path: ''
+            mkdir -p "${path}"
+            yabridgectl add "${path}"
+          '') (paths)
         );
     in
     {
@@ -285,6 +319,8 @@
             audio_pkgs
           ];
           shellHook = ''
+            set -eo pipefail
+
             export CUSTOM_HOST="ide-audio"
 
             export CLAP_PATH="${
@@ -312,9 +348,22 @@
             mkdir -p ~/.config/REAPER/UserPlugins
             ln -sf ${reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
 
-            yabridgectl add ~/win-plugins
-            yabridgectl add ~/.wine/drive_c/Program\ Files/Common\ Files/VST3
-            yabridgectl sync
+            # TODO: intel (libvulkan_intel.so).
+            deps=$(ldd /usr/lib/libvulkan_radeon.so)
+            if echo "$deps" | grep -q "not found"; then
+                echo "Missing Vulkan dependencies:"
+                echo "$deps" | grep "not found"
+                exit 1
+            fi
+
+            winetricks dxvk
+
+            ${ensureYabridgePaths [
+              "$HOME/win-plugins"
+              "$HOME/.wine/drive_c/Program Files/Common Files/VST3"
+            ]}
+
+            yabridgectl sync --prune
             yabridgectl status
 
             exec bash

@@ -28,6 +28,7 @@ sudo pacman -S --needed --noconfirm \
 	git \
 	less \
 	tree \
+	fdupes \
 	bash-completion \
 	vim \
 	neovim \
@@ -56,7 +57,6 @@ sudo pacman -S --needed --noconfirm \
 	lxsession \
 	geoclue \
 	gammastep \
-	xorg-xwayland \
 	nm-connection-editor \
 	network-manager-applet \
 	gnome-keyring \
@@ -88,7 +88,11 @@ sudo pacman -S --needed --noconfirm \
 	profile-sync-daemon \
 	fzf \
 	rsync \
-	vivid
+	vivid \
+	xorg-xwayland \
+	xorg-server \
+	xorg-xinit \
+	openbox
 
 # Set up yay.
 yaydir="$HOME/workspaces/yay-bin"

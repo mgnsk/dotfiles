@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-set -euo pipefail
+set -eu
 
 if lspci -k | grep -q i915; then
 	echo "Detected Intel GPU (i915)"

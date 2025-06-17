@@ -2,6 +2,11 @@
 
 set -eu
 
+# Link plugins dir to Windows user home.
+{
+	ln -sf "$HOME/win-plugins" "$HOME/.wine/drive_c/users/$USER/win-plugins"
+}
+
 # Set up Ampenstein data paths.
 {
 	target="/home/${USER}/.wine/drive_c/users/${USER}/AppData/Roaming/Ugritone/Ampenstein/config.xml"

@@ -1,0 +1,21 @@
+# Normal/regular colors (color palette 0-7)
+palette = 0=#000000
+palette = 1=#c72e0f
+palette = 2=#008000
+palette = 3=#795e25
+palette = 4=#007acc
+palette = 5=#af00db
+palette = 6=#56b6c2
+palette = 7=#000000
+
+# Bright colors (color palette 8-15)
+palette = 8=#808080
+
+background = #ffffff
+foreground = #000000
+
+cursor-color = #cccccc
+cursor-text = #000000
+
+selection-foreground = #000000
+selection-background = #d7ba7d

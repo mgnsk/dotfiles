@@ -1,0 +1,10 @@
+[general]
+import = [
+    "~/.config/alacritty/themes/light.toml"
+]
+
+[font]
+size = 12
+
+[font.normal]
+family = "monospace"

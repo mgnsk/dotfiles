@@ -73,7 +73,7 @@ return {
 	{
 		"norcalli/nvim-colorizer.lua",
 		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-colorizer.lua"),
-		ft = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml" },
+		ft = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml", "dosini" },
 		opts = {
 			["*"] = {
 				RGB = true,

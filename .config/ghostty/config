@@ -1,0 +1,5 @@
+theme = light
+window-decoration = false
+
+font-family = monospace
+font-size = 12

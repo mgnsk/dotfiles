@@ -30,7 +30,8 @@ gset monospace-font-name 'Monospace 11'
 gset document-font-name 'Adwaita Sans 11'
 gset font-antialiasing 'grayscale'
 gset font-hinting 'slight'
-gset font-rgba-order 'none'
+# Note: only used when font-antialiasing is set to 'rgba'
+# gset font-rgba-order 'rgb'
 gset text-scaling-factor '1.2'
 
 # TTY1: start sway at login if available.

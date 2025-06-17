@@ -207,7 +207,6 @@
         raysession
         reaper
         reaper-reapack-extension
-        tuxguitar
 
         yabridge
         yabridgectl

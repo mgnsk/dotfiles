@@ -1,11 +1,13 @@
-#!/bin/env sh
+#!/bin/env bash
 
 set -eu
 
-ampensteinCfg="/home/${USER}/.wine/drive_c/users/${USER}/AppData/Roaming/Ugritone/Ampenstein/config.xml"
-
 # Set up Ampenstein data paths.
-cat <<'EOF' | tee "$ampensteinCfg" >/dev/null
+{
+	target="/home/${USER}/.wine/drive_c/users/${USER}/AppData/Roaming/Ugritone/Ampenstein/config.xml"
+	mkdir -p "$(dirname "$target")"
+
+	cat <<'EOF' | tee "$target" >/dev/null
 <?xml version="1.0" encoding="UTF-8"?>
 
 <root pluginDataPath="Z:\home\_USER_\win-plugins\Ugritone\Ampenstein\Processors"
@@ -14,5 +16,32 @@ cat <<'EOF' | tee "$ampensteinCfg" >/dev/null
 	  BGImagePath=""/>
 EOF
 
-# TODO: howto expand env vars in heredoc?
-sed -i "s/_USER_/${USER}/" "$ampensteinCfg"
+	# TODO: howto expand env vars in heredoc?
+	sed -i "s/_USER_/${USER}/" "$target"
+}
+
+# Set up VerbCore data.
+{
+	src="$HOME/win-plugins/Ugritone/VerbCore/VerbCore.cab"
+	target="$HOME/.wine/drive_c/ProgramData/Ugritone/VerbCore/VerbCore.cab"
+
+	if [ -f "$src" ]; then
+		mkdir -p "$(dirname "$target")"
+		ln -sf "$src" "$target"
+	fi
+}
+
+# Set up VerbCore data paths.
+{
+	target="/home/${USER}/.wine/drive_c/users/${USER}/AppData/Roaming/Ugritone/VerbCore/config.cfg"
+	mkdir -p "$(dirname "$target")"
+
+	cat <<'EOF' | tee "$target" >/dev/null
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root userDataPath="Z:\home\_USER_\win-plugins\Ugritone\VerbCore"/>
+EOF
+
+	# TODO: howto expand env vars in heredoc?
+	sed -i "s/_USER_/${USER}/" "$target"
+}

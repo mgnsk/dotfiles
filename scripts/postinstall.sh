@@ -71,6 +71,8 @@ sudo pacman -S --needed --noconfirm \
 	j4-dmenu-desktop \
 	wmenu \
 	kitty \
+	alacritty \
+	foot \
 	thunar \
 	thunar-archive-plugin \
 	engrampa \

@@ -1,12 +1,12 @@
 set $mod Mod4
 
 # start a terminal
-bindsym $mod+Return exec kitty
+bindsym $mod+Return exec alacritty
 
 # kill focused window
 bindsym $mod+q kill
 
-bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='wmenu -i' --term='kitty'
+bindsym $mod+d exec j4-dmenu-desktop --no-generic --display-binary --dmenu='wmenu -i' --term='alacritty'
 
 # change focus
 bindsym {

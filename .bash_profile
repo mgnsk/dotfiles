@@ -15,6 +15,24 @@ export XDG_DATA_HOME="$HOME/.local/share"
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
+function gset {
+	key="$1"
+	value="$2"
+
+	gnome_schema="org.gnome.desktop.interface"
+	gsettings set "$gnome_schema" "$key" "$value"
+}
+
+gset gtk-theme 'Adwaita'
+gset icon-theme 'Adwaita'
+gset font-name 'Cantarell 11'
+gset monospace-font-name 'Monospace 11'
+gset document-font-name 'Adwaita Sans 11'
+gset font-antialiasing 'grayscale'
+gset font-hinting 'slight'
+gset font-rgba-order 'none'
+gset text-scaling-factor '1.2'
+
 # TTY1: start sway at login if available.
 if test -z "$DISPLAY" -a "$XDG_VTNR" = 1; then
 	if command -v sway &>/dev/null; then

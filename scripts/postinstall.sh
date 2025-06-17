@@ -94,7 +94,10 @@ sudo pacman -S --needed --noconfirm \
 	xorg-xwayland \
 	xorg-server \
 	xorg-xinit \
-	openbox
+	openbox \
+	pcmanfm \
+	tint2 \
+	picom
 
 # Set up yay.
 yaydir="$HOME/workspaces/yay-bin"

@@ -1,1 +1,4 @@
+picom -b --no-fading-openclose
+tint2 &
 alacritty &
+gammastep-indicator &

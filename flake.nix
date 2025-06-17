@@ -351,6 +351,8 @@
 
             winetricks dxvk
 
+            bash ~/win-plugins/setup-paths.sh
+
             ${ensureYabridgePaths [
               "$HOME/win-plugins"
               "$HOME/.wine/drive_c/Program Files/Common Files/VST3"

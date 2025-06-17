@@ -348,13 +348,7 @@
             mkdir -p ~/.config/REAPER/UserPlugins
             ln -sf ${reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
 
-            # TODO: intel (libvulkan_intel.so).
-            deps=$(ldd /usr/lib/libvulkan_radeon.so)
-            if echo "$deps" | grep -q "not found"; then
-                echo "Missing Vulkan dependencies:"
-                echo "$deps" | grep "not found"
-                exit 1
-            fi
+            bash ~/scripts/check-vulkan-deps.sh
 
             winetricks dxvk
 

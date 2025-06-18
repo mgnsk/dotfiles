@@ -11,7 +11,7 @@ end
 local git_log_actions = {
 	["ctrl-l"] = {
 		fn = function(selected)
-			vim.fn.system(string.format("gh browse %s", selected[1]))
+			vim.fn.system(string.format("gh-browse-commit %s", selected[1]))
 		end,
 		field_index = "{1}",
 		exec_silent = true,

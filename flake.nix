@@ -362,6 +362,8 @@
             bash ~/win-plugins/setup-paths.sh
 
             exec bash
+
+            wineserver -k
           '';
         };
       };

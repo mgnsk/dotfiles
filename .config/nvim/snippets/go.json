@@ -1,24 +1,22 @@
 {
-  ".source.go": {
-    "multiple imports": {
-      "prefix": "im",
-      "body": "import (\n\t\"${1:package}\"\n)",
-      "description": "Snippet for an import block"
-    },
-    "if err != nil": {
-      "prefix": "iferr",
-      "body": "if err != nil {\n\t${1:return ${2:nil, }${3:err}}\n}",
-      "description": "Snippet for if err != nil"
-    },
-    "go anonymous function": {
-      "prefix": "go",
-      "body": "go func() {\n\t$0\n}()",
-      "description": "Snippet for anonymous goroutine declaration"
-    },
-    "defer anonymous function": {
-      "prefix": "defer",
-      "body": "defer func() {\n\t$0\n}()",
-      "description": "Snippet for defer statement"
-    }
+  "multiple imports": {
+    "prefix": "im",
+    "body": "import (\n\t\"${1:package}\"\n)",
+    "description": "Snippet for an import block"
+  },
+  "if err != nil": {
+    "prefix": "iferr",
+    "body": "if err != nil {\n\t${1:return ${2:nil, }${3:err}}\n}",
+    "description": "Snippet for if err != nil"
+  },
+  "go anonymous function": {
+    "prefix": "go",
+    "body": "go func() {\n\t$0\n}()",
+    "description": "Snippet for anonymous goroutine declaration"
+  },
+  "defer anonymous function": {
+    "prefix": "defer",
+    "body": "defer func() {\n\t$0\n}()",
+    "description": "Snippet for defer statement"
   }
 }

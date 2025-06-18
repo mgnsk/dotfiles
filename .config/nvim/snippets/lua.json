@@ -1,9 +1,7 @@
 {
-  ".source.lua": {
-    "inspect": {
-      "prefix": "inspect",
-      "body": "print(vim.inspect($0))",
-      "description": "Snippet for inspect"
-    }
+  "inspect": {
+    "prefix": "inspect",
+    "body": "print(vim.inspect($0))",
+    "description": "Snippet for inspect"
   }
 }

@@ -10,32 +10,18 @@ set -eu
 INPUT="$1"
 FLAKE_OUTPUT=".#devShells.x86_64-linux.$2"
 
-# Save current lock file
-cp flake.lock flake.lock.before
-
-function cleanup {
-	rm -f ./flake.lock.before
-	rm -f ./result
-}
-
-trap cleanup EXIT
-
 # Build the old output and get its store path.
-nix build "$FLAKE_OUTPUT"
-OLD_PATH=$(readlink -f ./result)
-OLD_STORE_PATH=$(nix path-info "$OLD_PATH")
+OLD_STORE_PATH=$(nix build --no-link --print-out-paths "$FLAKE_OUTPUT")
 
 # Update flake.
 nix flake update "$INPUT"
 
 # Build the new output and get its store path.
-nix build "$FLAKE_OUTPUT"
-NEW_PATH=$(readlink -f ./result)
-NEW_STORE_PATH=$(nix path-info "$NEW_PATH")
+NEW_STORE_PATH=$(nix build --no-link --print-out-paths "$FLAKE_OUTPUT")
 
 # Show git diff of flake.lock.
 echo -e "\n===== flake.lock diff ====="
-git diff flake.lock.before flake.lock || true
+git diff flake.lock || true
 
 # Show package version changes.
 nix store diff-closures "$OLD_STORE_PATH" "$NEW_STORE_PATH"

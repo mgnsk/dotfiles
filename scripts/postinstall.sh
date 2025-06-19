@@ -2,6 +2,8 @@
 
 set -eu
 
+# Run as normal user after booting into an installed system.
+
 function set_option() {
 	file="$1"
 	key="$2"
@@ -10,96 +12,109 @@ function set_option() {
 	sudo sed -i "$script" "$file"
 }
 
-# Run as normal user after booting into an installed system.
+packages=(
+	man-db
+	fuse2
+	mesa
+	mpv
+	yt-dlp
+	base-devel
+	sshfs
+	git
+	less
+	tree
+	fdupes
+	bash-completion
+	vim
+	neovim
+	tmux
+	realtime-privileges
+	glances
+	noto-fonts
+	noto-fonts-cjk
+	noto-fonts-emoji
+	noto-fonts-extra
+	cantarell-fonts
+	ttf-font-awesome
+	xfce4-settings
+	gnome-tweaks
+	xdg-desktop-portal-wlr
+	xdg-desktop-portal-gtk
+	xdg-user-dirs
+	flatpak
+	sway
+	swaybg
+	swaylock
+	swayidle
+	swaync
+	waybar
+	wl-clipboard
+	lxsession
+	geoclue
+	gammastep
+	nm-connection-editor
+	network-manager-applet
+	gnome-keyring
+	libsecret
+	seahorse
+	viewnior
+	grim
+	slurp
+	zenity
+	imagemagick
+	pavucontrol
+	j4-dmenu-desktop
+	wmenu
+	kitty
+	alacritty
+	foot
+	thunar
+	thunar-archive-plugin
+	engrampa
+	unrar
+	tumbler
+	ffmpegthumbnailer
+	geany
+	gvfs
+	cpupower
+	tailscale
+	nix
+	docker
+	docker-buildx
+	docker-compose
+	thunderbird
+	profile-sync-daemon
+	fzf
+	rsync
+	vivid
+	xorg-xwayland
+	xorg-server
+	xorg-xinit
+	openbox
+	tint2
+	picom
+)
+
+if lscpu | grep -q Intel; then
+	echo "Detected Intel CPU"
+	packages+=(
+		intel-ucode
+		intel-media-driver
+		vulkan-intel
+	)
+elif lscpu | grep -q AMD; then
+	echo "Detected AMD CPU"
+	packages+=(
+		amd-ucode
+		vulkan-radeon
+	)
+else
+	echo "Unsupported CPU!"
+	exit 1
+fi
 
 # Install packages.
-sudo pacman -S --needed --noconfirm \
-	man-db \
-	amd-ucode \
-	intel-ucode \
-	fuse2 \
-	mesa \
-	vulkan-radeon \
-	intel-media-driver \
-	vulkan-intel \
-	mpv \
-	yt-dlp \
-	base-devel \
-	sshfs \
-	git \
-	less \
-	tree \
-	fdupes \
-	bash-completion \
-	vim \
-	neovim \
-	tmux \
-	realtime-privileges \
-	glances \
-	noto-fonts \
-	noto-fonts-cjk \
-	noto-fonts-emoji \
-	noto-fonts-extra \
-	cantarell-fonts \
-	ttf-font-awesome \
-	xfce4-settings \
-	gnome-tweaks \
-	xdg-desktop-portal-wlr \
-	xdg-desktop-portal-gtk \
-	xdg-user-dirs \
-	flatpak \
-	sway \
-	swaybg \
-	swaylock \
-	swayidle \
-	swaync \
-	waybar \
-	wl-clipboard \
-	lxsession \
-	geoclue \
-	gammastep \
-	nm-connection-editor \
-	network-manager-applet \
-	gnome-keyring \
-	libsecret \
-	seahorse \
-	viewnior \
-	grim \
-	slurp \
-	zenity \
-	imagemagick \
-	pavucontrol \
-	j4-dmenu-desktop \
-	wmenu \
-	kitty \
-	alacritty \
-	foot \
-	thunar \
-	thunar-archive-plugin \
-	engrampa \
-	unrar \
-	tumbler \
-	ffmpegthumbnailer \
-	geany \
-	gvfs \
-	cpupower \
-	tailscale \
-	nix \
-	docker \
-	docker-buildx \
-	docker-compose \
-	thunderbird \
-	profile-sync-daemon \
-	fzf \
-	rsync \
-	vivid \
-	xorg-xwayland \
-	xorg-server \
-	xorg-xinit \
-	openbox \
-	pcmanfm \
-	tint2 \
-	picom
+sudo pacman -S --needed --noconfirm "${packages[@]}"
 
 # Set up yay.
 yaydir="$HOME/workspaces/yay-bin"

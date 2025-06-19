@@ -57,13 +57,18 @@ return {
 			},
 			sources = {
 				default = function(ctx)
-					print(vim.inspect(vim.bo.filetype))
 					---@param args string[]
 					local function in_treesitter_capture(args)
-						local node = vim.treesitter.get_node()
-						while node do
-							print(vim.inspect(node:type()))
+						local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+						r = r - 1 -- Convert to 0-indexed.
+						if c > 0 then
+							-- Use the previous column from cursor. Fixes the issue where
+							-- treesitter doesn't detect the correct node.
+							c = c - 1
+						end
 
+						local node = vim.treesitter.get_node({ pos = { r, c } })
+						while node do
 							if vim.tbl_contains(args, node:type()) then
 								return true
 							end
@@ -71,12 +76,11 @@ return {
 						end
 					end
 
-					if in_treesitter_capture({ "argument" }) then
-						-- For bash.
+					if vim.bo.filetype == "sh" and in_treesitter_capture({ "word", "string" }) then
 						return { "buffer", "path" }
 					end
 
-					if in_treesitter_capture({ "string", "comment", "line_comment", "block_comment" }) then
+					if in_treesitter_capture({ "comment", "line_comment", "block_comment" }) then
 						return { "buffer" }
 					end
 

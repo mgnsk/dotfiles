@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-set -euo pipefail
+set -eu
 
 function set_option() {
 	file="$1"
@@ -17,6 +17,7 @@ sudo pacman -S --needed --noconfirm \
 	man-db \
 	amd-ucode \
 	intel-ucode \
+	fuse2 \
 	mesa \
 	vulkan-radeon \
 	intel-media-driver \
@@ -76,6 +77,7 @@ sudo pacman -S --needed --noconfirm \
 	thunar \
 	thunar-archive-plugin \
 	engrampa \
+	unrar \
 	tumbler \
 	ffmpegthumbnailer \
 	geany \

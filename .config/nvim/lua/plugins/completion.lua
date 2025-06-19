@@ -24,6 +24,9 @@ return {
 					auto_show = function(ctx)
 						return ctx.mode ~= "cmdline"
 					end,
+					draw = {
+						columns = { { "label", "label_description", gap = 1 }, { "kind" } },
+					},
 				},
 				documentation = {
 					auto_show = true,
@@ -52,22 +55,32 @@ return {
 					"sort_text",
 				},
 			},
-			appearance = {
-				nerd_font_variant = "mono",
-			},
 			sources = {
 				default = function(ctx)
-					local success, node = pcall(vim.treesitter.get_node)
-					print(vim.inspect(node:type()))
-					if
-						success
-						and node
-						and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type())
-					then
-						return { "buffer" }
-					else
-						return { "lsp", "path", "snippets", "buffer" }
+					print(vim.inspect(vim.bo.filetype))
+					---@param args string[]
+					local function in_treesitter_capture(args)
+						local node = vim.treesitter.get_node()
+						while node do
+							print(vim.inspect(node:type()))
+
+							if vim.tbl_contains(args, node:type()) then
+								return true
+							end
+							node = node:parent()
+						end
 					end
+
+					if in_treesitter_capture({ "argument" }) then
+						-- For bash.
+						return { "buffer", "path" }
+					end
+
+					if in_treesitter_capture({ "string", "comment", "line_comment", "block_comment" }) then
+						return { "buffer" }
+					end
+
+					return { "lsp", "snippets", "buffer" }
 				end,
 			},
 		},

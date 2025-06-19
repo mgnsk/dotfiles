@@ -318,7 +318,7 @@
             audio_pkgs
           ];
           shellHook = ''
-            set -eo pipefail
+            set -e
 
             export CUSTOM_HOST="ide-audio"
 
@@ -363,7 +363,7 @@
 
             exec bash
 
-            wineserver -k
+            wineserver -k || true
           '';
         };
       };

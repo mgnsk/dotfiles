@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-set -euo pipefail
+set -eu
 
 buildah rm -a
 buildah rmi -a -f

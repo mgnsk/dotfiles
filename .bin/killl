@@ -9,6 +9,6 @@ pids=$(ps x --no-headers --format=pid,command --sort=-pid)
 self="$$"
 
 # NR>1 - exclude ps itself.
-for pid in $(echo "$pids" | awk -v self="$self" 'NR>1 && !($1 == self)' | fzf --no-sort --multi --accept-nth=1); do
+for pid in $(echo "$pids" | awk -v self="$self" 'NR>1 && !($1 == self)' | fzf --no-sort --exact --multi --accept-nth=1); do
 	kill -9 "$pid"
 done

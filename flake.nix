@@ -2,14 +2,21 @@
   description = "ide";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    dev-nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    # Separate input for audio packages so we can update dev and audio shells independently.
+    audio-nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
   outputs =
     { self, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import inputs.nixpkgs {
+      pkgs = import inputs.dev-nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+
+      audiopkgs = import inputs.audio-nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
@@ -106,6 +113,7 @@
         ansible
         ansible-lint
         ansible-language-server
+        nvd
       ];
 
       gocc = pkgs.buildGoModule (finalAttrs: {
@@ -181,7 +189,7 @@
         vscode-langservers-extracted
       ];
 
-      audio_pkgs = with pkgs; [
+      audio_pkgs = with audiopkgs; [
         pipewire.jack
 
         # For LSP and Zam plugins.
@@ -293,8 +301,8 @@
         };
       };
 
-      devShells.${system} = with pkgs; {
-        dev = mkShell {
+      devShells.${system} = {
+        dev = pkgs.mkShell {
           buildInputs = [
             base_pkgs
             dev_pkgs
@@ -312,12 +320,12 @@
           '';
         };
 
-        audio = mkShell {
+        audio = pkgs.mkShell {
           buildInputs = [
             base_pkgs
             audio_pkgs
           ];
-          shellHook = ''
+          shellHook = with audiopkgs; ''
             set -e
 
             export CUSTOM_HOST="ide-audio"

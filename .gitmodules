@@ -64,3 +64,6 @@
 [submodule "nvim-plugins/blink.cmp"]
 	path = nvim-plugins/blink.cmp
 	url = https://github.com/Saghen/blink.cmp.git
+[submodule "nvim-plugins/vim-eel"]
+	path = nvim-plugins/vim-eel
+	url = https://github.com/NlGHT/vim-eel.git

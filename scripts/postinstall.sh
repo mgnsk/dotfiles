@@ -36,7 +36,6 @@ packages=(
 	noto-fonts-extra
 	cantarell-fonts
 	ttf-font-awesome
-	xfce4-settings
 	gnome-tweaks
 	xdg-desktop-portal-wlr
 	xdg-desktop-portal-gtk
@@ -49,7 +48,7 @@ packages=(
 	swaync
 	waybar
 	wl-clipboard
-	lxsession
+	mate-polkit
 	geoclue
 	gammastep
 	nm-connection-editor
@@ -219,6 +218,12 @@ sudo systemctl enable --now cpupower
 
 # Create user dirs.
 xdg-user-dirs-update
+
+# Set default browser.
+{
+	cd /usr/share/applications
+	xdg-settings set default-web-browser librewolf.desktop
+}
 
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime

@@ -27,8 +27,7 @@ while ! dbus-send --session --dest=org.freedesktop.DBus --type=method_call --pri
 done
 
 sway-fader &
-lxsession &
-lxpolkit &
+/usr/lib/mate-polkit/polkit-mate-authentication-agent-1 &
 /usr/lib/geoclue-2.0/demos/agent &
 gammastep-indicator &
 nm-applet --indicator &

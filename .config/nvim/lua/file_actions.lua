@@ -9,6 +9,15 @@ local function neomake_filetype(ft)
 	return result
 end
 
+--- Replace dashes with underscores.
+---
+--- @param exe string
+--- @return string
+local function neomake_exe(exe)
+	local result = string.gsub(exe, "-", "_")
+	return result
+end
+
 --- Register a custom formatter. The formatter name is config.command.
 ---
 ---@param config conform.FormatterConfigOverride
@@ -63,7 +72,7 @@ function M.registerLinter(config)
 		return
 	end
 
-	vim.g["neomake_" .. neomake_filetype(vim.bo.filetype) .. "_" .. config.exe .. "_maker"] = config
+	vim.g["neomake_" .. neomake_filetype(vim.bo.filetype) .. "_" .. neomake_exe(config.exe) .. "_maker"] = config
 end
 
 --- Configure linters for the current buffer's filetype to run on BufWritePost.
@@ -72,6 +81,10 @@ end
 function M.configureLintAfterSave(linters)
 	if os.getenv("NVIM_DIFF") then
 		return
+	end
+
+	for i, exe in ipairs(linters) do
+		linters[i] = neomake_exe(exe)
 	end
 
 	vim.g["neomake_" .. neomake_filetype(vim.bo.filetype) .. "_enabled_makers"] = linters

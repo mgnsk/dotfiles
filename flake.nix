@@ -11,27 +11,16 @@
     { self, ... }@inputs:
     let
       system = "x86_64-linux";
+
+      # Packages for dev shell.
       pkgs = import inputs.dev-nixpkgs {
         inherit system;
-        config.allowUnfree = true;
-      };
-
-      audiopkgs = import inputs.audio-nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
       };
 
       diff-highlight = pkgs.linkFarm "diff-highlight" [
         {
           name = "bin/diff-highlight";
           path = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight";
-        }
-      ];
-
-      spirv-tools-lib = pkgs.linkFarm "spirv-tools-lib" [
-        {
-          name = "lib/libSPIRV-Tools.so";
-          path = "${pkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
         }
       ];
 
@@ -88,33 +77,6 @@
           install -m755 -D tusk $out/bin/tusk
         '';
       };
-
-      dev_pkgs = with pkgs; [
-        tusk-go
-        neovim
-        gojq
-        shellcheck
-        hadolint
-        gcc
-        buf
-        yamllint
-        gh
-        gh-tpl
-        glow
-        jsonnet-language-server
-        docker-compose-language-service
-        bash-language-server
-        nodejs_22
-        nodePackages.cspell
-        markdownlint-cli
-        nodePackages.prettier
-        nil
-        nixfmt-rfc-style
-        ansible
-        ansible-lint
-        ansible-language-server
-        nvd
-      ];
 
       gocc = pkgs.buildGoModule (finalAttrs: {
         pname = "gocc";
@@ -189,6 +151,69 @@
         vscode-langservers-extracted
       ];
 
+      jsfx-lint = pkgs.stdenv.mkDerivation {
+        name = "jsfx-lint";
+        src = pkgs.fetchurl {
+          url = "https://github.com/Souk21/jsfx-lint/releases/download/0.2.0/jsfx-lint-0.2.0-x86_64-unknown-linux-musl.tar.gz";
+          sha256 = "ee20752516341a69d2f7be595834ed754614b5a3638f806580f538c0c66d0a60";
+        };
+        sourceRoot = "./jsfx-lint-0.2.0-x86_64-unknown-linux-musl";
+        installPhase = ''
+          install -m755 -D eel_pp $out/bin/eel_pp
+          install -m755 -D jsfx-lint $out/bin/jsfx-lint
+        '';
+      };
+
+      dev_pkgs = with pkgs; [
+        base_pkgs
+
+        tusk-go
+        neovim
+        gojq
+        shellcheck
+        hadolint
+        gcc
+        buf
+        yamllint
+        gh
+        gh-tpl
+        glow
+        jsonnet-language-server
+        docker-compose-language-service
+        bash-language-server
+        nodejs_22
+        nodePackages.cspell
+        markdownlint-cli
+        nodePackages.prettier
+        nil
+        nixfmt-rfc-style
+        ansible
+        ansible-lint
+        ansible-language-server
+        nvd
+        jsfx-lint
+
+        go_pkgs
+        lua_pkgs
+        rust_pkgs
+        php_pkgs
+        python_pkgs
+        webdev_pkgs
+      ];
+
+      # Packges for audio shell.
+      audiopkgs = import inputs.audio-nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+
+      spirv-tools-lib = pkgs.linkFarm "spirv-tools-lib" [
+        {
+          name = "lib/libSPIRV-Tools.so";
+          path = "${audiopkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
+        }
+      ];
+
       audio_pkgs = with audiopkgs; [
         pipewire.jack
 
@@ -252,18 +277,7 @@
       docker = pkgs.dockerTools.streamLayeredImage {
         name = "ghcr.io/mgnsk/ide";
         tag = "edge";
-
-        contents = [
-          base_pkgs
-          dev_pkgs
-          go_pkgs
-          lua_pkgs
-          rust_pkgs
-          php_pkgs
-          python_pkgs
-          webdev_pkgs
-        ];
-
+        contents = dev_pkgs;
         enableFakechroot = true;
         fakeRootCommands = ''
           #!${pkgs.runtimeShell}
@@ -303,16 +317,7 @@
 
       devShells.${system} = {
         dev = pkgs.mkShell {
-          buildInputs = [
-            base_pkgs
-            dev_pkgs
-            go_pkgs
-            lua_pkgs
-            rust_pkgs
-            php_pkgs
-            python_pkgs
-            webdev_pkgs
-          ];
+          buildInputs = dev_pkgs;
           shellHook = ''
             export CUSTOM_HOST="ide-dev"
 

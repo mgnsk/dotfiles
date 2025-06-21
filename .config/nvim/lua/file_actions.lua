@@ -61,7 +61,8 @@ end
 
 ---@class (exact) NeomakeLinter
 ---@field exe string
----@field args string[]
+---@field args? string[]
+---@field cwd? string
 ---@field errorformat string
 
 --- Register a custom linter for the current buffer's filetype.

@@ -5,7 +5,6 @@ vim.bo.tabstop = 2
 
 require("file_actions").registerLinter({
 	exe = "jsfx-lint",
-	args = {},
 	cwd = "%:p:h", -- Run linter in the file's directory.
 	errorformat = table.concat({
 		[[%A%t%*[A-Za-z]: %m]],

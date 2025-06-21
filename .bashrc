@@ -28,7 +28,7 @@ __append_path /usr/share/git/diff-highlight
 export EDITOR="nvim"
 export VISUAL="nvim"
 export PAGER="less -R"
-export MANPAGER="nvim +Man!"
+export MANPAGER="less -R"
 
 export FZF_DEFAULT_OPTS="--layout=reverse --marker='>' --pointer='>' --style=minimal"
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --exclude '.git'"

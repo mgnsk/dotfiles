@@ -26,7 +26,6 @@ packages=(
 	fd
 	fdupes
 	bash-completion
-	vim
 	neovim
 	tmux
 	realtime-privileges
@@ -228,6 +227,9 @@ xdg-user-dirs-update
 
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime
+
+# Add to audio group. TODO: is this necessary anymore?
+sudo gpasswd -a "$USER" audio
 
 # Set up docker.
 sudo systemctl enable --now docker

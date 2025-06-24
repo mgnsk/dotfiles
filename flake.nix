@@ -49,7 +49,7 @@
         shfmt
         direnv
         man
-        vim
+        neovim
         qrcp
         file
       ];
@@ -168,7 +168,6 @@
         base_pkgs
 
         tusk-go
-        neovim
         gojq
         shellcheck
         hadolint
@@ -215,7 +214,9 @@
       ];
 
       audio_pkgs = with audiopkgs; [
+        # Pipewire JACK management.
         pipewire.jack
+        raysession
 
         # For LSP and Zam plugins.
         mesa
@@ -237,19 +238,31 @@
         spirv-tools-lib
         pkgs.stdenv.cc.cc.lib
 
-        raysession
+        # Reaper.
         reaper
         reaper-reapack-extension
 
+        # Wine and yabridge.
         yabridge
         yabridgectl
         wineWow64Packages.yabridge
         winetricks
         cabextract
 
+        # Additional plugins.
         zam-plugins
         lsp-plugins
         chow-tape-model
+        guitarix
+        gxplugins-lv2
+        airwindows
+        x42-plugins
+        infamousPlugins
+        distrho-ports
+        mda_lv2
+        swh_lv2
+        mod-distortion
+        kapitonov-plugins-pack
       ];
 
       docker_user = "ide";
@@ -259,9 +272,20 @@
 
       # makeClapPath creates a CLAP_PATH value for Reaper, separated with semicolons.
       makeClapPath =
-        subDir: paths:
+        paths:
         builtins.concatStringsSep ";" (
-          map (path: path + "/" + subDir) (builtins.filter (x: x != null) paths)
+          map (path: path + "/lib/clap") (builtins.filter (x: x != null) paths)
+        );
+
+      # Symlink LV2 or VST plugins to make them available for Reaper.
+      # For some reason Reaper only supports loading CLAP plugins via env vars.
+      symlimkPlugins =
+        type: paths:
+        builtins.concatStringsSep "\n" (
+          map (path: ''
+            mkdir -p ~/.${type}
+            ln -sf ${path}/lib/${type}/* ~/.${type}/
+          '') paths
         );
 
       ensureYabridgePaths =
@@ -270,7 +294,7 @@
           map (path: ''
             mkdir -p "${path}"
             yabridgectl add "${path}"
-          '') (paths)
+          '') paths
         );
     in
     {
@@ -342,27 +366,34 @@
 
             export CUSTOM_HOST="ide-audio"
             export SHELL="${pkgs.bash}/bin/bash"
+            export NIX_PROFILES="${yabridge} $NIX_PROFILES"
+            export WINEFSYNC=1 # TODO: needs a wine build with fsync patch.
 
             export CLAP_PATH="${
-              makeClapPath "lib/clap" [
+              makeClapPath [
                 zam-plugins
                 lsp-plugins
                 chow-tape-model
               ]
             };$CLAP_PATH"
 
-            export LD_LIBRARY_PATH="${
-              lib.makeLibraryPath (
-                builtins.concatLists [
-                  audio_pkgs
-                ]
-              )
-            }:$LD_LIBRARY_PATH"
+            export LD_LIBRARY_PATH="${lib.makeLibraryPath audio_pkgs}:$LD_LIBRARY_PATH"
 
-            export NIX_PROFILES="${yabridge} $NIX_PROFILES"
+            ${symlimkPlugins "lv2" [
+              guitarix
+              gxplugins-lv2
+              x42-plugins
+              infamousPlugins
+              distrho-ports
+              mda_lv2
+              swh_lv2
+              mod-distortion
+              kapitonov-plugins-pack
+            ]}
 
-            # TODO: needs a wine build with fsync patch.
-            export WINEFSYNC=1
+            ${symlimkPlugins "vst" [
+              airwindows
+            ]}
 
             # Make reapack available.
             mkdir -p ~/.config/REAPER/UserPlugins

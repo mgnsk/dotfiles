@@ -61,9 +61,6 @@ export HISTTIMEFORMAT="[%F %T] "
 GPG_TTY="$(tty)"
 export GPG_TTY
 
-SHELL="$(which bash)"
-export SHELL
-
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 
 shopt -s histappend

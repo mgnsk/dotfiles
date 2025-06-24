@@ -243,7 +243,7 @@
 
         yabridge
         yabridgectl
-        wineWowPackages.yabridge
+        wineWow64Packages.yabridge
         winetricks
         cabextract
 
@@ -280,7 +280,7 @@
         contents = dev_pkgs;
         enableFakechroot = true;
         fakeRootCommands = ''
-          #!${pkgs.runtimeShell}
+          set -e
           ${pkgs.dockerTools.shadowSetup}
           groupadd -f -g ${docker_gid} ${docker_group}
           useradd -m -s /bin/bash -g ${docker_group} --uid ${docker_uid} ${docker_user}
@@ -309,6 +309,7 @@
           Cmd = [ "${pkgs.bash}/bin/bash" ];
           User = "${docker_uid}:${docker_gid}";
           Env = [
+            "SHELL=${pkgs.bash}/bin/bash"
             "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
             "TZDIR=${pkgs.tzdata}/share/zoneinfo"
           ];
@@ -316,16 +317,15 @@
       };
 
       devShells.${system} = {
-        dev = pkgs.mkShell {
+        dev = pkgs.mkShellNoCC {
           buildInputs = dev_pkgs;
           shellHook = ''
             export CUSTOM_HOST="ide-dev"
-
-            exec bash
+            export SHELL="${pkgs.bash}/bin/bash"
           '';
         };
 
-        audio = pkgs.mkShell {
+        audio = pkgs.mkShellNoCC {
           buildInputs = [
             base_pkgs
             audio_pkgs
@@ -333,7 +333,15 @@
           shellHook = with audiopkgs; ''
             set -e
 
+            function cleanup {
+              echo "Exiting audio shell"
+              wineserver -k || true
+            }
+
+            trap cleanup EXIT
+
             export CUSTOM_HOST="ide-audio"
+            export SHELL="${pkgs.bash}/bin/bash"
 
             export CLAP_PATH="${
               makeClapPath "lib/clap" [
@@ -373,10 +381,6 @@
             yabridgectl status
 
             bash ~/win-plugins/setup-paths.sh
-
-            exec bash
-
-            wineserver -k || true
           '';
         };
       };

@@ -23,6 +23,7 @@ packages=(
 	git
 	less
 	tree
+	fd
 	fdupes
 	bash-completion
 	vim

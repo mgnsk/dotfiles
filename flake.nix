@@ -52,6 +52,7 @@
         neovim
         qrcp
         file
+        crudini
       ];
 
       gh-tpl = pkgs.stdenv.mkDerivation {
@@ -212,10 +213,22 @@
         }
       ];
 
+      reaper-default-5-dark-extended-theme = pkgs.stdenv.mkDerivation {
+        name = "reaper-default-5-dark-extended-theme";
+        src = pkgs.fetchurl {
+          url = "https://stash.reaper.fm/30492/Default_5_Dark_Extended.ReaperThemeZip";
+          sha256 = "9fd0577863dc267e093dacca0a7ddafd6a03a224a9224a8393ff82b67ab6727d";
+        };
+        phases = [ "installPhase" ];
+        installPhase = ''
+          install -m644 -D $src $out/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip
+        '';
+      };
+
       audioPkgs = with audiopkgs; [
         # Pipewire JACK management.
         pipewire.jack
-        raysession
+        # raysession
 
         # For LSP and Zam plugins.
         mesa
@@ -240,6 +253,7 @@
         # Reaper.
         reaper
         reaper-reapack-extension
+        reaper-default-5-dark-extended-theme
 
         # Wine and yabridge.
         yabridge
@@ -276,31 +290,18 @@
       docker_uid = "1000";
       docker_gid = "1000";
 
-      # makeClapPath creates a CLAP_PATH value for Reaper, separated with semicolons.
-      makeClapPath =
-        paths:
-        builtins.concatStringsSep ";" (
-          map (path: path + "/lib/clap") (builtins.filter (x: x != null) paths)
-        );
-
-      # Symlink LV2 or VST plugins to make them available for Reaper.
-      # For some reason Reaper only supports loading CLAP plugins via env vars.
-      symlimkPlugins =
+      makePluginPath =
         type: paths:
-        builtins.concatStringsSep "\n" (
-          map (path: ''
-            mkdir -p ~/.${type}
-            ln -sf ${path}/lib/${type}/* ~/.${type}/
-          '') paths
+        builtins.concatStringsSep ";" (
+          map (path: path + "/lib/${type}") (builtins.filter (x: x != null) paths)
         );
 
-      ensureYabridgePaths =
-        paths:
+      setIni =
+        file: section: attrs:
         builtins.concatStringsSep "\n" (
-          map (path: ''
-            mkdir -p "${path}"
-            yabridgectl add "${path}"
-          '') paths
+          pkgs.lib.mapAttrsToList (name: value: ''
+            crudini --set --ini-options=nospace ${file} ${section} ${name} "${value}"
+          '') attrs
         );
     in
     {
@@ -377,29 +378,25 @@
             export SHELL="${pkgs.bash}/bin/bash"
             export NIX_PROFILES="${yabridge} $NIX_PROFILES"
             export WINEFSYNC=1 # TODO: needs a wine build with fsync patch.
-
             export LD_LIBRARY_PATH="${lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
-            export CLAP_PATH="${makeClapPath clapPlugins};$CLAP_PATH"
 
-            ${symlimkPlugins "lv2" lv2Plugins}
-            ${symlimkPlugins "vst" vst2Plugins}
-
-            # Make reapack available.
+            # Setup reaper.
             mkdir -p ~/.config/REAPER/UserPlugins
             ln -sf ${reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
 
-            bash ~/scripts/check-vulkan-deps.sh
+            ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
+              lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
+              clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
+              lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";
+              vstpath = "~/.vst;~/.vst3;${makePluginPath "vst" vst2Plugins}";
+            }}
 
+            bash ~/scripts/check-vulkan-deps.sh
             winetricks dxvk
 
-            ${ensureYabridgePaths [
-              "$HOME/win-plugins"
-            ]}
-
-            yabridgectl sync --prune
-            yabridgectl status
-
             bash ~/win-plugins/setup-paths.sh
+
+            set +e
           '';
         };
       };

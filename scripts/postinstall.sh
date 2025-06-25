@@ -57,6 +57,7 @@ packages=(
 	libsecret
 	seahorse
 	viewnior
+	webp-pixbuf-loader
 	grim
 	slurp
 	zenity

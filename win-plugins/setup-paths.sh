@@ -50,3 +50,10 @@ EOF
 	# TODO: howto expand env vars in heredoc?
 	sed -i "s/_USER_/${USER}/" "$target"
 }
+
+# Set up yabridge paths.
+{
+	yabridgectl add "$HOME/win-plugins"
+	yabridgectl sync --prune
+	yabridgectl status
+}

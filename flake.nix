@@ -189,7 +189,6 @@
         ansible
         ansible-lint
         ansible-language-server
-        nvd
         jsfx-lint
 
         go_pkgs

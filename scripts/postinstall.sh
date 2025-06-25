@@ -63,6 +63,7 @@ packages=(
 	zenity
 	imagemagick
 	pavucontrol
+	raysession
 	j4-dmenu-desktop
 	wmenu
 	kitty

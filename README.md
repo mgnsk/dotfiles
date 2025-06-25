@@ -51,10 +51,13 @@ Sometimes it is useful to use tmux inside a single project to run multiple insta
 # Audio
 
 The audio nix shell includes a Reaper, yabridge and wine installation.
-Run `ide` and select audio.
+For CLI usage (to install plugins, etc.), run `ide` and select audio.
 
 The host system is assumed to run a PipeWire audio server and the operating user is assumed to have realtime privileges.
 Audio applications connect to PipeWire via the JACK API.
+
+For everyday usage, go to TTY2, log in and Openbox on Xorg starts automatically.
+Start Reaper from the right-click application menu.
 
 ## Running Northern Artillery Drums
 
@@ -71,7 +74,7 @@ Run a fake X server:
 Xephyr -br -ac -noreset -screen 1920x1000 :1
 ```
 
-Then start reaper in openbox.
+Then start reaper in openbox:
 
 ```
 DISPLAY=:1 openbox --startup reaper
@@ -85,7 +88,7 @@ doesn't load at all then.
 
 #### Verdict
 
-Use Sway on TTY1 and Openbox on TTY2.
+Use Sway (Wayland) on TTY1 and Openbox (Xorg) on TTY2.
 
 ## Linux plugins
 
@@ -103,7 +106,7 @@ I have not attempted to configure any other Linux plugin format.
 
 Drop your windows plugins into `~/win-plugins`.
 
-If the plugin has a setup, then run it with wine: `wine MyPluginSetup.exe`.
+If the plugin has a setup, then inside the audio shell run it with wine: `wine MyPluginSetup.exe`.
 Attempt to install it to `~/win-plugins`
 (through wine `Z:` volume Linux home should be available).
 
@@ -118,13 +121,7 @@ The idea is to attempt to keep WINEPREFIX ephemerable as possible.
 - Display plugins with `yabridgectl status`.
 - To force resync, remove `~/.vst/yabridge` and `~/.vst3/yabridge` and sync again.
 
-## Using Reaper
-
-While Reaper can be started standalone by executing `reaper`,
-I advise using it via RaySession (by executing `raysession`).
-
-Set up a session which includes the reaper executable
-and start Reaper from there.
+## Raysession
 
 RaySession provides a way to change the PipeWire buffer size (in the top right corner).
 If the patchbay connections disappear, just hit Ctrl+R to refresh.

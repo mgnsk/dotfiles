@@ -228,8 +228,6 @@
       audioPkgs = with audiopkgs; [
         # Pipewire JACK management.
         pipewire.jack
-        patchage
-        # raysession
 
         # For LSP and Zam plugins.
         mesa
@@ -390,6 +388,7 @@
               clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
               lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";
               vstpath = "~/.vst;~/.vst3;${makePluginPath "vst" vst2Plugins}";
+              ui_scale = "1.0";
             }}
 
             bash ~/scripts/check-vulkan-deps.sh
@@ -399,7 +398,7 @@
 
             set +e
 
-            tmux -L audio
+            echo "Starting audio shell"
           '';
         };
       };

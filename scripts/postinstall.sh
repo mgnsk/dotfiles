@@ -180,7 +180,8 @@ fi
 yay -S --needed --noconfirm \
 	swaddle \
 	librewolf-bin \
-	profile-sync-daemon-librewolf
+	profile-sync-daemon-librewolf \
+	obmenu-generator
 
 # Performance settings for LUKS on SSD.
 # Determine the LUKS device name.

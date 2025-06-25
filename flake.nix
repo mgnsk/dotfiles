@@ -228,6 +228,7 @@
       audioPkgs = with audiopkgs; [
         # Pipewire JACK management.
         pipewire.jack
+        patchage
         # raysession
 
         # For LSP and Zam plugins.
@@ -397,6 +398,8 @@
             bash ~/win-plugins/setup-paths.sh
 
             set +e
+
+            tmux -L audio
           '';
         };
       };

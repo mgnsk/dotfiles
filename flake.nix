@@ -24,7 +24,7 @@
         }
       ];
 
-      base_pkgs = with pkgs; [
+      basePkgs = with pkgs; [
         glibcLocalesUtf8
         ncurses
         gnugrep
@@ -91,20 +91,20 @@
         doCheck = false;
       });
 
-      go_pkgs = with pkgs; [
+      goPkgs = with pkgs; [
         go_1_24
         gopls
         revive
         gocc
       ];
 
-      lua_pkgs = with pkgs; [
+      luaPkgs = with pkgs; [
         lua-language-server
         luajitPackages.luacheck
         stylua
       ];
 
-      rust_pkgs = with pkgs; [
+      rustPkgs = with pkgs; [
         rustc
         rustfmt
         clippy
@@ -124,7 +124,7 @@
         '';
       };
 
-      php_pkgs = with pkgs; [
+      phpPkgs = with pkgs; [
         php84
         phpactor
         php84Extensions.sqlite3
@@ -133,14 +133,14 @@
         pint
       ];
 
-      python_pkgs = with pkgs; [
+      pythonPkgs = with pkgs; [
         pipx
         pipenv
         black
         pylint
       ];
 
-      webdev_pkgs = with pkgs; [
+      webdevPkgs = with pkgs; [
         html-tidy
         npm-check-updates
         pnpm
@@ -164,8 +164,8 @@
         '';
       };
 
-      dev_pkgs = with pkgs; [
-        base_pkgs
+      devPkgs = with pkgs; [
+        basePkgs
 
         tusk-go
         gojq
@@ -191,12 +191,12 @@
         ansible-language-server
         jsfx-lint
 
-        go_pkgs
-        lua_pkgs
-        rust_pkgs
-        php_pkgs
-        python_pkgs
-        webdev_pkgs
+        goPkgs
+        luaPkgs
+        rustPkgs
+        phpPkgs
+        pythonPkgs
+        webdevPkgs
       ];
 
       # Packges for audio shell.
@@ -212,7 +212,7 @@
         }
       ];
 
-      audio_pkgs = with audiopkgs; [
+      audioPkgs = with audiopkgs; [
         # Pipewire JACK management.
         pipewire.jack
         raysession
@@ -247,14 +247,21 @@
         wineWow64Packages.yabridge
         winetricks
         cabextract
+      ];
 
-        # Additional plugins.
+      clapPlugins = with audiopkgs; [
         zam-plugins
         lsp-plugins
         chow-tape-model
+      ];
+
+      vst2Plugins = with audiopkgs; [
+        airwindows
+      ];
+
+      lv2Plugins = with audiopkgs; [
         guitarix
         gxplugins-lv2
-        airwindows
         x42-plugins
         infamousPlugins
         distrho-ports
@@ -300,7 +307,7 @@
       docker = pkgs.dockerTools.streamLayeredImage {
         name = "ghcr.io/mgnsk/ide";
         tag = "edge";
-        contents = dev_pkgs;
+        contents = devPkgs;
         enableFakechroot = true;
         fakeRootCommands = ''
           set -e
@@ -341,7 +348,7 @@
 
       devShells.${system} = {
         dev = pkgs.mkShellNoCC {
-          buildInputs = dev_pkgs;
+          buildInputs = devPkgs;
           shellHook = ''
             export CUSTOM_HOST="ide-dev"
             export SHELL="${pkgs.bash}/bin/bash"
@@ -350,8 +357,11 @@
 
         audio = pkgs.mkShellNoCC {
           buildInputs = [
-            base_pkgs
-            audio_pkgs
+            basePkgs
+            audioPkgs
+            clapPlugins
+            vst2Plugins
+            lv2Plugins
           ];
           shellHook = with audiopkgs; ''
             set -e
@@ -368,31 +378,11 @@
             export NIX_PROFILES="${yabridge} $NIX_PROFILES"
             export WINEFSYNC=1 # TODO: needs a wine build with fsync patch.
 
-            export CLAP_PATH="${
-              makeClapPath [
-                zam-plugins
-                lsp-plugins
-                chow-tape-model
-              ]
-            };$CLAP_PATH"
+            export LD_LIBRARY_PATH="${lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
+            export CLAP_PATH="${makeClapPath clapPlugins};$CLAP_PATH"
 
-            export LD_LIBRARY_PATH="${lib.makeLibraryPath audio_pkgs}:$LD_LIBRARY_PATH"
-
-            ${symlimkPlugins "lv2" [
-              guitarix
-              gxplugins-lv2
-              x42-plugins
-              infamousPlugins
-              distrho-ports
-              mda_lv2
-              swh_lv2
-              mod-distortion
-              kapitonov-plugins-pack
-            ]}
-
-            ${symlimkPlugins "vst" [
-              airwindows
-            ]}
+            ${symlimkPlugins "lv2" lv2Plugins}
+            ${symlimkPlugins "vst" vst2Plugins}
 
             # Make reapack available.
             mkdir -p ~/.config/REAPER/UserPlugins
@@ -404,7 +394,6 @@
 
             ${ensureYabridgePaths [
               "$HOME/win-plugins"
-              "$HOME/.wine/drive_c/Program Files/Common Files/VST3"
             ]}
 
             yabridgectl sync --prune

@@ -2,7 +2,7 @@
 return {
 	cmd = { "lua-language-server", "--force-accept-workspace" },
 	filetypes = { "lua" },
-	root_markers = { ".luarc.json", ".luarc.jsonc" },
+	root_markers = {},
 	settings = {
 		Lua = {
 			workspace = {

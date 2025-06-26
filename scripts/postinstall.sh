@@ -39,6 +39,7 @@ packages=(
 	cantarell-fonts
 	ttf-font-awesome
 	gnome-tweaks
+	baobab
 	xdg-desktop-portal-wlr
 	xdg-desktop-portal-gtk
 	xdg-user-dirs

@@ -178,13 +178,18 @@ if [[ "$(stat -f -c %T /)" == "btrfs" ]]; then
 	EOF
 fi
 
-# Set up AUR packages.
-yay -S --needed --noconfirm \
-	swaddle \
-	librewolf-bin \
-	profile-sync-daemon-librewolf \
-	raysession \
+aur_packages=(
+	swaddle
+	librewolf-bin
+	profile-sync-daemon-librewolf
+	raysession
+	# TODO: in the future, try out wine with NTSYNC.
+	wine-tkg-staging-wow64-bin
 	obmenu-generator
+)
+
+# Set up AUR packages.
+yay -S --needed --noconfirm "${aur_packages[@]}"
 
 # Performance settings for LUKS on SSD.
 # Determine the LUKS device name.

@@ -257,7 +257,6 @@
         # Wine and yabridge.
         yabridge
         yabridgectl
-        wineWow64Packages.yabridge
         winetricks
         cabextract
       ];
@@ -376,7 +375,7 @@
             export CUSTOM_HOST="ide-audio"
             export SHELL="${pkgs.bash}/bin/bash"
             export NIX_PROFILES="${yabridge} $NIX_PROFILES"
-            export WINEFSYNC=1 # TODO: needs a wine build with fsync patch.
+            export WINEFSYNC=1
             export LD_LIBRARY_PATH="${lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
 
             # Setup reaper.

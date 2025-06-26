@@ -29,7 +29,6 @@ done
 sway-fader &
 /usr/lib/mate-polkit/polkit-mate-authentication-agent-1 &
 /usr/lib/geoclue-2.0/demos/agent &
-gammastep-indicator &
 nm-applet --indicator &
 swaync &
 thunar --daemon &
@@ -38,4 +37,7 @@ swayidle -w \
 	timeout 600 'lock' \
 	timeout 1200 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
-	before-sleep 'lock'
+	before-sleep 'lock' &
+
+sleep 5
+gammastep-indicator &

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+
+Name=Reaper (Wayland)
+Exec=/usr/bin/bash -c "bash ~/scripts/start-reaper-wayland.sh"
+
+Categories=AudioVideo;Audio
+Keywords=reaper;daw
+
+NoDisplay=false

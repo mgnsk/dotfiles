@@ -56,39 +56,16 @@ For CLI usage (to install plugins, etc.), run `ide` and select audio.
 The host system is assumed to run a PipeWire audio server and the operating user is assumed to have realtime privileges.
 Audio applications connect to PipeWire via the JACK API.
 
-For everyday usage, go to TTY2, log in and Openbox on Xorg starts automatically.
-Start Reaper from the right-click application menu.
+## Reaper on Wayland
 
-## Running Northern Artillery Drums
+Some plugins that use Vulkan, have rendering issues on Wayland.
+In TTY1 (in the Sway/Wayland), start Reaper (Wayland) application
+to fix those issues but suffer some graphical interface latency
+due to running in Xpra.
 
-On wayland, there is a menu flicker bug. Fixed when enabling wine virtual desktop.
+## Reaper on Xorg
 
-On Xorg, there is no flicker. Vulkan is required so that UI update
-does not require moving the window.
-
-### Some solutions to running on Wayland with usable menus
-
-Run a fake X server:
-
-```sh
-Xephyr -br -ac -noreset -screen 1920x1000 :1
-```
-
-Then start reaper in openbox:
-
-```
-DISPLAY=:1 openbox --startup reaper
-```
-
-Vulkan is not supported but at least the menu flicker bug is fixed.
-Due to missing Vulkan, the UI Update needs window movement bug exists.
-
-Also tried with Lavapipe (software Vulkan) but Northern Artillery
-doesn't load at all then.
-
-#### Verdict
-
-Use Sway (Wayland) on TTY1 and Openbox (Xorg) on TTY2.
+In TTY2 (in Openbox/Xorg), start Reaper application.
 
 ## Linux plugins
 

@@ -16,6 +16,8 @@ packages=(
 	man-db
 	fuse2
 	mesa
+	vulkan-swrast
+	xpra
 	mpv
 	yt-dlp
 	base-devel
@@ -63,7 +65,6 @@ packages=(
 	zenity
 	imagemagick
 	pavucontrol
-	raysession
 	j4-dmenu-desktop
 	wmenu
 	kitty
@@ -182,6 +183,7 @@ yay -S --needed --noconfirm \
 	swaddle \
 	librewolf-bin \
 	profile-sync-daemon-librewolf \
+	raysession \
 	obmenu-generator
 
 # Performance settings for LUKS on SSD.

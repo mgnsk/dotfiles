@@ -312,3 +312,11 @@ else
 	echo "$line" | sudo tee -a /etc/sudoers
 fi
 systemctl --user enable --now psd
+
+# Disable automatic coredumps.
+sudo mkdir -p /etc/systemd/coredump.conf.d
+cat <<-'EOF' | sudo tee /etc/systemd/coredump.conf.d/custom.conf >/dev/null
+	[Coredump]
+	Storage=none
+	ProcessSizeMax=0
+EOF

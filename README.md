@@ -61,11 +61,11 @@ Audio applications connect to PipeWire via the JACK API.
 Some plugins that use Vulkan, have rendering issues on Wayland.
 In TTY1 (in the Sway/Wayland), start Reaper (Wayland) application
 to fix those issues but suffer some graphical interface latency
-due to running in Xpra.
+and CPU overhead due to running in Xpra.
 
 ## Reaper on Xorg
 
-In TTY2 (in Openbox/Xorg), start Reaper application.
+In TTY2 (in Openbox/Xorg), start Reaper application. The best way to run it.
 
 ## Linux plugins
 

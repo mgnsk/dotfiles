@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
 
-Name=Reaper (Wayland)
-Exec=/usr/bin/bash -c "bash ~/scripts/start-reaper-wayland.sh"
+Name=Reaper (Xpra)
+Exec=/usr/bin/bash -c "bash ~/scripts/start-reaper-xpra.sh"
 
 Categories=AudioVideo;Audio
 Keywords=reaper;daw

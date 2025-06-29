@@ -10,7 +10,7 @@ function cleanup {
 
 trap cleanup EXIT
 
-LOGFILE="$XDG_RUNTIME_DIR/reaper-$(date --iso-8601=seconds).log"
+LOGFILE="$XDG_RUNTIME_DIR/reaper-$$-$(date --iso-8601=seconds).log"
 
 xpra desktop :100 --resize-display="1920x1000" --start-child=openbox --exit-with-children
 xpra attach :100 &

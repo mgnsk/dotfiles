@@ -4,7 +4,7 @@
 
 set -eu
 
-LOGFILE="$XDG_RUNTIME_DIR/reaper-$(date --iso-8601=seconds).log"
+LOGFILE="$XDG_RUNTIME_DIR/reaper-$$-$(date --iso-8601=seconds).log"
 
 (
 	start=$EPOCHSECONDS

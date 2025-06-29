@@ -2,9 +2,7 @@
   description = "ide";
 
   inputs = {
-    dev-nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    # Separate input for audio packages so we can update dev and audio shells independently.
-    audio-nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
   outputs =
@@ -12,9 +10,9 @@
     let
       system = "x86_64-linux";
 
-      # Packages for dev shell.
-      pkgs = import inputs.dev-nixpkgs {
+      pkgs = import inputs.nixpkgs {
         inherit system;
+        config.allowUnfree = true;
       };
 
       diff-highlight = pkgs.linkFarm "diff-highlight" [
@@ -200,16 +198,10 @@
         webdevPkgs
       ];
 
-      # Packges for audio shell.
-      audiopkgs = import inputs.audio-nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-
       spirv-tools-lib = pkgs.linkFarm "spirv-tools-lib" [
         {
           name = "lib/libSPIRV-Tools.so";
-          path = "${audiopkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
+          path = "${pkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
         }
       ];
 
@@ -225,7 +217,7 @@
         '';
       };
 
-      audioPkgs = with audiopkgs; [
+      audioPkgs = with pkgs; [
         # Pipewire JACK management.
         pipewire.jack
 
@@ -261,17 +253,17 @@
         cabextract
       ];
 
-      clapPlugins = with audiopkgs; [
+      clapPlugins = with pkgs; [
         zam-plugins
         lsp-plugins
         chow-tape-model
       ];
 
-      vst2Plugins = with audiopkgs; [
+      vst2Plugins = with pkgs; [
         airwindows
       ];
 
-      lv2Plugins = with audiopkgs; [
+      lv2Plugins = with pkgs; [
         guitarix
         gxplugins-lv2
         x42-plugins
@@ -362,7 +354,7 @@
             vst2Plugins
             lv2Plugins
           ];
-          shellHook = with audiopkgs; ''
+          shellHook = ''
             set -e
 
             function cleanup {
@@ -374,13 +366,13 @@
 
             export CUSTOM_HOST="ide-audio"
             export SHELL="${pkgs.bash}/bin/bash"
-            export NIX_PROFILES="${yabridge} $NIX_PROFILES"
+            export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
             export WINEFSYNC=1
-            export LD_LIBRARY_PATH="${lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
+            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
 
             # Setup reaper.
             mkdir -p ~/.config/REAPER/UserPlugins
-            ln -sf ${reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
+            ln -sf ${pkgs.reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
 
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";

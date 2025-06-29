@@ -3,8 +3,8 @@
 set -eu
 
 # Usage: nix-flake-update [input] [devShell]
-# Example: nix-flake-update dev-nixpkgs dev
-# Example: nix-flake-update audio-nixpkgs audio
+# Example: nix-flake-update nixpkgs dev
+# Example: nix-flake-update nixpkgs audio
 
 # Default values:
 INPUT="$1"

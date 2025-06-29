@@ -16,8 +16,6 @@ packages=(
 	man-db
 	fuse2
 	mesa
-	vulkan-swrast
-	xpra
 	mpv
 	yt-dlp
 	base-devel

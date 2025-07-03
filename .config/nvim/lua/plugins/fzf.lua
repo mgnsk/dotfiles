@@ -8,24 +8,30 @@ local function git_show_in_new_buf(commit)
 	vim.bo.filetype = "git"
 end
 
-local git_log_actions = {
-	["ctrl-l"] = {
-		fn = function(selected)
-			vim.fn.system(string.format("gh-browse-commit %s", selected[1]))
-		end,
-		field_index = "{1}",
-		exec_silent = true,
-	},
-	["ctrl-o"] = {
-		fn = function(selected)
-			vim.schedule(function()
-				git_show_in_new_buf(selected[1])
-			end)
-		end,
-		field_index = "{1}",
-		exec_silent = true,
-	},
-}
+--- @param field_index integer
+local function create_git_log_actions(field_index)
+	return {
+		["ctrl-l"] = {
+			fn = function(selected)
+				vim.fn.system(string.format("gh-browse-commit %s", selected[1]))
+			end,
+			field_index = string.format("{%d}", field_index),
+			exec_silent = true,
+		},
+		["ctrl-o"] = {
+			fn = function(selected)
+				vim.schedule(function()
+					git_show_in_new_buf(selected[1])
+				end)
+			end,
+			field_index = string.format("{%d}", field_index),
+			exec_silent = true,
+		},
+	}
+end
+
+local git_log_cmd =
+	[[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s']]
 
 --- @type LazySpec[]
 return {
@@ -96,18 +102,18 @@ return {
 				local start_line, end_line = unpack(selection())
 				local lineArg = string.format([[ -L %d,%d:%s]], start_line, end_line, vim.fn.expand("%:p"))
 
-				local gitCmd = require("fzf-lua").defaults.git.commits.cmd
-				local contentsCmd = gitCmd .. " --no-patch" .. lineArg .. " | nl -ba" -- Add line numbers.
+				local contentsCmd = git_log_cmd .. " --no-patch" .. lineArg .. " | nl -ba" -- Add line numbers.
 
 				return require("fzf-lua").fzf_exec(contentsCmd, {
 					prompt = "Blame> ",
 					fzf_opts = { ["--with-nth"] = "2.." }, -- Without the added line numbers.
+					actions = create_git_log_actions(2), -- Skip the first column (line nr).
 					preview = {
 						type = "cmd",
 						fn = function(items)
 							-- Skip this many entries in preview to only show the current selected.
 							local skip = tonumber(string.match(items[1], "%d")) - 1
-							return gitCmd
+							return git_log_cmd
 								.. lineArg
 								.. " --max-count=1"
 								.. string.format(" --skip=%d", skip)
@@ -147,14 +153,14 @@ return {
 			},
 			git = {
 				bcommits = {
-					cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' {file}]],
+					cmd = git_log_cmd .. " {file}",
 					preview_pager = "diff-highlight",
-					actions = git_log_actions,
+					actions = create_git_log_actions(1),
 				},
 				commits = {
-					cmd = [[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s']],
+					cmd = git_log_cmd,
 					preview_pager = "diff-highlight",
-					actions = git_log_actions,
+					actions = create_git_log_actions(1),
 				},
 			},
 			lsp = {

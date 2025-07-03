@@ -141,6 +141,9 @@ if [[ "$(stat -f -c %T /)" == "btrfs" ]]; then
 	# Ensure automatic timeline snapshotting is disabled.
 	sudo systemctl disable --now snapper-timeline.timer
 
+	# Ensure automatic snapper cleanup enabled.
+	sudo systemctl enable --now snapper-cleanup.timer
+
 	# Keep 10 last snapshots.
 	set_option /etc/snapper/configs/root NUMBER_LIMIT '"10"'
 

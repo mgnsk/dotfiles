@@ -185,6 +185,8 @@ aur_packages=(
 	# TODO: in the future, try out wine with NTSYNC.
 	wine-tkg-staging-wow64-bin
 	obmenu-generator
+	1password
+	1password-cli
 )
 
 # Set up AUR packages.

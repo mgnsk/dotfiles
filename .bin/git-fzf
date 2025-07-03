@@ -13,8 +13,7 @@ set -e
 
 export target
 
-tmpdir="/tmp/git-fzf.$$"
-mkdir -p "$tmpdir"
+tmpdir=$(mktemp -d)
 export tmpdir
 
 function cleanup {

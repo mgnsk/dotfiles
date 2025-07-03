@@ -30,8 +30,7 @@ local function create_git_log_actions(field_index)
 	}
 end
 
-local git_log_cmd =
-	[[git log --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s']]
+local git_log_cmd = string.format([[git log --color --decorate --pretty="%s"]], os.getenv("GIT_LOG_PRETTY_FORMAT"))
 
 --- @type LazySpec[]
 return {

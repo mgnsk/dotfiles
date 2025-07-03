@@ -7,8 +7,8 @@
 	pul = pull
 	ns = diff --name-status
 	cx = cherry-pick -x
-	lg = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --all"
-	lb = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' --abbrev-commit --first-parent $(git branch --show-current)"
+	lg = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>' --abbrev-commit --all"
+	lb = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>' --abbrev-commit --first-parent $(git branch --show-current)"
 
 	# Git logs.
 	logs = !git-fzf log

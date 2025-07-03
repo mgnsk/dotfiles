@@ -72,7 +72,7 @@ function git-search {
 
 	# Handle empty query.
 	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-		git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s'
+		git "$target" --color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT"
 		exit
 	fi
 
@@ -80,7 +80,7 @@ function git-search {
 
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
-	git "$target" --color --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Cblue(%an)%C(cyan)%d%Creset %s' -i --perl-regexp $gitflags "$query"
+	git "$target" --color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT" -i --perl-regexp $gitflags "$query"
 }
 
 export -f git-search

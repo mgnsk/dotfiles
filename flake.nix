@@ -189,6 +189,7 @@
         ansible-lint
         ansible-language-server
         jsfx-lint
+        asciinema
 
         goPkgs
         luaPkgs

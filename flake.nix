@@ -218,6 +218,21 @@
         '';
       };
 
+      levelrider = pkgs.stdenv.mkDerivation {
+        name = "levelrider";
+        src = pkgs.fetchFromGitHub {
+          owner = "unicornsasfuel";
+          repo = "levelrider";
+          rev = "ef54128";
+          sha256 = "sha256-vyoqoA75hQ7SbliPCVs8ZTmDS3GHPGId4hF/9c34lB8=";
+        };
+        installPhase = ''
+          mkdir -p $out
+          # https://faustdoc.grame.fr/tutorials/jsfx/
+          ${pkgs.faust}/bin/faust -lang jsfx levelrider.dsp -o $out/levelrider.jsfx
+        '';
+      };
+
       audioPkgs = with pkgs; [
         # Pipewire JACK management.
         pipewire.jack
@@ -274,6 +289,9 @@
         swh_lv2
         mod-distortion
         kapitonov-plugins-pack
+        stone-phaser
+        magnetophonDSP.VoiceOfFaust
+        magnetophonDSP.MBdistortion
       ];
 
       docker_user = "ide";
@@ -374,6 +392,10 @@
             # Setup reaper.
             mkdir -p ~/.config/REAPER/UserPlugins
             ln -sf ${pkgs.reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
+
+            # Install levelrider.
+            mkdir -p ~/.config/REAPER/Effects/dynamics
+            ln -sf ${levelrider}/levelrider.jsfx ~/.config/REAPER/Effects/dynamics/levelrider
 
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";

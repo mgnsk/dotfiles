@@ -18,15 +18,9 @@ set -eu
 	ln -s "$src" "$target"
 }
 
-# Set up VerbCore data.
+# Set up ProgramData.
 {
-	src="$HOME/win-plugins/Ugritone/VerbCore/VerbCore.cab"
-	target="$HOME/.wine/drive_c/ProgramData/Ugritone/VerbCore/VerbCore.cab"
-
-	if [ -f "$src" ]; then
-		mkdir -p "$(dirname "$target")"
-		ln -sf "$src" "$target"
-	fi
+	ln -sf "$HOME"/win-plugins/ProgramData/* "$HOME"/.wine/drive_c/ProgramData/
 }
 
 # Set up yabridge paths.

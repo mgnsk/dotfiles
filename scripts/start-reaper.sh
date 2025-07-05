@@ -17,4 +17,5 @@ LOGFILE="$XDG_RUNTIME_DIR/reaper-$$-$(date --iso-8601=seconds).log"
 ) | zenity --title="Starting Reaper..." --progress --pulsate --no-cancel --auto-close --text="Please wait..." &
 
 nix develop "${HOME}?submodules=1#audio" --show-trace \
-	--command bash -c 'reaper; wineserver -k || true' &>"$LOGFILE"
+	-s DESKTOP_DUMBUSER 1 \
+	--command unshare -nc bash -c 'reaper; wineserver -k || true' &>"$LOGFILE"

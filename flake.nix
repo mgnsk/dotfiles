@@ -391,9 +391,6 @@
             set +e
 
             echo "Starting audio shell"
-
-            # Disable network.
-            unshare -nc
           '';
         };
       };

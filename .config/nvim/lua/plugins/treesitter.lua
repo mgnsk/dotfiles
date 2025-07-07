@@ -33,6 +33,7 @@ return {
 				ignore_install = {
 					"dockerfile",
 					"gitcommit",
+					"csv",
 				},
 				highlight = {
 					enable = true,

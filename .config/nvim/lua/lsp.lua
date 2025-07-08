@@ -1,32 +1,13 @@
 -- location_callback opens all LSP gotos in a new tab
-local goto_callback = function(_, result, ctx)
-	local util = vim.lsp.util
-
-	if result == nil or vim.tbl_isempty(result) then
-		vim.lsp.log.info(ctx["method"], "No location found")
+---@param options vim.lsp.LocationOpts.OnList
+local location_callback = function(options)
+	if vim.tbl_isempty(options.items) then
+		vim.lsp.log.info(options.context.method, "No location found")
 		return nil
 	end
 
-	if vim.islist(result) then
-		if #result > 0 then
-			-- Take the first result.
-			vim.api.nvim_command("tabnew")
-			util.show_document(result[1], "utf-8", { reuse_win = false, focus = true })
-		end
-	else
-		vim.api.nvim_command("tabnew")
-		util.show_document(result, "utf-8", { reuse_win = false, focus = true })
-	end
-end
-
---- Adapter for nightly neovim. TOOD: clean up and combine this with goto_callback.
----@param options vim.lsp.LocationOpts.OnList
-local goto_callback_adapter = function(options)
-	local result = {}
-	for _, item in ipairs(options.items) do
-		table.insert(result, item.user_data)
-	end
-	goto_callback(nil, result, options.context)
+	vim.api.nvim_command("tabnew")
+	vim.lsp.util.show_document(options.items[1].user_data, "utf-8", { reuse_win = false, focus = true })
 end
 
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
@@ -34,19 +15,19 @@ vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, { desc = "Hover signature"
 
 vim.keymap.set("n", "gd", function()
 	vim.lsp.buf.definition({
-		on_list = goto_callback_adapter,
+		on_list = location_callback,
 	})
 end, { desc = "Goto definition" })
 
 vim.keymap.set("n", "gD", function()
 	vim.lsp.buf.declaration({
-		on_list = goto_callback_adapter,
+		on_list = location_callback,
 	})
 end, { desc = "Goto declaration" })
 
 vim.keymap.set("n", "go", function()
 	vim.lsp.buf.type_definition({
-		on_list = goto_callback_adapter,
+		on_list = location_callback,
 	})
 end, { desc = "Goto type definition" })
 

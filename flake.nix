@@ -226,10 +226,21 @@
           rev = "ef54128";
           sha256 = "sha256-vyoqoA75hQ7SbliPCVs8ZTmDS3GHPGId4hF/9c34lB8=";
         };
+
+        buildInputs = [
+          pkgs.which
+          pkgs.faust2lv2
+        ];
+
+        dontWrapQtApps = true;
+
+        buildPhase = ''
+          faust2lv2 -vec -time -t 99999 levelrider.dsp
+        '';
+
         installPhase = ''
-          mkdir -p $out
-          # https://faustdoc.grame.fr/tutorials/jsfx/
-          ${pkgs.faust}/bin/faust -lang jsfx levelrider.dsp -o $out/levelrider.jsfx
+          mkdir -p $out/lib/lv2
+          cp -r levelrider.lv2/ $out/lib/lv2
         '';
       };
 
@@ -292,6 +303,7 @@
         stone-phaser
         magnetophonDSP.VoiceOfFaust
         magnetophonDSP.MBdistortion
+        levelrider
       ];
 
       docker_user = "ide";
@@ -392,10 +404,6 @@
             # Setup reaper.
             mkdir -p ~/.config/REAPER/UserPlugins
             ln -sf ${pkgs.reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
-
-            # Install levelrider.
-            mkdir -p ~/.config/REAPER/Effects/dynamics
-            ln -sf ${levelrider}/levelrider.jsfx ~/.config/REAPER/Effects/dynamics/levelrider
 
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";

@@ -278,6 +278,8 @@
         yabridgectl
         winetricks
         cabextract
+
+        fluidsynth
       ];
 
       clapPlugins = with pkgs; [
@@ -414,7 +416,12 @@
             }}
 
             bash ~/scripts/check-vulkan-deps.sh
+
+            # Needed for some Windows VST plugins.
             winetricks dxvk
+
+            # Needed for Guitar Pro 5.
+            winetricks gdiplus
 
             bash ~/win-plugins/setup-paths.sh
 

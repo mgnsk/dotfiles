@@ -418,10 +418,10 @@
             bash ~/scripts/check-vulkan-deps.sh
 
             # Needed for some Windows VST plugins.
-            winetricks dxvk
+            winetricks -q dxvk
 
             # Needed for Guitar Pro 5.
-            winetricks gdiplus
+            winetricks -q gdiplus
 
             bash ~/win-plugins/setup-paths.sh
 

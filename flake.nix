@@ -279,7 +279,9 @@
         winetricks
         cabextract
 
+        # General programs.
         fluidsynth
+        rakarrack
       ];
 
       clapPlugins = with pkgs; [
@@ -296,6 +298,7 @@
         guitarix
         gxplugins-lv2
         x42-plugins
+        x42-avldrums
         infamousPlugins
         distrho-ports
         mda_lv2

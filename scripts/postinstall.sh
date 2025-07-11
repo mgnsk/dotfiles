@@ -18,6 +18,7 @@ packages=(
 	mesa
 	mpv
 	yt-dlp
+	sox
 	base-devel
 	sshfs
 	git

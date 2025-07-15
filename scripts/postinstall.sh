@@ -74,6 +74,7 @@ packages=(
 	thunar-archive-plugin
 	engrampa
 	unrar
+	7zip
 	tumbler
 	ffmpegthumbnailer
 	geany

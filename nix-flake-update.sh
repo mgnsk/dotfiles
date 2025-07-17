@@ -7,8 +7,11 @@ set -eu
 # Example: nix-flake-update nixpkgs audio
 
 # Default values:
-INPUT="$1"
-FLAKE_OUTPUT=".#devShells.x86_64-linux.$2"
+# INPUT="$1"
+# FLAKE_OUTPUT=".#devShells.x86_64-linux.$2"
+
+INPUT="nixpkgs"
+FLAKE_OUTPUT=".#devShells.x86_64-linux.all"
 
 # Build the old output and get its store path.
 OLD_STORE_PATH=$(nix build --show-trace --no-link --print-out-paths "$FLAKE_OUTPUT")

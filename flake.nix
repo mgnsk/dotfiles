@@ -374,6 +374,18 @@
       };
 
       devShells.${system} = {
+        # Dummy shell definition for showing diff for all packages
+        # when using the nix-flake-update.sh script.
+        all = pkgs.mkShellNoCC {
+          buildInputs = [
+            devPkgs
+            audioPkgs
+            clapPlugins
+            vst2Plugins
+            lv2Plugins
+          ];
+        };
+
         dev = pkgs.mkShellNoCC {
           buildInputs = devPkgs;
           shellHook = ''

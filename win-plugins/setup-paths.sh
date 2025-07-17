@@ -13,35 +13,50 @@ set -eu
 # Set up AppData.
 {
 	src="$HOME/win-plugins/AppData"
-	target="$HOME/.wine/drive_c/users/$USER/AppData"
-	rm -rf "$target"
-	ln -s "$src" "$target"
+	if [[ -d $src ]]; then
+		target="$HOME/.wine/drive_c/users/$USER/AppData"
+		rm -rf "$target"
+		ln -s "$src" "$target"
+	fi
 }
 
 # Set up ProgramData.
 {
-	ln -sf "$HOME"/win-plugins/ProgramData/* "$HOME"/.wine/drive_c/ProgramData/
+	if [[ -d "$HOME/win-plugins/ProgramData" ]]; then
+		ln -sf "$HOME"/win-plugins/ProgramData/* "$HOME"/.wine/drive_c/ProgramData/
+	fi
 }
 
 # Set up Program Files.
 {
-	ln -sf "$HOME"/win-plugins/Program\ Files/* "$HOME"/.wine/drive_c/Program\ Files/
-	ln -sf "$HOME"/win-plugins/Program\ Files\ \(x86\)/* "$HOME"/.wine/drive_c/Program\ Files\ \(x86\)/
+	if [[ -d "$HOME/win-plugins/Program Files" ]]; then
+		ln -sf "$HOME"/win-plugins/Program\ Files/* "$HOME"/.wine/drive_c/Program\ Files/
+	fi
+
+	if [[ -d "$HOME/win-plugins/Program Files (x86)" ]]; then
+		ln -sf "$HOME"/win-plugins/Program\ Files\ \(x86\)/* "$HOME"/.wine/drive_c/Program\ Files\ \(x86\)/
+	fi
 }
 
 # Set up fonts.
 {
-	ln -sf "$HOME"/win-plugins/windows/Fonts/* "$HOME"/.wine/drive_c/windows/Fonts/
+	if [[ -d "$HOME/win-plugins/windows/Fonts" ]]; then
+		ln -sf "$HOME"/win-plugins/windows/Fonts/* "$HOME"/.wine/drive_c/windows/Fonts/
+	fi
 }
 
 # Set up registry.
 {
-	wine regedit "$HOME/win-plugins/custom.reg"
+	if [[ -f "$HOME/win-plugins/custom.reg" ]]; then
+		wine regedit "$HOME/win-plugins/custom.reg"
+	fi
 }
 
 # Set up yabridge paths.
 {
-	yabridgectl add "$HOME/win-plugins/Plugins"
-	yabridgectl sync --prune
-	yabridgectl status
+	if [[ -d "$HOME/win-plugins/Plugins" ]]; then
+		yabridgectl add "$HOME/win-plugins/Plugins"
+		yabridgectl sync --prune
+		yabridgectl status
+	fi
 }

@@ -282,16 +282,14 @@
         # General programs.
         fluidsynth
         rakarrack
+
       ];
 
       clapPlugins = with pkgs; [
         zam-plugins
         lsp-plugins
         chow-tape-model
-      ];
-
-      vst2Plugins = with pkgs; [
-        airwindows
+        airwin2rack
       ];
 
       lv2Plugins = with pkgs; [
@@ -381,7 +379,6 @@
             devPkgs
             audioPkgs
             clapPlugins
-            vst2Plugins
             lv2Plugins
           ];
         };
@@ -399,7 +396,6 @@
             basePkgs
             audioPkgs
             clapPlugins
-            vst2Plugins
             lv2Plugins
           ];
           shellHook = ''
@@ -426,7 +422,7 @@
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
               clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
               lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";
-              vstpath = "~/.vst;~/.vst3;${makePluginPath "vst" vst2Plugins}";
+              vstpath = "~/.vst;~/.vst3";
               ui_scale = "1.0";
             }}
 

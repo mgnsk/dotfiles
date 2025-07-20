@@ -96,6 +96,7 @@ packages=(
 	openbox
 	tint2
 	picom
+	bind
 )
 
 if lscpu | grep -q Intel; then

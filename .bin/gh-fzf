@@ -198,7 +198,7 @@ args=(
 	--no-sort
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
 	--bind "shift-up:preview-top,shift-down:preview-bottom"
-	--preview-window=down:70%:wrap
+	--preview-window=right:50%:wrap
 	--style=minimal
 	--header-lines=1
 	--prompt "$target> "

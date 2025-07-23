@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+
+Name=Guitar Pro 5
+Exec=/usr/bin/bash -c "bash ~/scripts/start-gp5.sh"
+
+Categories=AudioVideo;Audio
+Keywords=gp5;guitar
+
+NoDisplay=false

@@ -97,6 +97,7 @@ packages=(
 	tint2
 	picom
 	bind
+	gimp
 )
 
 if lscpu | grep -q Intel; then

@@ -148,8 +148,8 @@ if [[ "$(stat -f -c %T /)" == "btrfs" ]]; then
 	# Ensure automatic snapper cleanup enabled.
 	sudo systemctl enable --now snapper-cleanup.timer
 
-	# Keep 10 last snapshots.
-	set_option /etc/snapper/configs/root NUMBER_LIMIT '"10"'
+	# Keep 30 last snapshots.
+	set_option /etc/snapper/configs/root NUMBER_LIMIT '"30"'
 
 	# Include /boot partition data in snapshots.
 	# https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition

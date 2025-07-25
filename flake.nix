@@ -190,6 +190,7 @@
         ansible-language-server
         jsfx-lint
         asciinema
+        go-jsonnet
 
         goPkgs
         luaPkgs

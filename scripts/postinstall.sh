@@ -20,6 +20,7 @@ packages=(
 	yt-dlp
 	sox
 	base-devel
+	inotify-tools
 	sshfs
 	git
 	less

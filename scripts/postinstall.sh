@@ -98,6 +98,10 @@ packages=(
 	picom
 	bind
 	gimp
+	qbittorrent
+	libreoffice-fresh
+	libreoffice-fresh-et
+	picard
 )
 
 if lscpu | grep -q Intel; then

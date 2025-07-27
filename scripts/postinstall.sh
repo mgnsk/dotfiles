@@ -37,7 +37,7 @@ packages=(
 	noto-fonts-emoji
 	noto-fonts-extra
 	cantarell-fonts
-	ttf-font-awesome
+	otf-font-awesome
 	gnome-tweaks
 	baobab
 	xdg-desktop-portal-wlr

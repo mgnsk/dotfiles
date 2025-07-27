@@ -23,21 +23,24 @@ function gset {
 	gsettings set "$gnome_schema" "$key" "$value"
 }
 
-gset gtk-theme 'Adwaita'
-gset icon-theme 'Adwaita'
-gset font-name 'Cantarell 11'
-gset monospace-font-name 'Monospace 11'
-gset document-font-name 'Adwaita Sans 11'
-gset font-antialiasing 'grayscale'
-gset font-hinting 'slight'
-# Note: only used when font-antialiasing is set to 'rgba'
-# gset font-rgba-order 'rgb'
-gset text-scaling-factor '1.2'
+function set-gsettings {
+	gset gtk-theme 'Adwaita'
+	gset icon-theme 'Adwaita'
+	gset font-name 'Cantarell 11'
+	gset monospace-font-name 'Monospace 11'
+	gset document-font-name 'Adwaita Sans 11'
+	gset font-antialiasing 'grayscale'
+	gset font-hinting 'slight'
+	# Note: only used when font-antialiasing is set to 'rgba'
+	# gset font-rgba-order 'rgb'
+	gset text-scaling-factor '1.2'
+}
 
 # TTY1: start sway at login if available.
 if test -z "$DISPLAY" -a "$XDG_VTNR" = 1; then
 	if command -v sway &>/dev/null; then
 		export XDG_CURRENT_DESKTOP=sway
+		set-gsettings
 		exec sway
 	fi
 fi
@@ -46,6 +49,7 @@ fi
 if test -z "$DISPLAY" -a "$XDG_VTNR" = 2; then
 	if command -v openbox-session &>/dev/null; then
 		export XDG_CURRENT_DESKTOP=openbox
+		set-gsettings
 		exec startx
 	fi
 fi

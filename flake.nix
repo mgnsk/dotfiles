@@ -269,7 +269,9 @@
         spirv-tools-lib
         pkgs.stdenv.cc.cc.lib
 
-        # Reaper.
+        # Raysession and Reaper.
+        raysession
+        python313Packages.legacy-cgi
         reaper
         reaper-reapack-extension
         reaper-default-5-dark-extended-theme

@@ -2,5 +2,8 @@
 
 set -euo pipefail
 
+# Lock the session.
+loginctl lock-session
+
 # Lock the screen.
 swaylock -f -c 000000

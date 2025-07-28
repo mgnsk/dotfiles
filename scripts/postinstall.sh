@@ -20,6 +20,7 @@ packages=(
 	yt-dlp
 	sox
 	base-devel
+	strace
 	inotify-tools
 	sshfs
 	git
@@ -103,6 +104,9 @@ packages=(
 	libreoffice-fresh
 	libreoffice-fresh-et
 	picard
+	keepassxc
+	qt5-wayland
+	firefox
 )
 
 if lscpu | grep -q Intel; then
@@ -191,9 +195,6 @@ fi
 
 aur_packages=(
 	swaddle
-	librewolf-bin
-	profile-sync-daemon-librewolf
-	raysession
 	# TODO: in the future, try out wine with NTSYNC.
 	wine-tkg-staging-wow64-bin
 	obmenu-generator
@@ -245,7 +246,7 @@ xdg-user-dirs-update
 # Set default browser.
 {
 	cd /usr/share/applications
-	xdg-settings set default-web-browser librewolf.desktop
+	xdg-settings set default-web-browser firefox.desktop
 }
 
 # Enable realtime privileges for user.
@@ -332,3 +333,6 @@ cat <<-'EOF' | sudo tee /etc/systemd/coredump.conf.d/custom.conf >/dev/null
 	Storage=none
 	ProcessSizeMax=0
 EOF
+
+# Enable ssh-agent.
+systemctl --user enable --now ssh-agent

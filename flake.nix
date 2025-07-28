@@ -12,7 +12,12 @@
 
       pkgs = import inputs.nixpkgs {
         inherit system;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+          permittedInsecurePackages = [
+            "libsoup-2.74.3"
+          ];
+        };
       };
 
       diff-highlight = pkgs.linkFarm "diff-highlight" [

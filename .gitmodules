@@ -67,3 +67,27 @@
 [submodule "nvim-plugins/vim-eel"]
 	path = nvim-plugins/vim-eel
 	url = https://github.com/NlGHT/vim-eel.git
+[submodule "aur/yay-bin"]
+	path = aur/yay-bin
+	url = https://aur.archlinux.org/yay-bin.git
+[submodule "aur/snap-pac-grub"]
+	path = aur/snap-pac-grub
+	url = https://aur.archlinux.org/snap-pac-grub.git
+[submodule "aur/btrfs-assistant"]
+	path = aur/btrfs-assistant
+	url = https://aur.archlinux.org/btrfs-assistant.git
+[submodule "aur/swaddle"]
+	path = aur/swaddle
+	url = https://aur.archlinux.org/swaddle.git
+[submodule "aur/wine-tkg-staging-wow64-bin"]
+	path = aur/wine-tkg-staging-wow64-bin
+	url = https://aur.archlinux.org/wine-tkg-staging-wow64-bin.git
+[submodule "aur/obmenu-generator"]
+	path = aur/obmenu-generator
+	url = https://aur.archlinux.org/obmenu-generator.git
+[submodule "aur/1password"]
+	path = aur/1password
+	url = https://aur.archlinux.org/1password.git
+[submodule "aur/1password-cli"]
+	path = aur/1password-cli
+	url = https://aur.archlinux.org/1password-cli.git

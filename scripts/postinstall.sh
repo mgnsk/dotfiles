@@ -104,9 +104,11 @@ packages=(
 	libreoffice-fresh
 	libreoffice-fresh-et
 	picard
+	firefox
 	keepassxc
 	qt5-wayland
-	firefox
+	qt6-wayland
+	snap-pac
 )
 
 if lscpu | grep -q Intel; then
@@ -130,80 +132,53 @@ fi
 # Install packages.
 sudo pacman -S --needed --noconfirm "${packages[@]}"
 
-# Set up yay.
-yaydir="$HOME/workspaces/yay-bin"
-mkdir -p "$yaydir"
-if [[ ! -d "$yaydir/.git" ]]; then
-	{
-		cd "$yaydir"
-		git clone https://aur.archlinux.org/yay-bin.git .
-		makepkg -si --noconfirm --needed
-	}
-fi
+# Install AUR packages.
+for d in ~/aur/*; do
+	makepkg -D "$d" -si --needed
+done
 
-# Set up BTRFS snapshots.
-if [[ "$(stat -f -c %T /)" == "btrfs" ]]; then
-	sudo pacman -S --needed --noconfirm \
-		qt6-wayland \
-		snap-pac
+# Backup /boot partition data.
+# https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
+sudo mkdir -p /etc/pacman.d/hooks
+cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/55-bootbackup_pre.hook >/dev/null
+	[Trigger]
+	Operation = Upgrade
+	Operation = Install
+	Operation = Remove
+	Type = Path
+	Target = usr/lib/modules/*/vmlinuz
 
-	yay -S --needed --noconfirm \
-		snap-pac-grub \
-		btrfs-assistant-git
+	[Action]
+	Depends = rsync
+	Description = Backing up pre /boot...
+	When = PreTransaction
+	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_pre"/'
+EOF
+cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
+	[Trigger]
+	Operation = Upgrade
+	Operation = Install
+	Operation = Remove
+	Type = Path
+	Target = usr/lib/modules/*/vmlinuz
 
-	# Ensure automatic timeline snapshotting is disabled.
-	sudo systemctl disable --now snapper-timeline.timer
+	[Action]
+	Depends = rsync
+	Description = Backing up post /boot...
+	When = PostTransaction
+	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
+EOF
 
-	# Ensure automatic snapper cleanup enabled.
-	sudo systemctl enable --now snapper-cleanup.timer
+# Ensure automatic timeline snapshotting is disabled.
+sudo systemctl disable --now snapper-timeline.timer
 
+# Ensure automatic snapper cleanup enabled.
+sudo systemctl enable --now snapper-cleanup.timer
+
+if [[ -f /etc/snapper/configs/root ]]; then
 	# Keep 30 last snapshots.
 	set_option /etc/snapper/configs/root NUMBER_LIMIT '"30"'
-
-	# Include /boot partition data in snapshots.
-	# https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
-	sudo mkdir -p /etc/pacman.d/hooks
-	cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/55-bootbackup_pre.hook >/dev/null
-		[Trigger]
-		Operation = Upgrade
-		Operation = Install
-		Operation = Remove
-		Type = Path
-		Target = usr/lib/modules/*/vmlinuz
-
-		[Action]
-		Depends = rsync
-		Description = Backing up pre /boot...
-		When = PreTransaction
-		Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_pre"/'
-	EOF
-	cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
-		[Trigger]
-		Operation = Upgrade
-		Operation = Install
-		Operation = Remove
-		Type = Path
-		Target = usr/lib/modules/*/vmlinuz
-
-		[Action]
-		Depends = rsync
-		Description = Backing up post /boot...
-		When = PostTransaction
-		Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
-	EOF
 fi
-
-aur_packages=(
-	swaddle
-	# TODO: in the future, try out wine with NTSYNC.
-	wine-tkg-staging-wow64-bin
-	obmenu-generator
-	1password
-	1password-cli
-)
-
-# Set up AUR packages.
-yay -S --needed --noconfirm "${aur_packages[@]}"
 
 # Performance settings for LUKS on SSD.
 # Determine the LUKS device name.

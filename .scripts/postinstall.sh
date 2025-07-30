@@ -133,7 +133,7 @@ fi
 sudo pacman -S --needed --noconfirm "${packages[@]}"
 
 # Install AUR packages.
-for d in ~/aur/*; do
+for d in ~/.pkgbuilds/*; do
 	makepkg -D "$d" -si --needed
 done
 
@@ -265,12 +265,6 @@ if [[ ! -d "$HOME/.git" ]]; then
 	git reset --hard --recurse-submodules origin/master
 	rm -rf "$HOME/dotfiles-tmp"
 fi
-
-# Install sway-fader.
-{
-	cd "$HOME/.tools/sway-fader"
-	makepkg -si --noconfirm --needed
-}
 
 # Enable saving the last booted entry in GRUB.
 if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then

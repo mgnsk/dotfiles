@@ -36,7 +36,7 @@ local git_log_cmd = string.format([[git log --color --decorate --pretty="%s"]], 
 return {
 	{
 		"ibhagwan/fzf-lua",
-		dir = vim.fn.expand("$HOME/nvim-plugins/fzf-lua"),
+		dir = vim.fn.expand("$HOME/.nvim-plugins/fzf-lua"),
 		lazy = true,
 		init = function()
 			vim.keymap.set("n", "<leader>p", function()

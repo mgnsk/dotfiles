@@ -2,7 +2,7 @@
 return {
 	{
 		"saghen/blink.cmp",
-		dir = vim.fn.expand("$HOME/nvim-plugins/blink.cmp"),
+		dir = vim.fn.expand("$HOME/.nvim-plugins/blink.cmp"),
 		cond = not os.getenv("NVIM_DIFF"),
 		event = "InsertEnter",
 		---@type blink.cmp.Config

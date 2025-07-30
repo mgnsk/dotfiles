@@ -2,7 +2,7 @@
 return {
 	{
 		"Mofiqul/vscode.nvim",
-		dir = vim.fn.expand("$HOME/nvim-plugins/vscode.nvim"),
+		dir = vim.fn.expand("$HOME/.nvim-plugins/vscode.nvim"),
 		config = function()
 			vim.o.background = os.getenv("THEME") or "dark"
 
@@ -72,7 +72,7 @@ return {
 	},
 	{
 		"norcalli/nvim-colorizer.lua",
-		dir = vim.fn.expand("$HOME/nvim-plugins/nvim-colorizer.lua"),
+		dir = vim.fn.expand("$HOME/.nvim-plugins/nvim-colorizer.lua"),
 		ft = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml", "dosini" },
 		opts = {
 			["*"] = {

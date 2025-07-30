@@ -57,9 +57,6 @@ packages=(
 	gammastep
 	nm-connection-editor
 	network-manager-applet
-	gnome-keyring
-	libsecret
-	seahorse
 	viewnior
 	webp-pixbuf-loader
 	grim
@@ -272,19 +269,6 @@ if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then
 	set_option /etc/default/grub GRUB_SAVEDEFAULT true
 	sudo grub-mkconfig -o /boot/grub/grub.cfg
 fi
-
-# Set up auto unlock option for keyring.
-cat <<-'EOF' | sudo tee /etc/pam.d/login >/dev/null
-	#%PAM-1.0
-
-	auth       requisite    pam_nologin.so
-	auth       include      system-local-login
-	auth       optional     pam_gnome_keyring.so
-	account    include      system-local-login
-	session    include      system-local-login
-	session    optional     pam_gnome_keyring.so auto_start
-	password   include      system-local-login
-EOF
 
 # Enable profile-sync-daemon.
 line="$USER ALL=(ALL) NOPASSWD: /usr/bin/psd-overlay-helper"

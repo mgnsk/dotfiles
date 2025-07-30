@@ -3,7 +3,7 @@
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
-    directory: "/nvim-plugins"
+    directory: "/.nvim-plugins"
     schedule:
       interval: "weekly"
     groups:
@@ -15,7 +15,7 @@ updates:
 
 
   - package-ecosystem: "gitsubmodule"
-    directory: "/aur"
+    directory: "/.pkgbuilds"
     schedule:
       interval: "weekly"
     groups:

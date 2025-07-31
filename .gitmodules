@@ -91,3 +91,6 @@
 [submodule "aur/1password-cli"]
 	path = .pkgbuilds/1password-cli
 	url = https://aur.archlinux.org/1password-cli.git
+[submodule ".pkgbuilds/wdisplays"]
+	path = .pkgbuilds/wdisplays
+	url = https://aur.archlinux.org/wdisplays.git

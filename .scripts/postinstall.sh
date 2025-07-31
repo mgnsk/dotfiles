@@ -78,7 +78,8 @@ packages=(
 	ffmpegthumbnailer
 	geany
 	gvfs
-	cpupower
+	tlp
+	smartmontools
 	tailscale
 	nix
 	docker
@@ -106,6 +107,7 @@ packages=(
 	qt5-wayland
 	qt6-wayland
 	snap-pac
+	stress
 )
 
 if lscpu | grep -q Intel; then
@@ -198,19 +200,10 @@ cat <<-'EOF' | sudo tee /etc/udev/rules.d/99-lowbat.rules >/dev/null
 	# Suspend the system when battery level drops to 5% or lower
 	SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="[0-5]", RUN+="/usr/bin/systemctl suspend"
 EOF
-# Note: refer to https://linrunner.de/tlp/settings/processor.html#processor for explanation for different scaling driver modes.
-# Both amd-pstate and intel_pstate with powersave governor may still reach max frequency.
-# This is similar to the ondemand governor in the old acpi-cpufreq driver.
-# Also read https://wiki.archlinux.org/title/CPU_frequency_scaling#Scaling_governors which says that
-# the powersave governor on *_pstate drivers is equivalent to schedutil on old driver.
-if sudo cpupower frequency-info | grep -q pstate; then
-	set_option /etc/default/cpupower governor "'powersave'"
-elif sudo cpupower frequency-info | grep available | grep -q schedutil; then
-	set_option /etc/default/cpupower governor "'schedutil'"
-else
-	echo "Check CPU scaling governor!"
-fi
-sudo systemctl enable --now cpupower
+
+sudo systemctl enable --now tlp
+sudo systemctl mask systemd-rfkill.service
+sudo systemctl mask systemd-rfkill.socket
 
 # Create user dirs.
 xdg-user-dirs-update

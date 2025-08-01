@@ -6,9 +6,12 @@ FILES=$(fzf --multi)
 SUFFIX=$(tailscale status --json | gojq -r '.CurrentTailnet.MagicDNSSuffix')
 PEERS=$(tailscale status --json | gojq -r ".Peer[].DNSName | rtrimstr(\".$SUFFIX.\")" | fzf --multi)
 
+OIFS="$IFS"
+IFS=$'\n'
 for peer in $PEERS; do
 	for file in $FILES; do
 		echo "Sending $file to $peer"
 		tailscale file cp "$file" "$peer:"
 	done
 done
+IFS="$OIFS"

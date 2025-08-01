@@ -108,6 +108,9 @@ packages=(
 	qt6-wayland
 	snap-pac
 	stress
+	cups
+	cups-pdf
+	ipp-usb
 )
 
 if lscpu | grep -q Intel; then
@@ -282,3 +285,6 @@ EOF
 
 # Enable ssh-agent.
 systemctl --user enable --now ssh-agent
+
+# Enable printing support.
+sudo systemctl enable --now cups

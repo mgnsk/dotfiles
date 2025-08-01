@@ -3,24 +3,13 @@
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
-    directory: "/.nvim-plugins"
+    directory: "/"
     schedule:
       interval: "weekly"
     groups:
-      gitsubmodule:
+      nvim-plugins:
         patterns:
-          - "*"
-    commit-message:
-      prefix: "neovim"
-
-
-  - package-ecosystem: "gitsubmodule"
-    directory: "/.pkgbuilds"
-    schedule:
-      interval: "weekly"
-    groups:
-      gitsubmodule:
+          - "/.nvim-plugins/*"
+      aur:
         patterns:
-          - "*"
-    commit-message:
-      prefix: "aur"
+          - "/.pkgbuilds/*"

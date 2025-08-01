@@ -135,9 +135,35 @@ fi
 sudo pacman -S --needed --noconfirm "${packages[@]}"
 
 # Install AUR packages.
-for d in ~/.pkgbuilds/*; do
-	makepkg -D "$d" -si --needed
+packages=(
+	1password
+	1password-cli
+	btrfs-assistant
+	obmenu-generator
+	snap-pac-grub
+	swaddle
+	sway-fader
+	wdisplays
+	wine-tkg-staging-wow64-bin
+	yay-bin
+)
+
+for pkg in "${packages[@]}"; do
+	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
 done
+
+# Install support for Estonian ID card.
+packages=(
+	libdigidocpp
+	qdigidoc4
+	web-eid
+)
+
+for pkg in "${packages[@]}"; do
+	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
+done
+
+sudo systemctl enable --now pcscd.socket
 
 # Backup /boot partition data.
 # https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
@@ -212,10 +238,10 @@ sudo systemctl mask systemd-rfkill.socket
 xdg-user-dirs-update
 
 # Set default browser.
-{
+(
 	cd /usr/share/applications
 	xdg-settings set default-web-browser firefox.desktop
-}
+)
 
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime

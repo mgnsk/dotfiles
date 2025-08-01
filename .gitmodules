@@ -94,3 +94,12 @@
 [submodule ".pkgbuilds/wdisplays"]
 	path = .pkgbuilds/wdisplays
 	url = https://aur.archlinux.org/wdisplays.git
+[submodule ".pkgbuilds/qdigidoc4"]
+	path = .pkgbuilds/qdigidoc4
+	url = https://aur.archlinux.org/qdigidoc4.git
+[submodule ".pkgbuilds/libdigidocpp"]
+	path = .pkgbuilds/libdigidocpp
+	url = https://aur.archlinux.org/libdigidocpp.git
+[submodule ".pkgbuilds/web-eid"]
+	path = .pkgbuilds/web-eid
+	url = https://aur.archlinux.org/web-eid.git

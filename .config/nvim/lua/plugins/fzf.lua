@@ -152,9 +152,10 @@ return {
 			},
 			git = {
 				bcommits = {
-					cmd = git_log_cmd .. " {file}",
+					cmd = git_log_cmd .. " --follow {file}",
 					preview_pager = "diff-highlight",
 					actions = create_git_log_actions(1),
+					preview = [[name=$(bash ~/.scripts/get-old-git-filename.sh {1} {file}); git show --color {1} -- "$name"]],
 				},
 				commits = {
 					cmd = git_log_cmd,

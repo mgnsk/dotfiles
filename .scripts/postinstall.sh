@@ -250,7 +250,7 @@ sudo gpasswd -a "$USER" realtime
 sudo gpasswd -a "$USER" audio
 
 # Set up docker.
-sudo systemctl enable --now docker
+sudo systemctl enable --now docker.socket
 sudo gpasswd -a "$USER" docker
 
 # Set up nix.
@@ -313,4 +313,4 @@ EOF
 systemctl --user enable --now ssh-agent
 
 # Enable printing support.
-sudo systemctl enable --now cups
+sudo systemctl enable --now cups.socket

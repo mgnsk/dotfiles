@@ -230,6 +230,8 @@ cat <<-'EOF' | sudo tee /etc/udev/rules.d/99-lowbat.rules >/dev/null
 	SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="[0-5]", RUN+="/usr/bin/systemctl suspend"
 EOF
 
+sudo sensors-detect --auto
+
 sudo systemctl enable --now tlp
 sudo systemctl mask systemd-rfkill.service
 sudo systemctl mask systemd-rfkill.socket

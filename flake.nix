@@ -142,6 +142,7 @@
         pipenv
         black
         pylint
+        uv
       ];
 
       webdevPkgs = with pkgs; [

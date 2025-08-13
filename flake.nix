@@ -314,6 +314,7 @@
         chow-kick
         chow-centaur
         chow-tape-model
+        neural-amp-modeler-lv2
       ];
 
       vst3Plugins = with pkgs; [

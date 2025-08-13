@@ -76,9 +76,6 @@
 [submodule "aur/btrfs-assistant"]
 	path = .pkgbuilds/btrfs-assistant
 	url = https://aur.archlinux.org/btrfs-assistant.git
-[submodule "aur/swaddle"]
-	path = .pkgbuilds/swaddle
-	url = https://aur.archlinux.org/swaddle.git
 [submodule "aur/wine-tkg-staging-wow64-bin"]
 	path = .pkgbuilds/wine-tkg-staging-wow64-bin
 	url = https://aur.archlinux.org/wine-tkg-staging-wow64-bin.git

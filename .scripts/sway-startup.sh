@@ -32,7 +32,7 @@ sway-fader &
 nm-applet --indicator &
 swaync &
 thunar --daemon &
-swaddle &
+bash ~/.scripts/audio-idle-inhibit.sh &
 swayidle -w \
 	timeout 600 'lock' \
 	timeout 1200 'swaymsg "output * dpms off"' \

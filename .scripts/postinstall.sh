@@ -142,7 +142,6 @@ packages=(
 	btrfs-assistant
 	obmenu-generator
 	snap-pac-grub
-	swaddle
 	sway-fader
 	wdisplays
 	wine-tkg-staging-wow64-bin

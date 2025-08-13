@@ -214,9 +214,7 @@ fi
 cryptdevice=$(lsblk --list | awk '$6 == "crypt" {print $1}')
 # Only enable settings on LUKS2.
 if sudo cryptsetup status "$cryptdevice" | grep -q "LUKS2"; then
-	if sudo cryptsetup status "$cryptdevice" | grep -q 'discards no_read_workqueue no_write_workqueue'; then
-		true
-	else
+	if ! sudo cryptsetup status "$cryptdevice" | grep -q 'discards no_read_workqueue no_write_workqueue'; then
 		sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh "$cryptdevice"
 		sudo systemctl enable --now fstrim.timer
 	fi
@@ -258,10 +256,8 @@ sudo gpasswd -a "$USER" docker
 
 # Set up nix.
 sudo systemctl enable --now nix-daemon
-if nix-channel --list | grep -q 'nixpkgs-unstable'; then
-	true
-else
-	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+if ! nix-channel --list | grep -q 'channels'; then
+	nix-channel --add https://nixos.org/channels/nixos-25.05
 	nix-channel --update
 fi
 cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
@@ -297,9 +293,7 @@ fi
 
 # Enable profile-sync-daemon.
 line="$USER ALL=(ALL) NOPASSWD: /usr/bin/psd-overlay-helper"
-if sudo grep -q "$line" /etc/sudoers; then
-	true
-else
+if ! sudo grep -q "$line" /etc/sudoers; then
 	echo "$line" | sudo tee -a /etc/sudoers
 fi
 systemctl --user enable --now psd

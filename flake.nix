@@ -293,7 +293,6 @@
       clapPlugins = with pkgs; [
         zam-plugins
         lsp-plugins
-        # chow-tape-model
         airwin2rack
       ];
 
@@ -312,6 +311,10 @@
         magnetophonDSP.VoiceOfFaust
         magnetophonDSP.MBdistortion
         levelrider
+        chow-kick
+        chow-phaser
+        chow-centaur
+        chow-tape-model
       ];
 
       docker_user = "ide";

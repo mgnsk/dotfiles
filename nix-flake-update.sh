@@ -2,14 +2,6 @@
 
 set -eu
 
-# Usage: nix-flake-update [input] [devShell]
-# Example: nix-flake-update nixpkgs dev
-# Example: nix-flake-update nixpkgs audio
-
-# Default values:
-# INPUT="$1"
-# FLAKE_OUTPUT=".#devShells.x86_64-linux.$2"
-
 INPUT="nixpkgs"
 FLAKE_OUTPUT=".#devShells.x86_64-linux.all"
 

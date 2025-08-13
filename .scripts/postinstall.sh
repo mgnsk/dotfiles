@@ -111,6 +111,7 @@ packages=(
 	cups
 	cups-pdf
 	ipp-usb
+	pacman-contrib
 )
 
 if lscpu | grep -q Intel; then

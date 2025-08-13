@@ -2,7 +2,7 @@
   description = "ide";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.05";
   };
 
   outputs =
@@ -14,10 +14,6 @@
         inherit system;
         config = {
           allowUnfree = true;
-          permittedInsecurePackages = [
-            # For chow-tape-model.
-            "libsoup-2.74.3"
-          ];
         };
       };
 
@@ -297,7 +293,7 @@
       clapPlugins = with pkgs; [
         zam-plugins
         lsp-plugins
-        chow-tape-model
+        # chow-tape-model
         airwin2rack
       ];
 
@@ -435,7 +431,7 @@
               ui_scale = "1.0";
             }}
 
-            bash ~/scripts/check-vulkan-deps.sh
+            bash ~/.scripts/check-vulkan-deps.sh
 
             # Needed for some Windows VST plugins.
             winetricks -q dxvk
@@ -443,7 +439,7 @@
             # Needed for Guitar Pro 5.
             winetricks -q gdiplus
 
-            bash ~/win-plugins/setup-paths.sh
+            bash ~/.win-plugins/setup-paths.sh
 
             set +e
 

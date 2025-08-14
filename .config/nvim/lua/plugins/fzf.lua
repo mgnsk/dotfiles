@@ -144,7 +144,7 @@ return {
 				fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
 			},
 			grep = {
-				rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --no-ignore-vcs --glob=!.git/",
+				rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --no-ignore-vcs --glob=!.git/ --glob=!node_modules/ --glob=!vendor/",
 			},
 			defaults = {
 				git_icons = false,

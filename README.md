@@ -81,14 +81,14 @@ I have not attempted to configure any other Linux plugin format.
 
 ## Setting up Windows plugins
 
-Drop your windows plugins into `~/win-plugins`.
+Drop your windows plugins into `~/.win-plugins`.
 
 If the plugin has a setup, then inside the audio shell run it with wine: `wine MyPluginSetup.exe`.
-Attempt to install it to `~/win-plugins`
+Attempt to install it to `~/.win-plugins`
 (through wine `Z:` volume Linux home should be available).
 
 If you can't change the path, then determine if you can move it manually
-to `~/win-plugins` after installing. If it depends on some other files,
+to `~/.win-plugins` after installing. If it depends on some other files,
 it is probably best to leave it as is and add the plugin path to
 yabridgectl in `flake.nix` file.
 

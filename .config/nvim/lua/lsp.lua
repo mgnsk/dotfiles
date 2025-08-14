@@ -72,10 +72,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
--- vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
--- 	update_in_insert = false,
--- })
-
 local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 vim.lsp.config("*", {

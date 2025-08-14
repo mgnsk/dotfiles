@@ -52,6 +52,7 @@
         neovim
         qrcp
         file
+        vivid
       ];
 
       gh-tpl = pkgs.stdenv.mkDerivation {

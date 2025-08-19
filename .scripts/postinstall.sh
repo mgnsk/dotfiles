@@ -312,3 +312,8 @@ systemctl --user enable ssh-agent
 
 # Enable printing support.
 sudo systemctl enable cups.socket
+
+# Increase max AIO nr.
+cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null
+	fs.aio-max-nr = 1048576
+EOF

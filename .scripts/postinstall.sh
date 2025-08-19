@@ -159,11 +159,13 @@ packages=(
 	web-eid
 )
 
+gpg --keyserver keyserver.ubuntu.com --recv-keys 90C0B5E75C3B195D
+
 for pkg in "${packages[@]}"; do
 	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
 done
 
-sudo systemctl enable --now pcscd.socket
+sudo systemctl enable pcscd.socket
 
 # Backup /boot partition data.
 # https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
@@ -198,10 +200,10 @@ cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
 EOF
 
 # Ensure automatic timeline snapshotting is disabled.
-sudo systemctl disable --now snapper-timeline.timer
+sudo systemctl disable snapper-timeline.timer
 
 # Ensure automatic snapper cleanup enabled.
-sudo systemctl enable --now snapper-cleanup.timer
+sudo systemctl enable snapper-cleanup.timer
 
 if [[ -f /etc/snapper/configs/root ]]; then
 	# Keep 30 last snapshots.
@@ -215,7 +217,7 @@ cryptdevice=$(lsblk --list | awk '$6 == "crypt" {print $1}')
 if sudo cryptsetup status "$cryptdevice" | grep -q "LUKS2"; then
 	if ! sudo cryptsetup status "$cryptdevice" | grep -q 'discards no_read_workqueue no_write_workqueue'; then
 		sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh "$cryptdevice"
-		sudo systemctl enable --now fstrim.timer
+		sudo systemctl enable fstrim.timer
 	fi
 fi
 
@@ -230,7 +232,7 @@ EOF
 
 sudo sensors-detect --auto
 
-sudo systemctl enable --now tlp
+sudo systemctl enable tlp
 sudo systemctl mask systemd-rfkill.service
 sudo systemctl mask systemd-rfkill.socket
 
@@ -250,11 +252,11 @@ sudo gpasswd -a "$USER" realtime
 sudo gpasswd -a "$USER" audio
 
 # Set up docker.
-sudo systemctl enable --now docker.socket
+sudo systemctl enable docker.socket
 sudo gpasswd -a "$USER" docker
 
 # Set up nix.
-sudo systemctl enable --now nix-daemon
+sudo systemctl enable nix-daemon
 if ! nix-channel --list | grep -q 'channels'; then
 	nix-channel --add https://nixos.org/channels/nixos-25.05
 	nix-channel --update
@@ -265,7 +267,7 @@ cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
 EOF
 
 # Set up tailscale.
-sudo systemctl enable --now tailscaled
+sudo systemctl enable tailscaled
 if tailscale status --json | grep -q 'NeedsLogin'; then
 	echo "Logging into tailscale"
 	sudo tailscale set --operator="$USER"
@@ -295,7 +297,7 @@ line="$USER ALL=(ALL) NOPASSWD: /usr/bin/psd-overlay-helper"
 if ! sudo grep -q "$line" /etc/sudoers; then
 	echo "$line" | sudo tee -a /etc/sudoers
 fi
-systemctl --user enable --now psd
+systemctl --user enable psd
 
 # Disable automatic coredumps.
 sudo mkdir -p /etc/systemd/coredump.conf.d
@@ -306,7 +308,7 @@ cat <<-'EOF' | sudo tee /etc/systemd/coredump.conf.d/custom.conf >/dev/null
 EOF
 
 # Enable ssh-agent.
-systemctl --user enable --now ssh-agent
+systemctl --user enable ssh-agent
 
 # Enable printing support.
-sudo systemctl enable --now cups.socket
+sudo systemctl enable cups.socket

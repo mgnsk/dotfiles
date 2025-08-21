@@ -217,9 +217,11 @@ cryptdevice=$(lsblk --list | awk '$6 == "crypt" {print $1}')
 if sudo cryptsetup status "$cryptdevice" | grep -q "LUKS2"; then
 	if ! sudo cryptsetup status "$cryptdevice" | grep -q 'discards no_read_workqueue no_write_workqueue'; then
 		sudo cryptsetup --perf-no_read_workqueue --perf-no_write_workqueue --allow-discards --persistent refresh "$cryptdevice"
-		sudo systemctl enable fstrim.timer
 	fi
 fi
+
+# Enable periodic SSD trim.
+sudo systemctl enable fstrim.timer
 
 # Disable file access time to improve SSD lifetime.
 sudo sed -i -e 's/relatime/noatime/g' /etc/fstab
@@ -240,10 +242,7 @@ sudo systemctl mask systemd-rfkill.socket
 xdg-user-dirs-update
 
 # Set default browser.
-(
-	cd /usr/share/applications
-	xdg-settings set default-web-browser firefox.desktop
-)
+xdg-settings set default-web-browser firefox.desktop
 
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime

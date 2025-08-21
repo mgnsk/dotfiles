@@ -1,7 +1,7 @@
 [alias]
 	st = status
 	ci = commit
-	br = branch
+	br = branch -v --sort=-committerdate
 	co = checkout
 	p = pull
 	pul = pull

@@ -19,6 +19,7 @@ x-base: &base
     - /tmp:rw,exec,nosuid,nodev,mode=777
   volumes:
     - cache:/home/ide/.cache
+    - cache:/cache
     - local:/home/ide/.local
     - /home/${USER}/go:/home/ide/go
     - /home/${USER}/.cargo:/home/ide/.cargo

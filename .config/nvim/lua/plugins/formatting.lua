@@ -32,7 +32,7 @@ return {
 					return
 				end
 				---@type conform.FormatOpts
-				return { timeout_ms = 600000, lsp_format = "fallback" }
+				return { timeout_ms = 600000 }
 			end,
 		},
 	},

@@ -56,6 +56,20 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		if client.server_capabilities.inlayHintProvider then
 			vim.lsp.inlay_hint.enable(true)
+
+			vim.api.nvim_create_autocmd("InsertEnter", {
+				buffer = args.buf,
+				callback = function()
+					vim.lsp.inlay_hint.enable(false)
+				end,
+			})
+
+			vim.api.nvim_create_autocmd("InsertLeave", {
+				buffer = args.buf,
+				callback = function()
+					vim.lsp.inlay_hint.enable(true)
+				end,
+			})
 		end
 
 		if client:supports_method("textDocument/documentHighlight") then

@@ -112,6 +112,7 @@ packages=(
 	cups-pdf
 	ipp-usb
 	pacman-contrib
+	ufw
 )
 
 if lscpu | grep -q Intel; then
@@ -316,3 +317,10 @@ sudo systemctl enable cups.socket
 cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null
 	fs.aio-max-nr = 1048576
 EOF
+
+# Configure firewall.
+sudo systemctl enable ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow in on tailscale0
+sudo ufw enable

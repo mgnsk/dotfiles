@@ -2,7 +2,7 @@
   description = "ide";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
   outputs =
@@ -14,6 +14,10 @@
         inherit system;
         config = {
           allowUnfree = true;
+          permittedInsecurePackages = [
+            # For chow-tape-model.
+            "libsoup-2.74.3"
+          ];
         };
       };
 
@@ -64,6 +68,17 @@
         sourceRoot = ".";
         installPhase = ''
           install -m755 -D gh-tpl $out/bin/gh-tpl
+        '';
+      };
+
+      airwindows-consolidated = pkgs.stdenv.mkDerivation {
+        name = "airwindows-consolidated";
+        src = pkgs.fetchzip {
+          url = "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2025-08-24-94da083-Linux.zip";
+          sha256 = "UXkxBdfYGJ1n4Gd1q/2XlpE4KCUH9GFFDU6CwicyJiI=";
+        };
+        installPhase = ''
+          install -m755 -D ./Airwindows\ Consolidated.clap $out/lib/clap/Airwindows\ Consolidated.clap
         '';
       };
 
@@ -272,9 +287,7 @@
         spirv-tools-lib
         pkgs.stdenv.cc.cc.lib
 
-        # Raysession and Reaper.
-        raysession
-        python313Packages.legacy-cgi
+        # Reaper.
         reaper
         reaper-reapack-extension
         reaper-default-5-dark-extended-theme
@@ -294,7 +307,7 @@
       clapPlugins = with pkgs; [
         zam-plugins
         lsp-plugins
-        airwin2rack
+        airwindows-consolidated
       ];
 
       lv2Plugins = with pkgs; [

@@ -40,4 +40,8 @@ return {
 		dir = vim.fn.expand("$HOME/.nvim-plugins/vim-eel"),
 		ft = "eel2",
 	},
+	{
+		"towolf/vim-helm",
+		dir = vim.fn.expand("$HOME/.nvim-plugins/vim-helm"),
+	},
 }

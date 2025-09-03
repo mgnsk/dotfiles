@@ -103,8 +103,9 @@ vim.lsp.enable({
 	"phpactor",
 	"rust_analyzer",
 	"jsonnet_ls",
-	"docker_compose_language_service",
 	"buf_ls",
 	"nil_ls",
 	"ansiblels",
+	"helm_ls",
+	"yamlls",
 })

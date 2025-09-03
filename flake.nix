@@ -191,11 +191,11 @@
         gcc
         buf
         yamllint
+        yaml-language-server
         gh
         gh-tpl
         glow
         jsonnet-language-server
-        docker-compose-language-service
         bash-language-server
         nodejs_22
         nodePackages.cspell
@@ -209,6 +209,7 @@
         jsfx-lint
         asciinema
         go-jsonnet
+        helm-ls
 
         goPkgs
         luaPkgs

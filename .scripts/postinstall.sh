@@ -142,6 +142,7 @@ packages=(
 	1password-cli
 	btrfs-assistant
 	obmenu-generator
+	raysession
 	snap-pac-grub
 	sway-fader
 	wdisplays
@@ -235,7 +236,7 @@ EOF
 
 sudo sensors-detect --auto
 
-sudo systemctl enable tlp
+sudo systemctl enable tlp.service
 sudo systemctl mask systemd-rfkill.service
 sudo systemctl mask systemd-rfkill.socket
 
@@ -256,7 +257,7 @@ sudo systemctl enable docker.socket
 sudo gpasswd -a "$USER" docker
 
 # Set up nix.
-sudo systemctl enable nix-daemon
+sudo systemctl enable nix-daemon.service
 if ! nix-channel --list | grep -q 'channels'; then
 	nix-channel --add https://nixos.org/channels/nixos-25.05
 	nix-channel --update
@@ -267,22 +268,28 @@ cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
 EOF
 
 # Set up tailscale.
-sudo systemctl enable tailscaled
+sudo systemctl enable --now tailscaled.service
 if tailscale status --json | grep -q 'NeedsLogin'; then
 	echo "Logging into tailscale"
 	sudo tailscale set --operator="$USER"
 	tailscale up --qr
 fi
 
+# Enable ssh-agent.
+systemctl --user enable --now ssh-agent.service
+
 # Set up dotfiles.
 if [[ ! -d "$HOME/.git" ]]; then
-	echo "Set up Github SSH keys and press a key to continue..."
+	echo "Ensure KeePassXC database file is available at ~/Passwords.kdbx and press any key to continue..."
 	read -r
+	keepassxc-cli attachment-export ~/Passwords.kdbx "/Github SSH key" "github" --stdout | ssh-add -
 
 	git clone --recurse-submodules --separate-git-dir="$HOME/.git" git@github.com:mgnsk/dotfiles.git "$HOME/dotfiles-tmp"
 	git config status.showUntrackedFiles no
 	git reset --hard --recurse-submodules origin/master
 	rm -rf "$HOME/dotfiles-tmp"
+
+	ssh-add -D
 fi
 
 # Enable saving the last booted entry in GRUB.
@@ -297,7 +304,7 @@ line="$USER ALL=(ALL) NOPASSWD: /usr/bin/psd-overlay-helper"
 if ! sudo grep -q "$line" /etc/sudoers; then
 	echo "$line" | sudo tee -a /etc/sudoers
 fi
-systemctl --user enable psd
+systemctl --user enable psd.service
 
 # Disable automatic coredumps.
 sudo mkdir -p /etc/systemd/coredump.conf.d
@@ -306,9 +313,6 @@ cat <<-'EOF' | sudo tee /etc/systemd/coredump.conf.d/custom.conf >/dev/null
 	Storage=none
 	ProcessSizeMax=0
 EOF
-
-# Enable ssh-agent.
-systemctl --user enable ssh-agent
 
 # Enable printing support.
 sudo systemctl enable cups.socket
@@ -319,8 +323,22 @@ cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null
 EOF
 
 # Configure firewall.
-sudo systemctl enable ufw
+sudo systemctl enable ufw.service
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw allow in on tailscale0
 sudo ufw enable
+
+# Reboot the system.
+PS3='Reboot the system (y/n)? '
+options=("y")
+select opt in "${options[@]}"; do
+	case $opt in
+	"y")
+		reboot
+		;;
+	*)
+		exit
+		;;
+	esac
+done

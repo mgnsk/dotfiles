@@ -16,6 +16,16 @@ git reset --hard --recurse-submodules origin/master
 rm -r ~/dotfiles-tmp/
 ```
 
+# Installation on a fresh Arch system
+
+Download the install script:
+
+```sh
+curl https://raw.githubusercontent.com/mgnsk/dotfiles/refs/heads/master/.scripts/postinstall.sh
+```
+
+Run the install script and follow instructions.
+
 # development IDE
 
 `ide` is the nix development environment.

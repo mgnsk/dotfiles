@@ -100,6 +100,6 @@
 [submodule ".pkgbuilds/web-eid"]
 	path = .pkgbuilds/web-eid
 	url = https://aur.archlinux.org/web-eid.git
-[submodule ".nvim-plugins/vim-helm"]
-	path = .nvim-plugins/vim-helm
-	url = https://github.com/towolf/vim-helm.git
+[submodule ".pkgbuilds/raysession"]
+	path = .pkgbuilds/raysession
+	url = https://aur.archlinux.org/raysession.git

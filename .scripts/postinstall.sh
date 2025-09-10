@@ -103,6 +103,8 @@ packages=(
 	libreoffice-fresh-et
 	picard
 	firefox
+	pinentry
+	gcr
 	keepassxc
 	qt5-wayland
 	qt6-wayland

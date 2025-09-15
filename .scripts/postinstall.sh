@@ -76,6 +76,7 @@ packages=(
 	7zip
 	tumbler
 	ffmpegthumbnailer
+	exiftool
 	geany
 	gvfs
 	tlp

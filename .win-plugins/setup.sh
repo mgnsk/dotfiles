@@ -2,6 +2,15 @@
 
 set -eu
 
+# Set up wine prefix.
+if [ ! -d "$HOME/.wine" ]; then
+	# Needed for some Windows VST plugins.
+	winetricks -q dxvk
+
+	# Needed for Guitar Pro 5.
+	winetricks -q gdiplus
+fi
+
 # Link plugins dir to Windows user home.
 {
 	src="$HOME/.win-plugins"

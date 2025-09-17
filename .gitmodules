@@ -103,3 +103,6 @@
 [submodule ".pkgbuilds/raysession"]
 	path = .pkgbuilds/raysession
 	url = https://aur.archlinux.org/raysession.git
+[submodule ".pkgbuilds/rclone-browser"]
+	path = .pkgbuilds/rclone-browser
+	url = https://aur.archlinux.org/rclone-browser.git

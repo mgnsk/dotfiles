@@ -116,6 +116,7 @@ packages=(
 	ipp-usb
 	pacman-contrib
 	ufw
+	rclone
 )
 
 if lscpu | grep -q Intel; then
@@ -146,6 +147,7 @@ packages=(
 	btrfs-assistant
 	obmenu-generator
 	raysession
+	rclone-browser
 	snap-pac-grub
 	sway-fader
 	wdisplays
@@ -164,6 +166,7 @@ packages=(
 	web-eid
 )
 
+# Estonian ID card signing key.
 gpg --keyserver keyserver.ubuntu.com --recv-keys 90C0B5E75C3B195D
 
 for pkg in "${packages[@]}"; do

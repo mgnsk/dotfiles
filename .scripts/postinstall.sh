@@ -145,6 +145,7 @@ packages=(
 	1password
 	1password-cli
 	btrfs-assistant
+	downgrade
 	obmenu-generator
 	raysession
 	rclone-browser

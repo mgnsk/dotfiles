@@ -41,7 +41,10 @@ vim.keymap.set("n", "gr", function()
 end, { desc = "List references" })
 
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" })
-vim.keymap.set("n", "ga", vim.lsp.buf.code_action, { desc = "Code action" })
+
+vim.keymap.set("n", "ga", function()
+	return require("fzf-lua").lsp_code_actions()
+end, { desc = "Code actions" })
 
 local group = vim.api.nvim_create_augroup("UserLspConfig", {})
 

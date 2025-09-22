@@ -144,7 +144,6 @@ sudo pacman -S --needed --noconfirm "${packages[@]}"
 packages=(
 	1password
 	1password-cli
-	btrfs-assistant
 	downgrade
 	obmenu-generator
 	raysession

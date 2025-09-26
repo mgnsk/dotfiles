@@ -306,23 +306,12 @@
       ];
 
       clapPlugins = with pkgs; [
-        zam-plugins
-        lsp-plugins
         airwindows-consolidated
       ];
 
       lv2Plugins = with pkgs; [
-        guitarix
-        gxplugins-lv2
         x42-plugins
         x42-avldrums
-        infamousPlugins
-        distrho-ports
-        mda_lv2
-        swh_lv2
-        mod-distortion
-        kapitonov-plugins-pack
-        stone-phaser
         magnetophonDSP.VoiceOfFaust
         magnetophonDSP.MBdistortion
         levelrider

@@ -117,6 +117,12 @@ packages=(
 	pacman-contrib
 	ufw
 	rclone
+
+	# iOS
+	libimobiledevice
+	usbmuxd
+	gvfs-gphoto2
+	gvfs-afc
 )
 
 if lscpu | grep -q Intel; then

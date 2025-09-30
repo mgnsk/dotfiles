@@ -49,6 +49,7 @@
         fzf
         coreutils
         moreutils
+        findutils
         which
         shfmt
         direnv

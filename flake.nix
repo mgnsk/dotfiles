@@ -109,7 +109,7 @@
       });
 
       goPkgs = with pkgs; [
-        go_1_24
+        go
         gopls
         revive
         gocc

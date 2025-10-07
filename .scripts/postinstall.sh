@@ -271,7 +271,7 @@ sudo gpasswd -a "$USER" docker
 # Set up nix.
 sudo systemctl enable nix-daemon.service
 if ! nix-channel --list | grep -q 'channels'; then
-	nix-channel --add https://nixos.org/channels/nixos-25.05
+	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 	nix-channel --update
 fi
 cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
@@ -340,17 +340,3 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw allow in on tailscale0
 sudo ufw enable
-
-# Reboot the system.
-PS3='Reboot the system (y/n)? '
-options=("y")
-select opt in "${options[@]}"; do
-	case $opt in
-	"y")
-		reboot
-		;;
-	*)
-		exit
-		;;
-	esac
-done

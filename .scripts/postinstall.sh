@@ -13,13 +13,24 @@ function set_option() {
 }
 
 packages=(
+	# System.
 	man-db
 	fuse2
 	mesa
-	mpv
-	yt-dlp
-	sox
 	base-devel
+	bash-completion
+	realtime-privileges
+	flatpak
+	tailscale
+	nix
+	docker
+	docker-buildx
+	docker-compose
+	snap-pac
+	pacman-contrib
+	ufw
+
+	# CLI tools.
 	strace
 	inotify-tools
 	sshfs
@@ -28,23 +39,30 @@ packages=(
 	tree
 	fd
 	fdupes
-	bash-completion
+	sox
 	neovim
 	tmux
-	realtime-privileges
 	glances
-	noto-fonts
-	noto-fonts-cjk
-	noto-fonts-emoji
-	noto-fonts-extra
-	cantarell-fonts
-	otf-font-awesome
-	gnome-tweaks
-	baobab
-	xdg-desktop-portal-wlr
-	xdg-desktop-portal-gtk
-	xdg-user-dirs
-	flatpak
+	grim
+	slurp
+	zenity
+	fzf
+	rsync
+	vivid
+	bind
+	stress
+
+	# Disks.
+	btrfs-assistant
+	qt6-wayland
+
+	# Identity and passwords.
+	pinentry
+	gcr
+	keepassxc
+	qt5-wayland
+
+	# Desktop and window management.
 	sway
 	swaybg
 	swaylock
@@ -53,22 +71,42 @@ packages=(
 	waybar
 	wl-clipboard
 	mate-polkit
-	geoclue
-	gammastep
-	nm-connection-editor
-	network-manager-applet
-	viewnior
-	webp-pixbuf-loader
-	grim
-	slurp
-	zenity
-	imagemagick
-	pavucontrol
+	xorg-xwayland
 	j4-dmenu-desktop
 	wmenu
+	nm-connection-editor
+	network-manager-applet
+	gammastep
+	xdg-desktop-portal-wlr
+	xdg-desktop-portal-gtk
+	xdg-user-dirs
+	gnome-tweaks
+	pavucontrol
+	noto-fonts
+	noto-fonts-cjk
+	noto-fonts-emoji
+	noto-fonts-extra
+	cantarell-fonts
+	otf-font-awesome
+	geoclue
 	kitty
 	alacritty
 	foot
+	geany
+
+	# Power management.
+	tlp
+	smartmontools
+
+	# Web and document tools.
+	thunderbird
+	libreoffice-fresh
+	libreoffice-fresh-et
+	firefox
+	profile-sync-daemon
+	gimp
+
+	# File management.
 	thunar
 	thunar-archive-plugin
 	engrampa
@@ -77,48 +115,29 @@ packages=(
 	tumbler
 	ffmpegthumbnailer
 	exiftool
-	geany
 	gvfs
-	tlp
-	smartmontools
-	tailscale
-	nix
-	docker
-	docker-buildx
-	docker-compose
-	thunderbird
-	profile-sync-daemon
-	fzf
-	rsync
-	vivid
-	xorg-xwayland
+	webp-pixbuf-loader
+	viewnior
+	gthumb
+	rclone
+	imagemagick
+	baobab
+	mpv
+	yt-dlp
+
+	# Xorg and Openbox (for TTY2).
 	xorg-server
 	xorg-xinit
 	openbox
 	tint2
 	picom
-	bind
-	gimp
-	qbittorrent
-	libreoffice-fresh
-	libreoffice-fresh-et
-	picard
-	firefox
-	pinentry
-	gcr
-	keepassxc
-	qt5-wayland
-	qt6-wayland
-	snap-pac
-	stress
+
+	# Printing.
 	cups
 	cups-pdf
 	ipp-usb
-	pacman-contrib
-	ufw
-	rclone
 
-	# iOS
+	# iOS.
 	libimobiledevice
 	usbmuxd
 	gvfs-gphoto2

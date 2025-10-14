@@ -106,3 +106,6 @@
 [submodule ".pkgbuilds/downgrade"]
 	path = .pkgbuilds/downgrade
 	url = https://aur.archlinux.org/downgrade.git
+[submodule ".pkgbuilds/systemd-audio-idle-inhibit"]
+	path = .pkgbuilds/systemd-audio-idle-inhibit
+	url = https://github.com/mgnsk/systemd-audio-idle-inhibit.git

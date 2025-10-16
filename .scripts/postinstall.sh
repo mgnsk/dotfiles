@@ -38,7 +38,6 @@ packages=(
 	less
 	tree
 	fd
-	fdupes
 	sox
 	neovim
 	tmux
@@ -119,11 +118,13 @@ packages=(
 	webp-pixbuf-loader
 	viewnior
 	gthumb
+	geeqie
 	rclone
 	imagemagick
 	baobab
 	mpv
 	yt-dlp
+	fdupes
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

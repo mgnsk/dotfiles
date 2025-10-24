@@ -32,10 +32,6 @@ return {
 		dir = vim.fn.expand("$HOME/.nvim-plugins/vim-wordmotion"),
 	},
 	{
-		"mfussenegger/nvim-ansible",
-		dir = vim.fn.expand("$HOME/.nvim-plugins/nvim-ansible"),
-	},
-	{
 		"NlGHT/vim-eel",
 		dir = vim.fn.expand("$HOME/.nvim-plugins/vim-eel"),
 		ft = "eel2",

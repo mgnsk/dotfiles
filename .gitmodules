@@ -55,9 +55,6 @@
 [submodule ".config/nvim/plugins/gitsigns.nvim"]
 	path = .nvim-plugins/gitsigns.nvim
 	url = https://github.com/lewis6991/gitsigns.nvim.git
-[submodule ".config/nvim/plugins/nvim-ansible"]
-	path = .nvim-plugins/nvim-ansible
-	url = https://github.com/mfussenegger/nvim-ansible.git
 [submodule ".config/kitty/kitty_grab"]
 	path = .config/kitty/kitty_grab
 	url = https://github.com/yurikhan/kitty_grab.git

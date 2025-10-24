@@ -108,7 +108,6 @@ vim.lsp.enable({
 	"jsonnet_ls",
 	"buf_ls",
 	"nil_ls",
-	"ansiblels",
 	"helm_ls",
 	"yamlls",
 })

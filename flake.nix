@@ -141,6 +141,19 @@
         '';
       };
 
+      jsfx-lint = pkgs.stdenv.mkDerivation {
+        name = "jsfx-lint";
+        src = pkgs.fetchurl {
+          url = "https://github.com/Souk21/jsfx-lint/releases/download/0.2.0/jsfx-lint-0.2.0-x86_64-unknown-linux-musl.tar.gz";
+          sha256 = "ee20752516341a69d2f7be595834ed754614b5a3638f806580f538c0c66d0a60";
+        };
+        sourceRoot = "./jsfx-lint-0.2.0-x86_64-unknown-linux-musl";
+        installPhase = ''
+          install -m755 -D eel_pp $out/bin/eel_pp
+          install -m755 -D jsfx-lint $out/bin/jsfx-lint
+        '';
+      };
+
       phpPkgs = with pkgs; [
         php84
         phpactor
@@ -194,6 +207,7 @@
         asciinema
         go-jsonnet
         helm-ls
+        jsfx-lint
 
         goPkgs
         luaPkgs

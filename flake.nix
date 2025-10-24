@@ -178,7 +178,7 @@
         eslint
         stylelint
         typescript
-        typescript-language-server
+        vtsls
         vscode-langservers-extracted
       ];
 

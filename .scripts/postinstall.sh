@@ -29,6 +29,7 @@ packages=(
 	snap-pac
 	pacman-contrib
 	ufw
+	logrotate
 
 	# CLI tools.
 	strace
@@ -232,6 +233,9 @@ cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
 	When = PostTransaction
 	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
 EOF
+
+# Enable logrotate.
+sudo systemctl enable logrotate.timer
 
 # Ensure automatic timeline snapshotting is disabled.
 sudo systemctl disable snapper-timeline.timer

@@ -18,3 +18,8 @@ if echo "$deps" | grep -q "not found"; then
 	echo "$deps" | grep "not found"
 	exit 1
 fi
+
+if ! vulkaninfo &>/dev/null; then
+	vulkaninfo
+	exit 1
+fi

@@ -14,10 +14,6 @@
         inherit system;
         config = {
           allowUnfree = true;
-          permittedInsecurePackages = [
-            # For chow-tape-model.
-            "libsoup-2.74.3"
-          ];
         };
       };
 
@@ -272,7 +268,7 @@
 
         # Complete Vulkan setup to fix Northern Artillery Drums plugin GUI not updating until window moved.
         libdrm
-        llvmPackages_20.libllvm
+        llvmPackages_21.libllvm
         elfutils
         zstd
         xorg.libxcb
@@ -284,7 +280,7 @@
         libudev-zero
         expat
         spirv-tools-lib
-        pkgs.stdenv.cc.cc.lib
+        stdenv.cc.cc.lib
 
         # Reaper.
         reaper
@@ -299,8 +295,6 @@
 
         # General programs.
         fluidsynth
-        rakarrack
-
       ];
 
       clapPlugins = with pkgs; [
@@ -313,9 +307,6 @@
         magnetophonDSP.VoiceOfFaust
         magnetophonDSP.MBdistortion
         levelrider
-        chow-kick
-        chow-centaur
-        chow-tape-model
         neural-amp-modeler-lv2
       ];
 

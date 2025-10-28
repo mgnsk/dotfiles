@@ -1,12 +1,17 @@
 #!/bin/env bash
 
-set -euo pipefail
+set -eu
 
 # Pick desired files from a chosen branch.
 
 # use fzf to choose source branch to snag files FROM
 # TODO sort branches by changes in this specific directory
-branch="$(git for-each-ref --sort='-committerdate' --format='%(refname:short)' refs/heads | fzf --no-sort --height 20%)"
+branch=$(
+	git branch -v --sort=-committerdate |
+		grep -v "^\*" |            # Without current branch.
+		sed 's/^[[:space:]]*//g' | # Trim whitespace prefix.
+		fzf --no-sort --height 20% --accept-nth=1
+)
 
 # avoid doing work if branch isn't set
 if test -n "$branch"; then

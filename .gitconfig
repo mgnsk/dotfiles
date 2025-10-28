@@ -1,10 +1,6 @@
 [alias]
 	st = status
-	ci = commit
-	br = branch -v --sort=-committerdate
 	co = checkout
-	p = pull
-	pul = pull
 	ns = diff --name-status
 	cx = cherry-pick -x
 	lg = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>' --abbrev-commit --all"
@@ -20,6 +16,7 @@
 	snag = !bash ~/.scripts/git/snag.sh
 	squashall = !bash ~/.scripts/git/squashall.sh
 	sw = !bash ~/.scripts/git/switch-fzf.sh
+	alias = !git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
 
 [mergetool]
 	keepBackup = false

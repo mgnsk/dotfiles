@@ -1,7 +1,12 @@
 #!/bin/env bash
 
-set -euo pipefail
+set -eu
 
-branch=$(git for-each-ref --sort='-committerdate' --format='%(refname:short)' refs/heads | fzf --no-sort --height 20%)
+branch=$(
+	git branch -v --sort=-committerdate |
+		grep -v "^\*" |            # Without current branch.
+		sed 's/^[[:space:]]*//g' | # Trim whitespace prefix.
+		fzf --no-sort --height 20% --accept-nth=1
+)
 
 git switch "$branch"

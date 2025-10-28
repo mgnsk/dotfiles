@@ -10,20 +10,16 @@
 	lg = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>' --abbrev-commit --all"
 	lb = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>' --abbrev-commit --first-parent $(git branch --show-current)"
 
-	# Git logs.
-	logs = !git-fzf log
-	reflogs = !git-fzf reflog
-
-	# Github CLI.
-
-	# PRs in current repo.
-	prs = !gh-fzf prs
-
-	# Issues in current repo.
-	issues = !gh-fzf issues
-
-	# Search code in all repos.
-	code = !gh-fzf code
+	logs = !bash ~/.scripts/git/git-fzf.sh log
+	reflogs = !bash ~/.scripts/git/git-fzf.sh reflog
+	browse-commit = !bash ~/.scripts/git/browse-commit.sh
+	prs = !bash ~/.scripts/git/gh-fzf.sh prs
+	issues = !bash ~/.scripts/git/gh-fzf.sh issues
+	code = !gh-fzf ~/.scripts/git/gh-fzf.sh code
+	mergesquashn = !bash ~/.scripts/git/mergesquashn.sh
+	snag = !bash ~/.scripts/git/snag.sh
+	squashall = !bash ~/.scripts/git/squashall.sh
+	sw = !bash ~/.scripts/git/switch-fzf.sh
 
 [mergetool]
 	keepBackup = false

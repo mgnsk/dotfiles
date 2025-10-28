@@ -231,7 +231,7 @@ cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
 	Depends = rsync
 	Description = Backing up post /boot...
 	When = PostTransaction
-	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
+	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/ && ls -t | tail -n +11 | xargs rm -rf --'
 EOF
 
 # Enable logrotate.

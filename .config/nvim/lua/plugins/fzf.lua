@@ -13,7 +13,7 @@ local function create_git_log_actions(field_index)
 	return {
 		["ctrl-l"] = {
 			fn = function(selected)
-				vim.fn.system(string.format("git browse-commit %s", selected[1]))
+				vim.fn.system(string.format("git browse %s", selected[1]))
 			end,
 			field_index = string.format("{%d}", field_index),
 			exec_silent = true,

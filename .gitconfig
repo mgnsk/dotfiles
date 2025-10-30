@@ -8,11 +8,11 @@
 
 	logs = !bash ~/.scripts/git/git-fzf.sh log
 	reflogs = !bash ~/.scripts/git/git-fzf.sh reflog
-	browse-commit = !bash ~/.scripts/git/browse-commit.sh
+	browse = !bash ~/.scripts/git/browse-commit.sh
 	prs = !bash ~/.scripts/git/gh-fzf.sh prs
 	issues = !bash ~/.scripts/git/gh-fzf.sh issues
 	code = !gh-fzf ~/.scripts/git/gh-fzf.sh code
-	mergesquashn = !bash ~/.scripts/git/mergesquashn.sh
+	msn = !bash ~/.scripts/git/mergesquashn.sh
 	snag = !bash ~/.scripts/git/snag.sh
 	squashall = !bash ~/.scripts/git/squashall.sh
 	sw = !bash ~/.scripts/git/switch-fzf.sh

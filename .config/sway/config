@@ -134,9 +134,9 @@ input type:keyboard {
 
 focus_follows_mouse no
 
-set $wallpapers_path $HOME/wallpapers
+#set $wallpapers_path $HOME/wallpapers
 # TODO: only if $wallpapers_path exists and at least one file, otherwise we get config syntax error.
-output * bg `find $wallpapers_path -type f | shuf -n 1` fill
+#output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
 for_window [class=".*"] border none
 

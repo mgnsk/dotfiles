@@ -30,6 +30,7 @@ packages=(
 	pacman-contrib
 	ufw
 	logrotate
+	ntfs-3g
 
 	# CLI tools.
 	strace
@@ -51,6 +52,7 @@ packages=(
 	vivid
 	bind
 	stress
+	jq
 
 	# Disks.
 	btrfs-assistant
@@ -88,7 +90,6 @@ packages=(
 	noto-fonts-extra
 	cantarell-fonts
 	otf-font-awesome
-	geoclue
 	kitty
 	alacritty
 	foot
@@ -124,6 +125,7 @@ packages=(
 	imagemagick
 	baobab
 	mpv
+	smplayer
 	yt-dlp
 	fdupes
 
@@ -167,41 +169,6 @@ fi
 # Install packages.
 sudo pacman -S --needed --noconfirm "${packages[@]}"
 
-# Install AUR packages.
-packages=(
-	1password
-	1password-cli
-	downgrade
-	obmenu-generator
-	raysession
-	rclone-browser
-	snap-pac-grub
-	sway-fader
-	wdisplays
-	wine-tkg-staging-wow64-bin
-	yay-bin
-)
-
-for pkg in "${packages[@]}"; do
-	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
-done
-
-# Install support for Estonian ID card.
-packages=(
-	libdigidocpp
-	qdigidoc4
-	web-eid
-)
-
-# Estonian ID card signing key.
-gpg --keyserver keyserver.ubuntu.com --recv-keys 90C0B5E75C3B195D
-
-for pkg in "${packages[@]}"; do
-	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
-done
-
-sudo systemctl enable pcscd.socket
-
 # Backup /boot partition data.
 # https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
 sudo mkdir -p /etc/pacman.d/hooks
@@ -231,7 +198,7 @@ cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
 	Depends = rsync
 	Description = Backing up post /boot...
 	When = PostTransaction
-	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/ && ls -t | tail -n +11 | xargs rm -rf --'
+	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
 EOF
 
 # Enable logrotate.
@@ -303,6 +270,20 @@ cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
 	max-jobs = auto
 EOF
 
+# Disable tailscale logs.
+cat <<-'EOF' | sudo tee /etc/default/tailscaled >/dev/null
+	# Set the port to listen on for incoming VPN packets.
+	# Remote nodes will automatically be informed about the new port number,
+	# but you might want to configure this in order to set external firewall
+	# settings.
+	PORT="41641"
+
+	# Extra flags you might want to pass to tailscaled.
+	FLAGS=""
+
+	TS_NO_LOGS_NO_SUPPORT=true
+EOF
+
 # Set up tailscale.
 sudo systemctl enable --now tailscaled.service
 if tailscale status --json | grep -q 'NeedsLogin'; then
@@ -312,21 +293,54 @@ if tailscale status --json | grep -q 'NeedsLogin'; then
 fi
 
 # Enable ssh-agent.
-systemctl --user enable --now ssh-agent.service
+systemctl --user enable ssh-agent.service
 
 # Set up dotfiles.
 if [[ ! -d "$HOME/.git" ]]; then
-	echo "Ensure KeePassXC database file is available at ~/Passwords.kdbx and press any key to continue..."
-	read -r
-	keepassxc-cli attachment-export ~/Passwords.kdbx "/Github SSH key" "github" --stdout | ssh-add -
-
-	git clone --recurse-submodules --separate-git-dir="$HOME/.git" git@github.com:mgnsk/dotfiles.git "$HOME/dotfiles-tmp"
+	git clone --recurse-submodules --separate-git-dir="$HOME/.git" https://github.com/mgnsk/dotfiles.git "$HOME/dotfiles-tmp"
 	git config status.showUntrackedFiles no
 	git reset --hard --recurse-submodules origin/master
 	rm -rf "$HOME/dotfiles-tmp"
-
-	ssh-add -D
 fi
+
+# 1password signing key.
+gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
+
+# Install AUR packages.
+packages=(
+	1password
+	1password-cli
+	downgrade
+	# TODO: missing deps
+	#obmenu-generator
+	raysession
+	rclone-browser
+	snap-pac-grub
+	sway-fader
+	wdisplays
+	wine-tkg-staging-wow64-bin
+	yay-bin
+)
+
+for pkg in "${packages[@]}"; do
+	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
+done
+
+# Install support for Estonian ID card.
+packages=(
+	libdigidocpp
+	qdigidoc4
+	web-eid
+)
+
+# Estonian ID card signing key.
+gpg --keyserver keyserver.ubuntu.com --recv-keys 90C0B5E75C3B195D
+
+for pkg in "${packages[@]}"; do
+	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
+done
+
+sudo systemctl enable pcscd.socket
 
 # Enable saving the last booted entry in GRUB.
 if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then

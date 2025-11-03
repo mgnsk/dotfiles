@@ -31,6 +31,7 @@ packages=(
 	ufw
 	logrotate
 	ntfs-3g
+	vulkan-tools
 
 	# CLI tools.
 	strace

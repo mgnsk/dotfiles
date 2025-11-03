@@ -71,8 +71,8 @@
       airwindows-consolidated = pkgs.stdenv.mkDerivation {
         name = "airwindows-consolidated";
         src = pkgs.fetchzip {
-          url = "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2025-08-24-94da083-Linux.zip";
-          sha256 = "UXkxBdfYGJ1n4Gd1q/2XlpE4KCUH9GFFDU6CwicyJiI=";
+          url = "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2025-11-03-f08ea4f-Linux.zip";
+          sha256 = "hjYz7Usp9fCE9m6/Ykm9fM7v4C7El00J7sWzSCTOGSY=";
         };
         installPhase = ''
           install -m755 -D ./Airwindows\ Consolidated.clap $out/lib/clap/Airwindows\ Consolidated.clap

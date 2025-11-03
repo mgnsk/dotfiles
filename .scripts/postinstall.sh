@@ -83,7 +83,6 @@ packages=(
 	xdg-desktop-portal-wlr
 	xdg-desktop-portal-gtk
 	xdg-user-dirs
-	gnome-tweaks
 	pavucontrol
 	noto-fonts
 	noto-fonts-cjk
@@ -106,7 +105,6 @@ packages=(
 	libreoffice-fresh-et
 	firefox
 	profile-sync-daemon
-	gimp
 
 	# File management.
 	thunar
@@ -312,8 +310,8 @@ packages=(
 	1password
 	1password-cli
 	downgrade
-	# TODO: missing deps
-	#obmenu-generator
+	perl-linux-desktopfiles # Dependency of obmenu-generator.
+	obmenu-generator
 	raysession
 	rclone-browser
 	snap-pac-grub

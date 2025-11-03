@@ -106,3 +106,6 @@
 [submodule ".pkgbuilds/systemd-audio-idle-inhibit"]
 	path = .pkgbuilds/systemd-audio-idle-inhibit
 	url = https://github.com/mgnsk/systemd-audio-idle-inhibit.git
+[submodule ".pkgbuilds/perl-linux-desktopfiles"]
+	path = .pkgbuilds/perl-linux-desktopfiles
+	url = https://aur.archlinux.org/perl-linux-desktopfiles.git

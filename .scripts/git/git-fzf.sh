@@ -147,7 +147,7 @@ fzf \
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
 	--bind "shift-up:preview-top,shift-down:preview-bottom" \
 	--header-lines=1 \
-	--bind "ctrl-l:execute-silent(gh-browse-commit {1})" \
+	--bind "ctrl-l:execute-silent(git browse {1})" \
 	--bind "ctrl-o:execute(bash -c 'git show --color {1}')" \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \

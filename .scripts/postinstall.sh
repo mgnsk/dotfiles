@@ -54,6 +54,7 @@ packages=(
 	bind
 	stress
 	jq
+	iotop
 
 	# Disks.
 	btrfs-assistant

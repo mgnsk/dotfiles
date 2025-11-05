@@ -246,9 +246,6 @@ sudo systemctl mask systemd-rfkill.socket
 # Create user dirs.
 xdg-user-dirs-update
 
-# Set default browser.
-xdg-settings set default-web-browser firefox.desktop
-
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime
 

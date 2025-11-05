@@ -310,6 +310,7 @@ gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D627
 packages=(
 	1password
 	1password-cli
+	brave-bin
 	downgrade
 	perl-linux-desktopfiles # Dependency of obmenu-generator.
 	obmenu-generator
@@ -348,6 +349,12 @@ if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then
 	set_option /etc/default/grub GRUB_SAVEDEFAULT true
 	sudo grub-mkconfig -o /boot/grub/grub.cfg
 fi
+
+# Configure profile-sync-daemon for brave.
+cat <<-'EOF' | sudo tee /usr/share/psd/browsers/brave >/dev/null
+	DIRArr[0]="$XDG_CONFIG_HOME/BraveSoftware/Brave-Browser"
+	PSNAME="brave"
+EOF
 
 # Enable profile-sync-daemon.
 line="$USER ALL=(ALL) NOPASSWD: /usr/bin/psd-overlay-helper"

@@ -109,3 +109,6 @@
 [submodule ".pkgbuilds/perl-linux-desktopfiles"]
 	path = .pkgbuilds/perl-linux-desktopfiles
 	url = https://aur.archlinux.org/perl-linux-desktopfiles.git
+[submodule ".pkgbuilds/brave-bin"]
+	path = .pkgbuilds/brave-bin
+	url = https://aur.archlinux.org/brave-bin.git

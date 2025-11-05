@@ -160,6 +160,9 @@ function gh-view {
 		gh pr view --json commits "$number" |
 			gh-tpl --color "$commit_list_template" |
 			highlight "$query"
+
+		gh pr diff --color=always "$number" |
+			diff-highlight
 	elif [ "$target" == "issues" ]; then
 		GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS - 4)) gh issue view --comments "$number" |
 			highlight "$query"

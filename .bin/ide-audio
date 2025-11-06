@@ -1,0 +1,5 @@
+#!/bin/env bash
+
+set -euo pipefail
+
+nix develop "${HOME}?submodules=1#audio" --show-trace

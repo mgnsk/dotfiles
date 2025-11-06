@@ -112,3 +112,27 @@
 [submodule ".pkgbuilds/brave-bin"]
 	path = .pkgbuilds/brave-bin
 	url = https://aur.archlinux.org/brave-bin.git
+[submodule ".pkgbuilds/shellcheck-bin"]
+	path = .pkgbuilds/shellcheck-bin
+	url = https://aur.archlinux.org/shellcheck-bin.git
+[submodule ".pkgbuilds/gojq-bin"]
+	path = .pkgbuilds/gojq-bin
+	url = https://aur.archlinux.org/gojq-bin.git
+[submodule ".pkgbuilds/hadolint-bin"]
+	path = .pkgbuilds/hadolint-bin
+	url = https://aur.archlinux.org/hadolint-bin.git
+[submodule ".pkgbuilds/jsonnet-language-server"]
+	path = .pkgbuilds/jsonnet-language-server
+	url = https://aur.archlinux.org/jsonnet-language-server.git
+[submodule ".pkgbuilds/nil-git"]
+	path = .pkgbuilds/nil-git
+	url = https://aur.archlinux.org/nil-git.git
+[submodule ".pkgbuilds/nixfmt"]
+	path = .pkgbuilds/nixfmt
+	url = https://aur.archlinux.org/nixfmt.git
+[submodule ".pkgbuilds/helm-ls-bin"]
+	path = .pkgbuilds/helm-ls-bin
+	url = https://aur.archlinux.org/helm-ls-bin.git
+[submodule ".pkgbuilds/go-jsonnet"]
+	path = .pkgbuilds/go-jsonnet
+	url = https://aur.archlinux.org/go-jsonnet.git

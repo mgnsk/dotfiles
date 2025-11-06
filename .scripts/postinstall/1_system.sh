@@ -41,6 +41,8 @@ packages=(
 	less
 	tree
 	fd
+	ripgrep
+	bat
 	sox
 	neovim
 	tmux
@@ -55,6 +57,8 @@ packages=(
 	stress
 	jq
 	iotop
+	shfmt
+	direnv
 
 	# Disks.
 	btrfs-assistant
@@ -146,6 +150,36 @@ packages=(
 	usbmuxd
 	gvfs-gphoto2
 	gvfs-afc
+
+	# Go development.
+	go
+	gopls
+	revive
+
+	# Lua development.
+	lua-language-server
+	luacheck
+	stylua
+
+	# PHP development.
+	php
+	composer
+
+	# Python development.
+	python-black
+	python-pylint
+	uv
+
+	# Web development.
+	tidy
+	npm
+
+	# General development.
+	buf
+	yamllint
+	github-cli
+	glow
+	asciinema
 )
 
 if lscpu | grep -q Intel; then
@@ -249,9 +283,6 @@ xdg-user-dirs-update
 # Enable realtime privileges for user.
 sudo gpasswd -a "$USER" realtime
 
-# Add to audio group. TODO: is this necessary anymore?
-sudo gpasswd -a "$USER" audio
-
 # Set up docker.
 sudo systemctl enable docker.socket
 sudo gpasswd -a "$USER" docker
@@ -303,16 +334,28 @@ fi
 # 1password signing key.
 gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
 
+# TODO pkgbuilds
+# gh-tpl
+# jsfx-lint
+
 # Install AUR packages.
 packages=(
 	1password
 	1password-cli
 	brave-bin
 	downgrade
+	gojq-bin
+	go-jsonnet
+	hadolint-bin
+	helm-ls-bin
+	jsonnet-language-server
+	nil-git
+	nixfmt
 	perl-linux-desktopfiles # Dependency of obmenu-generator.
 	obmenu-generator
 	raysession
 	rclone-browser
+	shellcheck-bin
 	snap-pac-grub
 	sway-fader
 	wdisplays
@@ -339,6 +382,18 @@ for pkg in "${packages[@]}"; do
 done
 
 sudo systemctl enable pcscd.socket
+
+# Install PHP packages.
+(
+	cd ~/.composer-packages
+	/usr/bin/composer install --no-cache --no-interaction --optimize-autoloader
+)
+
+# Install JS packages.
+(
+	cd ~/.npm-packages
+	npm ci
+)
 
 # Enable saving the last booted entry in GRUB.
 if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then

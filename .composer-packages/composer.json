@@ -1,0 +1,13 @@
+{
+    "name": "magnus/composer-packages",
+    "authors": [
+        {
+            "name": "Magnus Kokk",
+            "email": "magnus@kokk.eu"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpactor/phpactor": "^0.18.1"
+    }
+}

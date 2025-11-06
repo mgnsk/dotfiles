@@ -1,5 +1,4 @@
-# See GitHub's documentation for more information on this file:
-# https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
+---
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
@@ -13,3 +12,24 @@ updates:
       aur:
         patterns:
           - "/.pkgbuilds/*"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/.pkgbuilds"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "aur"
+
+  - package-ecosystem: "npm"
+    directory: "/.npm-packages"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm"
+
+  - package-ecosystem: "composer"
+    directory: "/.composer-packages"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "composer"

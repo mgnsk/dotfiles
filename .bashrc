@@ -5,20 +5,17 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-__append_path() {
-	PATH="${PATH:+"$PATH:"}$1"
-}
-
 __prepend_path() {
 	PATH="$1${PATH:+":$PATH"}"
 }
 
-__prepend_path ~/.local/bin
-__prepend_path ~/.bin
+__prepend_path ~/.npm-packages/node_modules/.bin
+__prepend_path ~/.composer-packages/vendor/bin
 __prepend_path ~/go/bin
 __prepend_path ~/.cargo/bin
-# We append to PATH so that nix can override this by prepending.
-__append_path /usr/share/git/diff-highlight
+__prepend_path /usr/share/git/diff-highlight
+__prepend_path ~/.local/bin
+__prepend_path ~/.bin
 
 export EDITOR="nvim"
 export VISUAL="nvim"

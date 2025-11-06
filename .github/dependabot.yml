@@ -13,13 +13,6 @@ updates:
         patterns:
           - "/.pkgbuilds/*"
 
-  - package-ecosystem: "gitsubmodule"
-    directory: "/.pkgbuilds"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "aur"
-
   - package-ecosystem: "npm"
     directory: "/.npm-packages"
     schedule:

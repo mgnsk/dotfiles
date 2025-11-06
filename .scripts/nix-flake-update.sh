@@ -3,7 +3,7 @@
 set -eu
 
 INPUT="nixpkgs"
-FLAKE_OUTPUT=".#devShells.x86_64-linux.all"
+FLAKE_OUTPUT=".#devShells.x86_64-linux.audio"
 
 # Build the old output and get its store path.
 OLD_STORE_PATH=$(nix build --show-trace --no-link --print-out-paths "$FLAKE_OUTPUT")

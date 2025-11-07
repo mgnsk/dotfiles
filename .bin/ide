@@ -7,6 +7,9 @@ args=(
 	--proc /proc
 	--tmpfs /tmp
 	--tmpfs "/run/user/$(id -u)"
+	--tmpfs "$HOME/.cache"
+	--tmpfs "$HOME/.local/share"
+	--tmpfs "$HOME/.local/state"
 	--ro-bind /bin /bin
 	--ro-bind /usr /usr
 	--ro-bind /lib /lib
@@ -14,8 +17,6 @@ args=(
 	--ro-bind /etc /etc
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 	--bind "$PWD" "$PWD"
-	--bind "$HOME/.cache" "$HOME/.cache"
-	--bind "$HOME/.local" "$HOME/.local"
 	--bind "$HOME/go" "$HOME/go"
 	--bind "$HOME/.cargo" "$HOME/.cargo"
 )

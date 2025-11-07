@@ -11,7 +11,7 @@ args=(
 	--ro-bind /usr /usr
 	--ro-bind /lib /lib
 	--ro-bind /lib64 /lib64
-	--ro-bind /etc/ /etc
+	--ro-bind /etc /etc
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 	--bind "$PWD" "$PWD"
 	--bind "$HOME/.cache" "$HOME/.cache"

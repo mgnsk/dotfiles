@@ -26,3 +26,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "composer"
+
+  - package-ecosystem: "gomod"
+    directory: "/.go-packages"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "go"

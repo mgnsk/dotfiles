@@ -346,7 +346,6 @@ packages=(
 	downgrade
 	gojq-bin
 	go-jsonnet
-	go-tusk-bin
 	hadolint-bin
 	helm-ls-bin
 	jsonnet-language-server
@@ -358,7 +357,6 @@ packages=(
 	rclone-browser
 	shellcheck-bin
 	snap-pac-grub
-	sway-fader-bin
 	wdisplays
 	wine-tkg-staging-wow64-bin
 	yay-bin
@@ -394,6 +392,12 @@ sudo systemctl enable pcscd.socket
 (
 	cd ~/.npm-packages
 	npm ci
+)
+
+# Install Go packages.
+(
+	cd ~/.go-packages
+	go install tool
 )
 
 # Enable saving the last booted entry in GRUB.

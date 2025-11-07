@@ -346,6 +346,7 @@ packages=(
 	downgrade
 	gojq-bin
 	go-jsonnet
+	go-tusk-bin
 	hadolint-bin
 	helm-ls-bin
 	jsonnet-language-server
@@ -357,7 +358,7 @@ packages=(
 	rclone-browser
 	shellcheck-bin
 	snap-pac-grub
-	sway-fader
+	sway-fader-bin
 	wdisplays
 	wine-tkg-staging-wow64-bin
 	yay-bin

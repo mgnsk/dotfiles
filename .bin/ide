@@ -23,7 +23,7 @@ args=(
 # Bind mount all files tracked by dotfiles git.
 for f in $(git -C "$HOME" ls-tree -r master --name-only); do
 	args+=(
-		--bind "$HOME/$f" "$HOME/$f"
+		--ro-bind "$HOME/$f" "$HOME/$f"
 	)
 done
 

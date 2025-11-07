@@ -343,7 +343,6 @@ rustup component add rust-analyzer
 gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
 
 # TODO pkgbuilds
-# gh-tpl
 # jsfx-lint
 
 # Install AUR packages.

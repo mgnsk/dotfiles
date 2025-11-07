@@ -156,6 +156,9 @@ packages=(
 	gopls
 	revive
 
+	# Rust development.
+	rustup
+
 	# Lua development.
 	lua-language-server
 	luacheck
@@ -330,6 +333,11 @@ if [[ ! -d "$HOME/.git" ]]; then
 	git reset --hard --recurse-submodules origin/master
 	rm -rf "$HOME/dotfiles-tmp"
 fi
+
+# Set up rust.
+rustup update
+rustup default stable
+rustup component add rust-analyzer
 
 # 1password signing key.
 gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22

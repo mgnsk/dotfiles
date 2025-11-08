@@ -14,9 +14,8 @@ args=(
 	--proc /proc
 	--tmpfs /tmp
 	--tmpfs "/run/user/$(id -u)"
-	--tmpfs "$HOME/.cache"
-	--tmpfs "$HOME/.local/share"
 	--tmpfs "$HOME/.local/state"
+	--bind "$HOME/.local/share/nvim" "$HOME/.local/share/nvim"
 	--ro-bind /bin /bin
 	--ro-bind /usr /usr
 	--ro-bind /lib /lib
@@ -25,7 +24,6 @@ args=(
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 	--unshare-all
 	--share-net
-	--new-session
 	--die-with-parent
 	--bind "$PWD" "$PWD"
 	--bind "$HOME/go" "$HOME/go"

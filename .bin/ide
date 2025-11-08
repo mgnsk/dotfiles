@@ -1,6 +1,13 @@
 #!/bin/env bash
 
-set -eu
+set -e
+
+prog="$1"
+
+if [[ "$prog" == "" ]]; then
+	echo "Usage: ide {program} [args]"
+	exit 1
+fi
 
 args=(
 	--dev-bind /dev /dev
@@ -16,6 +23,10 @@ args=(
 	--ro-bind /lib64 /lib64
 	--ro-bind /etc /etc
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
+	--unshare-all
+	--share-net
+	--new-session
+	--die-with-parent
 	--bind "$PWD" "$PWD"
 	--bind "$HOME/go" "$HOME/go"
 	--bind "$HOME/.cargo" "$HOME/.cargo"
@@ -28,4 +39,10 @@ for f in $(git -C "$HOME" ls-tree -r master --name-only); do
 	)
 done
 
-bwrap "${args[@]}" /usr/bin/bash
+args+=(
+	"$(which "$prog")"
+	--
+	"${@:2}"
+)
+
+bwrap "${args[@]}"

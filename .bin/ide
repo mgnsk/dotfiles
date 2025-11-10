@@ -10,27 +10,57 @@ if [[ "$prog" == "" ]]; then
 fi
 
 args=(
-	--dev-bind /dev /dev
-	--proc /proc
-	--tmpfs /tmp
-	--tmpfs "/run/user/$(id -u)"
-	--tmpfs "$HOME/.local/state"
-	--ro-bind /bin /bin
-	--ro-bind /usr /usr
-	--ro-bind /lib /lib
-	--ro-bind /lib64 /lib64
-	--ro-bind /etc /etc
-	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 	--unshare-all
 	--share-net
 	--die-with-parent
-	--bind "$PWD" "$PWD"
-	--bind "$HOME/go" "$HOME/go"
-	--bind "$HOME/.cargo" "$HOME/.cargo"
-	# For treesitter compiled plugins.
-	--bind "$HOME/.local/share/nvim" "$HOME/.local/share/nvim"
-	--bind "$HOME/.cache/go-build" "$HOME/.cache/go-build"
+	--setenv USERHOST_COLOR '\[\e[0;33m\]'
+	--dev-bind /dev /dev
+	--proc /proc
 )
+
+ro_binds=(
+	/bin
+	/usr
+	/lib
+	/lib64
+	/etc
+)
+
+rw_binds=(
+	"$PWD"
+	"$HOME/go"
+	"$HOME/.cargo"
+	"$HOME/.local/share/nvim"
+	"$HOME/.cache/goimports"
+	"$HOME/.cache/gopls"
+	"$HOME/.cache/go-build"
+	"$HOME/.cache/phpactor"
+	"$HOME/.npm-packages"
+)
+
+tmpfs_volumes=(
+	"/tmp"
+	"/run/user/$(id -u)"
+	"$HOME/.local/state"
+)
+
+for v in "${ro_binds[@]}"; do
+	args+=(
+		--ro-bind "$v" "$v"
+	)
+done
+
+for v in "${rw_binds[@]}"; do
+	args+=(
+		--bind "$v" "$v"
+	)
+done
+
+for v in "${tmpfs_volumes[@]}"; do
+	args+=(
+		--tmpfs "$v"
+	)
+done
 
 # Bind mount all files tracked by dotfiles git.
 for f in $(git -C "$HOME" ls-tree -r master --name-only); do

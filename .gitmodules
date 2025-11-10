@@ -136,3 +136,9 @@
 [submodule ".pkgbuilds/go-jsonnet"]
 	path = .pkgbuilds/go-jsonnet
 	url = https://aur.archlinux.org/go-jsonnet.git
+[submodule ".pkgbuilds/phpstan-bin"]
+	path = .pkgbuilds/phpstan-bin
+	url = https://aur.archlinux.org/phpstan-bin.git
+[submodule ".pkgbuilds/phpactor-bin"]
+	path = .pkgbuilds/phpactor-bin
+	url = https://aur.archlinux.org/phpactor-bin.git

@@ -339,8 +339,14 @@ rustup update
 rustup default stable
 rustup component add rust-analyzer
 
+# Set up PHP.
+sudo sed -i -e 's/;extension=iconv/extension=iconv/g' /etc/php/php.ini
+
 # 1password signing key.
 gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
+
+# phpstan-bin signing key.
+gpg --keyserver keys.openpgp.org --recv-keys 51C67305FFC2E5C0
 
 # TODO pkgbuilds
 # jsfx-lint
@@ -360,6 +366,8 @@ packages=(
 	nixfmt
 	perl-linux-desktopfiles # Dependency of obmenu-generator.
 	obmenu-generator
+	phpactor-bin
+	phpstan-bin
 	raysession
 	rclone-browser
 	shellcheck-bin
@@ -388,12 +396,6 @@ for pkg in "${packages[@]}"; do
 done
 
 sudo systemctl enable pcscd.socket
-
-# Install PHP packages.
-(
-	cd ~/.composer-packages
-	/usr/bin/composer install --no-cache --no-interaction --optimize-autoloader
-)
 
 # Install JS packages.
 (

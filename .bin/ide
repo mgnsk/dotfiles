@@ -31,6 +31,7 @@ rw_binds=(
 	"$HOME/go"
 	"$HOME/.cargo"
 	"$HOME/.local/share/nvim"
+	"$HOME/.local/share/phpactor"
 	"$HOME/.cache/goimports"
 	"$HOME/.cache/gopls"
 	"$HOME/.cache/go-build"

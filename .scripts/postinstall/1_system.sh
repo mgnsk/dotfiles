@@ -32,6 +32,7 @@ packages=(
 	logrotate
 	ntfs-3g
 	vulkan-tools
+	wget
 
 	# CLI tools.
 	strace
@@ -176,6 +177,17 @@ packages=(
 	# Web development.
 	tidy
 	npm
+	pnpm
+	eslint
+	prettier
+	stylelint
+	typescript
+	bash-language-server
+	markdownlint-cli
+	npm-check-updates
+	vscode-css-languageserver
+	vscode-html-languageserver
+	yaml-language-server
 
 	# General development.
 	buf

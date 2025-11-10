@@ -4,7 +4,7 @@ set -eo pipefail
 
 # Called by Neomake.
 
-if npm list eslint &>/dev/null; then
+if npm list --depth=0 eslint &>/dev/null; then
 	# Use eslint from project dir if available.
 	npx --offline eslint "$@"
 else

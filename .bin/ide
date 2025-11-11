@@ -27,6 +27,11 @@ declare -A ro_binds=(
 	["$HOME/.npm-packages"]="$HOME/.npm-packages"
 )
 
+# Mount all files tracked by dotfiles git.
+for f in $(git -C "$HOME" ls-tree -r master --name-only); do
+	ro_binds["$HOME/$f"]="$HOME/$f"
+done
+
 # Create persistent volumes.
 mkdir -p \
 	"$HOME/.ide/go" \
@@ -62,13 +67,6 @@ done
 for v in "${tmpfs_volumes[@]}"; do
 	args+=(
 		--tmpfs "$v"
-	)
-done
-
-# Bind mount all files tracked by dotfiles git.
-for f in $(git -C "$HOME" ls-tree -r master --name-only); do
-	args+=(
-		--ro-bind "$HOME/$f" "$HOME/$f"
 	)
 done
 

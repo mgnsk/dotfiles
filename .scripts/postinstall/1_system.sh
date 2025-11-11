@@ -411,13 +411,14 @@ sudo systemctl enable pcscd.socket
 
 # Install JS packages.
 (
-	cd ~/.npm-packages
+	cd "$HOME/.npm-packages"
 	npm ci
 )
 
 # Install Go packages.
 (
-	cd ~/.go-packages
+	cd "$HOME/.go-packages"
+	export GOBIN="$HOME/.go-packages/bin"
 	go install tool
 )
 

@@ -18,43 +18,44 @@ args=(
 	--proc /proc
 )
 
-ro_binds=(
-	/bin
-	/usr
-	/lib
-	/lib64
-	/etc
+declare -A ro_binds=(
+	["/bin"]="/bin"
+	["/usr"]="/usr"
+	["/lib"]="/lib"
+	["/lib64"]="/lib64"
+	["/etc"]="/etc"
+	["$HOME/.npm-packages"]="$HOME/.npm-packages"
 )
 
-rw_binds=(
-	"$PWD"
-	"$HOME/go"
-	"$HOME/.cargo"
-	"$HOME/.local/share/nvim"
-	"$HOME/.local/share/phpactor"
-	"$HOME/.cache/goimports"
-	"$HOME/.cache/gopls"
-	"$HOME/.cache/go-build"
-	"$HOME/.cache/nvim"
-	"$HOME/.cache/phpactor"
-	"$HOME/.npm-packages"
+# Create persistent volumes.
+mkdir -p \
+	"$HOME/.ide/go" \
+	"$HOME/.ide/.cargo" \
+	"$HOME/.ide/.local" \
+	"$HOME/.ide/.cache"
+
+declare -A rw_binds=(
+	["$PWD"]="$PWD"
+	["$HOME/.ide/go"]="$HOME/go"
+	["$HOME/.ide/.cargo"]="$HOME/.cargo"
+	["$HOME/.ide/.local"]="$HOME/.local"
+	["$HOME/.ide/.cache"]="$HOME/.cache"
 )
 
 tmpfs_volumes=(
 	"/tmp"
 	"/run/user/$(id -u)"
-	"$HOME/.local/state"
 )
 
-for v in "${ro_binds[@]}"; do
+for key in "${!ro_binds[@]}"; do
 	args+=(
-		--ro-bind "$v" "$v"
+		--ro-bind "$key" "${ro_binds[$key]}"
 	)
 done
 
-for v in "${rw_binds[@]}"; do
+for key in "${!rw_binds[@]}"; do
 	args+=(
-		--bind "$v" "$v"
+		--bind "$key" "${rw_binds[$key]}"
 	)
 done
 

@@ -25,6 +25,8 @@ declare -A ro_binds=(
 	["/lib64"]="/lib64"
 	["/etc"]="/etc"
 	["$HOME/.npm-packages"]="$HOME/.npm-packages"
+	["$HOME/.go-packages"]="$HOME/.go-packages"
+	["$HOME/.rustup"]="$HOME/.rustup"
 )
 
 # Mount all files tracked by dotfiles git.

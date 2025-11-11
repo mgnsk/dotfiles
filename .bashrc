@@ -13,9 +13,7 @@ __prepend_path ~/.go-packages/bin
 __prepend_path ~/.npm-packages/node_modules/.bin
 __prepend_path ~/go/bin
 __prepend_path ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin
-__prepend_path ~/.cargo/bin
 __prepend_path /usr/share/git/diff-highlight
-__prepend_path ~/.local/bin
 __prepend_path ~/.bin
 
 export EDITOR="nvim"

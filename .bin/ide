@@ -38,8 +38,7 @@ done
 mkdir -p \
 	"$HOME/.ide/go" \
 	"$HOME/.ide/.cargo" \
-	"$HOME/.ide/.local/share" \
-	"$HOME/.ide/.local/state" \
+	"$HOME/.ide/.local" \
 	"$HOME/.ide/.cache"
 
 declare -A rw_binds=(

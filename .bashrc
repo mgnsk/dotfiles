@@ -47,6 +47,7 @@ export PKGEXT=".pkg.tar"
 
 export NODE_OPTIONS="--max_old_space_size=4096"
 
+mkdir -p "$HOME/.local/state"
 export HISTFILE="$HOME/.local/state/.bash_history"
 export HISTFILESIZE=
 export HISTSIZE=

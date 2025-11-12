@@ -16,6 +16,7 @@
 	snag = !bash ~/.scripts/git/snag.sh
 	squashall = !bash ~/.scripts/git/squashall.sh
 	sw = !bash ~/.scripts/git/switch-fzf.sh
+	stat = !bash ~/.scripts/git/stat.sh
 	alias = !git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
 
 [mergetool]

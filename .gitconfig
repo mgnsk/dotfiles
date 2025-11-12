@@ -27,7 +27,8 @@
 	mnemonicPrefix = true
 	renames = true
 [mergetool "nvim"]
-	cmd = NVIM_DIFF=1 nvim -d -c \"norm ]c\" \"$LOCAL\" \"$MERGED\" \"$REMOTE\"
+	; cmd = NVIM_DIFF=1 nvim -d -c \"norm ]c\" \"$LOCAL\" \"$MERGED\" \"$REMOTE\" ; Native functionality
+	cmd = NVIM_DIFF=1 nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
 [merge]
 	tool = nvim
 [commit]

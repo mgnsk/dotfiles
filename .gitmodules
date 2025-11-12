@@ -142,3 +142,6 @@
 [submodule ".pkgbuilds/phpactor-bin"]
 	path = .pkgbuilds/phpactor-bin
 	url = https://aur.archlinux.org/phpactor-bin.git
+[submodule ".nvim-plugins/vim-fugitive"]
+	path = .nvim-plugins/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive.git

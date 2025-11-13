@@ -145,6 +145,7 @@ packages=(
 	cups
 	cups-pdf
 	ipp-usb
+	nss-mdns
 
 	# iOS.
 	libimobiledevice
@@ -452,6 +453,30 @@ EOF
 
 # Enable printing support.
 sudo systemctl enable cups.socket
+sudo systemctl enable avahi-daemon
+
+# Configure mdns for printing.
+cat <<-'EOF' | sudo tee /etc/nsswitch.conf >/dev/null
+	# Name Service Switch configuration file.
+	# See nsswitch.conf(5) for details.
+
+	passwd: files systemd
+	group: files [SUCCESS=merge] systemd
+	shadow: files systemd
+	gshadow: files systemd
+
+	publickey: files
+
+	hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
+	networks: files
+
+	protocols: files
+	services: files
+	ethers: files
+	rpc: files
+
+	netgroup: files
+EOF
 
 # Increase max AIO nr.
 cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null

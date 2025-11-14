@@ -180,14 +180,14 @@ function fzf-header {
 		grepmode="passthrough"
 	fi
 
-	target="$1"
-	header="<ctrl-l web>"
+	header=""
+	header+="<ctrl-l web>\n"
 
 	if [ "$target" == "prs" ]; then
-		header+=" <ctrl-o diff>"
+		header+="<ctrl-o diff>\n"
 	fi
 
-	header+=" <ctrl-p pinpoint [current: $grepmode]>"
+	header+="<ctrl-p pinpoint [current: $grepmode]>"
 
 	echo -e "${header}"
 }
@@ -203,7 +203,7 @@ args=(
 	--bind "shift-up:preview-top,shift-down:preview-bottom"
 	--preview-window=right:50%:wrap
 	--style=minimal
-	--header-lines=1
+	"--header-lines=$(fzf-header | wc -l)"
 	--prompt "$target> "
 )
 

@@ -129,7 +129,11 @@ function fzf-header {
 		grepmode="passthrough"
 	fi
 
-	header="<ctrl-l web> <ctrl-o diff> <ctrl-f search [current: $gitmode]> <ctrl-p pinpoint [current: $grepmode]>"
+	header=""
+	header+="<ctrl-l web>\n"
+	header+="<ctrl-o diff>\n"
+	header+="<ctrl-f search [current: $gitmode]>\n"
+	header+="<ctrl-p pinpoint [current: $grepmode]>"
 
 	echo -e "${header}"
 }
@@ -146,7 +150,7 @@ fzf \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
 	--bind "shift-up:preview-top,shift-down:preview-bottom" \
-	--header-lines=1 \
+	--header-lines="$(fzf-header | wc -l)" \
 	--bind "ctrl-l:execute-silent(git browse {1})" \
 	--bind "ctrl-o:execute(bash -c 'git show --color {1}')" \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \

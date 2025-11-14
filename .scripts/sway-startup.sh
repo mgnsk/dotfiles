@@ -26,7 +26,6 @@ while ! dbus-send --session --dest=org.freedesktop.DBus --type=method_call --pri
 	sleep 0.2
 done
 
-sway-fader &
 /usr/lib/mate-polkit/polkit-mate-authentication-agent-1 &
 nm-applet --indicator &
 swaync &

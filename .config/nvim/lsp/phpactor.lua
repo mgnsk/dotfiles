@@ -2,10 +2,9 @@
 return {
 	cmd = { "phpactor", "language-server" },
 	filetypes = { "php" },
-	-- TODO
-	-- init_options = {
-	-- 	["language_server_worse_reflection.inlay_hints.enable"] = true,
-	-- 	["language_server_worse_reflection.inlay_hints.params"] = true,
-	-- 	["language_server_worse_reflection.inlay_hints.types"] = true,
-	-- },
+	init_options = {
+		["language_server_worse_reflection.inlay_hints.enable"] = true,
+		["language_server_worse_reflection.inlay_hints.params"] = true,
+		["language_server_worse_reflection.inlay_hints.types"] = true,
+	},
 }

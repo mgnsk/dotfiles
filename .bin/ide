@@ -34,20 +34,31 @@ for f in $(git -C "$HOME" ls-tree -r master --name-only); do
 	ro_binds["$HOME/$f"]="$HOME/$f"
 done
 
-# Create persistent volumes.
-mkdir -p \
-	"$HOME/.ide/go" \
-	"$HOME/.ide/.cargo" \
-	"$HOME/.ide/.local" \
-	"$HOME/.ide/.cache"
+# Create per-project persistent volumes.
+volumes=(
+	"go"
+	".cargo"
+	".local"
+	".cache"
+)
+
+repo=$(git rev-parse --show-toplevel)
+
+# Fall back to PWD if no repo found.
+if [[ "$repo" == "$HOME" ]]; then
+	repo="$PWD"
+fi
 
 declare -A rw_binds=(
 	["$PWD"]="$PWD"
-	["$HOME/.ide/go"]="$HOME/go"
-	["$HOME/.ide/.cargo"]="$HOME/.cargo"
-	["$HOME/.ide/.local"]="$HOME/.local"
-	["$HOME/.ide/.cache"]="$HOME/.cache"
 )
+
+for v in "${volumes[@]}"; do
+	host_path="$HOME/.ide/$repo/$v"
+	container_path="$HOME/$v"
+	mkdir -p "$host_path"
+	rw_binds["$host_path"]="$container_path"
+done
 
 tmpfs_volumes=(
 	"/tmp"

@@ -46,6 +46,7 @@ packages=(
 	bat
 	sox
 	neovim
+	tree-sitter-cli
 	tmux
 	glances
 	grim

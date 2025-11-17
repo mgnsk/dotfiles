@@ -40,12 +40,6 @@
 [submodule ".config/nvim/plugins/oil.nvim"]
 	path = .nvim-plugins/oil.nvim
 	url = https://github.com/stevearc/oil.nvim.git
-[submodule ".config/nvim/plugins/tree-sitter-balafon"]
-	path = .nvim-plugins/tree-sitter-balafon
-	url = https://github.com/mgnsk/tree-sitter-balafon.git
-[submodule ".config/nvim/plugins/nvim-treesitter"]
-	path = .nvim-plugins/nvim-treesitter
-	url = https://github.com/nvim-treesitter/nvim-treesitter.git
 [submodule ".config/nvim/plugins/nvim-treesitter-context"]
 	path = .nvim-plugins/nvim-treesitter-context
 	url = https://github.com/nvim-treesitter/nvim-treesitter-context.git
@@ -145,3 +139,10 @@
 [submodule ".nvim-plugins/vim-fugitive"]
 	path = .nvim-plugins/vim-fugitive
 	url = https://github.com/tpope/vim-fugitive.git
+[submodule ".nvim-plugins/nvim-treesitter"]
+	path = .nvim-plugins/nvim-treesitter
+	url = https://github.com/nvim-treesitter/nvim-treesitter.git
+	branch = main
+[submodule ".nvim-plugins/treesitter-modules.nvim"]
+	path = .nvim-plugins/treesitter-modules.nvim
+	url = https://github.com/MeanderingProgrammer/treesitter-modules.nvim.git

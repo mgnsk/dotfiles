@@ -141,10 +141,10 @@ return {
 				},
 			},
 			files = {
-				fd_opts = os.getenv("FZF_DEFAULT_COMMAND"):gsub("fd ", ""),
+				fd_opts = "--type f --hidden --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'",
 			},
 			grep = {
-				rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --no-ignore-vcs --glob=!.git/ --glob=!node_modules/ --glob=!vendor/",
+				rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/ --glob=!node_modules/ --glob=!vendor/",
 			},
 			defaults = {
 				git_icons = false,

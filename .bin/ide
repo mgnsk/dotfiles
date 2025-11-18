@@ -14,8 +14,9 @@ args=(
 	--share-net
 	--die-with-parent
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
-	--dev-bind /dev /dev
+	--dev /dev
 	--proc /proc
+	--cap-drop ALL
 )
 
 declare -A ro_binds=(

@@ -3,8 +3,8 @@
 	co = checkout
 	ns = diff --name-status
 	cx = cherry-pick -x
-	lg = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>' --abbrev-commit --all"
-	lb = "!git log --graph --decorate --pretty=format:'%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>' --abbrev-commit --first-parent $(git branch --show-current)"
+	lg = !bash ~/.scripts/git/lg.sh
+	lb = !bash ~/.scripts/git/lb.sh
 
 	logs = !bash ~/.scripts/git/git-fzf.sh log
 	reflogs = !bash ~/.scripts/git/git-fzf.sh reflog

@@ -10,7 +10,7 @@ local function organize_go_imports(client, bufnr)
 			vim.lsp.util.apply_workspace_edit(r.edit, client.offset_encoding)
 		else
 			print(r.command)
-			vim.lsp.buf.execute_command(r.command)
+			client:exec_cmd(r.command)
 		end
 	end
 end

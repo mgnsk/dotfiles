@@ -130,6 +130,7 @@ function fzf-header {
 	fi
 
 	header=""
+	header+="<enter copy commit sha>\n"
 	header+="<ctrl-l web>\n"
 	header+="<ctrl-o diff>\n"
 	header+="<ctrl-f search [current: $gitmode]>\n"
@@ -151,8 +152,9 @@ fzf \
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
 	--bind "shift-up:preview-top,shift-down:preview-bottom" \
 	--header-lines="$(fzf-header | wc -l)" \
+	--bind 'enter:execute(echo {1} | pbcopy)' \
 	--bind "ctrl-l:execute-silent(git browse {1})" \
-	--bind "ctrl-o:execute(bash -c 'git show --color {1}')" \
+	--bind "ctrl-o:execute(bash -c 'git show --color {1} | diff-highlight | less -R')" \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
 	--preview 'bash -c "git-view {1} {q}"' \

@@ -181,6 +181,7 @@ function fzf-header {
 	fi
 
 	header=""
+	header+="<enter copy number>\n"
 	header+="<ctrl-l web>\n"
 
 	if [ "$target" == "prs" ]; then
@@ -201,6 +202,7 @@ args=(
 	--no-sort
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down"
 	--bind "shift-up:preview-top,shift-down:preview-bottom"
+	--bind 'enter:execute(echo {1} | pbcopy)'
 	--preview-window=right:50%:wrap
 	--style=minimal
 	"--header-lines=$(fzf-header | wc -l)"

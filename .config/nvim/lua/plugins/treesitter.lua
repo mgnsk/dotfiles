@@ -8,7 +8,7 @@ return {
 	{
 		"MeanderingProgrammer/treesitter-modules.nvim",
 		dir = vim.fn.expand("$HOME/.nvim-plugins/treesitter-modules.nvim"),
-		event = "VeryLazy",
+		lazy = false,
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		---@module 'treesitter-modules'
 		---@type ts.mod.UserConfig

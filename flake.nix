@@ -102,6 +102,9 @@
         reaper-reapack-extension
         reaper-default-5-dark-extended-theme
 
+        # Bitwig.
+        bitwig-studio
+
         # Wine and yabridge.
         yabridge
         yabridgectl
@@ -114,6 +117,7 @@
 
       clapPlugins = with pkgs; [
         airwindows-consolidated
+        surge-XT
       ];
 
       lv2Plugins = with pkgs; [

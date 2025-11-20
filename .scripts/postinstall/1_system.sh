@@ -305,15 +305,11 @@ sudo systemctl enable docker.socket
 sudo gpasswd -a "$USER" docker
 
 # Set up nix.
-sudo systemctl enable nix-daemon.service
-if ! nix-channel --list | grep -q 'channels'; then
-	nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-	nix-channel --update
-fi
 cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
 	build-users-group = nixbld
 	max-jobs = auto
 EOF
+sudo systemctl enable nix-daemon.service
 
 # Disable tailscale logs.
 cat <<-'EOF' | sudo tee /etc/default/tailscaled >/dev/null

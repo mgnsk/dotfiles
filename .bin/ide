@@ -37,8 +37,6 @@ done
 
 # Create per-project persistent volumes.
 volumes=(
-	"go"
-	".cargo"
 	".local"
 	".cache"
 )
@@ -52,6 +50,8 @@ fi
 
 declare -A rw_binds=(
 	["$PWD"]="$PWD"
+	["$HOME/go"]="$HOME/go"
+	["$HOME/.cargo"]="$HOME/.cargo"
 )
 
 for v in "${volumes[@]}"; do

@@ -45,6 +45,7 @@ packages=(
 	ripgrep
 	bat
 	sox
+	vim
 	neovim
 	tree-sitter-cli
 	tmux

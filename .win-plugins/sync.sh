@@ -2,4 +2,4 @@
 
 set -eu
 
-rclone sync -v . "gdrive:/Audio/.win-plugins"
+rclone bisync --progress -v . "gdrive:/Audio/.win-plugins"

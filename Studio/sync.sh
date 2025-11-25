@@ -2,4 +2,4 @@
 
 set -eu
 
-rclone sync -v . "gdrive:/Studio"
+rclone bisync --progress -v . "gdrive:/Studio"

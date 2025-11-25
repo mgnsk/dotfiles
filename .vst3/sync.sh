@@ -2,4 +2,4 @@
 
 set -eu
 
-rclone sync -v . "gdrive:/Audio/.vst3" --exclude "yabridge/**"
+rclone bisync --progress -v . "gdrive:/Audio/.vst3" --exclude "yabridge/**"

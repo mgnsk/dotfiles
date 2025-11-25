@@ -146,3 +146,9 @@
 [submodule ".nvim-plugins/treesitter-modules.nvim"]
 	path = .nvim-plugins/treesitter-modules.nvim
 	url = https://github.com/MeanderingProgrammer/treesitter-modules.nvim.git
+[submodule ".nvim-plugins/codecompanion.nvim"]
+	path = .nvim-plugins/codecompanion.nvim
+	url = https://github.com/olimorris/codecompanion.nvim.git
+[submodule ".nvim-plugins/plenary.nvim"]
+	path = .nvim-plugins/plenary.nvim
+	url = https://github.com/nvim-lua/plenary.nvim.git

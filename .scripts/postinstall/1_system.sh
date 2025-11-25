@@ -62,6 +62,7 @@ packages=(
 	iotop
 	shfmt
 	direnv
+	gemini-cli
 
 	# Disks.
 	btrfs-assistant

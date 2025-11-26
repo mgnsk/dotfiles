@@ -87,24 +87,32 @@ return {
 		"olimorris/codecompanion.nvim",
 		dir = vim.fn.expand("$HOME/.nvim-plugins/codecompanion.nvim"),
 		event = "VeryLazy",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
 		opts = {
+			strategies = {
+				chat = {
+					adapter = "gemini",
+				},
+				inline = {
+					adapter = "gemini",
+				},
+				cmd = {
+					adapter = "gemini",
+				},
+			},
 			adapters = {
-				acp = {
-					gemini_cli = function()
-						return require("codecompanion.adapters").extend("gemini_cli", {
-							defaults = {
-								auth_method = "gemini-api-key",
-							},
+				http = {
+					gemini = function()
+						return require("codecompanion.adapters").extend("gemini", {
 							env = {
-								GEMINI_API_KEY = "cmd:secret-tool lookup apikey gemini",
+								api_key = "cmd:secret-tool lookup apikey gemini",
 							},
 						})
 					end,
 				},
 			},
-		},
-		dependencies = {
-			"nvim-lua/plenary.nvim",
 		},
 	},
 }

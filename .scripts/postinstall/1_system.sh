@@ -62,6 +62,7 @@ packages=(
 	iotop
 	shfmt
 	direnv
+	xdg-dbus-proxy
 
 	# Disks.
 	btrfs-assistant

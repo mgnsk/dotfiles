@@ -9,6 +9,24 @@ if [[ "$prog" == "" ]]; then
 	exit 1
 fi
 
+# Proxy org.freedesktop.secrets service.
+# Security: the provider on host asks for GUI confirmation on secret access.
+sockdir="$XDG_RUNTIME_DIR/xdg-dbus-proxy/ide-$$"
+mkdir -p "$sockdir"
+sockfile="$sockdir/ide.sock"
+
+xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
+	--filter \
+	--call=org.freedesktop.secrets=* &
+
+proxy_pid=$!
+
+function cleanup {
+	kill -9 "$proxy_pid"
+}
+
+trap cleanup EXIT
+
 args=(
 	--unshare-all
 	--share-net
@@ -17,6 +35,8 @@ args=(
 	--dev /dev
 	--proc /proc
 	--cap-drop ALL
+	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
+	--bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
 )
 
 declare -A ro_binds=(
@@ -63,7 +83,6 @@ done
 
 tmpfs_volumes=(
 	"/tmp"
-	"/run/user/$(id -u)"
 )
 
 for key in "${!ro_binds[@]}"; do

@@ -17,7 +17,6 @@ vim.o.wrap = true
 vim.o.inccommand = "split"
 vim.o.encoding = "UTF-8"
 vim.o.path = vim.o.path .. "**"
-vim.o.shell = os.getenv("SHELL")
 
 vim.o.autoindent = true
 vim.o.expandtab = false

@@ -11,9 +11,7 @@ fi
 
 # Proxy org.freedesktop.secrets service.
 # Security: the provider on host asks for GUI confirmation on secret access.
-sockdir="$XDG_RUNTIME_DIR/xdg-dbus-proxy/ide-$$"
-mkdir -p "$sockdir"
-sockfile="$sockdir/ide.sock"
+sockfile="$XDG_RUNTIME_DIR/ide-xdg-dbus-proxy-$$.sock"
 
 xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
 	--filter \
@@ -23,6 +21,7 @@ proxy_pid=$!
 
 function cleanup {
 	kill -9 "$proxy_pid"
+	rm -f "$sockfile"
 }
 
 trap cleanup EXIT

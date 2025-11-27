@@ -161,6 +161,8 @@ function gh-view {
 			gh-tpl --color "$commit_list_template" |
 			highlight "$query"
 
+		echo ""
+
 		gh pr diff --color=always "$number" |
 			diff-highlight
 	elif [ "$target" == "issues" ]; then

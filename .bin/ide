@@ -74,9 +74,10 @@ declare -A rw_binds=(
 )
 
 for v in "${volumes[@]}"; do
-	host_path="$HOME/.ide/$repo/$v"
-	container_path="$HOME/$v"
+	# Replace every (//) slash (\/) with underscore (_).
+	host_path="$HOME/.ide/${repo//\//_}/$v"
 	mkdir -p "$host_path"
+	container_path="$HOME/$v"
 	rw_binds["$host_path"]="$container_path"
 done
 

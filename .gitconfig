@@ -2,7 +2,6 @@
 	st = status
 	co = checkout
 	ns = diff --name-status
-	cx = cherry-pick -x
 	lg = !bash ~/.scripts/git/lg.sh
 	lb = !bash ~/.scripts/git/lb.sh
 
@@ -14,6 +13,7 @@
 	code = !bash ~/.scripts/git/gh-fzf.sh code
 	msn = !bash ~/.scripts/git/mergesquashn.sh
 	snag = !bash ~/.scripts/git/snag.sh
+	cx = !bash ~/.scripts/git/cherry-pick-fzf.sh
 	squashall = !bash ~/.scripts/git/squashall.sh
 	sw = !bash ~/.scripts/git/switch-fzf.sh
 	stat = !bash ~/.scripts/git/stat.sh

@@ -346,88 +346,13 @@ if [[ ! -d "$HOME/.git" ]]; then
 	rm -rf "$HOME/dotfiles-tmp"
 fi
 
-# Set up rust.
-rustup update
-rustup default stable
-rustup component add rust-analyzer
-
-# Set up PHP.
-sudo sed -i -e 's/;extension=iconv/extension=iconv/g' /etc/php/php.ini
-
-# 1password signing key.
-gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
-
-# phpstan-bin signing key.
-gpg --keyserver keys.openpgp.org --recv-keys 51C67305FFC2E5C0
-
-# TODO pkgbuilds
-# jsfx-lint
-
-# Install AUR packages.
-packages=(
-	1password
-	1password-cli
-	brave-bin
-	downgrade
-	gojq-bin
-	go-jsonnet
-	hadolint-bin
-	helm-ls-bin
-	jsonnet-language-server
-	nil-git
-	nixfmt
-	perl-linux-desktopfiles # Dependency of obmenu-generator.
-	obmenu-generator
-	phpactor-bin
-	phpstan-bin
-	raysession
-	rclone-browser
-	shellcheck-bin
-	snap-pac-grub
-	wdisplays
-	wine-tkg-staging-wow64-bin
-	yay-bin
-)
-
-for pkg in "${packages[@]}"; do
-	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
-done
-
-# Install support for Estonian ID card.
-packages=(
-	libdigidocpp
-	qdigidoc4
-	web-eid
-)
-
-# Estonian ID card signing key.
-gpg --keyserver keyserver.ubuntu.com --recv-keys 90C0B5E75C3B195D
-
-for pkg in "${packages[@]}"; do
-	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
-done
-
-sudo systemctl enable pcscd.socket
-
-# Install JS packages.
-(
-	cd "$HOME/.npm-packages"
-	npm ci
-)
-
-# Install Go packages.
-(
-	cd "$HOME/.go-packages"
-	export GOBIN="$HOME/.go-packages/bin"
-	go install tool
-)
-
 # Enable saving the last booted entry in GRUB.
-if grep -q 'GRUB_DEFAULT=0' /etc/default/grub; then
-	set_option /etc/default/grub GRUB_DEFAULT saved
-	set_option /etc/default/grub GRUB_SAVEDEFAULT true
-	sudo grub-mkconfig -o /boot/grub/grub.cfg
-fi
+set_option /etc/default/grub GRUB_DEFAULT saved
+set_option /etc/default/grub GRUB_SAVEDEFAULT true
+
+# Install and configure GRUB.
+sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 # Configure profile-sync-daemon for brave.
 cat <<-'EOF' | sudo tee /usr/share/psd/browsers/brave >/dev/null

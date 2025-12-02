@@ -70,9 +70,8 @@ function git-search {
 	query="$1"
 
 	# Handle empty query.
-	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-		git "$target" --color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT"
-		exit
+	if [ "$query" == "{q}" ]; then
+		query=""
 	fi
 
 	gitflags=$(cat "$tmpdir/git_flags")
@@ -96,9 +95,8 @@ function git-view {
 	fi
 
 	# Handle empty query.
-	if [ "$query" == "{q}" ] || [ "$query" == "" ]; then
-		git show --color "$commit" | diff-highlight
-		exit
+	if [ "$query" == "{q}" ]; then
+		query=""
 	fi
 
 	gitflags=$(cat "$tmpdir/git_flags")

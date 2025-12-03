@@ -99,7 +99,7 @@ vim.lsp.config("*", {
 vim.lsp.enable({
 	"luals",
 	"gopls",
-	"vtsls",
+	"tsgo",
 	"html",
 	"css",
 	-- "bash",

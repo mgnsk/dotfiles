@@ -12,7 +12,6 @@ vim.o.splitright = true
 vim.o.lazyredraw = true
 vim.o.laststatus = 2
 vim.o.wildmenu = true
-vim.o.scrolloff = 999
 vim.o.wrap = true
 vim.o.inccommand = "split"
 vim.o.encoding = "UTF-8"
@@ -156,6 +155,13 @@ vim.keymap.set(
 	[[:let b = bufnr("%") | tabnew | execute 'buffer' b<CR>]],
 	{ silent = true, desc = "Duplicate current buffer to a new tab" }
 )
+
+-- Scroll lock disabled in diff mode.
+if os.getenv("NVIM_DIFF") then
+	vim.o.scrolloff = 0
+else
+	vim.o.scrolloff = 999
+end
 
 vim.keymap.set("n", "<leader>l", function()
 	if vim.wo.scrolloff > 0 then

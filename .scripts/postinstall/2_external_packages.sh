@@ -77,3 +77,8 @@ for pkg in "${packages[@]}"; do
 done
 
 sudo systemctl enable pcscd.socket
+
+# Checkout pkgbuild repos again. Needed for -git packages.
+for d in ~/.pkgbuilds/*/; do
+	git -C "$d" checkout .
+done

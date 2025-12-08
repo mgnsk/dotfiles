@@ -57,6 +57,7 @@ for_window [app_id="xdg-desktop-portal-.*"] floating enable
 for_window [title="KeePassXC - (.*)Access Request"] floating enable
 for_window [title="Unlock Database - KeePassXC"] floating enable
 for_window [app_id="eu.web-eid.web-eid"] floating enable
+for_window [app_id="thunar" title="^Rename"] floating enable
 
 # focus the parent container
 bindsym $mod+a focus parent

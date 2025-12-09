@@ -126,6 +126,31 @@ fi
 # Enable ssh-agent.
 systemctl --user enable ssh-agent.service
 
+# Configure KeepassXC.
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General HideWindowOnCopy false
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General MinimizeAfterUnlock false
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General MinimizeOnCopy true
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General UpdateCheckMessageShown true
+
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Browser CustomProxyLocation ""
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Browser Enabled true
+
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" FdoSecrets ConfirmAccessItem true
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" FdoSecrets Enabled true
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" FdoSecrets ShowNotification false
+
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI CheckForUpdates false
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI HideUsernames false
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI MinimizeOnClose true
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI MinimizeToTray true
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI ShowTrayIcon true
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI TrayIconAppearance monochrome-light
+
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" SSHAgent Enabled true
+
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Security LockDatabaseIdle false
+crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Security LockDatabaseScreenLock true
+
 # Enable saving the last booted entry in GRUB.
 set_option /etc/default/grub GRUB_DEFAULT saved
 set_option /etc/default/grub GRUB_SAVEDEFAULT true

@@ -37,6 +37,10 @@ packages=(
 	1password
 	1password-cli
 	brave-bin
+
+	python-iniparse
+	crudini
+
 	downgrade
 	gojq-bin
 	go-jsonnet
@@ -45,8 +49,10 @@ packages=(
 	jsonnet-language-server
 	nil-git
 	nixfmt
-	perl-linux-desktopfiles # Dependency of obmenu-generator.
+
+	perl-linux-desktopfiles
 	obmenu-generator
+
 	phpactor-bin
 	phpstan-bin
 	raysession

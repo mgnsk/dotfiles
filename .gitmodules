@@ -152,3 +152,9 @@
 [submodule ".nvim-plugins/plenary.nvim"]
 	path = .nvim-plugins/plenary.nvim
 	url = https://github.com/nvim-lua/plenary.nvim.git
+[submodule ".pkgbuilds/python-iniparse"]
+	path = .pkgbuilds/python-iniparse
+	url = https://aur.archlinux.org/python-iniparse.git
+[submodule ".pkgbuilds/crudini"]
+	path = .pkgbuilds/crudini
+	url = https://aur.archlinux.org/crudini.git

@@ -91,6 +91,7 @@ return {
 			"nvim-lua/plenary.nvim",
 		},
 		opts = {
+			ignore_warnings = true,
 			strategies = {
 				chat = {
 					adapter = "gemini",

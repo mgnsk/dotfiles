@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
     groups:
       nvim-plugins:
         patterns:
@@ -16,13 +16,13 @@ updates:
   - package-ecosystem: "npm"
     directory: "/.npm-packages"
     schedule:
-      interval: "weekly"
+      interval: "daily"
     commit-message:
       prefix: "npm"
 
   - package-ecosystem: "gomod"
     directory: "/.go-packages"
     schedule:
-      interval: "weekly"
+      interval: "daily"
     commit-message:
       prefix: "go"

@@ -33,78 +33,53 @@ args=(
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 	--dev /dev
 	--proc /proc
+	--tmpfs /tmp
 	--cap-drop ALL
 	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
 	--bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
+	--bind "$PWD" "$PWD"
+	--ro-bind "/bin" "/bin"
+	--ro-bind "/usr" "/usr"
+	--ro-bind "/lib" "/lib"
+	--ro-bind "/lib64" "/lib64"
+	--ro-bind "/etc" "/etc"
+	--ro-bind "$HOME/.npm-packages" "$HOME/.npm-packages"
+	--ro-bind "$HOME/.go-packages" "$HOME/.go-packages"
+	--ro-bind "$HOME/.rustup" "$HOME/.rustup"
 )
 
-declare -A ro_binds=(
-	["/bin"]="/bin"
-	["/usr"]="/usr"
-	["/lib"]="/lib"
-	["/lib64"]="/lib64"
-	["/etc"]="/etc"
-	["$HOME/.npm-packages"]="$HOME/.npm-packages"
-	["$HOME/.go-packages"]="$HOME/.go-packages"
-	["$HOME/.rustup"]="$HOME/.rustup"
-)
-
-# Mount all files tracked by dotfiles git.
+# Read bind all files tracked by dotfiles git.
 for f in $(git -C "$HOME" ls-tree -r master --name-only); do
-	ro_binds["$HOME/$f"]="$HOME/$f"
+	args+=(
+		--ro-bind "$HOME/$f" "$HOME/$f"
+	)
 done
 
-# Create per-project persistent volumes.
-volumes=(
-	".local"
-	".cache"
-)
-
-repo=$(git rev-parse --show-toplevel)
+# Detect current project root.
+project=$(git rev-parse --show-toplevel)
 
 # Fall back to PWD if no repo found.
-if [[ "$repo" == "$HOME" ]]; then
-	repo="$PWD"
+if [[ "$project" == "$HOME" ]]; then
+	project="$PWD"
 fi
 
-declare -A rw_binds=(
-	["$PWD"]="$PWD"
-	["$HOME/go"]="$HOME/go"
-	["$HOME/.cargo"]="$HOME/.cargo"
-)
-
-for v in "${volumes[@]}"; do
-	# Replace every (//) slash (\/) with underscore (_).
-	host_path="$HOME/.ide/${repo//\//_}/$v"
+function add_volume() {
+	container_path="$1"
+	host_path="$HOME/.ide/$project/$container_path"
 	mkdir -p "$host_path"
-	container_path="$HOME/$v"
-	rw_binds["$host_path"]="$container_path"
-done
-
-tmpfs_volumes=(
-	"/tmp"
-)
-
-for key in "${!ro_binds[@]}"; do
 	args+=(
-		--ro-bind "$key" "${ro_binds[$key]}"
+		--bind "$host_path" "$container_path"
 	)
-done
+}
 
-for key in "${!rw_binds[@]}"; do
-	args+=(
-		--bind "$key" "${rw_binds[$key]}"
-	)
-done
-
-for v in "${tmpfs_volumes[@]}"; do
-	args+=(
-		--tmpfs "$v"
-	)
-done
+# Create per-project persistent volumes.
+add_volume "$HOME/.cache"
+add_volume "$HOME/.cargo"
+add_volume "$HOME/.local"
+add_volume "$HOME/go"
 
 args+=(
-	"$(which "$prog")"
+	"$prog"
 	--
 	"${@:2}"
 )

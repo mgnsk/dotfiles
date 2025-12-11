@@ -5,17 +5,6 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-__prepend_path() {
-	PATH="$1${PATH:+":$PATH"}"
-}
-
-__prepend_path ~/.go-packages/bin
-__prepend_path ~/.npm-packages/node_modules/.bin
-__prepend_path ~/go/bin
-__prepend_path ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin
-__prepend_path /usr/share/git/diff-highlight
-__prepend_path ~/.bin
-
 export EDITOR="nvim"
 export VISUAL="nvim"
 export PAGER="less -R"

@@ -14,6 +14,17 @@ export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_DATA_HOME="$HOME/.local/share"
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
+__prepend_path() {
+	PATH="$1${PATH:+":$PATH"}"
+}
+
+__prepend_path ~/.go-packages/bin
+__prepend_path ~/.npm-packages/node_modules/.bin
+__prepend_path ~/go/bin
+__prepend_path ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin
+__prepend_path /usr/share/git/diff-highlight
+__prepend_path ~/.bin
+
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
 function gset {

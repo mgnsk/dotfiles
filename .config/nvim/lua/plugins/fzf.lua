@@ -121,6 +121,10 @@ return {
 					},
 				})
 			end, { desc = "FZF blame selected lines" })
+
+			vim.keymap.set("n", "<leader>U", function()
+				return require("fzf-lua").undotree()
+			end, { desc = "FZF undotree" })
 		end,
 		---@type fzf-lua.Config
 		opts = {

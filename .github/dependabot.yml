@@ -6,23 +6,29 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      nvim-plugins:
-        patterns:
-          - "/.nvim-plugins/*"
       aur:
         patterns:
           - "/.pkgbuilds/*"
 
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      nvim-plugins:
+        patterns:
+          - "/.nvim-plugins/*"
+
   - package-ecosystem: "npm"
     directory: "/.npm-packages"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: "npm"
 
   - package-ecosystem: "gomod"
     directory: "/.go-packages"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: "go"

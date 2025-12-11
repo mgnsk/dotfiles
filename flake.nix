@@ -133,11 +133,6 @@
         chow-phaser
       ];
 
-      docker_user = "ide";
-      docker_group = "ide";
-      docker_uid = "1000";
-      docker_gid = "1000";
-
       makePluginPath =
         type: paths:
         builtins.concatStringsSep ";" (

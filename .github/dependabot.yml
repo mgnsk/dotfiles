@@ -5,6 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    allow:
+      - dependency-name: ".pkgbuilds/*"
     groups:
       aur:
         patterns:
@@ -14,6 +16,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    allow:
+      - dependency-name: ".nvim-plugins/*"
     groups:
       nvim-plugins:
         patterns:

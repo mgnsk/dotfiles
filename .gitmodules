@@ -1,79 +1,79 @@
-[submodule ".config/nvim/plugins/vscode.nvim"]
+[submodule ".nvim-plugins/vscode.nvim"]
 	path = .nvim-plugins/vscode.nvim
 	url = https://github.com/Mofiqul/vscode.nvim.git
-[submodule ".config/nvim/plugins/nvim-colorizer.lua"]
+[submodule ".nvim-plugins/nvim-colorizer.lua"]
 	path = .nvim-plugins/nvim-colorizer.lua
 	url = https://github.com/norcalli/nvim-colorizer.lua.git
-[submodule ".config/nvim/plugins/autotabline.nvim"]
+[submodule ".nvim-plugins/autotabline.nvim"]
 	path = .nvim-plugins/autotabline.nvim
 	url = https://github.com/mgnsk/autotabline.nvim.git
-[submodule ".config/nvim/plugins/dumb-autopairs.nvim"]
+[submodule ".nvim-plugins/dumb-autopairs.nvim"]
 	path = .nvim-plugins/dumb-autopairs.nvim
 	url = https://github.com/mgnsk/dumb-autopairs.nvim.git
-[submodule ".config/nvim/plugins/promise-async"]
+[submodule ".nvim-plugins/promise-async"]
 	path = .nvim-plugins/promise-async
 	url = https://github.com/kevinhwang91/promise-async.git
-[submodule ".config/nvim/plugins/nvim-fundo"]
+[submodule ".nvim-plugins/nvim-fundo"]
 	path = .nvim-plugins/nvim-fundo
 	url = https://github.com/kevinhwang91/nvim-fundo.git
-[submodule ".config/nvim/plugins/vim-wordmotion"]
+[submodule ".nvim-plugins/vim-wordmotion"]
 	path = .nvim-plugins/vim-wordmotion
 	url = https://github.com/chaoren/vim-wordmotion.git
-[submodule ".config/nvim/plugins/conform.nvim"]
+[submodule ".nvim-plugins/conform.nvim"]
 	path = .nvim-plugins/conform.nvim
 	url = https://github.com/stevearc/conform.nvim.git
-[submodule ".config/nvim/plugins/fzf-lua"]
+[submodule ".nvim-plugins/fzf-lua"]
 	path = .nvim-plugins/fzf-lua
 	url = https://github.com/ibhagwan/fzf-lua.git
-[submodule ".config/nvim/plugins/luvit-meta"]
+[submodule ".nvim-plugins/luvit-meta"]
 	path = .nvim-plugins/luvit-meta
 	url = https://github.com/Bilal2453/luvit-meta.git
-[submodule ".config/nvim/plugins/neomake"]
+[submodule ".nvim-plugins/neomake"]
 	path = .nvim-plugins/neomake
 	url = https://github.com/neomake/neomake.git
-[submodule ".config/nvim/plugins/vim-cspell"]
+[submodule ".nvim-plugins/vim-cspell"]
 	path = .nvim-plugins/vim-cspell
 	url = https://github.com/ryu-ichiroh/vim-cspell.git
-[submodule ".config/nvim/plugins/jsonpath.nvim"]
+[submodule ".nvim-plugins/jsonpath.nvim"]
 	path = .nvim-plugins/jsonpath.nvim
 	url = https://github.com/phelipetls/jsonpath.nvim.git
-[submodule ".config/nvim/plugins/oil.nvim"]
+[submodule ".nvim-plugins/oil.nvim"]
 	path = .nvim-plugins/oil.nvim
 	url = https://github.com/stevearc/oil.nvim.git
-[submodule ".config/nvim/plugins/nvim-treesitter-context"]
+[submodule ".nvim-plugins/nvim-treesitter-context"]
 	path = .nvim-plugins/nvim-treesitter-context
 	url = https://github.com/nvim-treesitter/nvim-treesitter-context.git
-[submodule ".config/nvim/plugins/lazy.nvim"]
+[submodule ".nvim-plugins/lazy.nvim"]
 	path = .nvim-plugins/lazy.nvim
 	url = https://github.com/folke/lazy.nvim.git
-[submodule ".config/nvim/plugins/gitsigns.nvim"]
+[submodule ".nvim-plugins/gitsigns.nvim"]
 	path = .nvim-plugins/gitsigns.nvim
 	url = https://github.com/lewis6991/gitsigns.nvim.git
 [submodule ".config/kitty/kitty_grab"]
 	path = .config/kitty/kitty_grab
 	url = https://github.com/yurikhan/kitty_grab.git
-[submodule "nvim-plugins/blink.cmp"]
+[submodule ".nvim-plugins/blink.cmp"]
 	path = .nvim-plugins/blink.cmp
 	url = https://github.com/Saghen/blink.cmp.git
-[submodule "nvim-plugins/vim-eel"]
+[submodule ".nvim-plugins/vim-eel"]
 	path = .nvim-plugins/vim-eel
 	url = https://github.com/NlGHT/vim-eel.git
-[submodule "aur/yay-bin"]
+[submodule ".pkgbuilds/yay-bin"]
 	path = .pkgbuilds/yay-bin
 	url = https://aur.archlinux.org/yay-bin.git
-[submodule "aur/snap-pac-grub"]
+[submodule ".pkgbuilds/snap-pac-grub"]
 	path = .pkgbuilds/snap-pac-grub
 	url = https://aur.archlinux.org/snap-pac-grub.git
-[submodule "aur/wine-tkg-staging-wow64-bin"]
+[submodule ".pkgbuilds/wine-tkg-staging-wow64-bin"]
 	path = .pkgbuilds/wine-tkg-staging-wow64-bin
 	url = https://aur.archlinux.org/wine-tkg-staging-wow64-bin.git
-[submodule "aur/obmenu-generator"]
+[submodule ".pkgbuilds/obmenu-generator"]
 	path = .pkgbuilds/obmenu-generator
 	url = https://aur.archlinux.org/obmenu-generator.git
-[submodule "aur/1password"]
+[submodule ".pkgbuilds/1password"]
 	path = .pkgbuilds/1password
 	url = https://aur.archlinux.org/1password.git
-[submodule "aur/1password-cli"]
+[submodule ".pkgbuilds/1password-cli"]
 	path = .pkgbuilds/1password-cli
 	url = https://aur.archlinux.org/1password-cli.git
 [submodule ".pkgbuilds/wdisplays"]

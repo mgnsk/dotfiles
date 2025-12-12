@@ -2,22 +2,26 @@
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
-    directory: "/.pkgbuilds"
+    directory: "/"
     schedule:
       interval: "daily"
+    allow:
+      - dependency-name: ".pkgbuilds/*"
     groups:
       aur:
         patterns:
-          - "*"
+          - "/.pkgbuilds/*"
 
   - package-ecosystem: "gitsubmodule"
-    directory: "/.nvim-plugins"
+    directory: "/"
     schedule:
       interval: "weekly"
+    allow:
+      - dependency-name: ".nvim-plugins/*"
     groups:
       nvim-plugins:
         patterns:
-          - "*"
+          - "/.nvim-plugins/*"
 
   - package-ecosystem: "npm"
     directory: "/.npm-packages"

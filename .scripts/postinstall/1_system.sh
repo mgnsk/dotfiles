@@ -55,6 +55,7 @@ packages=(
 	shfmt
 	direnv
 	xdg-dbus-proxy
+	winetricks
 
 	# Disks.
 	btrfs-assistant

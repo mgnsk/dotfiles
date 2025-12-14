@@ -108,8 +108,6 @@
         # Wine and yabridge.
         yabridge
         yabridgectl
-        winetricks
-        cabextract
 
         # General programs.
         fluidsynth

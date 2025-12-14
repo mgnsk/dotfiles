@@ -46,6 +46,7 @@ packages=(
 	go-jsonnet
 	hadolint-bin
 	helm-ls-bin
+	jsfx-lint
 	jsonnet-language-server
 	nil-git
 	nixfmt

@@ -1,0 +1,21 @@
+# Maintainer: mgnsk
+
+pkgname=jsfx-lint-bin
+pkgver=0.2.0
+pkgrel=1
+provides=("${pkgname/-bin/}")
+conflicts=('jsfx-lint' 'jsfx-lint-git')
+pkgdesc="jsfx-lint is a static analyzer and linter for JSFX, REAPER's amazing language to create audio and MIDI plugins."
+arch=('x86_64')
+url="https://github.com/Souk21/jsfx-lint"
+license=('MIT')
+
+source_x86_64=("$pkgname-$pkgver.tar.gz::$url/releases/download/${pkgver}/${pkgname/-bin/}-${pkgver}-${arch}-unknown-linux-musl.tar.gz")
+
+sha256sums_x86_64=('ee20752516341a69d2f7be595834ed754614b5a3638f806580f538c0c66d0a60')
+
+package() {
+	cd jsfx-lint-0.2.0-x86_64-unknown-linux-musl
+	install -Dm755 eel_pp "$pkgdir/usr/bin/eel_pp"
+	install -Dm755 jsfx-lint "$pkgdir/usr/bin/jsfx-lint"
+}

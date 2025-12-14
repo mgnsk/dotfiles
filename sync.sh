@@ -12,6 +12,8 @@ declare -A mappings=(
 for host_dir in "${!mappings[@]}"; do
 	remote_dir="${mappings[$host_dir]}"
 
+	echo "### Syncing $host_dir"
+
 	rclone bisync \
 		--progress \
 		--copy-links \
@@ -20,6 +22,7 @@ for host_dir in "${!mappings[@]}"; do
 		--max-lock 2m \
 		--conflict-resolve newer \
 		--resync-mode newer \
+		--exclude "yabridge/**" \
 		"$host_dir" \
 		"$remote_dir"
 done

@@ -6,8 +6,8 @@ set -eo pipefail
 
 if npm list --depth=0 eslint &>/dev/null; then
 	# Use eslint from project dir if available.
-	npx --offline eslint "$@"
+	npx --offline eslint "$@" 2>/dev/null
 else
 	# Otherwise use global eslint.
-	/usr/bin/eslint "$@"
+	/usr/bin/eslint "$@" 2>/dev/null
 fi

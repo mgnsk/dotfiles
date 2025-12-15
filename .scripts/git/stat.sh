@@ -12,7 +12,7 @@ fi
 
 # Iterate over all local branches and show their stats relative to the main branch.
 {
-	git branch --sort=-committerdate --format '%(refname:short)' | while IFS= read -r branch; do
+	git branch --sort=-committerdate --format '%(refname:short)' | grep -vE "^(${main})$" | while IFS= read -r branch; do
 		# Left: behind, right: ahead.
 		# Handle cases where branches might not have a direct common history with main
 		# by defaulting to "0 0" if rev-list fails or returns empty.

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 if [ -f "$PWD/revive.toml" ]; then
-	revive -config "$PWD/revive.toml" "$@"
+	/usr/bin/revive -config "$PWD/revive.toml" "$@"
 else
-	revive "$@"
+	/usr/bin/revive "$@"
 fi

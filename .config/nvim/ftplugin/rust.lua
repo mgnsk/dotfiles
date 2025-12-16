@@ -1,2 +1,2 @@
 require("file_actions").configureFormatBeforeSave({ lsp_format = "fallback" })
-require("file_actions").configureLintAfterSave({ "cargo" })
+require("file_actions").configureLintAfterSave({ "clippy" })

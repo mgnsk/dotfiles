@@ -4,9 +4,10 @@ require("file_actions").registerFormatter({
 })
 require("file_actions").configureFormatBeforeSave({ "balafon" })
 
-require("file_actions").registerLinter({
-	exe = "balafon",
-	args = { "lint" },
-	errorformat = "%f:%l:%c: error: %m",
-})
-require("file_actions").configureLintAfterSave({ "balafon" })
+-- TODO
+-- require("file_actions").registerLinter({
+-- 	exe = "balafon",
+-- 	args = { "lint" },
+-- 	errorformat = "%f:%l:%c: error: %m",
+-- })
+-- require("file_actions").configureLintAfterSave({ "balafon" })

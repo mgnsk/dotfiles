@@ -156,21 +156,6 @@ vim.keymap.set(
 	{ silent = true, desc = "Duplicate current buffer to a new tab" }
 )
 
--- Scroll lock disabled in diff mode.
-if os.getenv("NVIM_DIFF") then
-	vim.o.scrolloff = 0
-else
-	vim.o.scrolloff = 999
-end
-
-vim.keymap.set("n", "<leader>l", function()
-	if vim.wo.scrolloff > 0 then
-		vim.wo.scrolloff = 0
-	else
-		vim.wo.scrolloff = 999
-	end
-end, { desc = "Toggle cursor lock" })
-
 vim.keymap.set("n", "<leader>mt", ":tabm +1<CR>", { desc = "Move tab to right" })
 vim.keymap.set("n", "<leader>mT", ":tabm -1<CR>", { desc = "Move tab to left" })
 

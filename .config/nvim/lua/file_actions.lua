@@ -1,23 +1,5 @@
 local M = {}
 
---- Create a neomake-safe filetype string.
----
----@param ft string
----@return string
-local function neomake_filetype(ft)
-	local result = string.gsub(ft, "%.", "_")
-	return result
-end
-
---- Replace dashes with underscores.
----
---- @param exe string
---- @return string
-local function neomake_exe(exe)
-	local result = string.gsub(exe, "-", "_")
-	return result
-end
-
 --- Register a custom formatter. The formatter name is config.command.
 ---
 ---@param config conform.FormatterConfigOverride
@@ -59,23 +41,6 @@ function M.configureRetabBeforeSave()
 	})
 end
 
----@class (exact) NeomakeLinter
----@field exe string
----@field args? string[]
----@field cwd? string
----@field errorformat string
-
---- Register a custom linter for the current buffer's filetype.
----
----@param config NeomakeLinter
-function M.registerLinter(config)
-	if os.getenv("NVIM_DIFF") then
-		return
-	end
-
-	vim.g["neomake_" .. neomake_filetype(vim.bo.filetype) .. "_" .. neomake_exe(config.exe) .. "_maker"] = config
-end
-
 --- Configure linters for the current buffer's filetype to run on BufWritePost.
 ---
 ---@param linters string[]
@@ -84,12 +49,6 @@ function M.configureLintAfterSave(linters)
 		return
 	end
 
-	for i, exe in ipairs(linters) do
-		linters[i] = neomake_exe(exe)
-	end
-
-	vim.g["neomake_" .. neomake_filetype(vim.bo.filetype) .. "_enabled_makers"] = linters
-
 	local filetype = vim.bo.filetype
 
 	vim.api.nvim_create_autocmd("BufWritePost", {
@@ -97,7 +56,7 @@ function M.configureLintAfterSave(linters)
 		pattern = "*",
 		callback = function()
 			if vim.bo.filetype == filetype then
-				vim.cmd("Neomake")
+				require("lint").try_lint(linters)
 			end
 		end,
 	})

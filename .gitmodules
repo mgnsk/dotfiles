@@ -28,9 +28,6 @@
 [submodule ".nvim-plugins/luvit-meta"]
 	path = .nvim-plugins/luvit-meta
 	url = https://github.com/Bilal2453/luvit-meta.git
-[submodule ".nvim-plugins/neomake"]
-	path = .nvim-plugins/neomake
-	url = https://github.com/neomake/neomake.git
 [submodule ".nvim-plugins/vim-cspell"]
 	path = .nvim-plugins/vim-cspell
 	url = https://github.com/ryu-ichiroh/vim-cspell.git
@@ -158,3 +155,6 @@
 [submodule ".pkgbuilds/crudini"]
 	path = .pkgbuilds/crudini
 	url = https://aur.archlinux.org/crudini.git
+[submodule ".nvim-plugins/nvim-lint"]
+	path = .nvim-plugins/nvim-lint
+	url = https://github.com/mfussenegger/nvim-lint.git

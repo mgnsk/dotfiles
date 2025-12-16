@@ -1,14 +1,9 @@
 --- @type LazySpec[]
 return {
 	{
-		"neomake/neomake",
-		dir = vim.fn.expand("$HOME/.nvim-plugins/neomake"),
-		cond = not os.getenv("NVIM_DIFF"),
-		event = "VeryLazy",
-		config = function()
-			vim.g.neomake_open_list = 2
-			vim.g.neomake_list_height = 3
-		end,
+		"mfussenegger/nvim-lint.git",
+		dir = vim.fn.expand("$HOME/.nvim-plugins/nvim-lint"),
+		lazy = true,
 	},
 	{
 		"ryuichiroh/vim-cspell",

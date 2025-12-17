@@ -25,6 +25,7 @@ packages=(
 	ntfs-3g
 	vulkan-tools
 	wget
+	fwupd
 
 	# CLI tools.
 	strace

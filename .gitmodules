@@ -158,3 +158,9 @@
 [submodule ".nvim-plugins/nvim-lint"]
 	path = .nvim-plugins/nvim-lint
 	url = https://github.com/mfussenegger/nvim-lint.git
+[submodule ".browser-extensions/vimium"]
+	path = .browser-extensions/vimium
+	url = https://github.com/philc/vimium.git
+[submodule ".browser-extensions/keepassxc-browser"]
+	path = .browser-extensions/keepassxc-browser
+	url = https://github.com/keepassxreboot/keepassxc-browser.git

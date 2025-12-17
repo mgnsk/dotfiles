@@ -44,7 +44,6 @@ args=(
 	--ro-bind "/lib64" "/lib64"
 	--ro-bind "/etc" "/etc"
 	--ro-bind "$HOME/.npm-packages" "$HOME/.npm-packages"
-	--ro-bind "$HOME/.go-packages" "$HOME/.go-packages"
 	--ro-bind "$HOME/.rustup" "$HOME/.rustup"
 )
 

@@ -1,4 +1,4 @@
-# Maintainer: mgnsk
+# Maintainer: mgnsk < mgnsk at kokk dot eu >
 
 pkgname=jsfx-lint-bin
 pkgver=0.2.0
@@ -15,7 +15,7 @@ source_x86_64=("$pkgname-$pkgver.tar.gz::$url/releases/download/${pkgver}/${pkgn
 sha256sums_x86_64=('ee20752516341a69d2f7be595834ed754614b5a3638f806580f538c0c66d0a60')
 
 package() {
-	cd jsfx-lint-0.2.0-x86_64-unknown-linux-musl
-	install -Dm755 eel_pp "$pkgdir/usr/bin/eel_pp"
-	install -Dm755 jsfx-lint "$pkgdir/usr/bin/jsfx-lint"
+	cd "jsfx-lint-${pkgver}-${arch}-unknown-linux-musl"
+	install -Dm755 eel_pp -t "$pkgdir/usr/bin/"
+	install -Dm755 jsfx-lint -t "$pkgdir/usr/bin/"
 }

@@ -16,21 +16,11 @@ sudo sed -i -e 's/;extension=iconv/extension=iconv/g' /etc/php/php.ini
 	npm ci
 )
 
-# Install Go packages.
-(
-	cd "$HOME/.go-packages"
-	export GOBIN="$HOME/.go-packages/bin"
-	go install tool
-)
-
 # 1password signing key.
 gpg --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
 
 # phpstan-bin signing key.
 gpg --keyserver keys.openpgp.org --recv-keys 51C67305FFC2E5C0
-
-# TODO pkgbuilds
-# jsfx-lint
 
 # Install AUR packages.
 packages=(
@@ -42,11 +32,12 @@ packages=(
 	crudini
 
 	downgrade
+	gh-tpl-bin
 	gojq-bin
 	go-jsonnet
 	hadolint-bin
 	helm-ls-bin
-	jsfx-lint
+	jsfx-lint-bin
 	jsonnet-language-server
 	nil-git
 	nixfmt
@@ -60,6 +51,7 @@ packages=(
 	rclone-browser
 	shellcheck-bin
 	snap-pac-grub
+	tusk-bin
 	wdisplays
 	wine-tkg-staging-wow64-bin
 	yay-bin

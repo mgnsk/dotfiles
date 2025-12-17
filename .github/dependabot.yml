@@ -2,6 +2,7 @@
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
+    target-branch: master # see https://github.com/dependabot/dependabot-core/issues/1778#issuecomment-1988140219
     directory: "/"
     schedule:
       interval: "daily"
@@ -9,6 +10,12 @@ updates:
       aur:
         patterns:
           - "/.pkgbuilds/*"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
       nvim-plugins:
         patterns:
           - "/.nvim-plugins/*"

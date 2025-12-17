@@ -42,6 +42,9 @@ cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
 	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
 EOF
 
+# Enable systemd journal in RAM.
+set_option /etc/systemd/journald.conf Storage volatile
+
 # Enable logrotate.
 sudo systemctl enable logrotate.timer
 

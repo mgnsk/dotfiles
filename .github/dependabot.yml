@@ -6,26 +6,18 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    groups:
-      aur:
-        patterns:
-          - "/.pkgbuilds/*"
+    patterns:
+      - "/.pkgbuilds/*"
 
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
       interval: "weekly"
-    groups:
-      nvim-plugins:
-        patterns:
-          - "/.nvim-plugins/*"
-      browser-extensions:
-        patterns:
-          - "/.browser-extensions/*"
+    patterns:
+      - "/.nvim-plugins/*"
+      - "/.browser-extensions/*"
 
   - package-ecosystem: "npm"
     directory: "/.npm-packages"
     schedule:
       interval: "weekly"
-    commit-message:
-      prefix: "npm"

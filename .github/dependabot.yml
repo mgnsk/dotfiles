@@ -6,16 +6,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    patterns:
-      - "/.pkgbuilds/*"
+    allow:
+      - dependency-name: ".pkgbuilds/*"
 
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
       interval: "weekly"
-    patterns:
-      - "/.nvim-plugins/*"
-      - "/.browser-extensions/*"
+    allow:
+      - dependency-name: ".nvim-plugins/*"
+      - dependency-name: ".browser-extensions/*"
 
   - package-ecosystem: "npm"
     directory: "/.npm-packages"

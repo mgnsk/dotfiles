@@ -42,6 +42,37 @@ cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
 	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
 EOF
 
+# https://github.com/egnrse/updateKDEcache.hook
+cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/updateKDEcache.hook >/dev/null
+	# updates the KService desktop file configuration cache (for the currently logged in user)
+	# (by egnrse)
+	#
+	# depends on:
+	# -'kservice'
+	# -'archlinux-xdg-menu'
+	# -'sudo'
+	# -'coreutils' (provides 'logname')
+	# put this file into '/etc/pacman.d/hooks/updateKDEcache.hook'
+	#
+	# we need the sudo/bash stuff, because hooks are executed by root in a sandboxed environment
+
+	[Trigger]
+	Operation = Install
+	Operation = Upgrade
+	Operation = Remove
+	Type = Path
+	Target = usr/share/applications/*.desktop
+
+	[Action]
+	Description = Updating the Kservice desktop file configuration cache...
+	When = PostTransaction
+	Exec = /bin/bash -c "sudo -u \"$(logname)\" bash -lc 'XDG_MENU_PREFIX=arch- /usr/bin/kbuildsycoca6 --noincremental'"
+	Depends = sudo
+	Depends = coreutils
+	Depends = kservice
+	Depends = archlinux-xdg-menu
+EOF
+
 # Enable systemd journal in RAM.
 set_option /etc/systemd/journald.conf Storage volatile
 
@@ -214,9 +245,6 @@ EOF
 cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null
 	fs.aio-max-nr = 1048576
 EOF
-
-# Build desktop menus.
-XDG_MENU_PREFIX=arch- kbuildsycoca6
 
 # Configure firewall.
 sudo systemctl enable ufw.service

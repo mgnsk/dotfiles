@@ -215,6 +215,9 @@ cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null
 	fs.aio-max-nr = 1048576
 EOF
 
+# Build desktop menus.
+XDG_MENU_PREFIX=arch- kbuildsycoca6
+
 # Configure firewall.
 sudo systemctl enable ufw.service
 sudo ufw default deny incoming

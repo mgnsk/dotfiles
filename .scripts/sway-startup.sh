@@ -29,7 +29,6 @@ done
 /usr/lib/mate-polkit/polkit-mate-authentication-agent-1 &
 nm-applet --indicator &
 swaync &
-thunar --daemon &
 bash ~/.pkgbuilds/systemd-audio-idle-inhibit/systemd-audio-idle-inhibit.sh &
 swayidle -w \
 	timeout 600 'lock' \

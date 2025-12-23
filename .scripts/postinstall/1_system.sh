@@ -97,6 +97,7 @@ packages=(
 	alacritty
 	foot
 	geany
+	archlinux-xdg-menu
 
 	# Power management.
 	tlp
@@ -110,19 +111,18 @@ packages=(
 	profile-sync-daemon
 
 	# File management.
-	thunar
-	thunar-archive-plugin
-	engrampa
+	dolphin
+	ark
 	unrar
 	7zip
-	tumbler
-	ffmpegthumbnailer
+	ffmpegthumbs
+	kdegraphics-thumbnailers
+	kimageformats
+	qt6-imageformats
 	exiftool
-	gvfs
 	webp-pixbuf-loader
 	viewnior
 	gthumb
-	geeqie
 	rclone
 	imagemagick
 	baobab
@@ -147,8 +147,6 @@ packages=(
 	# iOS.
 	libimobiledevice
 	usbmuxd
-	gvfs-gphoto2
-	gvfs-afc
 
 	# Go development.
 	go

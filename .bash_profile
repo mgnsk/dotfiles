@@ -5,9 +5,13 @@
 # light or dark
 style="light"
 
+text_scaling_factor="1.2"
+
 export THEME="$style"
 export GLAMOUR_STYLE="$style"
 export GLOW_STYLE="$style"
+export QT_AUTO_SCREEN_SCALE_FACTOR=0
+export QT_SCALE_FACTOR="$text_scaling_factor"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
@@ -44,7 +48,7 @@ function set-gsettings {
 	gset font-hinting 'slight'
 	# Note: only used when font-antialiasing is set to 'rgba'
 	# gset font-rgba-order 'rgb'
-	gset text-scaling-factor '1.2'
+	gset text-scaling-factor "$text_scaling_factor"
 }
 
 # TTY1: start sway at login if available.

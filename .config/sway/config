@@ -130,6 +130,8 @@ bindsym $mod+Shift+Backspace exec lock
 # Toggle control center
 bindsym $mod+Shift+n exec swaync-client -t -sw
 
+bindsym $mod+o exec dolphin
+
 # resize window (you can also use the mouse for that)
 mode "resize" {
     # These bindings trigger as soon as you enter the resize mode

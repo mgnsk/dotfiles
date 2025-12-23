@@ -48,7 +48,6 @@ packages=(
 	phpactor-bin
 	phpstan-bin
 	raysession
-	rclone-browser
 	shellcheck-bin
 	snap-pac-grub
 	tusk-bin

@@ -36,8 +36,7 @@ args=(
 	--tmpfs /tmp
 	--cap-drop ALL
 	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
-	--bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
-	--bind "$PWD" "$PWD"
+	--ro-bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
 	--ro-bind "/bin" "/bin"
 	--ro-bind "/usr" "/usr"
 	--ro-bind "/lib" "/lib"
@@ -45,6 +44,7 @@ args=(
 	--ro-bind "/etc" "/etc"
 	--ro-bind "$HOME/.npm-packages" "$HOME/.npm-packages"
 	--ro-bind "$HOME/.rustup" "$HOME/.rustup"
+	--bind "$PWD" "$PWD"
 )
 
 # Read bind all files tracked by dotfiles git.

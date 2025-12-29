@@ -55,5 +55,9 @@ vim.api.nvim_create_autocmd("QuitPre", {
 })
 
 vim.keymap.set("n", "U", vim.diagnostic.open_float, { desc = "Hover diagnostic" })
-vim.keymap.set("n", "gj", vim.diagnostic.goto_next, { desc = "Goto next diagnostic in current buffer" })
-vim.keymap.set("n", "gk", vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic in current buffer" })
+vim.keymap.set("n", "gj", function()
+	vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Goto next diagnostic in current buffer" })
+vim.keymap.set("n", "gk", function()
+	vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Goto prev diagnostic in current buffer" })

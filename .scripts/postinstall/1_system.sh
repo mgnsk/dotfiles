@@ -74,6 +74,7 @@ packages=(
 	swaylock
 	swayidle
 	swaync
+	libnotify
 	waybar
 	wl-clipboard
 	mate-polkit

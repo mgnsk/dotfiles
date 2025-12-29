@@ -31,8 +31,8 @@ nm-applet --indicator &
 swaync &
 bash ~/.pkgbuilds/systemd-audio-idle-inhibit/systemd-audio-idle-inhibit.sh &
 swayidle -w \
-	timeout 600 'lock' \
-	timeout 1200 'swaymsg "output * dpms off"' \
+	timeout 3600 'lock' \
+	timeout 3601 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
 	before-sleep 'lock' &
 gammastep-indicator -l "59.436962:24.753574" &

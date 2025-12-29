@@ -7,5 +7,5 @@ for remote in $(rclone listremotes); do
 	dir="$HOME/$remote"
 	mkdir -p "$dir"
 	echo "Enabling $remote mount at $dir"
-	systemctl --user enable "rclone@$remote"
+	systemctl --user enable --now "rclone@$remote"
 done

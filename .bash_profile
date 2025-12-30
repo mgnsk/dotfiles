@@ -28,32 +28,46 @@ __prepend_path ~/.bin
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
-function gset {
-	key="$1"
-	value="$2"
+function pre {
+	if command -v gsettings &>/dev/null; then
+		gsettings set "org.gnome.desktop.interface" \
+			gtk-theme 'Adwaita'
 
-	gnome_schema="org.gnome.desktop.interface"
-	gsettings set "$gnome_schema" "$key" "$value"
-}
+		gsettings set "org.gnome.desktop.interface" \
+			icon-theme 'Adwaita'
 
-function set-gsettings {
-	gset gtk-theme 'Adwaita'
-	gset icon-theme 'Adwaita'
-	gset font-name 'Cantarell 11'
-	gset monospace-font-name 'Monospace 11'
-	gset document-font-name 'Adwaita Sans 11'
-	gset font-antialiasing 'grayscale'
-	gset font-hinting 'slight'
-	# Note: only used when font-antialiasing is set to 'rgba'
-	# gset font-rgba-order 'rgb'
-	gset text-scaling-factor "$text_scaling_factor"
+		gsettings set "org.gnome.desktop.interface" \
+			font-name 'Cantarell 11'
+
+		gsettings set "org.gnome.desktop.interface" \
+			monospace-font-name 'Monospace 11'
+
+		gsettings set "org.gnome.desktop.interface" \
+			document-font-name 'Adwaita Sans 11'
+
+		gsettings set "org.gnome.desktop.interface" \
+			font-antialiasing 'grayscale'
+
+		gsettings set "org.gnome.desktop.interface" \
+			font-hinting 'slight'
+
+		# Note: only used when font-antialiasing is set to 'rgba'
+		# font-rgba-order 'rgb'
+		gsettings set "org.gnome.desktop.interface" \
+			text-scaling-factor "$text_scaling_factor"
+	fi
+
+	if command -v kbuildsycoca6 &>/dev/null; then
+		# Updates the KService desktop file configuration cache.
+		XDG_MENU_PREFIX=arch- /usr/bin/kbuildsycoca6 --noincremental &>/dev/null
+	fi
 }
 
 # TTY1: start sway at login if available.
 if test -z "$DISPLAY" -a "$XDG_VTNR" = 1; then
 	if command -v sway &>/dev/null; then
 		export XDG_CURRENT_DESKTOP=sway
-		set-gsettings
+		pre
 		exec sway
 	fi
 fi
@@ -62,7 +76,7 @@ fi
 if test -z "$DISPLAY" -a "$XDG_VTNR" = 2; then
 	if command -v openbox-session &>/dev/null; then
 		export XDG_CURRENT_DESKTOP=openbox
-		set-gsettings
+		pre
 		exec startx
 	fi
 fi

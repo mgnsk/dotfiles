@@ -1,0 +1,21 @@
+MenuBar=Disabled
+
+[General]
+BrowseThroughArchives=true
+RememberOpenedTabs=false
+ShowFullPath=true
+Version=202
+ViewPropsTimestamp=2025,12,23,19,26,45.504
+
+[IconsMode]
+PreviewSize=128
+
+[KFileDialog Settings]
+Places Icons Auto-resize=false
+Places Icons Static Size=22
+
+[MainWindow]
+MenuBar=Disabled
+
+[PreviewSettings]
+Plugins=appimagethumbnail,audiothumbnail,glycin-heif,blenderthumbnail,comicbookthumbnail,cursorthumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,directorythumbnail,heif,imagethumbnail,glycin-image-rs,jpegthumbnail,glycin-jxl,kraorathumbnail,windowsexethumbnail,windowsimagethumbnail,mobithumbnail,opendocumentthumbnail,gsthumbnail,rawthumbnail,glycin-svg,svgthumbnail,ffmpegthumbs,webp-pixbuf

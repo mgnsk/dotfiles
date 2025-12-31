@@ -112,6 +112,7 @@ packages=(
 	profile-sync-daemon
 
 	# File management.
+	qt6ct
 	dolphin
 	ark
 	unrar

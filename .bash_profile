@@ -15,6 +15,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_DATA_HOME="$HOME/.local/share"
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+export QT_QPA_PLATFORMTHEME=qt6ct
 
 __prepend_path() {
 	PATH="$1${PATH:+":$PATH"}"

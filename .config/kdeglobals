@@ -1,0 +1,6 @@
+[KDE]
+ShowDeleteCommand=true
+
+[PreviewSettings]
+EnableRemoteFolderThumbnail=false
+MaximumRemoteSize=1047527424

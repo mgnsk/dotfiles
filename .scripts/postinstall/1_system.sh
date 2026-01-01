@@ -132,6 +132,8 @@ packages=(
 	smplayer
 	yt-dlp
 	fdupes
+	cuetools
+	picard
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

@@ -161,3 +161,6 @@
 [submodule ".browser-extensions/keepassxc-browser"]
 	path = .browser-extensions/keepassxc-browser
 	url = https://github.com/keepassxreboot/keepassxc-browser.git
+[submodule ".pkgbuilds/shntool"]
+	path = .pkgbuilds/shntool
+	url = https://aur.archlinux.org/shntool.git

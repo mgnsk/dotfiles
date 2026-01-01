@@ -49,6 +49,7 @@ packages=(
 	phpstan-bin
 	raysession
 	shellcheck-bin
+	shntool
 	snap-pac-grub
 	tusk-bin
 	wdisplays

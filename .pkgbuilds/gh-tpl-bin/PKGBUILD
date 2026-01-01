@@ -1,7 +1,7 @@
 # Maintainer: mgnsk < mgnsk at kokk dot eu >
 
 pkgname=gh-tpl-bin
-pkgver=0.0.8
+pkgver=0.0.9
 pkgrel=1
 provides=("${pkgname/-bin/}")
 conflicts=('gh-tpl' 'gh-tpl-git')
@@ -11,7 +11,7 @@ url="https://github.com/mgnsk/gh-tpl"
 license=('MIT')
 
 source_x86_64=("$pkgname-$pkgver.tar.gz::https://github.com/mgnsk/gh-tpl/releases/download/v${pkgver}/gh-tpl-v${pkgver}-linux-amd64.tar.gz")
-sha256sums_x86_64=('54d667915007a093d6e3927b4b3bdaadc5e48716cf0b990b774bb2d7a6fb7b3e')
+sha256sums_x86_64=('1970b39372d421e831098529d71c126014f3d33225fffcdfc03a993aa90a05f4')
 
 package() {
 	install -Dm755 gh-tpl -t "$pkgdir/usr/bin/"

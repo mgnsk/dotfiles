@@ -5,6 +5,7 @@ set -eu
 declare -A mappings=(
 	["$HOME/Shared"]="gdrive:/Shared"
 	["$HOME/Studio"]="gdrive:/Studio"
+	["$HOME/Documents"]="gdrive:/Documents"
 	["$HOME/.win-plugins"]="gdrive:/Audio/.win-plugins"
 	["$HOME/.vst3"]="gdrive:/Audio/.vst3"
 )

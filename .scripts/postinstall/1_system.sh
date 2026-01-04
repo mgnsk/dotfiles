@@ -141,6 +141,7 @@ packages=(
 	openbox
 	tint2
 	picom
+	arandr
 
 	# Printing.
 	cups

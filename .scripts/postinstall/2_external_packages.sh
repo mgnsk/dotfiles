@@ -53,7 +53,6 @@ packages=(
 	snap-pac-grub
 	tusk-bin
 	wdisplays
-	wine-tkg-staging-wow64-bin
 	yay-bin
 )
 

@@ -61,9 +61,6 @@
 [submodule ".pkgbuilds/snap-pac-grub"]
 	path = .pkgbuilds/snap-pac-grub
 	url = https://aur.archlinux.org/snap-pac-grub.git
-[submodule ".pkgbuilds/wine-tkg-staging-wow64-bin"]
-	path = .pkgbuilds/wine-tkg-staging-wow64-bin
-	url = https://aur.archlinux.org/wine-tkg-staging-wow64-bin.git
 [submodule ".pkgbuilds/obmenu-generator"]
 	path = .pkgbuilds/obmenu-generator
 	url = https://aur.archlinux.org/obmenu-generator.git

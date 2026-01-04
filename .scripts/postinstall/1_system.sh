@@ -56,7 +56,6 @@ packages=(
 	shfmt
 	direnv
 	xdg-dbus-proxy
-	winetricks
 
 	# Disks.
 	btrfs-assistant
@@ -142,6 +141,11 @@ packages=(
 	tint2
 	picom
 	arandr
+
+	# Audio.
+	reaper
+	reapack
+	vulkan-swrast
 
 	# Printing.
 	cups

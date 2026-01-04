@@ -74,14 +74,11 @@
       };
 
       audioPkgs = with pkgs; [
-        # Pipewire JACK management.
-        pipewire.jack
-
         # For LSP and Zam plugins.
         mesa
         libGL
 
-        # Complete Vulkan setup to fix Northern Artillery Drums plugin GUI not updating until window moved.
+        # Complete Vulkan setup to fix Vulkan plugins.
         libdrm
         llvmPackages_21.libllvm
         elfutils
@@ -96,10 +93,9 @@
         expat
         spirv-tools-lib
         stdenv.cc.cc.lib
+        libdisplay-info
 
         # Reaper.
-        reaper
-        reaper-reapack-extension
         reaper-default-5-dark-extended-theme
 
         # Bitwig.
@@ -108,6 +104,8 @@
         # Wine and yabridge.
         yabridge
         yabridgectl
+        wineWowPackages.yabridge
+        winetricks
 
         # General programs.
         fluidsynth
@@ -164,14 +162,14 @@
 
             trap cleanup EXIT
 
-            export CUSTOM_HOST="ide-audio"
-            export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
-            export WINEFSYNC=1
-            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
+            # Enable software vulkan.
+            export LIBGL_ALWAYS_SOFTWARE=1
+            export __GLX_VENDOR_LIBRARY_NAME=mesa
+            export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/lvp_icd.i686.json:/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
 
-            # Setup reaper.
-            mkdir -p ~/.config/REAPER/UserPlugins
-            ln -sf ${pkgs.reaper-reapack-extension}/UserPlugins/* ~/.config/REAPER/UserPlugins/
+            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
+            export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
+            export CUSTOM_HOST="ide-audio"
 
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";

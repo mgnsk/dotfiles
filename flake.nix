@@ -105,10 +105,6 @@
         # Bitwig.
         bitwig-studio
 
-        # Wine and yabridge.
-        yabridge
-        yabridgectl
-
         # General programs.
         fluidsynth
       ];
@@ -165,7 +161,6 @@
             trap cleanup EXIT
 
             export CUSTOM_HOST="ide-audio"
-            export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
             export WINEFSYNC=1
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
 

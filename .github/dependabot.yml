@@ -8,6 +8,10 @@ updates:
       interval: "daily"
     allow:
       - dependency-name: ".pkgbuilds/*"
+    groups:
+      pkgbuilds:
+        patterns:
+          - "/.pkgbuilds/*"
 
   - package-ecosystem: "gitsubmodule"
     directory: "/"
@@ -16,6 +20,13 @@ updates:
     allow:
       - dependency-name: ".nvim-plugins/*"
       - dependency-name: ".browser-extensions/*"
+    groups:
+      nvim-plugins:
+        patterns:
+          - "/.nvim-plugins/*"
+      browser-extensions:
+        patterns:
+          - "/.browser-extensions/*"
 
   - package-ecosystem: "npm"
     directory: "/.npm-packages"

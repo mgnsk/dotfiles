@@ -2,25 +2,13 @@
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
-    target-branch: master # see https://github.com/dependabot/dependabot-core/issues/1778#issuecomment-1988140219
     directory: "/"
     schedule:
       interval: "daily"
-    allow:
-      - dependency-name: ".pkgbuilds/*"
     groups:
       pkgbuilds:
         patterns:
           - "/.pkgbuilds/*"
-
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    allow:
-      - dependency-name: ".nvim-plugins/*"
-      - dependency-name: ".browser-extensions/*"
-    groups:
       nvim-plugins:
         patterns:
           - "/.nvim-plugins/*"
@@ -32,3 +20,7 @@ updates:
     directory: "/.npm-packages"
     schedule:
       interval: "weekly"
+    groups:
+      npm-packages:
+        patterns:
+          - "*"

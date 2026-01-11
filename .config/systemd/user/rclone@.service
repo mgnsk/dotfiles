@@ -14,7 +14,7 @@ Environment=REMOTE_PATH="/"
 Environment=MOUNT_DIR="%h/%i"
 Environment=POST_MOUNT_SCRIPT=""
 Environment=RCLONE_CONF="%h/.config/rclone/rclone.conf"
-Environment=RCLONE_TEMP_DIR="/tmp/rclone/%u/%i"
+Environment=RCLONE_TEMP_DIR="%h/.cache/rclone/%u/%i"
 Environment=RCLONE_RC_ON="false"
 
 #Default arguments for rclone mount. Can be overridden in the environment file

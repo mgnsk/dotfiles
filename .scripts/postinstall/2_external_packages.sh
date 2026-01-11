@@ -33,7 +33,6 @@ packages=(
 	1password
 	1password-cli
 	brave-bin
-	crudini
 	downgrade
 	gojq-bin
 	go-jsonnet

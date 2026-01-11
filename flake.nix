@@ -139,7 +139,7 @@
         file: section: attrs:
         builtins.concatStringsSep "\n" (
           pkgs.lib.mapAttrsToList (name: value: ''
-            crudini --set --ini-options=nospace ${file} ${section} ${name} "${value}"
+            ${pkgs.crudini}/bin/crudini --set --ini-options=nospace ${file} ${section} ${name} "${value}"
           '') attrs
         );
     in

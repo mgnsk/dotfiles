@@ -55,78 +55,9 @@
 [submodule ".nvim-plugins/vim-eel"]
 	path = .nvim-plugins/vim-eel
 	url = https://github.com/NlGHT/vim-eel.git
-[submodule ".pkgbuilds/yay-bin"]
-	path = .pkgbuilds/yay-bin
-	url = https://aur.archlinux.org/yay-bin.git
-[submodule ".pkgbuilds/snap-pac-grub"]
-	path = .pkgbuilds/snap-pac-grub
-	url = https://aur.archlinux.org/snap-pac-grub.git
-[submodule ".pkgbuilds/obmenu-generator"]
-	path = .pkgbuilds/obmenu-generator
-	url = https://aur.archlinux.org/obmenu-generator.git
-[submodule ".pkgbuilds/1password"]
-	path = .pkgbuilds/1password
-	url = https://aur.archlinux.org/1password.git
-[submodule ".pkgbuilds/1password-cli"]
-	path = .pkgbuilds/1password-cli
-	url = https://aur.archlinux.org/1password-cli.git
-[submodule ".pkgbuilds/wdisplays"]
-	path = .pkgbuilds/wdisplays
-	url = https://aur.archlinux.org/wdisplays.git
-[submodule ".pkgbuilds/qdigidoc4"]
-	path = .pkgbuilds/qdigidoc4
-	url = https://aur.archlinux.org/qdigidoc4.git
-[submodule ".pkgbuilds/libdigidocpp"]
-	path = .pkgbuilds/libdigidocpp
-	url = https://aur.archlinux.org/libdigidocpp.git
-[submodule ".pkgbuilds/web-eid"]
-	path = .pkgbuilds/web-eid
-	url = https://aur.archlinux.org/web-eid.git
-[submodule ".pkgbuilds/raysession"]
-	path = .pkgbuilds/raysession
-	url = https://aur.archlinux.org/raysession.git
-[submodule ".pkgbuilds/downgrade"]
-	path = .pkgbuilds/downgrade
-	url = https://aur.archlinux.org/downgrade.git
 [submodule ".pkgbuilds/systemd-audio-idle-inhibit"]
 	path = .pkgbuilds/systemd-audio-idle-inhibit
 	url = https://github.com/mgnsk/systemd-audio-idle-inhibit.git
-[submodule ".pkgbuilds/perl-linux-desktopfiles"]
-	path = .pkgbuilds/perl-linux-desktopfiles
-	url = https://aur.archlinux.org/perl-linux-desktopfiles.git
-[submodule ".pkgbuilds/brave-bin"]
-	path = .pkgbuilds/brave-bin
-	url = https://aur.archlinux.org/brave-bin.git
-[submodule ".pkgbuilds/shellcheck-bin"]
-	path = .pkgbuilds/shellcheck-bin
-	url = https://aur.archlinux.org/shellcheck-bin.git
-[submodule ".pkgbuilds/gojq-bin"]
-	path = .pkgbuilds/gojq-bin
-	url = https://aur.archlinux.org/gojq-bin.git
-[submodule ".pkgbuilds/hadolint-bin"]
-	path = .pkgbuilds/hadolint-bin
-	url = https://aur.archlinux.org/hadolint-bin.git
-[submodule ".pkgbuilds/jsonnet-language-server"]
-	path = .pkgbuilds/jsonnet-language-server
-	url = https://aur.archlinux.org/jsonnet-language-server.git
-[submodule ".pkgbuilds/nil-git"]
-	path = .pkgbuilds/nil-git
-	url = https://aur.archlinux.org/nil-git.git
-[submodule ".pkgbuilds/nixfmt"]
-	path = .pkgbuilds/nixfmt
-	url = https://aur.archlinux.org/nixfmt.git
-[submodule ".pkgbuilds/helm-ls-bin"]
-	path = .pkgbuilds/helm-ls-bin
-	url = https://aur.archlinux.org/helm-ls-bin.git
-[submodule ".pkgbuilds/go-jsonnet"]
-	path = .pkgbuilds/go-jsonnet
-	url = https://aur.archlinux.org/go-jsonnet.git
-[submodule ".pkgbuilds/phpstan-bin"]
-	path = .pkgbuilds/phpstan-bin
-	url = https://aur.archlinux.org/phpstan-bin.git
-[submodule ".pkgbuilds/phpactor-bin"]
-	path = .pkgbuilds/phpactor-bin
-	url = https://aur.archlinux.org/phpactor-bin.git
 [submodule ".nvim-plugins/vim-fugitive"]
 	path = .nvim-plugins/vim-fugitive
 	url = https://github.com/tpope/vim-fugitive.git
@@ -143,12 +74,6 @@
 [submodule ".nvim-plugins/plenary.nvim"]
 	path = .nvim-plugins/plenary.nvim
 	url = https://github.com/nvim-lua/plenary.nvim.git
-[submodule ".pkgbuilds/python-iniparse"]
-	path = .pkgbuilds/python-iniparse
-	url = https://aur.archlinux.org/python-iniparse.git
-[submodule ".pkgbuilds/crudini"]
-	path = .pkgbuilds/crudini
-	url = https://aur.archlinux.org/crudini.git
 [submodule ".nvim-plugins/nvim-lint"]
 	path = .nvim-plugins/nvim-lint
 	url = https://github.com/mfussenegger/nvim-lint.git
@@ -158,6 +83,6 @@
 [submodule ".browser-extensions/keepassxc-browser"]
 	path = .browser-extensions/keepassxc-browser
 	url = https://github.com/keepassxreboot/keepassxc-browser.git
-[submodule ".pkgbuilds/shntool"]
-	path = .pkgbuilds/shntool
-	url = https://aur.archlinux.org/shntool.git
+[submodule ".pkgbuilds/yay-bin"]
+	path = .pkgbuilds/yay-bin
+	url = https://aur.archlinux.org/yay-bin.git

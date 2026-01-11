@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Stash uncommitted changes.
+git stash
+
 # Reset the current branch to the commit just before the last N:
 git reset --hard "HEAD~$1"
 
@@ -13,3 +16,6 @@ git merge --squash 'HEAD@{1}'
 # Commit those squashed changes.  The commit message will be helpfully
 # prepopulated with the commit messages of all the squashed commits:
 git commit --edit
+
+# Restore uncommitted changes.
+git stash apply

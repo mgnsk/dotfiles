@@ -1,0 +1,19 @@
+# Maintainer: mgnsk < mgnsk at kokk dot eu >
+
+pkgname=ini-file-bin
+pkgver=1.4.9
+pkgrel=1
+provides=("${pkgname/-bin/}")
+conflicts=('ini-file' 'ini-file-git')
+pkgdesc="CLI tool for modifying .ini files"
+arch=('x86_64')
+url="https://github.com/bitnami/ini-file"
+license=('Apache-2.0')
+
+source_x86_64=("$pkgname-$pkgver.tar.gz::https://github.com/bitnami/ini-file/releases/download/v${pkgver}/ini-file-linux-amd64.tar.gz")
+
+sha256sums_x86_64=('67d58e7dfb877722338120c348f496f98bc563e939ba29ba5111025e3dcef963')
+
+package() {
+	install -Dm755 ini-file-linux-amd64 "$pkgdir/usr/bin/ini-file"
+}

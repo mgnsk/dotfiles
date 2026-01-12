@@ -42,6 +42,37 @@ cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
 	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
 EOF
 
+# https://github.com/egnrse/updateKDEcache.hook
+cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/updateKDEcache.hook >/dev/null
+	# updates the KService desktop file configuration cache (for the currently logged in user)
+	# (by egnrse)
+	#
+	# depends on:
+	# -'kservice'
+	# -'archlinux-xdg-menu'
+	# -'sudo'
+	# -'coreutils' (provides 'logname')
+	# put this file into '/etc/pacman.d/hooks/updateKDEcache.hook'
+	#
+	# we need the sudo/bash stuff, because hooks are executed by root in a sandboxed environment
+
+	[Trigger]
+	Operation = Install
+	Operation = Upgrade
+	Operation = Remove
+	Type = Path
+	Target = usr/share/applications/*.desktop
+
+	[Action]
+	Description = Updating the Kservice desktop file configuration cache...
+	When = PostTransaction
+	Exec = /bin/bash -c "sudo -u \"$(logname)\" bash -lc 'XDG_MENU_PREFIX=arch- /usr/bin/kbuildsycoca6 --noincremental'"
+	Depends = sudo
+	Depends = coreutils
+	Depends = kservice
+	Depends = archlinux-xdg-menu
+EOF
+
 # Enable systemd journal in RAM.
 set_option /etc/systemd/journald.conf Storage volatile
 
@@ -130,29 +161,29 @@ fi
 systemctl --user enable ssh-agent.service
 
 # Configure KeepassXC.
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General HideWindowOnCopy false
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General MinimizeAfterUnlock false
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General MinimizeOnCopy true
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" General UpdateCheckMessageShown true
+ini-file set -s General -k HideWindowOnCopy -v false "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s General -k MinimizeAfterUnlock -v false "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s General -k MinimizeOnCopy -v true "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s General -k UpdateCheckMessageShown -v true "$HOME/.config/keepassxc/keepassxc.ini"
 
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Browser CustomProxyLocation ""
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Browser Enabled true
+ini-file set -s Browser -k CustomProxyLocation -v "" "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s Browser -k Enabled -v true "$HOME/.config/keepassxc/keepassxc.ini"
 
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" FdoSecrets ConfirmAccessItem true
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" FdoSecrets Enabled true
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" FdoSecrets ShowNotification false
+ini-file set -s FdoSecrets -k ConfirmAccessItem -v true "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s FdoSecrets -k Enabled -v true "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s FdoSecrets -k ShowNotification -v false "$HOME/.config/keepassxc/keepassxc.ini"
 
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI CheckForUpdates false
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI HideUsernames false
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI MinimizeOnClose true
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI MinimizeToTray true
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI ShowTrayIcon true
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" GUI TrayIconAppearance monochrome-light
+ini-file set -s GUI -k CheckForUpdates -v false "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s GUI -k HideUsernames -v false "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s GUI -k MinimizeOnClose -v true "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s GUI -k MinimizeToTray -v true "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s GUI -k ShowTrayIcon -v true "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s GUI -k TrayIconAppearance -v monochrome-light "$HOME/.config/keepassxc/keepassxc.ini"
 
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" SSHAgent Enabled true
+ini-file set -s SSHAgent -k Enabled -v true "$HOME/.config/keepassxc/keepassxc.ini"
 
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Security LockDatabaseIdle false
-crudini --set --ini-options=nospace "$HOME/.config/keepassxc/keepassxc.ini" Security LockDatabaseScreenLock true
+ini-file set -s Security -k LockDatabaseIdle -v false "$HOME/.config/keepassxc/keepassxc.ini"
+ini-file set -s Security -k LockDatabaseScreenLock -v true "$HOME/.config/keepassxc/keepassxc.ini"
 
 # Enable saving the last booted entry in GRUB.
 set_option /etc/default/grub GRUB_DEFAULT saved

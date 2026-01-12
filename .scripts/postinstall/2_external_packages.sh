@@ -19,6 +19,7 @@ sudo sed -i -e 's/;extension=iconv/extension=iconv/g' /etc/php/php.ini
 # Install PKGBUILDs.
 pkgbuilds=(
 	gh-tpl-bin
+	ini-file-bin
 	jsfx-lint-bin
 	tusk-bin
 	yay-bin

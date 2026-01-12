@@ -8,13 +8,13 @@ updates:
     groups:
       pkgbuilds:
         patterns:
-          - "/.pkgbuilds/*"
+          - ".pkgbuilds/*"
       nvim-plugins:
         patterns:
-          - "/.nvim-plugins/*"
+          - ".nvim-plugins/*"
       browser-extensions:
         patterns:
-          - "/.browser-extensions/*"
+          - ".browser-extensions/*"
 
   - package-ecosystem: "npm"
     directory: "/.npm-packages"

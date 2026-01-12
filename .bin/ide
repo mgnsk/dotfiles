@@ -64,8 +64,13 @@ fi
 
 function add_volume() {
 	container_path="$1"
-	host_path="$HOME/.ide/$project/$container_path"
+
+	# Replace every (//) slash (\/) with underscore (_) and append a unique hash.
+	volume_name="${project//\//_}-$(echo -n "$project" | sha256sum | cut -c1-8)"
+
+	host_path="$HOME/.ide/$volume_name/$container_path"
 	mkdir -p "$host_path"
+
 	args+=(
 		--bind "$host_path" "$container_path"
 	)

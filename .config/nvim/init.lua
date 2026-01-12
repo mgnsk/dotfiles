@@ -37,20 +37,11 @@ vim.o.undofile = true
 vim.o.swapfile = false
 vim.o.backup = false
 
-function _G.get_fold_expr(lnum)
-	local ok, result = pcall(vim.treesitter.foldexpr, lnum)
-	if not ok then
-		return "0"
-	end
-
-	return result
-end
-
 vim.api.nvim_create_autocmd("BufReadPost", {
 	-- Important to schedule this function for performance.
 	callback = vim.schedule_wrap(function()
-		vim.opt.foldmethod = "expr"
-		vim.wo.foldexpr = "v:lua.get_fold_expr()"
+		vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+		vim.wo[0][0].foldmethod = "expr"
 		vim.opt.foldnestmax = 3
 		vim.opt.foldlevel = 99
 		vim.opt.foldlevelstart = 99

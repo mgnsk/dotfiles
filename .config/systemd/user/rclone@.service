@@ -11,7 +11,7 @@ Type=notify
 #Set up environment
 Environment=REMOTE_NAME="%i"
 Environment=REMOTE_PATH="/"
-Environment=MOUNT_DIR="%h/%i"
+Environment=MOUNT_DIR="/mnt/%u/%i"
 Environment=POST_MOUNT_SCRIPT=""
 Environment=RCLONE_CONF="%h/.config/rclone/rclone.conf"
 Environment=RCLONE_TEMP_DIR="%h/.cache/rclone/%u/%i"

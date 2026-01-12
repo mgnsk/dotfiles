@@ -193,6 +193,6 @@
   <Action name="edit_paste" priority="0"/>
   <Action name="toggle_search" priority="0"/>
   <Action name="toggle_filter" priority="0"/>
-  <Action name="view_redisplay" priority="0"/>
+  <Action name="view_redisplay" priority="0" shortcut="F5; Ctrl+R"/>
  </ActionProperties>
 </gui>

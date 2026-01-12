@@ -162,11 +162,6 @@
 
             trap cleanup EXIT
 
-            # Enable software vulkan.
-            export LIBGL_ALWAYS_SOFTWARE=1
-            export __GLX_VENDOR_LIBRARY_NAME=mesa
-            export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/lvp_icd.i686.json:/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
-
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
             export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
             export CUSTOM_HOST="ide-audio"

@@ -98,6 +98,7 @@ packages=(
 	foot
 	geany
 	archlinux-xdg-menu
+	wayvnc
 
 	# Power management.
 	tlp

@@ -139,7 +139,7 @@
         file: section: attrs:
         builtins.concatStringsSep "\n" (
           pkgs.lib.mapAttrsToList (name: value: ''
-            ini-file set -s "${section}" -k "${name}" -v "${value}" "${file}"
+            ${pkgs.crudini}/bin/crudini --set --ini-options=nospace ${file} ${section} ${name} "${value}"
           '') attrs
         );
     in
@@ -166,7 +166,7 @@
             export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
             export CUSTOM_HOST="ide-audio"
 
-            ${setIni "$HOME/.config/REAPER/reaper.ini" "reaper" {
+            ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
               clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
               lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";

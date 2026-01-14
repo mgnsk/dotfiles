@@ -162,6 +162,7 @@
 
             trap cleanup EXIT
 
+            export WINEPREFIX="$HOME/.wine-audio"
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
             export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
             export CUSTOM_HOST="ide-audio"

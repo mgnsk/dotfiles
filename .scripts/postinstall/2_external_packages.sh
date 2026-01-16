@@ -49,7 +49,6 @@ packages=(
 	shellcheck-bin
 	shntool
 	snap-pac-grub
-	wdisplays
 	qdigidoc4
 	web-eid
 )

@@ -26,6 +26,7 @@ packages=(
 	vulkan-tools
 	wget
 	fwupd
+	lsof
 
 	# CLI tools.
 	strace

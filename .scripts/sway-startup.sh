@@ -35,5 +35,5 @@ swayidle -w \
 	timeout 3601 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
 	before-sleep 'lock' &
-gammastep-indicator -l "59.436962:24.753574" &
+wlsunset -l "59.436962" -L "24.753574" &
 wayvnc -Linfo 0.0.0.0 5900 &>"$XDG_RUNTIME_DIR/wayvnc.log" &

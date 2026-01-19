@@ -22,7 +22,6 @@ packages=(
 	pacman-contrib
 	ufw
 	logrotate
-	ntfs-3g
 	vulkan-tools
 	wget
 	fwupd
@@ -135,6 +134,7 @@ packages=(
 	fdupes
 	cuetools
 	picard
+	gnome-disk-utility
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

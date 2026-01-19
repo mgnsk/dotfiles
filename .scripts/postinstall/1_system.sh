@@ -99,7 +99,6 @@ packages=(
 	geany
 	archlinux-xdg-menu
 	wayvnc
-	nwg-displays
 
 	# Power management.
 	tlp

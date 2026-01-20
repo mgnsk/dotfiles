@@ -32,7 +32,7 @@
 [merge]
 	tool = nvim
 [commit]
-	gpgSign = true
+	gpgsign = true
 	verbose = true
 [include]
 	path = ~/.gitconfig_local
@@ -56,3 +56,5 @@
 	prune = true
 	pruneTags = true
 	all = true
+[gpg]
+	format = ssh

@@ -82,7 +82,7 @@ packages=(
 	wmenu
 	nm-connection-editor
 	network-manager-applet
-	wlsunset
+	gammastep
 	xdg-desktop-portal-wlr
 	xdg-desktop-portal-gtk
 	xdg-user-dirs

@@ -17,7 +17,6 @@ for host_dir in "${!mappings[@]}"; do
 
 	rclone bisync \
 		--progress \
-		--copy-links \
 		--resilient \
 		--recover \
 		--max-lock 2m \

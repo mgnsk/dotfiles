@@ -17,17 +17,6 @@
         };
       };
 
-      airwindows-consolidated = pkgs.stdenv.mkDerivation {
-        name = "airwindows-consolidated";
-        src = pkgs.fetchzip {
-          url = "https://github.com/baconpaul/airwin2rack/releases/download/DAWPlugin/AirwindowsConsolidated-2025-12-28-f9bb75d-Linux.zip";
-          sha256 = "OAqg8bPRypQuD3T3h9gYBZuDWOO5d0Mbf4mN81I08zk=";
-        };
-        installPhase = ''
-          install -m755 -D ./Airwindows\ Consolidated.clap $out/lib/clap/Airwindows\ Consolidated.clap
-        '';
-      };
-
       spirv-tools-lib = pkgs.linkFarm "spirv-tools-lib" [
         {
           name = "lib/libSPIRV-Tools.so";
@@ -112,7 +101,7 @@
       ];
 
       clapPlugins = with pkgs; [
-        airwindows-consolidated
+        airwin2rack
         surge-XT
       ];
 

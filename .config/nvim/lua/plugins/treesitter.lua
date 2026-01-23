@@ -24,6 +24,7 @@ return {
 					if bufsize > require("const").treesitter_max_filesize then
 						return true
 					end
+					return false
 				end,
 			},
 			incremental_selection = {

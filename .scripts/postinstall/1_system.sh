@@ -114,16 +114,17 @@ packages=(
 	# File management.
 	qt6ct
 	dolphin
-	ark
-	unrar
-	7zip
-	ffmpegthumbs
+	kde-cli-tools
 	kdegraphics-thumbnailers
 	kimageformats
 	qt6-imageformats
+	ffmpegthumbs
+	ark
+
+	unrar
+	7zip
 	exiftool
 	webp-pixbuf-loader
-	viewnior
 	gthumb
 	rclone
 	imagemagick

@@ -102,7 +102,7 @@ vim.lsp.enable({
 	"tsgo",
 	"html",
 	"css",
-	-- "bash",
+	"bash",
 	"phpactor",
 	"rust_analyzer",
 	"jsonnet_ls",

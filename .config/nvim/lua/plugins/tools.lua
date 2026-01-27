@@ -73,42 +73,4 @@ return {
 			default_file_explorer = false,
 		},
 	},
-	{
-		"nvim-lua/plenary.nvim",
-		dir = vim.fn.expand("$HOME/.nvim-plugins/plenary.nvim"),
-		lazy = true,
-	},
-	{
-		"olimorris/codecompanion.nvim",
-		dir = vim.fn.expand("$HOME/.nvim-plugins/codecompanion.nvim"),
-		event = "VeryLazy",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-		},
-		opts = {
-			ignore_warnings = true,
-			strategies = {
-				chat = {
-					adapter = "gemini",
-				},
-				inline = {
-					adapter = "gemini",
-				},
-				cmd = {
-					adapter = "gemini",
-				},
-			},
-			adapters = {
-				http = {
-					gemini = function()
-						return require("codecompanion.adapters").extend("gemini", {
-							env = {
-								api_key = "cmd:secret-tool lookup apikey gemini",
-							},
-						})
-					end,
-				},
-			},
-		},
-	},
 }

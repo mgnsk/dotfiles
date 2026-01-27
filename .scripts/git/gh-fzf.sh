@@ -62,7 +62,22 @@ function gh-list {
 
 	issue_pr_list_go_template="$(
 		cat <<-'EOF'
-			{{- range .}}{{.number | autocolor "yellow"}} {{timeago .createdAt | autocolor "red"}} {{printf "(%s)" .author.login | autocolor "blue"}} {{regexReplaceAllLiteral "[\r\n]+" .title " "}} {{if .stateReason}}{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}{{else}}{{(printf "(%s)" .state) | lower | autocolor "red"}}{{end}}{{"\n"}}{{end -}}
+			{{$sep := "\x1f"}}
+			{{- range . -}}
+				{{.number | autocolor "yellow"}}
+				{{- $sep -}}
+				{{.createdAt | mustToDate "2006-01-02T15:04:05Z07:00" | unixEpoch}}
+				{{- $sep -}}
+				{{printf "(%s)" .author.login | autocolor "blue"}}
+				{{- $sep -}}
+				{{regexReplaceAllLiteral "[\r\n]+" .title " "}}
+				{{- $sep -}}
+				{{- if .stateReason -}}
+					{{(printf "(%s: %s)" .state .stateReason) | autocolor "red"}}
+				{{- else -}}
+					{{(printf "(%s)" .state) | lower | autocolor "red"}}
+				{{- end -}}{{"\n"}}
+			{{- end -}}
 		EOF
 	)"
 
@@ -72,7 +87,8 @@ function gh-list {
 			--state=all \
 			--json number,title,state,createdAt,updatedAt,author \
 			--jq 'sort_by(.updatedAt) | reverse' |
-			gh-tpl --color "$issue_pr_list_go_template"
+			gh-tpl --color "$issue_pr_list_go_template" |
+			python3 ~/.scripts/git/relative_date.py
 		exit
 	fi
 
@@ -84,7 +100,8 @@ function gh-list {
 		--json number,title,state,createdAt,updatedAt,author \
 		--jq 'sort_by(.updatedAt) | reverse' \
 		$query |
-		gh-tpl --color "$issue_pr_list_go_template"
+		gh-tpl --color "$issue_pr_list_go_template" |
+		python3 ~/.scripts/git/relative_date.py
 }
 
 export -f gh-list

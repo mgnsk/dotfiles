@@ -30,7 +30,13 @@ local function create_git_log_actions(field_index)
 	}
 end
 
-local git_log_cmd = string.format([[git log --color --decorate --pretty="%s"]], os.getenv("GIT_LOG_PRETTY_FORMAT"))
+---@param extra_args string
+local function make_git_log_search_cmd(extra_args)
+	return string.format([[git log --color --decorate --pretty="%s"]], os.getenv("GIT_LOG_PRETTY_FORMAT"))
+		.. " "
+		.. extra_args
+		.. [[ | python ~/.scripts/git/relative_date.py]]
+end
 
 --- @type LazySpec[]
 return {
@@ -101,7 +107,7 @@ return {
 				local start_line, end_line = unpack(selection())
 				local lineArg = string.format([[ -L %d,%d:%s]], start_line, end_line, vim.fn.expand("%:p"))
 
-				local contentsCmd = git_log_cmd .. " --no-patch" .. lineArg .. " | nl -ba" -- Add line numbers.
+				local contentsCmd = make_git_log_search_cmd(" --no-patch" .. lineArg) .. " | nl -ba" -- Add line numbers.
 
 				return require("fzf-lua").fzf_exec(contentsCmd, {
 					prompt = "Blame> ",
@@ -112,7 +118,7 @@ return {
 						fn = function(items)
 							-- Skip this many entries in preview to only show the current selected.
 							local skip = tonumber(string.match(items[1], "%d")) - 1
-							return git_log_cmd
+							return "git log --color"
 								.. lineArg
 								.. " --max-count=1"
 								.. string.format(" --skip=%d", skip)
@@ -156,13 +162,13 @@ return {
 			},
 			git = {
 				bcommits = {
-					cmd = git_log_cmd .. " --follow {file}",
+					cmd = make_git_log_search_cmd(" --follow {file}"),
 					preview_pager = "diff-highlight",
 					actions = create_git_log_actions(1),
 					preview = [[name=$(bash ~/.scripts/get-old-git-filename.sh {1} {file}); git show --color {1} -- "$name"]],
 				},
 				commits = {
-					cmd = git_log_cmd,
+					cmd = make_git_log_search_cmd(""),
 					preview_pager = "diff-highlight",
 					actions = create_git_log_actions(1),
 				},

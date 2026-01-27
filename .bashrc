@@ -10,7 +10,7 @@ export VISUAL="nvim"
 export PAGER="less -R"
 export MANPAGER="less -R"
 
-export GIT_LOG_PRETTY_FORMAT='%C(yellow)%h %Cred%cr %Creset%s%C(cyan)%d %Cblue<%an>'
+export GIT_LOG_PRETTY_FORMAT='%C(yellow)%h%Creset%x1f%ct%x1f%Creset%s%C(cyan)%d%x1f%Cblue<%an>'
 
 export FZF_DEFAULT_OPTS="--layout=reverse --marker='>' --pointer='>' --style=minimal"
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --no-ignore-vcs --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'"

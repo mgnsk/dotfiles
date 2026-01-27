@@ -78,7 +78,8 @@ function git-search {
 
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
-	git "$target" --color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT" -i --perl-regexp $gitflags "$query"
+	git "$target" --color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT" -i --perl-regexp $gitflags "$query" |
+		python3 ~/.scripts/git/relative_date.py
 }
 
 export -f git-search

@@ -1,0 +1,8 @@
+#!/bin/env bash
+
+set -e
+
+GEMINI_API_KEY=$(secret-tool lookup apikey gemini)
+export GEMINI_API_KEY
+
+exec /usr/bin/gemini

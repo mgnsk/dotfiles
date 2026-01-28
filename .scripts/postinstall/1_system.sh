@@ -203,6 +203,7 @@ packages=(
 	github-cli
 	glow
 	asciinema
+	gemini-cli
 )
 
 if lscpu | grep -q Intel; then

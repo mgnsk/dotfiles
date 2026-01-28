@@ -7,7 +7,6 @@ set -eu
 packages=(
 	# System.
 	man-db
-	fuse2
 	mesa
 	base-devel
 	bash-completion
@@ -180,6 +179,7 @@ packages=(
 	# Python development.
 	python-black
 	python-pylint
+	ty
 	uv
 
 	# Web development.

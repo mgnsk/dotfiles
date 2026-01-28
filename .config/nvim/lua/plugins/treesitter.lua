@@ -17,6 +17,7 @@ return {
 			ignore_install = {
 				"gitcommit",
 			},
+			indent = { enable = true },
 			highlight = {
 				enable = true,
 				disable = function(ctx)

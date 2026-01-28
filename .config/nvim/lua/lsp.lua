@@ -109,5 +109,6 @@ vim.lsp.enable({
 	"buf_ls",
 	"nil_ls",
 	"helm_ls",
+	"ty",
 	"yamlls",
 })

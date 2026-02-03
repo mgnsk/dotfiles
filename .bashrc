@@ -30,9 +30,6 @@ export LIBRARY_PATH="$HOME/.local/lib"
 
 export ANSIBLE_NOCOWS=1
 
-# Disable makepkg compression.
-export PKGEXT=".pkg.tar"
-
 export NODE_OPTIONS="--max_old_space_size=4096"
 
 mkdir -p "$HOME/.local/state"

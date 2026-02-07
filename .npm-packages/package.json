@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@github/copilot": "^0.0.400",
+    "@github/copilot": "^0.0.405",
     "@typescript/native-preview": "^7.0.0-dev.20251203.1",
     "cspell": "^9.3.0"
   }

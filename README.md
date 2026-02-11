@@ -18,28 +18,26 @@ rm -r ~/dotfiles-tmp/
 
 # Audio
 
-The audio nix shell includes a Reaper and yabridge installation.
-Currently we are using system-wide wine installation.
 Run `ide-audio` to run the audio environment.
 
 ## Setting up Windows plugins
 
-Drop your windows plugins into `~/.win-plugins/Plugins`.
+Drop your windows plugins into `~/Shared/win-plugins/Plugins`.
 
 If the plugin has a setup, then inside the audio shell run it with wine: `wine MyPluginSetup.exe`.
-Attempt to install it to somewhere in `~/.win-plugins`
+Attempt to install it to somewhere in `~/Shared/win-plugins`
 (through wine `Z:` volume Linux home should be available).
 
 If you can't change the path, then determine if you can move it manually
-to `~/.win-plugins` after installing. If it depends on some other files,
-configure it in `~/.win-plugins/setup.sh`.
+to `~/Shared/win-plugins` after installing. If it depends on some other files,
+configure it in `~/Shared/win-plugins/setup.sh`.
 
-WINEPREFIX should be kept ephemerable, i.e. you could delete `~/.wine` and run the environment again
+`WINEPREFIX` is set to `~/.wine-audio`. It should be kept ephemerable, i.e. you could delete `~/.wine-audio` and run the environment again
 to recreate it.
 
 - Plugins can be manually scanned with `yabridgectl sync`.
 - Display plugins with `yabridgectl status`.
-- To force resync, remove `~/.vst/yabridge` and `~/.vst3/yabridge` and sync again or re-enter the environment.
+- To force resync, remove `~/Shared/vst3/yabridge` and sync again or re-enter the environment.
 
 ## Raysession
 

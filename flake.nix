@@ -158,14 +158,14 @@
 
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
-              clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
-              lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";
-              vstpath = "~/.vst;~/.vst3;${makePluginPath "vst3" vst3Plugins}";
+              clap_path_linux-x86_64 = "${makePluginPath "clap" clapPlugins}";
+              lv2path_linux = "${makePluginPath "lv2" lv2Plugins}";
+              vstpath = "~/.vst3;~/Shared/vst3;${makePluginPath "vst3" vst3Plugins}";
               ui_scale = "1.0";
             }}
 
             bash ~/.scripts/check-vulkan-deps.sh
-            bash ~/.win-plugins/setup.sh
+            bash ~/Shared/win-plugins/setup.sh
 
             set +e
 

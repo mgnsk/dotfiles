@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Fonts]
+"Guitar Pro 5 (TrueType)"="Guitar Pro 5.ttf"
+
+[HKEY_LOCAL_MACHINE\Software\Wow6432Node\Arobas Music\Guitar Pro 5]
+"InstallFolder"="C:\\Program Files (x86)\\Guitar Pro 5"

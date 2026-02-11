@@ -5,43 +5,43 @@ vim.diagnostic.config({
 
 local diagnostics_group = vim.api.nvim_create_augroup("diagnostics", {})
 
-local function setloclist()
-	if vim.fn.mode() == "i" then
-		-- Don't update in insert mode.
-		return
-	end
-
-	local winid = vim.api.nvim_get_current_win()
-
-	-- Save main window view to avoid jumping.
-	local view = vim.api.nvim_win_call(winid, function()
-		return vim.fn.winsaveview()
-	end)
-
-	pcall(vim.diagnostic.setloclist, { winnr = winid, open = true })
-
-	-- Limit loclist height.
-	local loclist = vim.fn.getloclist(winid, { winid = winid })
-	if loclist and loclist.winid > 0 then
-		local num_items = #vim.fn.getloclist(winid)
-		local max_h = 5
-		vim.api.nvim_win_set_height(loclist.winid, math.min(num_items, max_h))
-		-- Forces redraw of loclist (avoids empty lines).
-		vim.api.nvim_win_set_cursor(loclist.winid, { 1, 0 })
-	end
-
-	vim.api.nvim_set_current_win(winid)
-
-	-- Restore main windows view.
-	vim.api.nvim_win_call(winid, function()
-		vim.fn.winrestview(view)
-	end)
-end
-
 vim.api.nvim_create_autocmd({ "DiagnosticChanged", "InsertLeave" }, {
 	desc = "Automatically hide/show and update loclist",
 	group = diagnostics_group,
-	callback = vim.schedule_wrap(setloclist),
+	callback = function()
+		if vim.fn.mode() == "i" then
+			-- Don't update in insert mode.
+			return
+		end
+
+		vim.schedule(function()
+			local winid = vim.api.nvim_get_current_win()
+
+			-- Save main window view to avoid jumping.
+			local view = vim.api.nvim_win_call(winid, function()
+				return vim.fn.winsaveview()
+			end)
+
+			pcall(vim.diagnostic.setloclist, { winnr = winid, open = true })
+
+			-- Limit loclist height.
+			local loclist = vim.fn.getloclist(winid, { winid = winid })
+			if loclist and loclist.winid > 0 then
+				local num_items = #vim.fn.getloclist(winid)
+				local max_h = 5
+				vim.api.nvim_win_set_height(loclist.winid, math.min(num_items, max_h))
+				-- Forces redraw of loclist (avoids empty lines).
+				vim.api.nvim_win_set_cursor(loclist.winid, { 1, 0 })
+			end
+
+			vim.api.nvim_set_current_win(winid)
+
+			-- Restore main windows view.
+			vim.api.nvim_win_call(winid, function()
+				vim.fn.winrestview(view)
+			end)
+		end)
+	end,
 })
 
 vim.api.nvim_create_autocmd("QuitPre", {

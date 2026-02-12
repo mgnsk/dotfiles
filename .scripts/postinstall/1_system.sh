@@ -135,6 +135,7 @@ packages=(
 	cuetools
 	picard
 	gnome-disk-utility
+	fuse-zip
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

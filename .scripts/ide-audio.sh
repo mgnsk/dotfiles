@@ -1,6 +1,29 @@
 #!/bin/env bash
 
-set -eu
+set -e
+
+# Check vulkan deps.
+if lspci -k | grep -q i915; then
+	echo "Detected Intel GPU (i915)"
+	deps=$(ldd /usr/lib/libvulkan_intel.so)
+elif lspci -k | grep -q amdgpu; then
+	echo "Detected AMD GPU (amdgpu)"
+	deps=$(ldd /usr/lib/libvulkan_radeon.so)
+else
+	echo "Unsupported GPU!"
+	exit 1
+fi
+
+if echo "$deps" | grep -q "not found"; then
+	echo "Missing Vulkan dependencies:"
+	echo "$deps" | grep "not found"
+	exit 1
+fi
+
+if ! vulkaninfo &>/dev/null; then
+	vulkaninfo
+	exit 1
+fi
 
 # Set up wine prefix.
 if [ ! -d "$WINEPREFIX" ]; then
@@ -11,7 +34,7 @@ if [ ! -d "$WINEPREFIX" ]; then
 	winetricks -q gdiplus
 fi
 
-WINPLUGINS="$HOME/Shared/win-plugins"
+WINPLUGINS="$HOME/Shared/Audio/win-plugins"
 
 # Link plugins dir to Windows user home.
 {

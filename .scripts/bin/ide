@@ -90,4 +90,4 @@ args+=(
 	"${@:2}"
 )
 
-exec bwrap "${args[@]}"
+bwrap "${args[@]}"

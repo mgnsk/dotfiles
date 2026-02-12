@@ -205,6 +205,9 @@ packages=(
 	glow
 	asciinema
 	gemini-cli
+	ansible
+	ansible-language-server
+	ansible-lint
 )
 
 if lscpu | grep -q Intel; then

@@ -80,3 +80,6 @@
 [submodule ".pkgbuilds/yay-bin"]
 	path = .pkgbuilds/yay-bin
 	url = https://aur.archlinux.org/yay-bin.git
+[submodule ".nvim-plugins/nvim-ansible"]
+	path = .nvim-plugins/nvim-ansible
+	url = https://github.com/mfussenegger/nvim-ansible.git

@@ -111,4 +111,5 @@ vim.lsp.enable({
 	"helm_ls",
 	"ty",
 	"yamlls",
+	"ansiblels",
 })

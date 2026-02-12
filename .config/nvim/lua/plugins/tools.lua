@@ -1,6 +1,10 @@
 --- @type LazySpec[]
 return {
 	{
+		"mfussenegger/nvim-ansible",
+		dir = vim.fn.expand("$HOME/.nvim-plugins/nvim-ansible"),
+	},
+	{
 		"mfussenegger/nvim-lint.git",
 		dir = vim.fn.expand("$HOME/.nvim-plugins/nvim-lint"),
 		lazy = true,

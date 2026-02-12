@@ -2,8 +2,16 @@
 
 set -euo pipefail
 
+has_changes=false
+
+if [[ ! -z "$(git status -s)" ]]; then
+	has_changes=true
+fi
+
 # Stash uncommitted changes.
-git stash
+if [ "$has_changes" = true ]; then
+	git stash push
+fi
 
 # Reset the current branch to the commit just before the last N:
 git reset --hard "HEAD~$1"
@@ -18,4 +26,6 @@ git merge --squash 'HEAD@{1}'
 git commit --edit
 
 # Restore uncommitted changes.
-git stash apply
+if [ "$has_changes" = true ]; then
+	git stash pop
+fi

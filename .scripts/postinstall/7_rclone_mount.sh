@@ -13,6 +13,7 @@ for remote in $(rclone listremotes); do
 	echo "Unmounting $remote mount at $dir if mounted"
 	systemctl --user stop "rclone@$remote"
 
+	sudo umount "$dir" || true
 	sudo mkdir -p "$dir"
 	sudo chown "$(id -un):$(id -gn)" "$dir"
 

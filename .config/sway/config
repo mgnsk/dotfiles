@@ -153,6 +153,10 @@ input type:keyboard {
     repeat_rate 30
 }
 
+input type:touchpad {
+    tap enabled
+}
+
 focus_follows_mouse no
 
 #set $wallpapers_path $HOME/wallpapers

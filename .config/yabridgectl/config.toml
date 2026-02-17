@@ -1,0 +1,6 @@
+plugin_dirs = [
+    '/home/magnus/Shared/Audio/win-plugins/Plugins',
+]
+vst2_location = 'centralized'
+no_verify = false
+blacklist = []

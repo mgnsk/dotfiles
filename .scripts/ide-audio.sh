@@ -95,10 +95,16 @@ WINPLUGINS="$HOME/Shared/Audio/win-plugins"
 	fi
 }
 
+# Set up VST3 plugins.
+{
+	target="$HOME/.vst3"
+	rm -rf "$target"
+	ln -s "$HOME/Shared/Audio/vst3" "$target"
+}
+
 # Set up yabridge paths.
 {
 	if [[ -d "$WINPLUGINS/Plugins" ]]; then
-		yabridgectl add "$WINPLUGINS/Plugins"
 		yabridgectl sync --prune
 		yabridgectl status
 	fi

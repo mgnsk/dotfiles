@@ -144,20 +144,6 @@
           shellHook = ''
             set -e
 
-            mkdir -p ~/Shared/Audio/win-plugins/Plugins
-            fuse-zip ~/Shared/Audio/win-plugins/Plugins.zip ~/Shared/Audio/win-plugins/Plugins
-
-            mkdir -p ~/Shared/Audio/vst3
-            fuse-zip ~/Shared/Audio/vst3.zip ~/Shared/Audio/vst3
-
-            function cleanup {
-              echo "Exiting audio shell"
-              wineserver -k || true
-
-              fusermount3 -u ~/Shared/Audio/win-plugins/Plugins
-              fusermount3 -u ~/Shared/Audio/vst3
-            }
-
             trap cleanup EXIT
 
             export WINEPREFIX="$HOME/.wine-audio"
@@ -165,11 +151,12 @@
             export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
             export CUSTOM_HOST="ide-audio"
 
+            mkdir -p ~/.config/REAPER
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
-              clap_path_linux-x86_64 = "${makePluginPath "clap" clapPlugins}";
-              lv2path_linux = "${makePluginPath "lv2" lv2Plugins}";
-              vstpath = "~/.vst3;~/Shared/Audio/vst3;${makePluginPath "vst3" vst3Plugins}";
+              clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
+              lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";
+              vstpath = "~/.vst;~/.vst3;${makePluginPath "vst3" vst3Plugins}";
               ui_scale = "1.0";
             }}
 

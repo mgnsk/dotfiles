@@ -44,8 +44,6 @@ warningCode = 0
 [rule.waitgroup-by-value]
 [rule.atomic]
 [rule.empty-lines]
-[rule.line-length-limit]
-  arguments = [120]
 [rule.call-to-gc]
 [rule.duplicated-imports]
 [rule.import-shadowing]

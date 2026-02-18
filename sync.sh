@@ -9,5 +9,6 @@ rclone bisync \
 	--max-lock 2m \
 	--conflict-resolve newer \
 	--resync-mode newer \
+	--exclude "yabridge/**" \
 	"$HOME/Shared" \
 	"gdrive:/Shared"

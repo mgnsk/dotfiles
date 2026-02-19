@@ -143,6 +143,10 @@
           ];
           shellHook = ''
             set -e
+            function cleanup {
+              echo "Exiting audio shell"
+              wineserver -k || true
+            }
 
             trap cleanup EXIT
 

@@ -53,6 +53,7 @@ packages=(
 	wdisplays
 	qdigidoc4
 	web-eid
+	claude-code
 )
 
 yay -S "${packages[@]}"

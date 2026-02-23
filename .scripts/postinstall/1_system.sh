@@ -207,6 +207,7 @@ packages=(
 	ansible
 	ansible-language-server
 	ansible-lint
+	caddy
 )
 
 if lscpu | grep -q Intel; then

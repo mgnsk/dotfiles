@@ -76,10 +76,19 @@ function git-search {
 
 	gitflags=$(cat "$tmpdir/git_flags")
 
-	# Note: we need gitflags unquoted:
-	# shellcheck disable=SC2086
-	git "$target" --color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT" -i --perl-regexp $gitflags "$query" |
-		python3 ~/.scripts/git/relative_date.py
+	if [ "$target" == "log" ]; then
+		# Note: we need gitflags unquoted:
+		# shellcheck disable=SC2086
+		git log \
+			--color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT" -i --perl-regexp $gitflags "$query" |
+			python3 ~/.scripts/git/relative_date.py
+	elif [ "$target" == "reflog" ]; then
+		# Note: we need gitflags unquoted:
+		# shellcheck disable=SC2086
+		git log --reflog --all \
+			--color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT" -i --perl-regexp $gitflags "$query" |
+			python3 ~/.scripts/git/relative_date.py
+	fi
 }
 
 export -f git-search

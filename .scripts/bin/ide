@@ -50,13 +50,6 @@ args=(
 	--bind "$PWD" "$PWD"
 )
 
-# Read bind all files tracked by dotfiles git.
-for f in $(git -C "$HOME" ls-tree -r master --name-only); do
-	args+=(
-		--ro-bind "$HOME/$f" "$HOME/$f"
-	)
-done
-
 # Detect current project root.
 project=$(git rev-parse --show-toplevel)
 
@@ -64,6 +57,16 @@ project=$(git rev-parse --show-toplevel)
 if [[ "$project" == "$HOME" ]]; then
 	project="$PWD"
 fi
+
+# Read bind all files tracked by dotfiles git.
+for f in $(git -C "$HOME" ls-tree -r master --name-only); do
+	if ! echo "$HOME/$f" | grep -q "^$PWD"; then
+		# "$HOME/$f" is outside of "$PWD", mount it readonly.
+		args+=(
+			--ro-bind "$HOME/$f" "$HOME/$f"
+		)
+	fi
+done
 
 function add_volume() {
 	container_path="$1"

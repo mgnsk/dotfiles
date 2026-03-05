@@ -1,0 +1,36 @@
+#!/bin/env bash
+
+set -e
+
+# Ensure the necessary files exist before first start.
+mkdir -p "$HOME/.claude"
+if ! [ -f "$HOME/.claude.json" ]; then
+	echo "{}" >"$HOME/.claude.json"
+fi
+
+args=(
+	--unshare-all
+	--share-net
+	--die-with-parent
+	--dev /dev
+	--proc /proc
+	--tmpfs /tmp
+	--cap-drop ALL
+	--ro-bind "/bin" "/bin"
+	--ro-bind "/usr" "/usr"
+	--ro-bind "/lib" "/lib"
+	--ro-bind "/lib64" "/lib64"
+	--ro-bind "/etc" "/etc"
+	--ro-bind "/opt" "/opt"
+
+	# Bind current directory.
+	--bind "$PWD" "$PWD"
+
+	# Bind claude config.
+	--bind "$HOME/.claude" "$HOME/.claude"
+	--bind "$HOME/.claude.json" "$HOME/.claude.json"
+
+	/usr/bin/claude
+)
+
+bwrap "${args[@]}"

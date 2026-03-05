@@ -205,7 +205,6 @@ packages=(
 	github-cli
 	glow
 	asciinema
-	gemini-cli
 	ansible
 	ansible-language-server
 	ansible-lint

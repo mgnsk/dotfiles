@@ -63,8 +63,9 @@ packages=(
 	# Identity and passwords.
 	pinentry
 	gcr
-	keepassxc
-	qt5-wayland
+	kwallet
+	kwalletmanager
+	kwallet-pam
 
 	# Desktop and window management.
 	sway
@@ -135,6 +136,7 @@ packages=(
 	cuetools
 	picard
 	gnome-disk-utility
+	handbrake
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server
@@ -209,6 +211,7 @@ packages=(
 	ansible-lint
 	python-keyring
 	caddy
+	just
 )
 
 if lscpu | grep -q Intel; then

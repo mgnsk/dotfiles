@@ -74,9 +74,6 @@
 [submodule ".browser-extensions/vimium"]
 	path = .browser-extensions/vimium
 	url = https://github.com/philc/vimium.git
-[submodule ".browser-extensions/keepassxc-browser"]
-	path = .browser-extensions/keepassxc-browser
-	url = https://github.com/keepassxreboot/keepassxc-browser.git
 [submodule ".pkgbuilds/yay-bin"]
 	path = .pkgbuilds/yay-bin
 	url = https://aur.archlinux.org/yay-bin.git

@@ -157,33 +157,17 @@ if tailscale status --json | grep -q 'NeedsLogin'; then
 	tailscale up --qr
 fi
 
-# Enable ssh-agent.
-systemctl --user enable ssh-agent.service
+# Set up auto unlock option for keyring.
+cat <<-'EOF' | sudo tee /etc/pam.d/login >/dev/null
+	#%PAM-1.0
 
-# Configure KeepassXC.
-ini-file set -s General -k HideWindowOnCopy -v false "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s General -k MinimizeAfterUnlock -v false "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s General -k MinimizeOnCopy -v true "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s General -k UpdateCheckMessageShown -v true "$HOME/.config/keepassxc/keepassxc.ini"
-
-ini-file set -s Browser -k CustomProxyLocation -v "" "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s Browser -k Enabled -v true "$HOME/.config/keepassxc/keepassxc.ini"
-
-ini-file set -s FdoSecrets -k ConfirmAccessItem -v true "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s FdoSecrets -k Enabled -v true "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s FdoSecrets -k ShowNotification -v false "$HOME/.config/keepassxc/keepassxc.ini"
-
-ini-file set -s GUI -k CheckForUpdates -v false "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s GUI -k HideUsernames -v false "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s GUI -k MinimizeOnClose -v true "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s GUI -k MinimizeToTray -v true "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s GUI -k ShowTrayIcon -v true "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s GUI -k TrayIconAppearance -v monochrome-light "$HOME/.config/keepassxc/keepassxc.ini"
-
-ini-file set -s SSHAgent -k Enabled -v true "$HOME/.config/keepassxc/keepassxc.ini"
-
-ini-file set -s Security -k LockDatabaseIdle -v false "$HOME/.config/keepassxc/keepassxc.ini"
-ini-file set -s Security -k LockDatabaseScreenLock -v true "$HOME/.config/keepassxc/keepassxc.ini"
+	auth       include      system-local-login
+	auth       optional     pam_kwallet5.so
+	account    include      system-local-login
+	session    include      system-local-login
+	session    optional     pam_kwallet5.so auto_start force_run kwalletd=/usr/bin/ksecretd
+	password   include      system-local-login
+EOF
 
 # Enable saving the last booted entry in GRUB.
 set_option /etc/default/grub GRUB_DEFAULT saved

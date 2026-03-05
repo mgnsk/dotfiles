@@ -35,6 +35,10 @@
 [commit]
 	gpgsign = true
 	verbose = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = "/opt/1Password/op-ssh-sign"
 [include]
 	path = ~/.gitconfig_local
 [pull]
@@ -57,5 +61,3 @@
 	prune = true
 	pruneTags = true
 	all = true
-[gpg]
-	format = ssh

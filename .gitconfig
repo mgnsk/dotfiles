@@ -13,10 +13,8 @@
 	code = !bash ~/.scripts/git/gh-fzf.sh code
 	msn = !bash ~/.scripts/git/mergesquashn.sh
 	snag = !bash ~/.scripts/git/snag.sh
-	cx = !bash ~/.scripts/git/cherry-pick-fzf.sh
 	squashall = !bash ~/.scripts/git/squashall.sh
 	sw = !bash ~/.scripts/git/switch-fzf.sh
-	del = !bash ~/.scripts/git/del-fzf.sh
 	stat = !bash ~/.scripts/git/stat.sh
 	alias = !git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
 

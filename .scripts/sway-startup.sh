@@ -29,6 +29,7 @@ done
 /usr/lib/pam_kwallet_init
 /usr/lib/mate-polkit/polkit-mate-authentication-agent-1 &
 nm-applet --indicator &
+blueman-applet &
 swaync &
 bash ~/.pkgbuilds/systemd-audio-idle-inhibit/systemd-audio-idle-inhibit.sh &
 swayidle -w \

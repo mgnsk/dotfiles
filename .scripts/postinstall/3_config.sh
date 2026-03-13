@@ -230,6 +230,9 @@ cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null
 	fs.aio-max-nr = 1048576
 EOF
 
+# Enable bluetooth.
+sudo systemctl enable bluetooth
+
 # Configure firewall.
 sudo systemctl enable ufw.service
 sudo ufw default deny incoming

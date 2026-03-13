@@ -26,6 +26,11 @@ packages=(
 	fwupd
 	lsof
 
+	# Bluetooth.
+	bluez
+	bluez-utils
+	blueman
+
 	# CLI tools.
 	strace
 	inotify-tools

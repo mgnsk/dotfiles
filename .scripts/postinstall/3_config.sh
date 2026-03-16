@@ -10,38 +10,6 @@ function set_option() {
 	sudo sed -i "$script" "$file"
 }
 
-# Backup /boot partition data.
-# https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
-sudo mkdir -p /etc/pacman.d/hooks
-cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/55-bootbackup_pre.hook >/dev/null
-	[Trigger]
-	Operation = Upgrade
-	Operation = Install
-	Operation = Remove
-	Type = Path
-	Target = usr/lib/modules/*/vmlinuz
-
-	[Action]
-	Depends = rsync
-	Description = Backing up pre /boot...
-	When = PreTransaction
-	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_pre"/'
-EOF
-cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/95-bootbackup_post.hook >/dev/null
-	[Trigger]
-	Operation = Upgrade
-	Operation = Install
-	Operation = Remove
-	Type = Path
-	Target = usr/lib/modules/*/vmlinuz
-
-	[Action]
-	Depends = rsync
-	Description = Backing up post /boot...
-	When = PostTransaction
-	Exec = /usr/bin/bash -c 'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y_%m_%d_%H.%M.%S)_post"/'
-EOF
-
 # https://github.com/egnrse/updateKDEcache.hook
 cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/updateKDEcache.hook >/dev/null
 	# updates the KService desktop file configuration cache (for the currently logged in user)
@@ -76,19 +44,11 @@ EOF
 # Enable systemd journal in RAM.
 set_option /etc/systemd/journald.conf Storage volatile
 
+# Enable sleep when external monitor connected.
+set_option /etc/systemd/logind.conf HandleLidSwitchDocked suspend
+
 # Enable logrotate.
 sudo systemctl enable logrotate.timer
-
-# Ensure automatic timeline snapshotting is disabled.
-sudo systemctl disable snapper-timeline.timer
-
-# Ensure automatic snapper cleanup enabled.
-sudo systemctl enable snapper-cleanup.timer
-
-if [[ -f /etc/snapper/configs/root ]]; then
-	# Keep 30 last snapshots.
-	set_option /etc/snapper/configs/root NUMBER_LIMIT '"30"'
-fi
 
 # Performance settings for LUKS on SSD.
 # Determine the LUKS device name.

@@ -47,7 +47,6 @@ packages=(
 	raysession
 	shellcheck-bin
 	shntool
-	snap-pac-grub
 	snapd-xdg-open-git
 	wdisplays
 	qdigidoc4

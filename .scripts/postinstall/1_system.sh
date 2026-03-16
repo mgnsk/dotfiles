@@ -17,7 +17,6 @@ packages=(
 	docker
 	docker-buildx
 	docker-compose
-	snap-pac
 	pacman-contrib
 	ufw
 	logrotate
@@ -60,10 +59,6 @@ packages=(
 	shfmt
 	direnv
 	xdg-dbus-proxy
-
-	# Disks.
-	btrfs-assistant
-	qt6-wayland
 
 	# Identity and passwords.
 	pinentry

@@ -13,7 +13,13 @@ fi
 export main
 
 function branch-search {
-	git branch --format="%(refname:short)" --sort=-committerdate
+	git branch -v --sort=-committerdate |
+		grep -v "^\*" |            # Without current branch.
+		sed 's/^[[:space:]]*//g' | # Trim whitespace prefix.
+		awk '{print $1}'           # Print only branch name.
+
+	# Note: simpler version but we want to skip current branch (with asterisk).
+	# git branch --format="%(refname:short)" --sort=-committerdate
 }
 
 export -f branch-search

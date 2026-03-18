@@ -1,9 +1,7 @@
 #!/bin/env bash
 
-set -euo pipefail
-
 if [ -f "$PWD/revive.toml" ]; then
-	/usr/bin/revive -config "$PWD/revive.toml" "$@"
+	exec /usr/bin/revive -config "$PWD/revive.toml" "$@"
 else
-	/usr/bin/revive "$@"
+	exec /usr/bin/revive "$@"
 fi

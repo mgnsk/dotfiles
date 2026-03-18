@@ -2,13 +2,8 @@
 
 set -eu
 
-rclone bisync \
+rclone copy \
 	--progress \
-	--resilient \
-	--recover \
-	--max-lock 2m \
-	--conflict-resolve newer \
-	--resync-mode newer \
 	--exclude "yabridge/**" \
 	"$HOME/Shared" \
-	"gdrive:/Shared"
+	"cloud:Shared"

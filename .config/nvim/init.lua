@@ -37,17 +37,6 @@ vim.o.undofile = true
 vim.o.swapfile = false
 vim.o.backup = false
 
-vim.api.nvim_create_autocmd("BufReadPost", {
-	-- Important to schedule this function for performance.
-	callback = vim.schedule_wrap(function()
-		vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
-		vim.wo[0][0].foldmethod = "expr"
-		vim.opt.foldnestmax = 3
-		vim.opt.foldlevel = 99
-		vim.opt.foldlevelstart = 99
-	end),
-})
-
 vim.g.netrw_banner = 0
 -- Tree view.
 vim.g.netrw_liststyle = 3

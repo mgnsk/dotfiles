@@ -136,7 +136,7 @@ function gh-view-code {
 	fi
 
 	cat "$tmpdir/code-result.json" |
-		gh-tpl --jq ".[$index-3] | .matches = [.textMatches[].fragment]" \
+		gh-tpl --jq ".[$index-4] | .matches = [.textMatches[].fragment]" \
 			'{{.url}}{{"\n\n"}}{{.matches | join "\n"}}{{"\n"}}' |
 		highlight "$query"
 }

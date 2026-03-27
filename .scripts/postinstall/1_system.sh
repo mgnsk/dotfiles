@@ -42,8 +42,6 @@ packages=(
 	bat
 	sox
 	vim
-	neovim
-	tree-sitter-cli
 	tmux
 	glances
 	grim
@@ -54,9 +52,7 @@ packages=(
 	vivid
 	bind
 	stress
-	jq
 	iotop
-	shfmt
 	direnv
 	xdg-dbus-proxy
 
@@ -146,11 +142,6 @@ packages=(
 	picom
 	arandr
 
-	# Audio.
-	reaper
-	reapack
-	vulkan-swrast
-
 	# Printing.
 	cups
 	cups-pdf
@@ -160,57 +151,6 @@ packages=(
 	# iOS.
 	libimobiledevice
 	usbmuxd
-
-	# Go development.
-	go
-	gopls
-	revive
-
-	# Rust development.
-	rustup
-
-	# Lua development.
-	lua-language-server
-	luacheck
-	stylua
-
-	# PHP development.
-	php
-	composer
-
-	# Python development.
-	python-black
-	python-pylint
-	ty
-	uv
-
-	# Web development.
-	tidy
-	npm
-	pnpm
-	eslint
-	prettier
-	stylelint
-	typescript
-	bash-language-server
-	markdownlint-cli
-	npm-check-updates
-	vscode-css-languageserver
-	vscode-html-languageserver
-	yaml-language-server
-
-	# General development.
-	buf
-	yamllint
-	github-cli
-	glow
-	asciinema
-	ansible
-	ansible-language-server
-	ansible-lint
-	python-keyring
-	caddy
-	just
 )
 
 if lscpu | grep -q Intel; then

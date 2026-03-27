@@ -31,7 +31,7 @@ done
 nm-applet --indicator &
 blueman-applet &
 swaync &
-bash ~/.pkgbuilds/systemd-audio-idle-inhibit/systemd-audio-idle-inhibit.sh &
+bash ~/.scripts/systemd-audio-idle-inhibit.sh &
 swayidle -w \
 	timeout 3600 'lock' \
 	timeout 3601 'swaymsg "output * dpms off"' \

@@ -7,26 +7,14 @@ rustup update
 rustup default stable
 rustup component add rust-analyzer
 
-# Set up PHP.
-sudo sed -i -e 's/;extension=iconv/extension=iconv/g' /etc/php/php.ini
-
-# Install JS packages.
-(
-	cd "$HOME/.npm-packages"
-	npm ci
-)
-
-# Install PKGBUILDs.
-pkgbuilds=(
-	gh-tpl-bin
-	jsfx-lint-bin
-	tusk-bin
-	yay-bin
-)
-
-for pkg in "${pkgbuilds[@]}"; do
-	makepkg -D "$HOME/.pkgbuilds/$pkg" -si --needed
-done
+# Install yay.
+yaydir="/tmp/yay-bin"
+if [ -d "$yaydir" ]; then
+	git -C "$yaydir" pull
+else
+	git clone https://aur.archlinux.org/yay-bin.git "$yaydir"
+fi
+makepkg -D "$yaydir" -si --needed
 
 # Install AUR packages.
 packages=(
@@ -34,24 +22,12 @@ packages=(
 	1password-cli
 	brave-bin
 	downgrade
-	gojq-bin
-	go-jsonnet
-	hadolint-bin
-	helm-ls-bin
-	jsonnet-language-server
-	nil-git
-	nixfmt
 	obmenu-generator
-	phpactor-bin
-	phpstan-bin
 	raysession
-	shellcheck-bin
-	shntool
 	snapd-xdg-open-git
 	wdisplays
 	qdigidoc4
 	web-eid
-	claude-code
 )
 
 yay -S "${packages[@]}"

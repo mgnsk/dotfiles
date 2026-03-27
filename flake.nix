@@ -2,7 +2,8 @@
   description = "ide";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs-audio.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs-dev.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
   outputs =
@@ -10,23 +11,131 @@
     let
       system = "x86_64-linux";
 
-      pkgs = import inputs.nixpkgs {
+      audiopkgs = import inputs.nixpkgs-audio {
         inherit system;
         config = {
           allowUnfree = true;
         };
       };
 
-      spirv-tools-lib = pkgs.linkFarm "spirv-tools-lib" [
+      devpkgs = import inputs.nixpkgs-dev {
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      };
+
+      gh-tpl = devpkgs.stdenv.mkDerivation rec {
+        name = "gh-tpl";
+        version = "0.0.9";
+        src = devpkgs.fetchurl {
+          url = "https://github.com/mgnsk/gh-tpl/releases/download/v${version}/gh-tpl-v${version}-linux-amd64.tar.gz";
+          sha256 = "1970b39372d421e831098529d71c126014f3d33225fffcdfc03a993aa90a05f4";
+        };
+        sourceRoot = ".";
+        installPhase = ''
+          install -m755 -D gh-tpl $out/bin/gh-tpl
+        '';
+      };
+
+      tusk-go = devpkgs.stdenv.mkDerivation rec {
+        name = "tusk-go";
+        version = "0.8.1";
+        src = devpkgs.fetchurl {
+          url = "https://github.com/rliebz/tusk/releases/download/v${version}/tusk_${version}_linux_amd64.tar.gz";
+          sha256 = "3be7a872673c674dbcffbf4cfac2580152edf6d1f072d9be491fb69d2a460761";
+        };
+        sourceRoot = ".";
+        installPhase = ''
+          install -m755 -D tusk $out/bin/tusk
+        '';
+      };
+
+      devPkgs = with devpkgs; [
+        # General.
+        bash
+        bash-completion
+        neovim
+        tree-sitter
+        buf
+        gh
+        gh-tpl
+        tusk-go
+        glow
+        asciinema
+        caddy
+        just
+        hadolint
+        helm-ls
+        gojq
+        go-jsonnet
+        jsonnet-language-server
+        shntool
+        claude-code
+        cspell
+
+        # Bash.
+        shfmt
+        bash-language-server
+        shellcheck
+
+        # Go.
+        go
+        gopls
+        revive
+
+        # Lua development.
+        lua-language-server
+        lua54Packages.luacheck
+        stylua
+
+        # PHP.
+        php85
+        php85Packages.composer
+        phpactor
+        phpstan
+
+        # Python.
+        black
+        pylint
+        ty
+        uv
+
+        # Web.
+        html-tidy
+        nodejs_25
+        npm-check-updates
+        pnpm
+        eslint
+        prettier
+        stylelint
+        typescript-go
+        markdownlint-cli
+        vscode-langservers-extracted
+        yaml-language-server
+        yamllint
+
+        # Ansible.
+        ansible
+        ansible-language-server
+        ansible-lint
+        # TODO: python-keyring?
+
+        # Nix.
+        nil
+        nixfmt
+      ];
+
+      spirv-tools-lib = audiopkgs.linkFarm "spirv-tools-lib" [
         {
           name = "lib/libSPIRV-Tools.so";
-          path = "${pkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
+          path = "${audiopkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
         }
       ];
 
-      reaper-default-5-dark-extended-theme = pkgs.stdenv.mkDerivation {
+      reaper-default-5-dark-extended-theme = audiopkgs.stdenv.mkDerivation {
         name = "reaper-default-5-dark-extended-theme";
-        src = pkgs.fetchurl {
+        src = audiopkgs.fetchurl {
           url = "https://stash.reaper.fm/30492/Default_5_Dark_Extended.ReaperThemeZip";
           sha256 = "9fd0577863dc267e093dacca0a7ddafd6a03a224a9224a8393ff82b67ab6727d";
         };
@@ -36,9 +145,9 @@
         '';
       };
 
-      levelrider = pkgs.stdenv.mkDerivation {
+      levelrider = audiopkgs.stdenv.mkDerivation {
         name = "levelrider";
-        src = pkgs.fetchFromGitHub {
+        src = audiopkgs.fetchFromGitHub {
           owner = "unicornsasfuel";
           repo = "levelrider";
           rev = "ef54128";
@@ -46,8 +155,8 @@
         };
 
         buildInputs = [
-          pkgs.which
-          pkgs.faust2lv2
+          audiopkgs.which
+          audiopkgs.faust2lv2
         ];
 
         dontWrapQtApps = true;
@@ -62,7 +171,7 @@
         '';
       };
 
-      audioPkgs = with pkgs; [
+      audioPkgs = with audiopkgs; [
         # For LSP and Zam plugins.
         mesa
         libGL
@@ -85,10 +194,10 @@
         libdisplay-info
 
         # Reaper.
+        pipewire.jack
+        reaper
+        reaper-reapack-extension
         reaper-default-5-dark-extended-theme
-
-        # Bitwig.
-        bitwig-studio
 
         # Wine and yabridge.
         yabridge
@@ -100,12 +209,12 @@
         fluidsynth
       ];
 
-      clapPlugins = with pkgs; [
+      clapPlugins = with audiopkgs; [
         airwin2rack
         surge-XT
       ];
 
-      lv2Plugins = with pkgs; [
+      lv2Plugins = with audiopkgs; [
         x42-plugins
         x42-avldrums
         magnetophonDSP.VoiceOfFaust
@@ -114,7 +223,7 @@
         neural-amp-modeler-lv2
       ];
 
-      vst3Plugins = with pkgs; [
+      vst3Plugins = with audiopkgs; [
         chow-phaser
       ];
 
@@ -127,14 +236,22 @@
       setIni =
         file: section: attrs:
         builtins.concatStringsSep "\n" (
-          pkgs.lib.mapAttrsToList (name: value: ''
-            ${pkgs.crudini}/bin/crudini --set --ini-options=nospace ${file} ${section} ${name} "${value}"
+          audiopkgs.lib.mapAttrsToList (name: value: ''
+            ${audiopkgs.crudini}/bin/crudini --set --ini-options=nospace ${file} ${section} ${name} "${value}"
           '') attrs
         );
     in
     {
       devShells.${system} = {
-        audio = pkgs.mkShellNoCC {
+        dev = audiopkgs.mkShellNoCC {
+          buildInputs = devPkgs;
+          shellHook = ''
+            export CUSTOM_HOST="ide-dev"
+            export SHELL="${devpkgs.bash}/bin/bash"
+          '';
+        };
+
+        audio = audiopkgs.mkShellNoCC {
           buildInputs = [
             audioPkgs
             clapPlugins
@@ -151,8 +268,8 @@
             trap cleanup EXIT
 
             export WINEPREFIX="$HOME/.wine-audio"
-            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
-            export NIX_PROFILES="${pkgs.yabridge} $NIX_PROFILES"
+            export LD_LIBRARY_PATH="${audiopkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
+            export NIX_PROFILES="${audiopkgs.yabridge} $NIX_PROFILES"
             export CUSTOM_HOST="ide-audio"
 
             mkdir -p ~/.config/REAPER

@@ -43,9 +43,8 @@ args=(
 	--ro-bind "/lib" "/lib"
 	--ro-bind "/lib64" "/lib64"
 	--ro-bind "/etc" "/etc"
-	--ro-bind "/opt" "/opt"
+	--ro-bind "/nix" "/nix"
 	--ro-bind /usr/lib/snapd-xdg-open/xdg-open /usr/bin/xdg-open
-	--ro-bind "$HOME/.npm-packages" "$HOME/.npm-packages"
 	--ro-bind "$HOME/.rustup" "$HOME/.rustup"
 	--bind "$PWD" "$PWD"
 )

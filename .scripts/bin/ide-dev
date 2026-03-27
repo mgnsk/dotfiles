@@ -1,0 +1,5 @@
+#!/bin/env bash
+
+set -euo pipefail
+
+nix develop "${HOME}?submodules=1#dev" --show-trace

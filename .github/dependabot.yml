@@ -6,21 +6,6 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      pkgbuilds:
-        patterns:
-          - ".pkgbuilds/*"
       nvim-plugins:
         patterns:
           - ".nvim-plugins/*"
-      browser-extensions:
-        patterns:
-          - ".browser-extensions/*"
-
-  - package-ecosystem: "npm"
-    directory: "/.npm-packages"
-    schedule:
-      interval: "weekly"
-    groups:
-      npm-packages:
-        patterns:
-          - "*"

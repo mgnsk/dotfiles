@@ -1,0 +1,9 @@
+#!/bin/env bash
+
+# Called by nvim-lint.
+
+if [ -f "$PWD/revive.toml" ]; then
+	exec revive -config "$PWD/revive.toml" "$@"
+else
+	exec revive "$@"
+fi

@@ -5,11 +5,6 @@ return {
 		dir = vim.fn.expand("$HOME/.nvim-plugins/nvim-ansible"),
 	},
 	{
-		"mfussenegger/nvim-lint.git",
-		dir = vim.fn.expand("$HOME/.nvim-plugins/nvim-lint"),
-		lazy = true,
-	},
-	{
 		"ryuichiroh/vim-cspell",
 		dir = vim.fn.expand("$HOME/.nvim-plugins/vim-cspell"),
 		event = "VeryLazy",

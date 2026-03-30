@@ -1,7 +1,0 @@
-#!/bin/env bash
-
-if [ -f "$PWD/revive.toml" ]; then
-	exec /usr/bin/revive -config "$PWD/revive.toml" "$@"
-else
-	exec /usr/bin/revive "$@"
-fi

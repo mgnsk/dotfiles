@@ -105,6 +105,7 @@
         jsonnet-language-server
         just
         less
+        libxml2
         man
         moreutils
         ncurses

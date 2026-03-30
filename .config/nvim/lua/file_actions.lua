@@ -2,13 +2,14 @@ local M = {}
 
 --- Register a custom formatter. The formatter name is config.command.
 ---
+---@param name string
 ---@param config conform.FormatterConfigOverride
-function M.registerFormatter(config)
+function M.registerFormatter(name, config)
 	if os.getenv("NVIM_DIFF") then
 		return
 	end
 
-	require("conform").formatters[config.command] = config
+	require("conform").formatters[name] = config
 end
 
 --- Configure formatter for the current buffer's filetype to run on BufWritePre.

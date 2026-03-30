@@ -1,7 +1,3 @@
-require("file_actions").registerFormatter({
-	command = "balafon",
-	args = { "fmt" },
-})
 require("file_actions").configureFormatBeforeSave({ "balafon" })
 
 -- TODO

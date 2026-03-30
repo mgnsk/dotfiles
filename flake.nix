@@ -58,6 +58,19 @@
         }
       ];
 
+      pint = devpkgs.stdenv.mkDerivation rec {
+        name = "pint";
+        version = "1.29.0";
+        src = devpkgs.fetchurl {
+          url = "https://github.com/laravel/pint/releases/download/v${version}/pint.phar";
+          sha256 = "e29e7a16384c5baacf644d53402e963b320c9ec5c8b4afd20c30cccf9add1c7b";
+        };
+        phases = [ "installPhase" ]; # Removes all phases except installPhase (no unpackPhase).
+        installPhase = ''
+          install -m755 -D $src $out/bin/pint
+        '';
+      };
+
       devPkgs = with devpkgs; [
         # General.
         asciinema
@@ -136,6 +149,7 @@
         php85Packages.composer
         phpactor
         phpstan
+        pint
 
         # Python.
         black

@@ -51,28 +51,63 @@
         '';
       };
 
+      diff-highlight = devpkgs.linkFarm "diff-highlight" [
+        {
+          name = "bin/diff-highlight";
+          path = "${devpkgs.git}/share/git/contrib/diff-highlight/diff-highlight";
+        }
+      ];
+
       devPkgs = with devpkgs; [
         # General.
+        asciinema
         bash
         bash-completion
-        neovim
-        tree-sitter
+        bat
         buf
+        caddy
+        claude-code
+        coreutils
+        cspell
+        git
+        diff-highlight
+        direnv
+        fd
+        file
+        findutils
+        fzf
+        gawk
+        gcc
         gh
         gh-tpl
-        tusk-go
+        git
+        glibcLocalesUtf8
         glow
-        asciinema
-        caddy
-        just
-        hadolint
-        helm-ls
+        gnugrep
+        gnused
         gojq
         go-jsonnet
+        hadolint
+        helm-ls
         jsonnet-language-server
+        just
+        less
+        man
+        moreutils
+        ncurses
+        neovim
+        qrcp
+        ripgrep
+        shfmt
         shntool
-        claude-code
-        cspell
+        tmux
+        tree
+        tree-sitter
+        tusk-go
+        unzip
+        vivid
+        wget
+        which
 
         # Bash.
         shfmt
@@ -84,7 +119,14 @@
         gopls
         revive
 
-        # Lua development.
+        # Rust.
+        rustc
+        rustfmt
+        clippy
+        rust-analyzer
+        cargo
+
+        # Lua.
         lua-language-server
         lua54Packages.luacheck
         stylua
@@ -119,7 +161,6 @@
         ansible
         ansible-language-server
         ansible-lint
-        # TODO: python-keyring?
 
         # Nix.
         nil

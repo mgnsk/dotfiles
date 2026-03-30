@@ -2,11 +2,6 @@
 
 set -eu
 
-# Set up rust.
-rustup update
-rustup default stable
-rustup component add rust-analyzer
-
 # Install yay.
 yaydir="/tmp/yay-bin"
 if [ -d "$yaydir" ]; then

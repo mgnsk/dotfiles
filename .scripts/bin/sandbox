@@ -27,6 +27,8 @@ function cleanup {
 
 trap cleanup EXIT
 
+unset TMPDIR
+
 args=(
 	--unshare-all
 	--share-net

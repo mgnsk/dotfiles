@@ -57,8 +57,6 @@ packages=(
 	xdg-dbus-proxy
 
 	# Identity and passwords.
-	pinentry
-	gcr
 	kwallet
 	kwalletmanager
 	kwallet-pam

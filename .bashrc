@@ -38,9 +38,6 @@ export HISTFILESIZE=
 export HISTSIZE=
 export HISTTIMEFORMAT="[%F %T] "
 
-GPG_TTY="$(tty)"
-export GPG_TTY
-
 PROMPT_COMMAND=__prompt_command # Function to generate PS1 after CMDs
 
 shopt -s histappend

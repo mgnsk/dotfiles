@@ -94,6 +94,7 @@
         gh
         gh-tpl
         git
+        github-copilot-cli
         glibcLocalesUtf8
         glow
         gnugrep
@@ -299,11 +300,24 @@
     in
     {
       devShells.${system} = {
-        dev = audiopkgs.mkShellNoCC {
+        dev = devpkgs.mkShellNoCC rec {
           buildInputs = devPkgs;
           shellHook = ''
             export CUSTOM_HOST="ide-dev"
-            export SHELL="${devpkgs.bash}/bin/bash"
+
+            # Source bash-completion.
+            if [ -f "${devpkgs.bash-completion}/share/bash-completion/bash_completion" ]; then
+              source "${devpkgs.bash-completion}/share/bash-completion/bash_completion"
+            fi
+
+            # Source any per-package completions from buildInputs.
+            for dir in ${toString (map (p: "${p}/share/bash-completion/completions") buildInputs)}; do
+              if [ -d "$dir" ]; then
+                for f in "$dir"/*; do
+                  source "$f" 2>/dev/null || true
+                done
+              fi
+            done
           '';
         };
 

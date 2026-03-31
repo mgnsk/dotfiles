@@ -30,7 +30,7 @@ args=(
 	--bind "$HOME/.claude" "$HOME/.claude"
 	--bind "$HOME/.claude.json" "$HOME/.claude.json"
 
-	/usr/bin/claude
+	claude
 )
 
 bwrap "${args[@]}"

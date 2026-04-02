@@ -38,9 +38,9 @@ return {
 				},
 			})
 
-			vim.opt.foldnestmax = 3
-			vim.opt.foldlevel = 99
-			vim.opt.foldlevelstart = 99
+			vim.o.foldnestmax = 3
+			vim.o.foldlevel = 99
+			vim.o.foldlevelstart = 99
 
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = "*",

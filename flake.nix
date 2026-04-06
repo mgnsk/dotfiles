@@ -79,7 +79,7 @@
         bat
         buf
         caddy
-        claude-code
+        #claude-code
         coreutils
         cspell
         git
@@ -105,6 +105,7 @@
         helm-ls
         jsonnet-language-server
         just
+        jq
         less
         libxml2
         man

@@ -71,6 +71,25 @@
         '';
       };
 
+      myvscode = devpkgs.vscode-with-extensions.override {
+        vscodeExtensions = with devpkgs.vscode-extensions; [
+          anthropic.claude-code
+          #bufbuild.vscode-buf
+          dbaeumer.vscode-eslint
+          esbenp.prettier-vscode
+          golang.go
+          hashicorp.hcl
+          ms-python.black-formatter
+          ms-python.isort
+          ms-python.python
+          redhat.vscode-yaml
+          streetsidesoftware.code-spell-checker
+          sumneko.lua
+          tamasfe.even-better-toml
+          tim-koehler.helm-intellisense
+        ];
+      };
+
       devPkgs = with devpkgs; [
         # General.
         asciinema
@@ -182,6 +201,9 @@
         # Nix.
         nil
         nixfmt
+
+        # VSCode.
+        myvscode
       ];
 
       spirv-tools-lib = audiopkgs.linkFarm "spirv-tools-lib" [

@@ -9,6 +9,12 @@ if [[ "$prog" == "" ]]; then
 	exit 1
 fi
 
+# Ensure the necessary files exist before first start.
+mkdir -p "$HOME/.claude"
+if ! [ -f "$HOME/.claude.json" ]; then
+	echo "{}" >"$HOME/.claude.json"
+fi
+
 # Proxy org.freedesktop.secrets service.
 # Security: the provider on host asks for GUI confirmation on secret access.
 sockfile="$XDG_RUNTIME_DIR/ide-xdg-dbus-proxy-$$.sock"
@@ -38,15 +44,27 @@ args=(
 	--proc /proc
 	--tmpfs /tmp
 	--cap-drop ALL
+
+	# Dbus.
 	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
 	--ro-bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
+	--ro-bind /usr/lib/snapd-xdg-open/xdg-open /usr/bin/xdg-open
+
+	# Wayland.
+	--setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
+	--ro-bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
+
 	--ro-bind "/bin" "/bin"
 	--ro-bind "/usr" "/usr"
 	--ro-bind "/lib" "/lib"
 	--ro-bind "/lib64" "/lib64"
 	--ro-bind "/etc" "/etc"
 	--ro-bind "/nix" "/nix"
-	--ro-bind /usr/lib/snapd-xdg-open/xdg-open /usr/bin/xdg-open
+
+	# Bind claude config.
+	--bind "$HOME/.claude" "$HOME/.claude"
+	--bind "$HOME/.claude.json" "$HOME/.claude.json"
+
 	--bind "$PWD" "$PWD"
 )
 

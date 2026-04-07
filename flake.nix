@@ -79,7 +79,7 @@
         bat
         buf
         caddy
-        #claude-code
+        claude-code
         coreutils
         cspell
         git

@@ -21,9 +21,7 @@ packages=(
 	ufw
 	logrotate
 	vulkan-tools
-	wget
 	fwupd
-	lsof
 
 	# Bluetooth.
 	bluez
@@ -31,30 +29,14 @@ packages=(
 	blueman
 
 	# CLI tools.
-	strace
 	inotify-tools
-	sshfs
 	git
 	less
-	tree
-	fd
-	ripgrep
-	bat
-	sox
 	vim
-	tmux
-	glances
 	grim
 	slurp
 	zenity
-	fzf
 	rsync
-	vivid
-	bind
-	stress
-	iotop
-	direnv
-	xdg-dbus-proxy
 
 	# Identity and passwords.
 	kwallet
@@ -115,19 +97,12 @@ packages=(
 	ffmpegthumbs
 	ark
 
-	unrar
-	7zip
-	exiftool
 	webp-pixbuf-loader
 	gthumb
 	rclone
-	imagemagick
 	baobab
 	mpv
 	smplayer
-	yt-dlp
-	fdupes
-	cuetools
 	picard
 	gnome-disk-utility
 	handbrake

@@ -101,10 +101,12 @@
         claude-code
         coreutils
         cspell
+        cuetools
         git
         diff-highlight
         direnv
         fd
+        fdupes
         file
         findutils
         fzf
@@ -114,6 +116,7 @@
         gh-tpl
         git
         github-copilot-cli
+        glances
         glibcLocalesUtf8
         glow
         gnugrep
@@ -122,6 +125,7 @@
         go-jsonnet
         hadolint
         helm-ls
+        iotop
         jsonnet-language-server
         just
         jq
@@ -143,6 +147,8 @@
         vivid
         wget
         which
+        xdg-dbus-proxy
+        yt-dlp
 
         # Bash.
         shfmt

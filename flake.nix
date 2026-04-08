@@ -102,6 +102,7 @@
         coreutils
         cspell
         cuetools
+        curl
         git
         diff-highlight
         direnv

@@ -5,7 +5,7 @@ vim.diagnostic.config({
 
 local diagnostics_group = vim.api.nvim_create_augroup("diagnostics", {})
 
-vim.api.nvim_create_autocmd({ "DiagnosticChanged", "InsertLeave" }, {
+vim.api.nvim_create_autocmd({ "DiagnosticChanged", "TextChanged", "InsertLeave" }, {
 	desc = "Automatically hide/show and update loclist",
 	group = diagnostics_group,
 	callback = function()

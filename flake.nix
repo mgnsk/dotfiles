@@ -315,18 +315,6 @@
         }
       ];
 
-      reaper-default-5-dark-extended-theme = audiopkgs.stdenv.mkDerivation {
-        name = "reaper-default-5-dark-extended-theme";
-        src = audiopkgs.fetchurl {
-          url = "https://stash.reaper.fm/30492/Default_5_Dark_Extended.ReaperThemeZip";
-          sha256 = "sUqAfxx+K4v858lWHE9g0MSg7Wk7eaoFyQSJ1Bwhu48=";
-        };
-        phases = [ "installPhase" ];
-        installPhase = ''
-          install -m644 -D $src $out/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip
-        '';
-      };
-
       levelrider = audiopkgs.stdenv.mkDerivation {
         name = "levelrider";
         src = audiopkgs.fetchFromGitHub {
@@ -379,7 +367,6 @@
         pipewire.jack
         reaper
         reaper-reapack-extension
-        reaper-default-5-dark-extended-theme
 
         # Wine and yabridge.
         yabridge
@@ -468,8 +455,9 @@
             export CUSTOM_HOST="ide-audio"
 
             mkdir -p ~/.config/REAPER
+            cp ~/Shared/Default_5_Dark_Extended.ReaperThemeZip ~/.config/REAPER/ColorThemes/
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
-              lastthemefn5 = "${reaper-default-5-dark-extended-theme}/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
+              lastthemefn5 = "~/.config/REAPER/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
               clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
               lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";
               vstpath = "~/.vst;~/.vst3;${makePluginPath "vst3" vst3Plugins}";

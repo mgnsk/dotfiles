@@ -29,7 +29,7 @@ require("blink.cmp").setup({
 		},
 	},
 	fuzzy = {
-		implementation = "lua",
+		implementation = "rust",
 		sorts = {
 			function(a, b)
 				local source_priority = {

@@ -18,10 +18,6 @@
       url = "github:mgnsk/dumb-autopairs.nvim";
       flake = false;
     };
-    nvim-plugin-promise-async = {
-      url = "github:kevinhwang91/promise-async";
-      flake = false;
-    };
     nvim-plugin-nvim-fundo = {
       url = "github:kevinhwang91/nvim-fundo";
       flake = false;
@@ -145,24 +141,24 @@
       );
 
       nvimPlugins = with devpkgs.vimPlugins; [
+        blink-cmp
+        conform-nvim
+        fzf-lua
+        gitsigns-nvim
         inputs.nvim-plugin-autotabline
         inputs.nvim-plugin-dumb-autopairs
-        inputs.nvim-plugin-promise-async
         inputs.nvim-plugin-nvim-fundo
         inputs.nvim-plugin-vim-eel
-        vim-fugitive
-        gitsigns-nvim
-        nvim-lint
         luvit-meta
         nvim-ansible
-        vim-jsonpath
-        oil-nvim
-        vim-wordmotion
-        conform-nvim
-        blink-cmp
-        fzf-lua
-        vscode-nvim
         nvim-colorizer-lua
+        nvim-lint
+        oil-nvim
+        promise-async
+        vim-fugitive
+        vim-jsonpath
+        vim-wordmotion
+        vscode-nvim
       ];
 
       nvimPluginsPack = devpkgs.stdenv.mkDerivation {

@@ -80,22 +80,6 @@
         "type": "github"
       }
     },
-    "nvim-plugin-promise-async": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1722813441,
-        "narHash": "sha256-9eM66brPjiFlY64vmBetRYrKnpDyN7+/URMm4GsGimA=",
-        "owner": "kevinhwang91",
-        "repo": "promise-async",
-        "rev": "119e8961014c9bfaf1487bf3c2a393d254f337e2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "kevinhwang91",
-        "repo": "promise-async",
-        "type": "github"
-      }
-    },
     "nvim-plugin-tree-sitter-manager": {
       "flake": false,
       "locked": {
@@ -135,7 +119,6 @@
         "nvim-plugin-autotabline": "nvim-plugin-autotabline",
         "nvim-plugin-dumb-autopairs": "nvim-plugin-dumb-autopairs",
         "nvim-plugin-nvim-fundo": "nvim-plugin-nvim-fundo",
-        "nvim-plugin-promise-async": "nvim-plugin-promise-async",
         "nvim-plugin-tree-sitter-manager": "nvim-plugin-tree-sitter-manager",
         "nvim-plugin-vim-eel": "nvim-plugin-vim-eel"
       }

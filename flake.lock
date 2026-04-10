@@ -32,14 +32,71 @@
         "type": "github"
       }
     },
-    "root": {
-      "inputs": {
-        "nixpkgs-audio": "nixpkgs-audio",
-        "nixpkgs-dev": "nixpkgs-dev",
-        "tree-sitter-manager": "tree-sitter-manager"
+    "nvim-plugin-autotabline": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1696521497,
+        "narHash": "sha256-succRuPjRXcWEhcLq4jKVl708yvjR2NIKxiejVJ/4NE=",
+        "owner": "mgnsk",
+        "repo": "autotabline.nvim",
+        "rev": "021191b94f66e84fd38b5beb85df1c7e574a7448",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mgnsk",
+        "repo": "autotabline.nvim",
+        "type": "github"
       }
     },
-    "tree-sitter-manager": {
+    "nvim-plugin-dumb-autopairs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1763402749,
+        "narHash": "sha256-H3g+0d5yoWV6om/4PK115qZQIwes7vTyafqhg6mvzXc=",
+        "owner": "mgnsk",
+        "repo": "dumb-autopairs.nvim",
+        "rev": "d1c09e2dc2bff51db22069445cf2c364fca5bb65",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mgnsk",
+        "repo": "dumb-autopairs.nvim",
+        "type": "github"
+      }
+    },
+    "nvim-plugin-nvim-fundo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768116224,
+        "narHash": "sha256-PGebG5bhwXYJ6cv1wSB/WOJZucoL6FGBiGdxkEtPl04=",
+        "owner": "kevinhwang91",
+        "repo": "nvim-fundo",
+        "rev": "c2b83cb19e4ac475f2b08aaf775afe3da19bc495",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kevinhwang91",
+        "repo": "nvim-fundo",
+        "type": "github"
+      }
+    },
+    "nvim-plugin-promise-async": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1722813441,
+        "narHash": "sha256-9eM66brPjiFlY64vmBetRYrKnpDyN7+/URMm4GsGimA=",
+        "owner": "kevinhwang91",
+        "repo": "promise-async",
+        "rev": "119e8961014c9bfaf1487bf3c2a393d254f337e2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kevinhwang91",
+        "repo": "promise-async",
+        "type": "github"
+      }
+    },
+    "nvim-plugin-tree-sitter-manager": {
       "flake": false,
       "locked": {
         "lastModified": 1775813857,
@@ -53,6 +110,34 @@
         "owner": "romus204",
         "repo": "tree-sitter-manager.nvim",
         "type": "github"
+      }
+    },
+    "nvim-plugin-vim-eel": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1716915941,
+        "narHash": "sha256-GXatc3lLLqHB1MO+PLARZwdVibRVK5wT0pmGhRvqRUI=",
+        "owner": "NlGHT",
+        "repo": "vim-eel",
+        "rev": "7c1357b098629cf952ff7b2b6900295093c1bbeb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NlGHT",
+        "repo": "vim-eel",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs-audio": "nixpkgs-audio",
+        "nixpkgs-dev": "nixpkgs-dev",
+        "nvim-plugin-autotabline": "nvim-plugin-autotabline",
+        "nvim-plugin-dumb-autopairs": "nvim-plugin-dumb-autopairs",
+        "nvim-plugin-nvim-fundo": "nvim-plugin-nvim-fundo",
+        "nvim-plugin-promise-async": "nvim-plugin-promise-async",
+        "nvim-plugin-tree-sitter-manager": "nvim-plugin-tree-sitter-manager",
+        "nvim-plugin-vim-eel": "nvim-plugin-vim-eel"
       }
     }
   },

@@ -33,33 +33,8 @@ vim.cmd("set t_ut=")
 -- TODO what does this do?
 --vim.cmd("set noruler")
 
-vim.o.undofile = true
-vim.o.swapfile = false
-vim.o.backup = false
-
-vim.g.netrw_banner = 0
--- Tree view.
-vim.g.netrw_liststyle = 3
-vim.g.netrw_bufsettings = "noma nomod nu nobl nowrap ro"
--- Open files in new tab.
-vim.g.netrw_browse_split = 3
--- Preview in vertical split.
-vim.g.netrw_preview = 1
-vim.g.netrw_alto = 0
-vim.g.netrw_winsize = 30
-
 vim.api.nvim_create_autocmd("TermOpen", {
 	command = [[ startinsert ]],
-})
-
-vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = "*",
-	command = [[%s/\s\+$//e]],
-})
-
-vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = "*",
-	command = [[%s/\n\+\%$//e]],
 })
 
 vim.g.mapleader = ","
@@ -110,13 +85,6 @@ vim.keymap.set(
 vim.keymap.set("n", "<leader>v", ":vnew<CR>", { desc = "Open new window to right" })
 vim.keymap.set("n", "<leader>s", ":new<CR>", { desc = "Open new window to bottom" })
 vim.keymap.set("n", "<leader>t", ":tabnew<CR>", { desc = "Open new tab" })
-vim.keymap.set("n", "-", ":Oil<CR>", { desc = "Open Oil file browser" })
-vim.keymap.set(
-	"n",
-	"<leader>e",
-	":let $curdir=expand('%:p:h')<CR>:tabnew<CR>:e $curdir<CR>",
-	{ desc = "Open netrw file browser in tab" }
-)
 vim.keymap.set("n", "<leader>j", ":bnext<CR>", { desc = "Switch to next buffer" })
 vim.keymap.set("n", "<leader>k", ":bprev<CR>", { desc = "Switch to previous buffer" })
 vim.keymap.set("n", "<leader>u", "gg=G``", { desc = "Indent buffer" })
@@ -149,30 +117,19 @@ for i = 1, 9 do
 end
 vim.keymap.set("n", "<leader>0", ":tablast<CR>", { desc = "Goto last tab" })
 
-vim.keymap.set("n", "<leader>S", function()
-	if vim.o.spell then
-		vim.o.spell = false
-		print("spell off")
-	else
-		vim.o.spell = true
-		print("spell on")
-	end
-end, { desc = "Toggle vim spell check" })
+vim.cmd("packloadall")
 
-vim.api.nvim_create_user_command("GhBrowse", function()
-	local file = vim.fn.expand("%")
-	if string.len(file) == 0 then
-		return
-	end
-
-	vim.fn.system(string.format("gh browse %s --branch $(git rev-parse --abbrev-ref HEAD)", file))
-end, { desc = "Browse current file on Github" })
-
-require("lazy_setup")
+require("autotabline").setup()
+require("colors")
+require("completion")
 require("diagnostic")
+require("dumb-autopairs").setup()
+require("filemanager")
+require("formatting")
+require("fzf")
+require("git")
+require("linting")
+require("lsp")
 require("statusline")
 require("treesitter")
-
-if not os.getenv("NVIM_DIFF") then
-	require("lsp")
-end
+require("undo")

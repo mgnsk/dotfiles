@@ -4,10 +4,30 @@
   inputs = {
     nixpkgs-audio.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-dev.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    tree-sitter-manager = {
-      type = "github";
-      owner = "romus204";
-      repo = "tree-sitter-manager.nvim";
+
+    # Neovim plugins not in nixpkgs.
+    nvim-plugin-tree-sitter-manager = {
+      url = "github:romus204/tree-sitter-manager.nvim";
+      flake = false;
+    };
+    nvim-plugin-autotabline = {
+      url = "github:mgnsk/autotabline.nvim";
+      flake = false;
+    };
+    nvim-plugin-dumb-autopairs = {
+      url = "github:mgnsk/dumb-autopairs.nvim";
+      flake = false;
+    };
+    nvim-plugin-promise-async = {
+      url = "github:kevinhwang91/promise-async";
+      flake = false;
+    };
+    nvim-plugin-nvim-fundo = {
+      url = "github:kevinhwang91/nvim-fundo";
+      flake = false;
+    };
+    nvim-plugin-vim-eel = {
+      url = "github:NlGHT/vim-eel";
       flake = false;
     };
   };
@@ -119,18 +139,53 @@
           "dockerfile"
           "go"
           "javascript"
+          "nix"
           "python"
         ])
       );
+
+      nvimPlugins = with devpkgs.vimPlugins; [
+        inputs.nvim-plugin-autotabline
+        inputs.nvim-plugin-dumb-autopairs
+        inputs.nvim-plugin-promise-async
+        inputs.nvim-plugin-nvim-fundo
+        inputs.nvim-plugin-vim-eel
+        vim-fugitive
+        gitsigns-nvim
+        nvim-lint
+        luvit-meta
+        nvim-ansible
+        vim-jsonpath
+        oil-nvim
+        vim-wordmotion
+        conform-nvim
+        blink-cmp
+        fzf-lua
+        vscode-nvim
+        nvim-colorizer-lua
+      ];
+
+      nvimPluginsPack = devpkgs.stdenv.mkDerivation {
+        name = "mgnsk-neovim-plugins";
+        buildCommand = ''
+          mkdir -p $out/pack/plugins/start/
+          ${devpkgs.lib.concatMapStringsSep "\n" (path: "ln -s ${path} $out/pack/plugins/start/") nvimPlugins}
+        '';
+      };
 
       myneovim = devpkgs.neovim.override {
         wrapperArgs = [
           "--add-flags"
           # Contains the parser/ dir.
           ''--cmd "set rtp^=${ts-parsers}"''
+
           "--add-flags"
           # Contains the queries/ dir.
-          ''--cmd "set rtp^=${inputs.tree-sitter-manager}/runtime"''
+          ''--cmd "set rtp^=${inputs.nvim-plugin-tree-sitter-manager}/runtime"''
+
+          # Add the plugin pack to packpath.
+          "--add-flags"
+          ''--cmd "set packpath^=${nvimPluginsPack.outPath}"''
         ];
       };
 
@@ -268,7 +323,7 @@
         name = "reaper-default-5-dark-extended-theme";
         src = audiopkgs.fetchurl {
           url = "https://stash.reaper.fm/30492/Default_5_Dark_Extended.ReaperThemeZip";
-          sha256 = "9fd0577863dc267e093dacca0a7ddafd6a03a224a9224a8393ff82b67ab6727d";
+          sha256 = "sUqAfxx+K4v858lWHE9g0MSg7Wk7eaoFyQSJ1Bwhu48=";
         };
         phases = [ "installPhase" ];
         installPhase = ''

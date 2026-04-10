@@ -1,3 +1,7 @@
+if os.getenv("NVIM_DIFF") then
+	return
+end
+
 -- location_callback opens all LSP gotos in a new tab
 ---@param options vim.lsp.LocationOpts.OnList
 local location_callback = function(options)

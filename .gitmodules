@@ -61,6 +61,3 @@
 [submodule ".nvim-plugins/nvim-ansible"]
 	path = .nvim-plugins/nvim-ansible
 	url = https://github.com/mfussenegger/nvim-ansible.git
-[submodule ".nvim-plugins/tree-sitter-manager.nvim"]
-	path = .nvim-plugins/tree-sitter-manager.nvim
-	url = https://github.com/romus204/tree-sitter-manager.nvim.git

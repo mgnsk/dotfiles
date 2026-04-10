@@ -35,7 +35,24 @@
     "root": {
       "inputs": {
         "nixpkgs-audio": "nixpkgs-audio",
-        "nixpkgs-dev": "nixpkgs-dev"
+        "nixpkgs-dev": "nixpkgs-dev",
+        "tree-sitter-manager": "tree-sitter-manager"
+      }
+    },
+    "tree-sitter-manager": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1775813857,
+        "narHash": "sha256-fFVDoMWCJh5yYVraTPBEX+865hS0JrNKdWNUtzJLEjo=",
+        "owner": "romus204",
+        "repo": "tree-sitter-manager.nvim",
+        "rev": "1085058c03df1d063f285e0a5c42547ad200a10b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "romus204",
+        "repo": "tree-sitter-manager.nvim",
+        "type": "github"
       }
     }
   },

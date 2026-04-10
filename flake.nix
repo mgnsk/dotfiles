@@ -4,6 +4,12 @@
   inputs = {
     nixpkgs-audio.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-dev.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    tree-sitter-manager = {
+      type = "github";
+      owner = "romus204";
+      repo = "tree-sitter-manager.nvim";
+      flake = false;
+    };
   };
 
   outputs =
@@ -90,6 +96,44 @@
         ];
       };
 
+      makeTreesitterLinks =
+        names:
+        map (name: [
+          {
+            name = "parser/${name}.so";
+            path = devpkgs.tree-sitter-grammars.${"tree-sitter-" + name} + "/parser";
+          }
+          # Note: upstream queries not supported in Neovim, skip.
+          # {
+          #   name = "queries/${name}";
+          #   path = devpkgs.tree-sitter-grammars.${"tree-sitter-" + name} + "/queries";
+          # }
+        ]) (names);
+
+      ts-parsers = devpkgs.linkFarm "ts-parsers" (
+        builtins.concatLists (makeTreesitterLinks [
+          "bash"
+          "beancount"
+          "caddyfile"
+          "css"
+          "dockerfile"
+          "go"
+          "javascript"
+          "python"
+        ])
+      );
+
+      myneovim = devpkgs.neovim.override {
+        wrapperArgs = [
+          "--add-flags"
+          # Contains the parser/ dir.
+          ''--cmd "set rtp^=${ts-parsers}"''
+          "--add-flags"
+          # Contains the queries/ dir.
+          ''--cmd "set rtp^=${inputs.tree-sitter-manager}/runtime"''
+        ];
+      };
+
       devPkgs = with devpkgs; [
         # General.
         asciinema
@@ -134,14 +178,12 @@
         man
         moreutils
         ncurses
-        neovim
         qrcp
         ripgrep
         shfmt
         shntool
         tmux
         tree
-        tree-sitter
         tusk-go
         unzip
         vivid
@@ -210,6 +252,9 @@
 
         # VSCode.
         myvscode
+
+        # Neovim.
+        myneovim
       ];
 
       spirv-tools-lib = audiopkgs.linkFarm "spirv-tools-lib" [

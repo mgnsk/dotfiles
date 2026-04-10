@@ -9,4 +9,9 @@ require("lazy").setup({
 		-- import your plugins
 		{ import = "plugins" },
 	},
+	performance = {
+		rtp = {
+			reset = false,
+		},
+	},
 })

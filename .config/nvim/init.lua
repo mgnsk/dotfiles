@@ -171,6 +171,7 @@ end, { desc = "Browse current file on Github" })
 require("lazy_setup")
 require("diagnostic")
 require("statusline")
+require("treesitter")
 
 if not os.getenv("NVIM_DIFF") then
 	require("lsp")

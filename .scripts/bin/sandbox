@@ -9,12 +9,6 @@ if [[ "$prog" == "" ]]; then
 	exit 1
 fi
 
-# Ensure the necessary files exist before first start.
-mkdir -p "$HOME/.claude"
-if ! [ -f "$HOME/.claude.json" ]; then
-	echo "{}" >"$HOME/.claude.json"
-fi
-
 # Proxy org.freedesktop.secrets service.
 # Security: the provider on host asks for GUI confirmation on secret access.
 sockfile="$XDG_RUNTIME_DIR/ide-xdg-dbus-proxy-$$.sock"
@@ -61,11 +55,17 @@ args=(
 	--ro-bind "/etc" "/etc"
 	--ro-bind "/nix" "/nix"
 
-	# Bind claude config.
+	--bind "$PWD" "$PWD"
+)
+
+# Bind claude config.
+mkdir -p "$HOME/.claude"
+if ! [ -f "$HOME/.claude.json" ]; then
+	echo "{}" >"$HOME/.claude.json"
+fi
+args+=(
 	--bind "$HOME/.claude" "$HOME/.claude"
 	--bind "$HOME/.claude.json" "$HOME/.claude.json"
-
-	--bind "$PWD" "$PWD"
 )
 
 # Detect current project root.

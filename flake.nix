@@ -103,7 +103,6 @@
         cspell
         cuetools
         curl
-        git
         diff-highlight
         direnv
         fd
@@ -122,14 +121,14 @@
         glow
         gnugrep
         gnused
-        gojq
         go-jsonnet
+        gojq
         hadolint
         helm-ls
         iotop
+        jq
         jsonnet-language-server
         just
-        jq
         less
         libxml2
         man
@@ -152,9 +151,9 @@
         yt-dlp
 
         # Bash.
-        shfmt
         bash-language-server
         shellcheck
+        shfmt
 
         # Go.
         go
@@ -162,11 +161,11 @@
         revive
 
         # Rust.
-        rustc
-        rustfmt
+        cargo
         clippy
         rust-analyzer
-        cargo
+        rustc
+        rustfmt
 
         # Lua.
         lua-language-server
@@ -187,15 +186,15 @@
         uv
 
         # Web.
+        eslint
         html-tidy
+        markdownlint-cli
         nodejs_25
         npm-check-updates
         pnpm
-        eslint
         prettier
         stylelint
         typescript-go
-        markdownlint-cli
         vscode-langservers-extracted
         yaml-language-server
         yamllint

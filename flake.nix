@@ -112,34 +112,6 @@
         ];
       };
 
-      makeTreesitterLinks =
-        names:
-        map (name: [
-          {
-            name = "parser/${name}.so";
-            path = devpkgs.tree-sitter-grammars.${"tree-sitter-" + name} + "/parser";
-          }
-          # Note: upstream queries not supported in Neovim, skip.
-          # {
-          #   name = "queries/${name}";
-          #   path = devpkgs.tree-sitter-grammars.${"tree-sitter-" + name} + "/queries";
-          # }
-        ]) (names);
-
-      ts-parsers = devpkgs.linkFarm "ts-parsers" (
-        builtins.concatLists (makeTreesitterLinks [
-          "bash"
-          "beancount"
-          "caddyfile"
-          "css"
-          "dockerfile"
-          "go"
-          "javascript"
-          "nix"
-          "python"
-        ])
-      );
-
       nvimPlugins = with devpkgs.vimPlugins; [
         blink-cmp
         conform-nvim
@@ -161,20 +133,52 @@
         vscode-nvim
       ];
 
+      nvimTreesitterParsers = with devpkgs.vimPlugins.nvim-treesitter-parsers; [
+        caddy
+        css
+        csv
+        dockerfile
+        ebnf
+        go
+        gomod
+        gosum
+        gotmpl
+        gowork
+        helm
+        html
+        javascript
+        jq
+        json
+        jsonnet
+        nix
+        php
+        po
+        proto
+        python
+        rust
+        scss
+        sql
+        sway
+        tlaplus
+        tsx
+        twig
+        typescript
+        xml
+        yaml
+      ];
+
       nvimPluginsPack = devpkgs.stdenv.mkDerivation {
         name = "mgnsk-neovim-plugins";
         buildCommand = ''
           mkdir -p $out/pack/plugins/start/
-          ${devpkgs.lib.concatMapStringsSep "\n" (path: "ln -s ${path} $out/pack/plugins/start/") nvimPlugins}
+          ${devpkgs.lib.concatMapStringsSep "\n" (path: "ln -s ${path} $out/pack/plugins/start/") (
+            nvimPlugins ++ nvimTreesitterParsers
+          )}
         '';
       };
 
       myneovim = devpkgs.neovim.override {
         wrapperArgs = [
-          "--add-flags"
-          # Contains the parser/ dir.
-          ''--cmd "set rtp^=${ts-parsers}"''
-
           "--add-flags"
           # Contains the queries/ dir.
           ''--cmd "set rtp^=${inputs.nvim-plugin-tree-sitter-manager}/runtime"''

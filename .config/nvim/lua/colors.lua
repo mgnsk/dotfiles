@@ -15,7 +15,6 @@ local cfg = {
 		SpellCap = { link = "SpellBad" },
 		SpellRare = { link = "SpellBad" },
 		SpellLocal = { link = "SpellBad" },
-		CSpellBad = { link = "SpellBad" },
 		Type = { fg = c.vscBlueGreen, bg = "NONE" },
 		TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
 		QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },

@@ -95,7 +95,7 @@
 
       myvscode = devpkgs.vscode-with-extensions.override {
         vscodeExtensions = with devpkgs.vscode-extensions; [
-          anthropic.claude-code
+          #anthropic.claude-code
           #bufbuild.vscode-buf
           dbaeumer.vscode-eslint
           esbenp.prettier-vscode
@@ -112,68 +112,68 @@
         ];
       };
 
-      nvimPlugins = with devpkgs.vimPlugins; [
-        blink-cmp
-        conform-nvim
-        fzf-lua
-        gitsigns-nvim
-        inputs.nvim-plugin-autotabline
-        inputs.nvim-plugin-dumb-autopairs
-        inputs.nvim-plugin-nvim-fundo
-        inputs.nvim-plugin-vim-eel
-        luvit-meta
-        nvim-ansible
-        nvim-colorizer-lua
-        nvim-lint
-        oil-nvim
-        promise-async
-        vim-fugitive
-        vim-jsonpath
-        vim-wordmotion
-        vscode-nvim
-      ];
-
-      nvimTreesitterParsers = with devpkgs.vimPlugins.nvim-treesitter-parsers; [
-        caddy
-        css
-        csv
-        dockerfile
-        ebnf
-        go
-        gomod
-        gosum
-        gotmpl
-        gowork
-        helm
-        html
-        javascript
-        jq
-        json
-        jsonnet
-        nix
-        php
-        po
-        proto
-        python
-        rust
-        scss
-        sql
-        sway
-        tlaplus
-        tsx
-        twig
-        typescript
-        xml
-        yaml
-      ];
+      nvimPlugins =
+        (with inputs; [
+          nvim-plugin-autotabline
+          nvim-plugin-dumb-autopairs
+          nvim-plugin-nvim-fundo
+          nvim-plugin-vim-eel
+        ])
+        ++ (with devpkgs.vimPlugins; [
+          blink-cmp
+          conform-nvim
+          fzf-lua
+          gitsigns-nvim
+          luvit-meta
+          nvim-ansible
+          nvim-colorizer-lua
+          nvim-lint
+          oil-nvim
+          promise-async
+          vim-fugitive
+          vim-jsonpath
+          vim-wordmotion
+          vscode-nvim
+        ])
+        ++ (with devpkgs.vimPlugins.nvim-treesitter-parsers; [
+          caddy
+          css
+          csv
+          dockerfile
+          ebnf
+          go
+          gomod
+          gosum
+          gotmpl
+          gowork
+          helm
+          html
+          javascript
+          jq
+          json
+          jsonnet
+          nix
+          php
+          po
+          proto
+          python
+          rust
+          scss
+          sql
+          sway
+          tlaplus
+          tsx
+          twig
+          typescript
+          xml
+          yaml
+        ]);
 
       nvimPluginsPack = devpkgs.stdenv.mkDerivation {
         name = "mgnsk-neovim-plugins";
         buildCommand = ''
           mkdir -p $out/pack/plugins/start/
-          ${devpkgs.lib.concatMapStringsSep "\n" (path: "ln -s ${path} $out/pack/plugins/start/") (
-            nvimPlugins ++ nvimTreesitterParsers
-          )}
+          ${devpkgs.lib.concatMapStringsSep "\n" (path: "ln -s ${path} $out/pack/plugins/start/") nvimPlugins}
         '';
       };
 
@@ -197,7 +197,7 @@
         bat
         buf
         caddy
-        claude-code
+        #claude-code
         coreutils
         cspell
         cuetools

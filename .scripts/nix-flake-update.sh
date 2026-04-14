@@ -2,8 +2,8 @@
 
 set -eu
 
-INPUT=$(nix flake metadata --json 2>/dev/null | gojq -r '.locks.nodes.root.inputs | keys[]' | fzf)
-FLAKE_OUTPUT=".#devShells.x86_64-linux.$(nix flake show --json 2>/dev/null | gojq -r '.devShells."x86_64-linux" | keys[]' | fzf)"
+INPUT=$(nix flake metadata --json 2>/dev/null | jq -r '.locks.nodes.root.inputs | keys[]' | fzf)
+FLAKE_OUTPUT=".#devShells.x86_64-linux.$(nix flake show --json 2>/dev/null | jq -r '.devShells."x86_64-linux" | keys[]' | fzf)"
 
 # Build the old output and get its store path.
 OLD_STORE_PATH=$(nix build --show-trace --no-link --print-out-paths "$FLAKE_OUTPUT")

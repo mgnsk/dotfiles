@@ -17,11 +17,10 @@ vim.api.nvim_create_autocmd("FileType", {
 			return
 		end
 
-		vim.treesitter.start(buf, language)
-
-		-- Important to schedule this function for performance.
-		-- TODO: not working
 		vim.schedule(function()
+			vim.treesitter.start(buf, language)
+
+			-- TODO: not working
 			vim.wo.foldmethod = "expr"
 			vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 		end)

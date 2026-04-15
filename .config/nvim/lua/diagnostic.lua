@@ -26,7 +26,7 @@ vim.api.nvim_create_autocmd({ "DiagnosticChanged", "TextChanged", "InsertLeave" 
 
 			-- Limit loclist height.
 			local loclist = vim.fn.getloclist(winid, { winid = winid })
-			if loclist and loclist.winid > 0 then
+			if loclist and loclist.winid and loclist.winid > 0 then
 				local num_items = #vim.fn.getloclist(winid)
 				local max_h = 5
 				vim.api.nvim_win_set_height(loclist.winid, math.min(num_items, max_h))

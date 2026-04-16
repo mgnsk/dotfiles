@@ -95,7 +95,7 @@
 
       myvscode = devpkgs.vscode-with-extensions.override {
         vscodeExtensions = with devpkgs.vscode-extensions; [
-          #anthropic.claude-code
+          anthropic.claude-code
           #bufbuild.vscode-buf
           dbaeumer.vscode-eslint
           esbenp.prettier-vscode
@@ -197,7 +197,7 @@
         bat
         buf
         caddy
-        #claude-code
+        claude-code
         coreutils
         cspell
         cuetools

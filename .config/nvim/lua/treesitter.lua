@@ -2,6 +2,22 @@ vim.o.foldnestmax = 3
 vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 
+vim.keymap.set({ "n", "v" }, "<CR>", function()
+	if vim.fn.mode() == "v" then
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("an", true, false, true), "v", false)
+	else
+		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("van", true, false, true), "v", false)
+	end
+end, { desc = "Treesitter incremental select" })
+
+vim.keymap.set({ "v" }, "<Tab>", function()
+	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("an", true, false, true), "v", false)
+end, { desc = "Treesitter incremental select increase" })
+
+vim.keymap.set({ "v" }, "<S-Tab>", function()
+	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("in", true, false, true), "v", false)
+end, { desc = "Treesitter incremental select decrease" })
+
 vim.api.nvim_create_autocmd("FileType", {
 	group = vim.api.nvim_create_augroup("treesitter.setup", {}),
 	callback = function(args)
@@ -18,27 +34,14 @@ vim.api.nvim_create_autocmd("FileType", {
 		end
 
 		vim.schedule(function()
-			vim.treesitter.start(buf, language)
+			ok = pcall(vim.treesitter.start, buf, language)
+			if not ok then
+				return
+			end
 
 			-- TODO: not working
 			vim.wo.foldmethod = "expr"
 			vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 		end)
-
-		vim.keymap.set({ "n", "v" }, "<CR>", function()
-			if vim.fn.mode() == "v" then
-				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("an", true, false, true), "v", false)
-			else
-				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("van", true, false, true), "v", false)
-			end
-		end, { desc = "Treesitter incremental select", buf = buf })
-
-		vim.keymap.set({ "v" }, "<Tab>", function()
-			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("an", true, false, true), "v", false)
-		end, { desc = "Treesitter incremental select increase", buf = buf })
-
-		vim.keymap.set({ "v" }, "<S-Tab>", function()
-			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("in", true, false, true), "v", false)
-		end, { desc = "Treesitter incremental select decrease", buf = buf })
 	end,
 })

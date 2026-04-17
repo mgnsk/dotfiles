@@ -14,13 +14,17 @@ vim.api.nvim_create_autocmd({ "DiagnosticChanged", "TextChanged", "InsertLeave" 
 			return
 		end
 
-		vim.schedule(function()
-			local winid = vim.api.nvim_get_current_win()
+		local winid = vim.api.nvim_get_current_win()
 
-			-- Save main window view to avoid jumping.
-			local view = vim.api.nvim_win_call(winid, function()
-				return vim.fn.winsaveview()
-			end)
+		-- Save main window view to avoid jumping.
+		local view = vim.api.nvim_win_call(winid, function()
+			return vim.fn.winsaveview()
+		end)
+
+		vim.schedule(function()
+			if not vim.api.nvim_win_is_valid(winid) then
+				return
+			end
 
 			pcall(vim.diagnostic.setloclist, { winnr = winid, open = true })
 

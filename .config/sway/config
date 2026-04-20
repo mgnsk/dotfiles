@@ -148,11 +148,6 @@ input * {
     xkb_options caps:escape,grp:win_space_toggle
 }
 
-input type:keyboard {
-    repeat_delay 200
-    repeat_rate 30
-}
-
 input type:touchpad {
     tap enabled
 }

@@ -21,6 +21,7 @@ packages=(
 	raysession
 	snapd-xdg-open-git
 	wdisplays
+	libdigidoccpp
 	qdigidoc4
 	web-eid
 )

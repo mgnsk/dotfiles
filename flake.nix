@@ -136,36 +136,68 @@
           vscode-nvim
         ])
         ++ (with devpkgs.vimPlugins.nvim-treesitter-parsers; [
+          authzed
+          bash
+          beancount
+          c
           caddy
           comment
+          cpp
           css
           csv
+          desktop
+          diff
           dockerfile
           ebnf
+          faust
+          git_config
+          git_rebase
+          gitcommit
+          gitignore
+          glsl
           go
           gomod
           gosum
           gotmpl
           gowork
+          graphql
           helm
           html
+          ini
           javascript
           jq
+          jsdoc
           json
+          json5
           jsonnet
+          lalrpop
+          ledger
+          lua
+          luadoc
+          make
+          markdown
+          markdown_inline
+          mermaid
+          nginx
           nix
           php
+          phpdoc
           po
           proto
           python
+          regex
           rust
           scss
           sql
+          ssh_config
           sway
           tlaplus
+          toml
           tsx
           twig
           typescript
+          vim
+          vimdoc
           xml
           yaml
         ]);

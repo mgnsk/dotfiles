@@ -137,6 +137,7 @@
         ])
         ++ (with devpkgs.vimPlugins.nvim-treesitter-parsers; [
           caddy
+          comment
           css
           csv
           dockerfile
@@ -208,6 +209,7 @@
         fdupes
         file
         findutils
+        flatpak-xdg-utils
         fzf
         gawk
         gcc
@@ -371,6 +373,7 @@
         pipewire.jack
         reaper
         reaper-reapack-extension
+        raysession
 
         # Wine and yabridge.
         yabridge
@@ -439,6 +442,7 @@
 
         audio = audiopkgs.mkShellNoCC {
           buildInputs = [
+            devPkgs
             audioPkgs
             clapPlugins
             lv2Plugins

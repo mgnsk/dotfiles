@@ -16,7 +16,7 @@ sockfile="$XDG_RUNTIME_DIR/ide-xdg-dbus-proxy-$$.sock"
 xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
 	--filter \
 	--call=org.freedesktop.secrets=* \
-	--call=com.canonical.SafeLauncher=com.canonical.SafeLauncher.OpenURL@/ &
+	--call=org.freedesktop.portal.Desktop=org.freedesktop.portal.OpenURI.* &
 
 proxy_pid=$!
 
@@ -42,7 +42,6 @@ args=(
 	# Dbus.
 	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
 	--ro-bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
-	--ro-bind /usr/lib/snapd-xdg-open/xdg-open /usr/bin/xdg-open
 
 	# Wayland.
 	--setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"

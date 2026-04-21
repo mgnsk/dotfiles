@@ -18,8 +18,6 @@ packages=(
 	brave-bin
 	downgrade
 	obmenu-generator
-	raysession
-	snapd-xdg-open-git
 	wdisplays
 	libdigidoccpp
 	qdigidoc4

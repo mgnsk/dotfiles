@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs-audio.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs-wine.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-dev.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
     # Neovim plugins not in nixpkgs.
@@ -34,6 +35,13 @@
       system = "x86_64-linux";
 
       audiopkgs = import inputs.nixpkgs-audio {
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      };
+
+      winepkgs = import inputs.nixpkgs-wine {
         inherit system;
         config = {
           allowUnfree = true;
@@ -95,7 +103,7 @@
 
       myvscode = devpkgs.vscode-with-extensions.override {
         vscodeExtensions = with devpkgs.vscode-extensions; [
-          anthropic.claude-code
+          #anthropic.claude-code
           #bufbuild.vscode-buf
           dbaeumer.vscode-eslint
           esbenp.prettier-vscode
@@ -230,7 +238,7 @@
         bat
         buf
         caddy
-        claude-code
+        #claude-code
         coreutils
         cspell
         cuetools
@@ -349,7 +357,7 @@
       spirv-tools-lib = audiopkgs.linkFarm "spirv-tools-lib" [
         {
           name = "lib/libSPIRV-Tools.so";
-          path = "${audiopkgs.spirv-tools}/lib/libSPIRV-Tools-shared.so";
+          path = "${audiopkgs.spirv-tools.lib}/lib/libSPIRV-Tools-shared.so";
         }
       ];
 
@@ -386,15 +394,15 @@
 
         # Complete Vulkan setup to fix Vulkan plugins.
         libdrm
-        llvmPackages_21.libllvm
+        llvmPackages_22.libllvm
         elfutils
         zstd
-        xorg.libxcb
+        libxcb
         wayland
         libz
-        xorg.libX11
-        xorg.libxshmfence
-        xorg.xcbutilkeysyms
+        libx11
+        libxshmfence
+        libxcb-keysyms
         libudev-zero
         expat
         spirv-tools-lib
@@ -407,19 +415,21 @@
         reaper-reapack-extension
         raysession
 
+        # General programs.
+        fluidsynth
+      ];
+
+      winePkgs = with winepkgs; [
         # Wine and yabridge.
         yabridge
         yabridgectl
         wineWowPackages.yabridge
         winetricks
-
-        # General programs.
-        fluidsynth
       ];
 
       clapPlugins = with audiopkgs; [
         airwin2rack
-        surge-XT
+        surge-xt
       ];
 
       lv2Plugins = with audiopkgs; [
@@ -474,8 +484,8 @@
 
         audio = audiopkgs.mkShellNoCC {
           buildInputs = [
-            devPkgs
             audioPkgs
+            winePkgs
             clapPlugins
             lv2Plugins
             vst3Plugins
@@ -490,8 +500,9 @@
             trap cleanup EXIT
 
             export WINEPREFIX="$HOME/.wine-audio"
-            export LD_LIBRARY_PATH="${audiopkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
-            export NIX_PROFILES="${audiopkgs.yabridge} $NIX_PROFILES"
+            export LD_LIBRARY_PATH="${winepkgs.lib.makeLibraryPath winePkgs}:$LD_LIBRARY_PATH"
+            export LD_LIBRARY_PATH="${winepkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
+            export NIX_PROFILES="${winepkgs.yabridge} $NIX_PROFILES"
             export CUSTOM_HOST="ide-audio"
 
             mkdir -p ~/.config/REAPER

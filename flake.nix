@@ -423,7 +423,7 @@
         # Wine and yabridge.
         yabridge
         yabridgectl
-        wineWowPackages.yabridge
+        wineWow64Packages.yabridge
         winetricks
       ];
 

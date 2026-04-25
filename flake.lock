@@ -99,11 +99,11 @@
     "nvim-plugin-tree-sitter-manager": {
       "flake": false,
       "locked": {
-        "lastModified": 1776056818,
-        "narHash": "sha256-Qvhd3ULMDJkBlz+hyRNBRcyIgfwDW/br3yGn81XATbc=",
+        "lastModified": 1777009853,
+        "narHash": "sha256-w0jlFLM5CqN728taIJUDicMPMCAa2GfZcWsge8Sxm8s=",
         "owner": "romus204",
         "repo": "tree-sitter-manager.nvim",
-        "rev": "fa63bc63ae08b661843d9976a43becfbd3daf76c",
+        "rev": "33a94d022e3a5a500d878b784ba7fec61559c70a",
         "type": "github"
       },
       "original": {

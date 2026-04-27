@@ -50,6 +50,14 @@ vim.keymap.set("n", "ga", function()
 	return require("fzf-lua").lsp_code_actions()
 end, { desc = "Code actions" })
 
+vim.api.nvim_create_user_command("InlayHintDisable", function()
+	vim.lsp.inlay_hint.enable(false)
+end, { desc = "Disable inlay hints" })
+
+vim.api.nvim_create_user_command("InlayHintEnable", function()
+	vim.lsp.inlay_hint.enable(true)
+end, { desc = "Enable inlay hints" })
+
 local group = vim.api.nvim_create_augroup("UserLspConfig", {})
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -63,20 +71,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		-- if client.server_capabilities.inlayHintProvider then
 		-- 	vim.lsp.inlay_hint.enable(true)
-		--
-		-- 	vim.api.nvim_create_autocmd("InsertEnter", {
-		-- 		buffer = args.buf,
-		-- 		callback = function()
-		-- 			vim.lsp.inlay_hint.enable(false)
-		-- 		end,
-		-- 	})
-		--
-		-- 	vim.api.nvim_create_autocmd("InsertLeave", {
-		-- 		buffer = args.buf,
-		-- 		callback = function()
-		-- 			vim.lsp.inlay_hint.enable(true)
-		-- 		end,
-		-- 	})
 		-- end
 
 		if client.server_capabilities.documentHighlightProvider then

@@ -35,7 +35,7 @@ return {
 	settings = {
 		gopls = {
 			hints = {
-				assignVariableTypes = false,
+				assignVariableTypes = true,
 				compositeLiteralFields = true,
 				compositeLiteralTypes = true,
 				constantValues = true,

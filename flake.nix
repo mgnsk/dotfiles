@@ -238,7 +238,7 @@
         bat
         buf
         caddy
-        #claude-code
+        claude-code
         coreutils
         cspell
         cuetools
@@ -257,7 +257,6 @@
         gh-tpl
         git
         github-copilot-cli
-        glances
         glibcLocalesUtf8
         glow
         gnugrep
@@ -287,7 +286,8 @@
         wget
         which
         xdg-dbus-proxy
-        yt-dlp
+	# TODO: builds deno dependency
+        #yt-dlp
 
         # Bash.
         bash-language-server

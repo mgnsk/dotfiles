@@ -37,6 +37,7 @@ packages=(
 	slurp
 	zenity
 	rsync
+	glances
 
 	# Identity and passwords.
 	kwallet

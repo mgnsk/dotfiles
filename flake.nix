@@ -286,7 +286,7 @@
         wget
         which
         xdg-dbus-proxy
-	# TODO: builds deno dependency
+        # TODO: builds deno dependency
         #yt-dlp
 
         # Bash.

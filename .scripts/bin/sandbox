@@ -18,7 +18,9 @@ xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
 proxy_pid=$!
 
 # Wait until socket file exists.
-sleep 1
+until [ -e "$sockfile" ]; do
+	sleep 0.1
+done
 
 function cleanup {
 	kill -9 "$proxy_pid"

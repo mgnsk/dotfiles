@@ -9,16 +9,16 @@ if [[ "$prog" == "" ]]; then
 	exit 1
 fi
 
-# Proxy org.freedesktop.secrets service.
-# Security: the provider on host asks for GUI confirmation on secret access.
-sockfile="$XDG_RUNTIME_DIR/ide-xdg-dbus-proxy-$$.sock"
+sockfile="$XDG_RUNTIME_DIR/xdg-dbus-proxy-$$.sock"
 
 xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
 	--filter \
-	--call=org.freedesktop.secrets=* \
 	--call=org.freedesktop.portal.Desktop=org.freedesktop.portal.OpenURI.* &
 
 proxy_pid=$!
+
+# Wait until socket file exists.
+sleep 1
 
 function cleanup {
 	kill -9 "$proxy_pid"

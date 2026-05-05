@@ -1,0 +1,29 @@
+#!/bin/env bash
+
+set -e
+
+GH_TOKEN=$(gh auth token)
+export GH_TOKEN
+
+args=(
+	--unshare-all
+	--share-net
+	--die-with-parent
+	--dev /dev
+	--proc /proc
+	--tmpfs /tmp
+	--cap-drop ALL
+
+	--ro-bind "/bin" "/bin"
+	--ro-bind "/usr" "/usr"
+	--ro-bind "/lib" "/lib"
+	--ro-bind "/lib64" "/lib64"
+	--ro-bind "/etc" "/etc"
+	--ro-bind "/nix" "/nix"
+
+	--bind "$PWD" "$PWD"
+
+	copilot
+)
+
+bwrap "${args[@]}"

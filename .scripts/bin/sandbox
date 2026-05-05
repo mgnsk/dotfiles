@@ -5,7 +5,7 @@ set -e
 prog="$1"
 
 if [[ "$prog" == "" ]]; then
-	echo "Usage: ide {program} [args]"
+	echo "Usage: sandbox {program} [args]"
 	exit 1
 fi
 
@@ -55,16 +55,6 @@ args=(
 	--ro-bind "/nix" "/nix"
 
 	--bind "$PWD" "$PWD"
-)
-
-# Bind claude config.
-mkdir -p "$HOME/.claude"
-if ! [ -f "$HOME/.claude.json" ]; then
-	echo "{}" >"$HOME/.claude.json"
-fi
-args+=(
-	--bind "$HOME/.claude" "$HOME/.claude"
-	--bind "$HOME/.claude.json" "$HOME/.claude.json"
 )
 
 # Detect current project root.

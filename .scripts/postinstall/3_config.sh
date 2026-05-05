@@ -11,6 +11,7 @@ function set_option() {
 }
 
 # https://github.com/egnrse/updateKDEcache.hook
+sudo mkdir -p /etc/pacman.d/hooks
 cat <<-'EOF' | sudo tee /etc/pacman.d/hooks/updateKDEcache.hook >/dev/null
 	# updates the KService desktop file configuration cache (for the currently logged in user)
 	# (by egnrse)

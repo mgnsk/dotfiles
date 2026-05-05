@@ -138,12 +138,6 @@ set_option /etc/default/grub GRUB_SAVEDEFAULT true
 sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-# Configure profile-sync-daemon for brave.
-cat <<-'EOF' | sudo tee /usr/share/psd/browsers/brave >/dev/null
-	DIRArr[0]="$XDG_CONFIG_HOME/BraveSoftware/Brave-Browser"
-	PSNAME="brave"
-EOF
-
 # Enable profile-sync-daemon.
 line="$USER ALL=(ALL) NOPASSWD: /usr/bin/psd-overlay-helper"
 if ! sudo grep -q "$line" /etc/sudoers; then

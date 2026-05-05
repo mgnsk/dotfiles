@@ -15,7 +15,6 @@ makepkg -D "$yaydir" -si --needed
 packages=(
 	1password
 	1password-cli
-	brave-bin
 	downgrade
 	obmenu-generator
 	libdigidoccpp

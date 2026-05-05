@@ -19,7 +19,8 @@ packages=(
 	obmenu-generator
 	libdigidoccpp
 	qdigidoc4
-	web-eid
+	web-eid-firefox
+	web-eid-chrome
 )
 
 yay -S "${packages[@]}"

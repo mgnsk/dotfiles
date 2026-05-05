@@ -38,6 +38,7 @@ packages=(
 	zenity
 	rsync
 	glances
+	fzf
 
 	# Identity and passwords.
 	kwallet

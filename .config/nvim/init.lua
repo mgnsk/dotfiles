@@ -117,6 +117,15 @@ for i = 1, 9 do
 end
 vim.keymap.set("n", "<leader>0", ":tablast<CR>", { desc = "Goto last tab" })
 
+vim.api.nvim_create_user_command("CopyPath", function()
+	local file = vim.fn.expand("%")
+	if string.len(file) == 0 then
+		return
+	end
+
+	vim.fn.setreg("+", file)
+end, { desc = "Copy current file path to system clipboard" })
+
 vim.cmd("packloadall")
 
 require("autotabline").setup()

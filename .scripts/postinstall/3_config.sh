@@ -75,6 +75,10 @@ EOF
 
 sudo sensors-detect --auto
 
+# Configure battery charge limits.
+set_option /etc/tlp.conf START_CHARGE_THRESH_BAT0 70
+set_option /etc/tlp.conf STOP_CHARGE_THRESH_BAT0 80
+
 sudo systemctl enable tlp.service
 sudo systemctl mask systemd-rfkill.service
 sudo systemctl mask systemd-rfkill.socket

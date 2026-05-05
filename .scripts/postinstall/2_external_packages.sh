@@ -18,7 +18,6 @@ packages=(
 	brave-bin
 	downgrade
 	obmenu-generator
-	wdisplays
 	libdigidoccpp
 	qdigidoc4
 	web-eid

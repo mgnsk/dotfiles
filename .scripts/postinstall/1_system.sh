@@ -57,6 +57,7 @@ packages=(
 	xorg-xwayland
 	j4-dmenu-desktop
 	wmenu
+	wdisplays
 	nm-connection-editor
 	network-manager-applet
 	gammastep

@@ -109,6 +109,7 @@ packages=(
 	picard
 	gnome-disk-utility
 	handbrake
+	yt-dlp
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

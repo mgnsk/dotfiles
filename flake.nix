@@ -286,8 +286,6 @@
         wget
         which
         xdg-dbus-proxy
-        # TODO: builds deno dependency
-        #yt-dlp
 
         # Bash.
         bash-language-server

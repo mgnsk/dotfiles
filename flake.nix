@@ -505,7 +505,7 @@
             export NIX_PROFILES="${winepkgs.yabridge} $NIX_PROFILES"
             export CUSTOM_HOST="ide-audio"
 
-            mkdir -p ~/.config/REAPER
+            mkdir -p ~/.config/REAPER/ColorThemes
             cp ~/Shared/Default_5_Dark_Extended.ReaperThemeZip ~/.config/REAPER/ColorThemes/
             ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
               lastthemefn5 = "~/.config/REAPER/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";

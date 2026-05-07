@@ -477,6 +477,8 @@
                 done
               fi
             done
+
+            source ~/.bashrc
           '';
         };
 
@@ -517,6 +519,8 @@
             bash ~/.scripts/ide-audio.sh
 
             set +e
+
+            source ~/.bashrc
           '';
         };
       };

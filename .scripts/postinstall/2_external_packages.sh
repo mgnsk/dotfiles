@@ -3,7 +3,7 @@
 set -eu
 
 # Install yay.
-yaydir="/tmp/yay-bin"
+yaydir="$HOME/.cache/yay-bin"
 if [ -d "$yaydir" ]; then
 	git -C "$yaydir" pull
 else

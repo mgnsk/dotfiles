@@ -5,6 +5,22 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+__prepend_path() {
+	PATH="$1${PATH:+":$PATH"}"
+}
+
+__prepend_path /usr/share/git/diff-highlight
+__prepend_path ~/.scripts/bin
+
+export THEME="light"
+export GLAMOUR_STYLE="light"
+export GLOW_STYLE="light"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_DATA_HOME="$HOME/.local/share"
+export QT_QPA_PLATFORMTHEME=qt6ct
+
 export EDITOR="nvim"
 export VISUAL="nvim"
 export PAGER="less -R"

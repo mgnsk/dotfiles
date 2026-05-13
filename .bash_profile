@@ -2,27 +2,6 @@
 # ~/.bash_profile
 #
 
-# light or dark
-style="light"
-
-text_scaling_factor="1.2"
-
-export THEME="$style"
-export GLAMOUR_STYLE="$style"
-export GLOW_STYLE="$style"
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_STATE_HOME="$HOME/.local/state"
-export XDG_DATA_HOME="$HOME/.local/share"
-export QT_QPA_PLATFORMTHEME=qt6ct
-
-__prepend_path() {
-	PATH="$1${PATH:+":$PATH"}"
-}
-
-__prepend_path /usr/share/git/diff-highlight
-__prepend_path ~/.scripts/bin
-
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
 function pre {
@@ -51,7 +30,7 @@ function pre {
 		# Note: only used when font-antialiasing is set to 'rgba'
 		# font-rgba-order 'rgb'
 		gsettings set "org.gnome.desktop.interface" \
-			text-scaling-factor "$text_scaling_factor"
+			text-scaling-factor "1.2"
 	fi
 
 	if command -v kbuildsycoca6 &>/dev/null; then

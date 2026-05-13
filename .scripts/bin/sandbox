@@ -2,13 +2,6 @@
 
 set -e
 
-prog="$1"
-
-if [[ "$prog" == "" ]]; then
-	echo "Usage: sandbox {program} [args]"
-	exit 1
-fi
-
 sockfile="$XDG_RUNTIME_DIR/xdg-dbus-proxy-$$.sock"
 
 xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
@@ -99,9 +92,7 @@ add_volume "$HOME/.local"
 add_volume "$HOME/go"
 
 args+=(
-	"$prog"
-	--
-	"${@:2}"
+	bash
 )
 
 bwrap "${args[@]}"

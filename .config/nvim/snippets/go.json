@@ -1,12 +1,12 @@
 {
   "multiple imports": {
-    "prefix": "im",
-    "body": "import (\n\t\"${1:package}\"\n)",
+    "prefix": "import",
+    "body": "import (\n\t\"$0\"\n)",
     "description": "Snippet for an import block"
   },
   "if err != nil": {
     "prefix": "iferr",
-    "body": "if err != nil {\n\t${1:return ${2:nil, }${3:err}}\n}",
+    "body": "if err != nil {\n\t$0\n}",
     "description": "Snippet for if err != nil"
   },
   "go anonymous function": {

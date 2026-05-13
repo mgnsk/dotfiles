@@ -31,12 +31,15 @@ require("blink.cmp").setup({
 	fuzzy = {
 		implementation = "rust",
 		sorts = {
+			"exact",
+			"score",
+			"sort_text",
 			function(a, b)
 				local source_priority = {
 					buffer = 4,
 					lsp = 3,
-					path = 2,
-					snippets = 1,
+					snippets = 2,
+					path = 1,
 				}
 
 				local a_priority = source_priority[a.source_id] or 0
@@ -45,10 +48,6 @@ require("blink.cmp").setup({
 					return a_priority > b_priority
 				end
 			end,
-			-- defaults
-			"exact",
-			"score",
-			"sort_text",
 		},
 	},
 	sources = {
@@ -72,7 +71,9 @@ require("blink.cmp").setup({
 				end
 			end
 
-			if vim.bo.filetype == "sh" and in_treesitter_capture({ "word", "string" }) then
+			if
+				(vim.bo.filetype == "sh" or vim.bo.filetype == "bash") and in_treesitter_capture({ "word", "string" })
+			then
 				return { "buffer", "path" }
 			end
 
@@ -82,5 +83,16 @@ require("blink.cmp").setup({
 
 			return { "lsp", "snippets", "buffer" }
 		end,
+		providers = {
+			buffer = {
+				opts = {
+					get_bufnrs = function()
+						return vim.tbl_filter(function(bufnr)
+							return vim.bo[bufnr].buftype == ""
+						end, vim.api.nvim_list_bufs())
+					end,
+				},
+			},
+		},
 	},
 })

@@ -292,6 +292,9 @@
         shellcheck
         shfmt
 
+        # Git.
+        commitmsgfmt
+
         # Go.
         go
         gopls

@@ -17,6 +17,7 @@
 	sw = !bash ~/.scripts/git/switch-fzf.sh
 	stat = !bash ~/.scripts/git/stat.sh
 	alias = !git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
+	view-repo = !bash ~/.scripts/git/view-repo.sh
 
 [mergetool]
 	keepBackup = false

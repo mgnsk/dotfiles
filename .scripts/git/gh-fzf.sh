@@ -164,21 +164,9 @@ function gh-view {
 		exit 1
 	fi
 
-	commit_list_template="$(
-		cat <<-'EOF'
-			{{- range .commits}}* {{.oid | trunc 7 | autocolor "yellow"}} {{.messageHeadline}}{{"\n"}}{{end -}}
-		EOF
-	)"
-
 	if [ "$target" == "prs" ]; then
 		GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS - 4)) gh pr view --comments "$number" |
 			highlight "$query"
-
-		gh pr view --json commits "$number" |
-			gh-tpl --color "$commit_list_template" |
-			highlight "$query"
-
-		echo ""
 
 		gh pr diff --color=always "$number" |
 			diff-highlight
@@ -229,7 +217,7 @@ args=(
 )
 
 if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
-	repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+	repo="$(git view-repo)"
 	# Note: important to use double-quotes throughout, otherwise {q} will be split.
 	export FZF_DEFAULT_COMMAND="bash -c \"fzf-header $target; gh-list $repo {q} 2>&1\""
 

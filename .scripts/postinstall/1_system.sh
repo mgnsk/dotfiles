@@ -110,6 +110,8 @@ packages=(
 	gnome-disk-utility
 	handbrake
 	yt-dlp
+	gimp
+	inkscape
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

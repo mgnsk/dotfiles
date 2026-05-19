@@ -112,22 +112,6 @@
         "type": "github"
       }
     },
-    "nvim-plugin-vim-eel": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1716915941,
-        "narHash": "sha256-GXatc3lLLqHB1MO+PLARZwdVibRVK5wT0pmGhRvqRUI=",
-        "owner": "NlGHT",
-        "repo": "vim-eel",
-        "rev": "7c1357b098629cf952ff7b2b6900295093c1bbeb",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NlGHT",
-        "repo": "vim-eel",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "nixpkgs-audio": "nixpkgs-audio",
@@ -136,8 +120,7 @@
         "nvim-plugin-autotabline": "nvim-plugin-autotabline",
         "nvim-plugin-dumb-autopairs": "nvim-plugin-dumb-autopairs",
         "nvim-plugin-nvim-fundo": "nvim-plugin-nvim-fundo",
-        "nvim-plugin-tree-sitter-manager": "nvim-plugin-tree-sitter-manager",
-        "nvim-plugin-vim-eel": "nvim-plugin-vim-eel"
+        "nvim-plugin-tree-sitter-manager": "nvim-plugin-tree-sitter-manager"
       }
     }
   },

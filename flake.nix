@@ -23,10 +23,6 @@
       url = "github:kevinhwang91/nvim-fundo";
       flake = false;
     };
-    nvim-plugin-vim-eel = {
-      url = "github:NlGHT/vim-eel";
-      flake = false;
-    };
   };
 
   outputs =
@@ -125,7 +121,6 @@
           nvim-plugin-autotabline
           nvim-plugin-dumb-autopairs
           nvim-plugin-nvim-fundo
-          nvim-plugin-vim-eel
         ])
         ++ (with devpkgs.vimPlugins; [
           blink-cmp

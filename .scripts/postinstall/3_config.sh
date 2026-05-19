@@ -6,8 +6,8 @@ function set_option() {
 	file="$1"
 	key="$2"
 	value="$3"
-	script=$(printf 's/#*%s=.*/%s=%s/' "$key" "$key" "$value")
-	sudo sed -i "$script" "$file"
+
+	sudo kwriteconfig6 --file "$file" --group "<default>" --key "$key" "$value"
 }
 
 # https://github.com/egnrse/updateKDEcache.hook

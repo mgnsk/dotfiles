@@ -39,6 +39,7 @@ packages=(
 	rsync
 	glances
 	fzf
+	kconfig # provides kwriteconfig6
 
 	# Identity and passwords.
 	kwallet

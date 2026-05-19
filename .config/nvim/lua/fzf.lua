@@ -157,7 +157,7 @@ require("fzf-lua").setup({
 			cmd = make_git_log_search_cmd(" --follow {file}"),
 			preview_pager = "diff-highlight",
 			actions = create_git_log_actions(1),
-			preview = [[name=$(bash ~/.scripts/get-old-git-filename.sh {1} {file}); git show --color {1} -- "$name"]],
+			preview = [[name=$(bash ~/.scripts/git/get-old-filename.sh {1} {file}); git show --color {1} -- "$name"]],
 		},
 		commits = {
 			cmd = make_git_log_search_cmd(""),

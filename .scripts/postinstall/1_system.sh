@@ -82,6 +82,7 @@ packages=(
 
 	# Power management.
 	tlp
+	tlpui
 	smartmontools
 
 	# Web and document tools.

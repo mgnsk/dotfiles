@@ -75,7 +75,7 @@ EOF
 
 sudo sensors-detect --auto
 
-# Configure battery charge limits.
+# Configure power options.
 set_option /etc/tlp.conf START_CHARGE_THRESH_BAT0 70
 set_option /etc/tlp.conf STOP_CHARGE_THRESH_BAT0 80
 

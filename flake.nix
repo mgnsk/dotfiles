@@ -324,7 +324,7 @@
         eslint
         html-tidy
         markdownlint-cli
-        nodejs_25
+        nodejs
         npm-check-updates
         pnpm
         prettier

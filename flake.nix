@@ -107,7 +107,7 @@
           hashicorp.hcl
           ms-python.black-formatter
           ms-python.isort
-          ms-python.python
+          #ms-python.python
           redhat.vscode-yaml
           streetsidesoftware.code-spell-checker
           sumneko.lua

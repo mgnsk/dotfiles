@@ -169,9 +169,9 @@ require("fzf-lua").setup({
 		async_or_timeout = true,
 	},
 	keymap = {
-		fzf = {
-			["ctrl-d"] = "preview-page-down",
-			["ctrl-u"] = "preview-page-up",
+		builtin = {
+			["<C-d>"] = "preview-page-down",
+			["<C-u>"] = "preview-page-up",
 		},
 	},
 })

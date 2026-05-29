@@ -101,6 +101,7 @@ packages=(
 	qt6-imageformats
 	ffmpegthumbs
 	ark
+	unrar
 
 	webp-pixbuf-loader
 	gthumb
@@ -114,6 +115,7 @@ packages=(
 	yt-dlp
 	gimp
 	inkscape
+	whipper
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

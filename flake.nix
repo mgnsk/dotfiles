@@ -99,7 +99,7 @@
 
       myvscode = devpkgs.vscode-with-extensions.override {
         vscodeExtensions = with devpkgs.vscode-extensions; [
-          #anthropic.claude-code
+          anthropic.claude-code
           #bufbuild.vscode-buf
           dbaeumer.vscode-eslint
           esbenp.prettier-vscode
@@ -107,7 +107,7 @@
           hashicorp.hcl
           ms-python.black-formatter
           ms-python.isort
-          #ms-python.python
+          ms-python.python
           redhat.vscode-yaml
           streetsidesoftware.code-spell-checker
           sumneko.lua

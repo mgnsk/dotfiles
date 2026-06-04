@@ -294,6 +294,7 @@
         go
         gopls
         revive
+        ginkgo
 
         # Rust.
         cargo

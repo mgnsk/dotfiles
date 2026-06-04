@@ -9,7 +9,6 @@ __prepend_path() {
 	PATH="$1${PATH:+":$PATH"}"
 }
 
-__prepend_path ~/go/bin
 __prepend_path /usr/share/git/diff-highlight
 __prepend_path ~/.scripts/bin
 

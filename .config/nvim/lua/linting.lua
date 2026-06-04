@@ -1,6 +1,3 @@
-local revive = require("lint").linters.revive
-revive.cmd = "revive_custom"
-
 vim.api.nvim_create_user_command("CSpell", function()
 	require("lint").try_lint("cspell")
 end, { desc = "Run cspell on current buffer" })

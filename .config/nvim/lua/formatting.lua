@@ -25,22 +25,16 @@ end, {
 	bang = true,
 })
 
-vim.api.nvim_create_user_command("FormatEnable", function()
-	vim.b.disable_autoformat = false
-	vim.g.disable_autoformat = false
+vim.api.nvim_create_user_command("FormatEnable", function(args)
+	if args.bang then
+		-- FormatEnable! will enable formatting just for this buffer
+		vim.b.disable_autoformat = false
+	else
+		vim.g.disable_autoformat = false
+	end
 end, {
 	desc = "Re-enable autoformat-on-save",
-})
-
-require("file_actions").registerFormatter("balafon", {
-	command = "balafon",
-	args = { "fmt" },
-})
-
-require("file_actions").registerFormatter("caddy", {
-	command = "caddy",
-	args = { "fmt", "-" },
-	stdin = true,
+	bang = true,
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {

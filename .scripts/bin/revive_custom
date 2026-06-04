@@ -3,7 +3,7 @@
 # Called by nvim-lint.
 
 if [ -f "$PWD/revive.toml" ]; then
-	revive -config "$PWD/revive.toml" "$@" || true
+	exec revive -config "$PWD/revive.toml" "$@"
 else
-	revive "$@" || true
+	exec revive "$@"
 fi

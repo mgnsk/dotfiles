@@ -8,14 +8,46 @@ if ! [ -f "$HOME/.claude.json" ]; then
 	echo "{}" >"$HOME/.claude.json"
 fi
 
+sockfile="$XDG_RUNTIME_DIR/xdg-dbus-proxy-$$.sock"
+
+xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
+	--filter \
+	--call=org.freedesktop.portal.Desktop=org.freedesktop.portal.OpenURI.* &
+
+proxy_pid=$!
+
+# Wait until socket file exists.
+until [ -e "$sockfile" ]; do
+	sleep 0.1
+done
+
+function cleanup {
+	kill -9 "$proxy_pid"
+	rm -f "$sockfile"
+}
+
+trap cleanup EXIT
+
+unset TMPDIR
+unset TMP
+
 args=(
 	--unshare-all
 	--share-net
 	--die-with-parent
+	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 	--dev /dev
 	--proc /proc
 	--tmpfs /tmp
 	--cap-drop ALL
+
+	# Dbus.
+	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
+	--ro-bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
+
+	# Wayland.
+	--setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
+	--ro-bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
 
 	--ro-bind "/bin" "/bin"
 	--ro-bind "/usr" "/usr"
@@ -27,8 +59,49 @@ args=(
 	--bind "$PWD" "$PWD"
 	--bind "$HOME/.claude" "$HOME/.claude"
 	--bind "$HOME/.claude.json" "$HOME/.claude.json"
+)
 
-	claude
+# Detect current project root.
+project=$(git rev-parse --show-toplevel)
+
+# Fall back to PWD if no repo found.
+if [[ "$project" == "$HOME" ]]; then
+	project="$PWD"
+fi
+
+# Read bind all files tracked by dotfiles git.
+for f in $(git -C "$HOME" ls-tree -r master --name-only); do
+	if ! echo "$HOME/$f" | grep -q "^$PWD"; then
+		# "$HOME/$f" is outside of "$PWD", mount it readonly.
+		args+=(
+			--ro-bind "$HOME/$f" "$HOME/$f"
+		)
+	fi
+done
+
+function add_volume() {
+	container_path="$1"
+
+	# Replace every (//) slash (\/) with underscore (_) and append a unique hash.
+	volume_name="${project//\//_}-$(echo -n "$project" | sha256sum | cut -c1-8)"
+
+	host_path="$HOME/.ide/$volume_name/$container_path"
+	mkdir -p "$host_path"
+
+	args+=(
+		--bind "$host_path" "$container_path"
+	)
+}
+
+# Create per-project persistent volumes.
+add_volume "$HOME/.cache"
+add_volume "$HOME/.cargo"
+add_volume "$HOME/.config/Code"
+add_volume "$HOME/.local"
+add_volume "$HOME/go"
+
+args+=(
+	bash
 )
 
 bwrap "${args[@]}"

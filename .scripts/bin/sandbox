@@ -88,6 +88,7 @@ function add_volume() {
 # Create per-project persistent volumes.
 add_volume "$HOME/.cache"
 add_volume "$HOME/.cargo"
+add_volume "$HOME/.config/Code"
 add_volume "$HOME/.local"
 add_volume "$HOME/go"
 

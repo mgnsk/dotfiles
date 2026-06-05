@@ -80,6 +80,17 @@ packages=(
 	archlinux-xdg-menu
 	wayvnc
 
+	# Multimedia.
+	vmpk
+	mpv
+	smplayer
+	picard
+	handbrake
+	yt-dlp
+	whipper
+	gimp
+	inkscape
+
 	# Power management.
 	tlp
 	tlpui
@@ -102,20 +113,11 @@ packages=(
 	ffmpegthumbs
 	ark
 	unrar
-
 	webp-pixbuf-loader
 	gthumb
 	rclone
 	baobab
-	mpv
-	smplayer
-	picard
 	gnome-disk-utility
-	handbrake
-	yt-dlp
-	gimp
-	inkscape
-	whipper
 
 	# Xorg and Openbox (for TTY2).
 	xorg-server

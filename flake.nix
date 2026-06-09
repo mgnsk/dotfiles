@@ -275,6 +275,7 @@
         shntool
         tmux
         tree
+        tree-sitter
         tusk-go
         unzip
         vivid

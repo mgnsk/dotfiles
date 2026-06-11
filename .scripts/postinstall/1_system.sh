@@ -40,6 +40,7 @@ packages=(
 	glances
 	fzf
 	kconfig # provides kwriteconfig6
+	qrencode
 
 	# Identity and passwords.
 	kwallet

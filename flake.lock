@@ -1,5 +1,23 @@
 {
   "nodes": {
+    "flake-utils": {
+      "inputs": {
+        "systems": "systems"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "nixpkgs-audio": {
       "locked": {
         "lastModified": 1777578337,
@@ -112,6 +130,27 @@
         "type": "github"
       }
     },
+    "nvim-plugins-tree-sitter-balafon": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": [
+          "nixpkgs-dev"
+        ]
+      },
+      "locked": {
+        "lastModified": 1781014995,
+        "narHash": "sha256-LWzPh/U23jeLjtzJ1/WT68dDGUcrs0AclO1vsaBt+jM=",
+        "owner": "mgnsk",
+        "repo": "tree-sitter-balafon",
+        "rev": "105576eeea203fdbf03fac9517a3e9791d50d951",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mgnsk",
+        "repo": "tree-sitter-balafon",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "nixpkgs-audio": "nixpkgs-audio",
@@ -120,7 +159,23 @@
         "nvim-plugin-autotabline": "nvim-plugin-autotabline",
         "nvim-plugin-dumb-autopairs": "nvim-plugin-dumb-autopairs",
         "nvim-plugin-nvim-fundo": "nvim-plugin-nvim-fundo",
-        "nvim-plugin-tree-sitter-manager": "nvim-plugin-tree-sitter-manager"
+        "nvim-plugin-tree-sitter-manager": "nvim-plugin-tree-sitter-manager",
+        "nvim-plugins-tree-sitter-balafon": "nvim-plugins-tree-sitter-balafon"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
       }
     }
   },

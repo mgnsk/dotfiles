@@ -23,6 +23,11 @@
       url = "github:kevinhwang91/nvim-fundo";
       flake = false;
     };
+    nvim-plugins-tree-sitter-balafon = {
+      url = "github:mgnsk/tree-sitter-balafon";
+      flake = true;
+      inputs.nixpkgs.follows = "nixpkgs-dev";
+    };
   };
 
   outputs =
@@ -121,6 +126,7 @@
           nvim-plugin-autotabline
           nvim-plugin-dumb-autopairs
           nvim-plugin-nvim-fundo
+          nvim-plugins-tree-sitter-balafon.packages.x86_64-linux.nvimParser
         ])
         ++ (with devpkgs.vimPlugins; [
           blink-cmp

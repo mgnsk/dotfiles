@@ -141,6 +141,7 @@ function fzf-header {
 	header+="<enter copy commit sha>\n"
 	header+="<ctrl-l web>\n"
 	header+="<ctrl-o diff>\n"
+	header+="<ctrl-v nvim>\n"
 	header+="<ctrl-f search [current: $gitmode]>\n"
 	header+="<ctrl-p pinpoint [current: $grepmode]>"
 
@@ -163,6 +164,7 @@ fzf \
 	--bind 'enter:execute(echo {1} | pbcopy)' \
 	--bind "ctrl-l:execute-silent(git browse {1})" \
 	--bind "ctrl-o:execute(bash -c 'git show --color {1} | diff-highlight | less -R')" \
+	--bind "ctrl-v:execute(bash -c 'nvim -c \"lua show_commit()\" {1}')" \
 	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
 	--preview 'bash -c "git-view {1} {q}"' \

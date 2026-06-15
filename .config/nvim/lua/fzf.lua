@@ -1,13 +1,3 @@
-local function git_show_in_new_buf(commit)
-	local output = vim.fn.systemlist("git show " .. commit)
-	vim.cmd("tabnew")
-	vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
-	vim.bo.buftype = "nofile"
-	vim.bo.bufhidden = "wipe"
-	vim.bo.modifiable = false
-	vim.bo.filetype = "git"
-end
-
 --- @param field_index integer
 local function create_git_log_actions(field_index)
 	return {
@@ -21,7 +11,7 @@ local function create_git_log_actions(field_index)
 		["ctrl-o"] = {
 			fn = function(selected)
 				vim.schedule(function()
-					git_show_in_new_buf(selected[1])
+					require("util").git_show_in_new_buf(selected[1])
 				end)
 			end,
 			field_index = string.format("{%d}", field_index),
@@ -139,7 +129,7 @@ require("fzf-lua").setup({
 	previewers = {
 		builtin = {
 			syntax = true,
-			syntax_limit_b = require("const").treesitter_max_filesize,
+			syntax_limit_b = require("util").treesitter_max_filesize,
 		},
 	},
 	files = {

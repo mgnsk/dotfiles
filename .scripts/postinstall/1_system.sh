@@ -22,6 +22,7 @@ packages=(
 	logrotate
 	vulkan-tools
 	fwupd
+	inetutils # provides hostname
 
 	# Bluetooth.
 	bluez

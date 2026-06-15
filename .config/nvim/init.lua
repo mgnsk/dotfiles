@@ -142,3 +142,10 @@ require("lsp")
 require("statusline")
 require("treesitter")
 require("undo")
+
+function show_commit()
+	local hash = vim.fn.argv(0)
+	local orig_buf = vim.api.nvim_get_current_buf()
+	require("util").git_show_in_new_buf(hash)
+	vim.api.nvim_buf_delete(orig_buf, { force = true })
+end

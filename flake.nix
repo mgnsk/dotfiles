@@ -7,10 +7,26 @@
     nixpkgs-dev.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
     # Neovim plugins not in nixpkgs.
-    nvim-plugin-tree-sitter-manager.url = "github:romus204/tree-sitter-manager.nvim";
-    nvim-plugin-autotabline.url = "github:mgnsk/autotabline.nvim";
-    nvim-plugin-dumb-autopairs.url = "github:mgnsk/dumb-autopairs.nvim";
-    nvim-plugin-nvim-fundo.url = "github:kevinhwang91/nvim-fundo";
+    nvim-plugin-tree-sitter-manager = {
+      url = "github:romus204/tree-sitter-manager.nvim";
+      flake = false;
+    };
+
+    nvim-plugin-autotabline = {
+      url = "github:mgnsk/autotabline.nvim";
+      flake = false;
+    };
+
+    nvim-plugin-dumb-autopairs = {
+      url = "github:mgnsk/dumb-autopairs.nvim";
+      flake = false;
+    };
+
+    nvim-plugin-nvim-fundo = {
+      url = "github:kevinhwang91/nvim-fundo";
+      flake = false;
+    };
+
     nvim-plugins-tree-sitter-balafon = {
       url = "github:mgnsk/tree-sitter-balafon";
       inputs.nixpkgs.follows = "nixpkgs-dev";

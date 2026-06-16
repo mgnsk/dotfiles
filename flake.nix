@@ -253,7 +253,6 @@
         fdupes
         file
         findutils
-        flatpak-xdg-utils
         fzf
         gawk
         gcc
@@ -290,7 +289,6 @@
         vivid
         wget
         which
-        xdg-dbus-proxy
 
         # Bash.
         bash-language-server

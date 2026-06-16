@@ -2,26 +2,6 @@
 
 set -e
 
-sockfile="$XDG_RUNTIME_DIR/xdg-dbus-proxy-$$.sock"
-
-xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$sockfile" \
-	--filter \
-	--call=org.freedesktop.portal.Desktop=org.freedesktop.portal.OpenURI.* &
-
-proxy_pid=$!
-
-# Wait until socket file exists.
-until [ -e "$sockfile" ]; do
-	sleep 0.1
-done
-
-function cleanup {
-	kill -9 "$proxy_pid"
-	rm -f "$sockfile"
-}
-
-trap cleanup EXIT
-
 unset TMPDIR
 unset TMP
 
@@ -34,10 +14,6 @@ args=(
 	--proc /proc
 	--tmpfs /tmp
 	--cap-drop ALL
-
-	# Dbus.
-	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
-	--ro-bind "$sockfile" "$XDG_RUNTIME_DIR/bus"
 
 	# Wayland.
 	--setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"

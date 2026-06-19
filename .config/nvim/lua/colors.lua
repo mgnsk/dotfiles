@@ -62,18 +62,6 @@ end
 vscode.setup(cfg)
 vscode.load()
 
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml", "dosini" },
-	callback = function()
-		require("colorizer").setup({
-			["*"] = {
-				RGB = true,
-				RRGGBB = true,
-				names = true,
-				rgb_fn = true,
-				hsl_fn = true,
-				css = true,
-			},
-		})
-	end,
+require("colorizer").setup({
+	filetypes = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml", "dosini" },
 })

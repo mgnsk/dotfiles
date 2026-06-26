@@ -12,15 +12,17 @@ fi
 
 # Iterate over all local branches and show their stats relative to the main branch.
 {
-	git branch --sort=-committerdate --format '%(refname:short)' | grep -vE "^(${main})$" | while IFS= read -r branch; do
+	if [ $# -gt 0 ]; then
+		branches="$1"
+	else
+		branches=$(git branch --sort=-committerdate --format '%(refname:short)' | grep -vE "^(${main})$")
+	fi
+
+	echo "$branches" | while IFS= read -r branch; do
 		# Left: behind, right: ahead.
-		# Handle cases where branches might not have a direct common history with main
-		# by defaulting to "0 0" if rev-list fails or returns empty.
-		stats=$(git rev-list --left-right --count "${main}...${branch}" 2>/dev/null || echo "0 0")
+		rev_stats=$(git rev-list --left-right --count "${main}...${branch}" 2>/dev/null | awk '{a=$1; b=$2} END {printf "%d ahead %d behind", b+0, a+0}')
+		diff_stats=$(git diff "${main}...${branch}" --numstat 2>/dev/null | awk '{add+=$1; del+=$2} END {printf "\033[32m+%d\033[0m \033[31m-%d\033[0m", add, del}')
 
-		behind=$(echo "$stats" | awk '{print $1}')
-		ahead=$(echo "$stats" | awk '{print $2}')
-
-		echo "$branch|$ahead ahead $behind behind $main"
+		echo "$branch|$rev_stats $main|$diff_stats"
 	done
 } | column -t -s '|'

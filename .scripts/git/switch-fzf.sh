@@ -25,6 +25,10 @@ function branch-search {
 export -f branch-search
 
 function branch-view {
+	git stat "$1"
+
+	echo ""
+
 	export GIT_LOG_PRETTY_FORMAT='%C(yellow)%h%Creset%x1f%ct%x1f%Creset%s%x1f%Cblue<%an>'
 
 	git log \

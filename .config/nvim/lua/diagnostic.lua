@@ -1,3 +1,17 @@
+-- nvim-lint can emit end_lnum=-1/end_col=-1 which nvim 0.12+ rejects.
+local orig_diagnostic_set = vim.diagnostic.set
+vim.diagnostic.set = function(ns, bufnr, diagnostics, opts)
+	for _, d in ipairs(diagnostics) do
+		if d.end_lnum and d.end_lnum < 0 then
+			d.end_lnum = d.lnum
+		end
+		if d.end_col and d.end_col < 0 then
+			d.end_col = d.col
+		end
+	end
+	return orig_diagnostic_set(ns, bufnr, diagnostics, opts)
+end
+
 vim.diagnostic.config({
 	update_in_insert = false,
 	virtual_text = true,
@@ -16,6 +30,10 @@ vim.api.nvim_create_autocmd({ "DiagnosticChanged", "TextChanged", "InsertLeave" 
 			return
 		end
 
+		if vim.bo.buftype == "quickfix" then
+			return
+		end
+
 		local winid = vim.api.nvim_get_current_win()
 
 		-- Save main window view to avoid jumping.
@@ -23,6 +41,7 @@ vim.api.nvim_create_autocmd({ "DiagnosticChanged", "TextChanged", "InsertLeave" 
 			return vim.fn.winsaveview()
 		end)
 
+		-- Schedule to avoid jumping or flashing.
 		vim.schedule(function()
 			if not vim.api.nvim_win_is_valid(winid) then
 				return
@@ -41,11 +60,7 @@ vim.api.nvim_create_autocmd({ "DiagnosticChanged", "TextChanged", "InsertLeave" 
 			end
 
 			vim.api.nvim_set_current_win(winid)
-
-			-- Restore main windows view.
-			vim.api.nvim_win_call(winid, function()
-				vim.fn.winrestview(view)
-			end)
+			vim.fn.winrestview(view)
 		end)
 	end,
 })

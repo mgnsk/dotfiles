@@ -265,6 +265,7 @@
         gnugrep
         gnused
         go-jsonnet
+        go-task
         gojq
         hadolint
         helm-ls

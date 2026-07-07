@@ -37,9 +37,7 @@ vim.api.nvim_create_autocmd({ "DiagnosticChanged", "TextChanged", "InsertLeave" 
 		local winid = vim.api.nvim_get_current_win()
 
 		-- Save main window view to avoid jumping.
-		local view = vim.api.nvim_win_call(winid, function()
-			return vim.fn.winsaveview()
-		end)
+		local view = vim.fn.winsaveview()
 
 		-- Schedule to avoid jumping or flashing.
 		vim.schedule(function()

@@ -2,14 +2,16 @@
 
 set -e
 
+unset TMPDIR
+unset TMP
+unset TMUX
+unset TMUX_PANE
+
 # Scaffold claude config.
 mkdir -p "$HOME/.claude"
 if ! [ -f "$HOME/.claude.json" ]; then
 	echo "{}" >"$HOME/.claude.json"
 fi
-
-unset TMPDIR
-unset TMP
 
 args=(
 	--unshare-all

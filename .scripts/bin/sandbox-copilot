@@ -2,6 +2,11 @@
 
 set -e
 
+unset TMPDIR
+unset TMP
+unset TMUX
+unset TMUX_PANE
+
 GH_TOKEN=$(gh auth token)
 export GH_TOKEN
 

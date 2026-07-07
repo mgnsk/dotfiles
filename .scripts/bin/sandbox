@@ -4,6 +4,8 @@ set -e
 
 unset TMPDIR
 unset TMP
+unset TMUX
+unset TMUX_PANE
 
 args=(
 	--unshare-all

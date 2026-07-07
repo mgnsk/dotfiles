@@ -2,7 +2,7 @@ local M = {}
 
 local function git_show_in_new_buf(commit)
 	local output = vim.fn.systemlist("git show " .. commit)
-	vim.cmd("tabnew")
+	vim.cmd.tabnew()
 	vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
 	vim.bo.buftype = "nofile"
 	vim.bo.bufhidden = "wipe"

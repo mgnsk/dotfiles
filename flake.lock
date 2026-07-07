@@ -85,11 +85,11 @@
     "nvim-plugin-dumb-autopairs": {
       "flake": false,
       "locked": {
-        "lastModified": 1763402749,
-        "narHash": "sha256-H3g+0d5yoWV6om/4PK115qZQIwes7vTyafqhg6mvzXc=",
+        "lastModified": 1783406478,
+        "narHash": "sha256-vFXQq0TQ2j2EJZq2s/SJu+3VM/glqbXCtrrpwi4Xn7Y=",
         "owner": "mgnsk",
         "repo": "dumb-autopairs.nvim",
-        "rev": "d1c09e2dc2bff51db22069445cf2c364fca5bb65",
+        "rev": "cb2c1e557ff5e20374d97cb4bba249e2f0c2434b",
         "type": "github"
       },
       "original": {
@@ -117,11 +117,11 @@
     "nvim-plugin-tree-sitter-manager": {
       "flake": false,
       "locked": {
-        "lastModified": 1781754137,
-        "narHash": "sha256-SqaDN7nJhanpDgpD7DGectI0uv1sHrYdAPmVr4LXK40=",
+        "lastModified": 1782837617,
+        "narHash": "sha256-NCbbSMCtJRssYnWZ1kZPPnKpoe6o5qkP5O0Vb2xHEI0=",
         "owner": "romus204",
         "repo": "tree-sitter-manager.nvim",
-        "rev": "ae305699da5e97b6cffdd5cc6f6045b1b0bd26ea",
+        "rev": "966c28dbc68fc99c82c51a64b6ec37f420aab880",
         "type": "github"
       },
       "original": {

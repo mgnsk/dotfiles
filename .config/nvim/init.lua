@@ -1,12 +1,11 @@
-vim.cmd("set nocompatible")
-vim.cmd("set termguicolors")
-vim.cmd("set nofoldenable")
-vim.cmd("set noshowcmd")
+vim.o.termguicolors = true
+vim.o.foldenable = false
+vim.o.showcmd = false
 vim.o.hidden = true
 vim.o.updatetime = 500
 vim.o.timeoutlen = 500
-vim.opt.number = true
-vim.opt.signcolumn = "yes" -- TODO
+vim.o.number = true
+vim.o.signcolumn = "yes"
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.lazyredraw = true
@@ -14,7 +13,6 @@ vim.o.laststatus = 2
 vim.o.wildmenu = true
 vim.o.wrap = true
 vim.o.inccommand = "split"
-vim.o.encoding = "UTF-8"
 vim.o.path = vim.o.path .. "**"
 
 vim.o.autoindent = true
@@ -22,16 +20,12 @@ vim.o.expandtab = false
 vim.o.shiftwidth = 4
 vim.o.softtabstop = 4
 vim.o.tabstop = 4
-vim.cmd("filetype plugin indent on")
+vim.cmd.filetype("plugin indent on")
 
-vim.cmd("set list") -- visible whitespace
-vim.cmd("set lcs+=space:·")
-vim.cmd("set switchbuf+=newtab")
-vim.cmd("syntax on")
-vim.cmd("set t_ut=")
-
--- TODO what does this do?
---vim.cmd("set noruler")
+vim.o.list = true
+vim.o.listchars = vim.o.listchars .. ",space:·"
+vim.o.switchbuf = vim.o.switchbuf .. ",newtab"
+vim.o.syntax = "on"
 
 vim.api.nvim_create_autocmd("TermOpen", {
 	command = [[ startinsert ]],
@@ -126,7 +120,7 @@ vim.api.nvim_create_user_command("CopyPath", function()
 	vim.fn.setreg("+", file)
 end, { desc = "Copy current file path to system clipboard" })
 
-vim.cmd("packloadall")
+vim.cmd.packloadall()
 
 require("autotabline").setup()
 require("colors")
@@ -143,7 +137,7 @@ require("statusline")
 require("treesitter")
 require("undo")
 
-function show_commit()
+function _G.show_commit()
 	local hash = vim.fn.argv(0)
 	local orig_buf = vim.api.nvim_get_current_buf()
 	require("util").git_show_in_new_buf(hash)

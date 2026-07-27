@@ -42,6 +42,7 @@ packages=(
 	fzf
 	kconfig # provides kwriteconfig6
 	qrencode
+	patchelf
 
 	# Identity and passwords.
 	kwallet

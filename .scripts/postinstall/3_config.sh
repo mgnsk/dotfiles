@@ -149,14 +149,6 @@ if ! sudo grep -q "$line" /etc/sudoers; then
 fi
 systemctl --user enable psd.service
 
-# Disable automatic coredumps.
-sudo mkdir -p /etc/systemd/coredump.conf.d
-cat <<-'EOF' | sudo tee /etc/systemd/coredump.conf.d/custom.conf >/dev/null
-	[Coredump]
-	Storage=none
-	ProcessSizeMax=0
-EOF
-
 # Enable printing support.
 sudo systemctl enable cups.socket
 sudo systemctl enable avahi-daemon

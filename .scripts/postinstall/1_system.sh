@@ -74,7 +74,6 @@ packages=(
 	noto-fonts-cjk
 	noto-fonts-emoji
 	noto-fonts-extra
-	cantarell-fonts
 	otf-font-awesome
 	kitty
 	alacritty

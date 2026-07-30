@@ -7,13 +7,13 @@
 function pre {
 	if command -v gsettings &>/dev/null; then
 		gsettings set "org.gnome.desktop.interface" \
-			gtk-theme 'Adwaita'
+			gtk-theme 'Adwaita Sans'
 
 		gsettings set "org.gnome.desktop.interface" \
-			icon-theme 'Adwaita'
+			icon-theme 'Adwaita Sans'
 
 		gsettings set "org.gnome.desktop.interface" \
-			font-name 'Cantarell 11'
+			font-name 'Adwaita Sans'
 
 		gsettings set "org.gnome.desktop.interface" \
 			monospace-font-name 'Monospace 11'

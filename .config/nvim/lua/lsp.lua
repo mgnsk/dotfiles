@@ -102,7 +102,6 @@ vim.lsp.enable({
 	"css",
 	"bash",
 	"phpactor",
-	"rust_analyzer",
 	"jsonnet_ls",
 	"buf_ls",
 	"nil_ls",

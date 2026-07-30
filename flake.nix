@@ -198,7 +198,6 @@
           proto
           python
           regex
-          rust
           scss
           sql
           ssh_config
@@ -304,13 +303,6 @@
         gopls
         revive
         ginkgo
-
-        # Rust.
-        cargo
-        clippy
-        rust-analyzer
-        rustc
-        rustfmt
 
         # Lua.
         lua-language-server

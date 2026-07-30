@@ -61,6 +61,7 @@ fzf \
 	--ansi \
 	--query '' \
 	--accept-nth=1 \
+	--track \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
 	--bind "shift-up:preview-top,shift-down:preview-bottom" \

@@ -26,6 +26,7 @@ args=(
 	--ro-bind "/etc" "/etc"
 	--ro-bind "/nix" "/nix"
 
+	--bind "$HOME/go" "$HOME/go"
 	--bind "$PWD" "$PWD"
 
 	copilot

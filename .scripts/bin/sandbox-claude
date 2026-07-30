@@ -34,9 +34,10 @@ args=(
 	--ro-bind "/etc" "/etc"
 	--ro-bind "/nix" "/nix"
 
-	--bind "$PWD" "$PWD"
 	--bind "$HOME/.claude" "$HOME/.claude"
 	--bind "$HOME/.claude.json" "$HOME/.claude.json"
+	--bind "$HOME/go" "$HOME/go"
+	--bind "$PWD" "$PWD"
 )
 
 # Detect current project root.
@@ -75,7 +76,6 @@ function add_volume() {
 add_volume "$HOME/.cache"
 add_volume "$HOME/.config/Code"
 add_volume "$HOME/.local"
-add_volume "$HOME/go"
 
 args+=(
 	bash

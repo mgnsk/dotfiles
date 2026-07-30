@@ -28,6 +28,7 @@ args=(
 	--ro-bind "/etc" "/etc"
 	--ro-bind "/nix" "/nix"
 
+	--bind "$HOME/go" "$HOME/go"
 	--bind "$PWD" "$PWD"
 )
 
@@ -67,7 +68,6 @@ function add_volume() {
 add_volume "$HOME/.cache"
 add_volume "$HOME/.config/Code"
 add_volume "$HOME/.local"
-add_volume "$HOME/go"
 
 args+=(
 	bash

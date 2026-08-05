@@ -137,6 +137,18 @@ require("statusline")
 require("treesitter")
 require("undo")
 
+-- Open all folds when viewing diffs (e.g., mergetool / git diffs)
+vim.api.nvim_create_autocmd({"BufWinEnter", "BufReadPost", "VimEnter", "FileType"}, {
+	callback = function()
+		if vim.wo.diff then
+			-- open all folds
+			vim.cmd("normal! zR")
+			-- ensure foldlevel is high so folds stay open
+			vim.wo.foldlevel = 99
+		end
+	end,
+})
+
 function _G.show_commit()
 	local hash = vim.fn.argv(0)
 	local orig_buf = vim.api.nvim_get_current_buf()

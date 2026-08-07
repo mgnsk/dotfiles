@@ -8,6 +8,6 @@
 
 set -e
 
-repo="$(git view-repo)"
+repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
 
 xdg-open "https://github.com/${repo}/commit/$1"

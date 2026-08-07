@@ -217,7 +217,8 @@ args=(
 )
 
 if [ "$target" == "prs" ] || [ "$target" == "issues" ]; then
-	repo="$(git view-repo)"
+	repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+
 	# Note: important to use double-quotes throughout, otherwise {q} will be split.
 	export FZF_DEFAULT_COMMAND="bash -c \"fzf-header $target; gh-list $repo {q} 2>&1\""
 

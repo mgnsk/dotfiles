@@ -14,9 +14,8 @@ export main
 
 function branch-search {
 	git branch -v --sort=-committerdate |
-		grep -v "^\*" |            # Without current branch.
-		sed 's/^[[:space:]]*//g' | # Trim whitespace prefix.
-		awk '{print $1}'           # Print only branch name.
+		grep -v "^\*" |          # Without current branch.
+		sed 's/^[[:space:]]*//g' # Trim whitespace prefix.
 
 	# Note: simpler version but we want to skip current branch (with asterisk).
 	# git branch --format="%(refname:short)" --sort=-committerdate
@@ -62,6 +61,7 @@ fzf \
 	--query '' \
 	--accept-nth=1 \
 	--track \
+	--id-nth=1 \
 	--bind "change:reload:sleep 0.2; $FZF_DEFAULT_COMMAND || true" \
 	--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
 	--bind "shift-up:preview-top,shift-down:preview-bottom" \

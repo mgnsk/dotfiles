@@ -407,14 +407,7 @@
         stdenv.cc.cc.lib
         libdisplay-info
 
-        # Reaper.
-        pipewire.jack
-        reaper
-        reaper-reapack-extension
-        raysession
-
-        # General programs.
-        fluidsynth
+        tmux
       ];
 
       winePkgs = with winepkgs; [

@@ -23,6 +23,7 @@ packages=(
 	vulkan-tools
 	fwupd
 	inetutils # provides hostname
+	arch-audit
 
 	# Bluetooth.
 	bluez
@@ -138,6 +139,12 @@ packages=(
 	# iOS.
 	libimobiledevice
 	usbmuxd
+
+	# Audio.
+	reaper
+	reapack
+	qjackctl
+	fluidsynth
 )
 
 if lscpu | grep -q Intel; then

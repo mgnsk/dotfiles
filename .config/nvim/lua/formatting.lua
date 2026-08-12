@@ -39,10 +39,22 @@ end, {
 
 vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*",
-	command = [[%s/\s\+$//e]],
+	callback = function()
+		if vim.bo.filetype == "diff" then
+			return
+		end
+
+		vim.cmd([[%s/\s\+$//e]])
+	end,
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*",
-	command = [[%s/\n\+\%$//e]],
+	callback = function()
+		if vim.bo.filetype == "diff" then
+			return
+		end
+
+		vim.cmd([[%s/\n\+\%$//e]])
+	end,
 })

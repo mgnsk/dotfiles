@@ -268,7 +268,6 @@
         gojq
         hadolint
         helm-ls
-        iotop
         jq
         jsonnet-language-server
         just

@@ -138,7 +138,7 @@ require("treesitter")
 require("undo")
 
 -- Open all folds when viewing diffs (e.g., mergetool / git diffs)
-vim.api.nvim_create_autocmd({"BufWinEnter", "BufReadPost", "VimEnter", "FileType"}, {
+vim.api.nvim_create_autocmd({ "BufWinEnter", "BufReadPost", "VimEnter", "FileType" }, {
 	callback = function()
 		if vim.wo.diff then
 			-- open all folds
@@ -148,10 +148,3 @@ vim.api.nvim_create_autocmd({"BufWinEnter", "BufReadPost", "VimEnter", "FileType
 		end
 	end,
 })
-
-function _G.show_commit()
-	local hash = vim.fn.argv(0)
-	local orig_buf = vim.api.nvim_get_current_buf()
-	require("util").git_show_in_new_buf(hash)
-	vim.api.nvim_buf_delete(orig_buf, { force = true })
-end

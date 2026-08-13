@@ -120,6 +120,49 @@ function git-view {
 
 export -f git-view
 
+function browse-commit-files {
+	set -euo pipefail
+
+	commit="$1"
+
+	if [ "$commit" == "" ]; then
+		echo "usage: browse-commit-files {commit}"
+		exit 1
+	fi
+
+	git diff-tree --no-commit-id --name-status -r "$commit"
+}
+
+export -f browse-commit-files
+
+function show-file-diff {
+	set -euo pipefail
+
+	commit="$1"
+	filepath="$2"
+
+	if [ "$commit" == "" ] || [ "$filepath" == "" ]; then
+		echo "usage: show-file-diff {commit} {filepath}"
+		exit 1
+	fi
+
+	git show --color --format= "$commit" -- "$filepath" |
+		diff-highlight
+}
+
+export -f show-file-diff
+
+function commit-files-header {
+	header=""
+	header+="<enter copy filepath>\n"
+	header+="<ctrl-o diff>\n"
+	header+="<esc back>"
+
+	echo -e "${header}"
+}
+
+export -f commit-files-header
+
 function fzf-header {
 	gitflags=$(cat "$tmpdir/git_flags")
 	gitmode=""
@@ -139,9 +182,9 @@ function fzf-header {
 
 	header=""
 	header+="<enter copy commit sha>\n"
+	header+="<ctrl-e browse files>\n"
 	header+="<ctrl-l web>\n"
 	header+="<ctrl-o diff>\n"
-	header+="<ctrl-v nvim>\n"
 	header+="<ctrl-f search [current: $gitmode]>\n"
 	header+="<ctrl-p pinpoint [current: $grepmode]>"
 
@@ -151,7 +194,32 @@ function fzf-header {
 export -f fzf-header
 
 # Note: important to use double-quotes throughout, otherwise {q} will be split.
-export FZF_DEFAULT_COMMAND="bash -c \"fzf-header; git-search {q} 2>&1\""
+export FZF_DEFAULT_COMMAND="fzf-header; git-search {q} 2>&1"
+
+function browse_commit_files {
+	set -euo pipefail
+
+	commit="$1"
+
+	fzf \
+		--ansi \
+		--header-lines="$(commit-files-header | wc -l)" \
+		--bind 'enter:execute(echo {2..} | pbcopy)' \
+		--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
+		--bind "shift-up:preview-top,shift-down:preview-bottom" \
+		--bind "ctrl-o:execute(show-file-diff $commit {2..})" \
+		--bind "esc:abort" \
+		--preview "show-file-diff $commit {2..}" \
+		--preview-window=right:60%:wrap \
+		--style=minimal \
+		--prompt "files> " \
+		< <(
+			commit-files-header
+			browse-commit-files "$commit"
+		)
+}
+
+export -f browse_commit_files
 
 fzf \
 	--ansi \
@@ -162,12 +230,13 @@ fzf \
 	--bind "shift-up:preview-top,shift-down:preview-bottom" \
 	--header-lines="$(fzf-header | wc -l)" \
 	--bind 'enter:execute(echo {1} | pbcopy)' \
+	--bind "ctrl-e:execute(browse_commit_files {1})" \
 	--bind "ctrl-l:execute-silent(git browse {1})" \
-	--bind "ctrl-o:execute(bash -c 'git show --color {1} | diff-highlight | less -R')" \
-	--bind "ctrl-v:execute(bash -c 'nvim -c \"lua show_commit()\" {1}')" \
-	--bind "ctrl-f:execute-silent(bash -c 'toggle-git-mode')+reload($FZF_DEFAULT_COMMAND)" \
-	--bind "ctrl-p:execute-silent(bash -c 'toggle-grep-passthrough')+reload($FZF_DEFAULT_COMMAND)" \
-	--preview 'bash -c "git-view {1} {q}"' \
+	--bind "ctrl-o:execute(git show --color {1} | diff-highlight | less -R)" \
+	--bind "ctrl-v:execute(nvim -c 'lua show_commit()' {1})" \
+	--bind "ctrl-f:execute-silent(toggle-git-mode)+reload($FZF_DEFAULT_COMMAND)" \
+	--bind "ctrl-p:execute-silent(toggle-grep-passthrough)+reload($FZF_DEFAULT_COMMAND)" \
+	--preview 'git-view {1} {q}' \
 	--preview-window=right:50%:wrap \
 	--style=minimal \
 	--prompt "$target> "

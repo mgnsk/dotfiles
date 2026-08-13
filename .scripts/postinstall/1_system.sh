@@ -23,7 +23,6 @@ packages=(
 	vulkan-tools
 	fwupd
 	inetutils # provides hostname
-	arch-audit
 
 	# Bluetooth.
 	bluez
@@ -44,6 +43,9 @@ packages=(
 	kconfig # provides kwriteconfig6
 	qrencode
 	patchelf
+	iotop
+	powertop
+	arch-audit
 
 	# Identity and passwords.
 	kwallet

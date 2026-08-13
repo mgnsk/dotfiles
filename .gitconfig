@@ -7,7 +7,6 @@
 
 	logs = !bash ~/.scripts/git/git-fzf.sh log
 	reflogs = !bash ~/.scripts/git/git-fzf.sh reflog
-	browse = !bash ~/.scripts/git/browse-commit.sh
 	msn = !bash ~/.scripts/git/mergesquashn.sh
 	snag = !bash ~/.scripts/git/snag.sh
 	squashall = !bash ~/.scripts/git/squashall.sh

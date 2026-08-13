@@ -221,6 +221,12 @@ function browse_commit_files {
 
 export -f browse_commit_files
 
+function gh_browse {
+	gh browse "$(git rev-parse "$1")"
+}
+
+export -f gh_browse
+
 fzf \
 	--ansi \
 	--phony \
@@ -231,7 +237,7 @@ fzf \
 	--header-lines="$(fzf-header | wc -l)" \
 	--bind 'enter:execute(echo {1} | pbcopy)' \
 	--bind "ctrl-e:execute(browse_commit_files {1})" \
-	--bind "ctrl-l:execute-silent(git browse {1})" \
+	--bind "ctrl-l:execute-silent(gh_browse {1})" \
 	--bind "ctrl-o:execute(git show --color {1} | diff-highlight | less -R)" \
 	--bind "ctrl-v:execute(nvim -c 'lua show_commit()' {1})" \
 	--bind "ctrl-f:execute-silent(toggle-git-mode)+reload($FZF_DEFAULT_COMMAND)" \

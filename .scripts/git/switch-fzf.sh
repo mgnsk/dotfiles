@@ -54,7 +54,7 @@ function fzf-header {
 export -f fzf-header
 
 # Note: important to use double-quotes throughout, otherwise {q} will be split.
-export FZF_DEFAULT_COMMAND="bash -c \"fzf-header; branch-search {q} 2>&1\""
+export FZF_DEFAULT_COMMAND="fzf-header; branch-search {q} 2>&1"
 
 fzf \
 	--ansi \
@@ -67,9 +67,9 @@ fzf \
 	--bind "shift-up:preview-top,shift-down:preview-bottom" \
 	--header-lines="$(fzf-header | wc -l)" \
 	--bind 'enter:execute(git switch {1})+abort' \
-	--bind "ctrl-o:execute(bash -c 'branch-view {1} | less -R')" \
+	--bind "ctrl-o:execute(branch-view {1} | less -R)" \
 	--bind "delete:execute-silent(git branch -D {1})+reload($FZF_DEFAULT_COMMAND)" \
-	--preview 'bash -c "branch-view {1}"' \
+	--preview 'branch-view {1}' \
 	--preview-window=right:50%:wrap \
 	--style=minimal \
 	--prompt "branch> "

@@ -87,10 +87,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
-local capabilities = require("blink.cmp").get_lsp_capabilities()
-
 vim.lsp.config("*", {
-	capabilities = capabilities,
+	capabilities = require("blink.cmp").get_lsp_capabilities(),
 	root_markers = { ".git" },
 })
 
@@ -98,9 +96,8 @@ vim.lsp.enable({
 	"luals",
 	"gopls",
 	"tsgo",
-	"html",
-	"css",
-	"bash",
+	"biome", -- TODO: use as formatter
+	"bashls",
 	"phpactor",
 	"jsonnet_ls",
 	"buf_ls",

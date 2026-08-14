@@ -17,9 +17,6 @@ end
 
 --- @type vim.lsp.Config
 return {
-	cmd = { "gopls" },
-	filetypes = { "go", "gotmpl" },
-	root_markers = { "go.work", "go.mod" },
 	on_attach = function(client, bufnr)
 		vim.api.nvim_create_autocmd("BufWritePre", {
 			buffer = bufnr,
@@ -32,17 +29,4 @@ return {
 			end,
 		})
 	end,
-	settings = {
-		gopls = {
-			hints = {
-				assignVariableTypes = true,
-				compositeLiteralFields = true,
-				compositeLiteralTypes = true,
-				constantValues = true,
-				functionTypeParameters = true,
-				parameterNames = false,
-				rangeVariableTypes = true,
-			},
-		},
-	},
 }

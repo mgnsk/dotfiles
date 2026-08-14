@@ -110,6 +110,7 @@
           anthropic.claude-code
           #bufbuild.vscode-buf
           dbaeumer.vscode-eslint
+          biomejs.biome
           esbenp.prettier-vscode
           golang.go
           hashicorp.hcl
@@ -140,6 +141,7 @@
           nvim-ansible
           nvim-colorizer-lua
           nvim-lint
+          nvim-lspconfig
           oil-nvim
           promise-async
           vim-fugitive
@@ -322,6 +324,7 @@
         uv
 
         # Web.
+        biome
         eslint
         html-tidy
         markdownlint-cli
@@ -331,7 +334,6 @@
         prettier
         stylelint
         typescript-go
-        vscode-langservers-extracted
         yaml-language-server
         yamllint
 

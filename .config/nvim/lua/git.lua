@@ -24,3 +24,15 @@ end, { desc = "Goto next git hunk" })
 vim.keymap.set("n", "gp", function()
 	require("gitsigns").nav_hunk("prev")
 end, { desc = "Goto prev git hunk" })
+
+-- Open all folds when viewing diffs (e.g., mergetool / git diffs)
+vim.api.nvim_create_autocmd({ "BufWinEnter", "BufReadPost", "VimEnter", "FileType" }, {
+	callback = function()
+		if vim.wo.diff then
+			-- open all folds
+			vim.cmd("normal! zR")
+			-- ensure foldlevel is high so folds stay open
+			vim.wo.foldlevel = 99
+		end
+	end,
+})

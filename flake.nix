@@ -325,14 +325,11 @@
 
         # Web.
         biome
-        eslint
-        html-tidy
         markdownlint-cli
         nodejs
         npm-check-updates
         pnpm
         prettier
-        stylelint
         typescript-go
         yaml-language-server
         yamllint

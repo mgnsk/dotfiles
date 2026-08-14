@@ -15,6 +15,42 @@ end
 --- Configure formatter for the current buffer's filetype to run on BufWritePre.
 ---
 ---@param formatters string[]
+local function configureFormatBeforeSave(formatters)
+	if os.getenv("NVIM_DIFF") then
+		return
+	end
+
+	require("conform").formatters_by_ft[vim.bo.filetype] = formatters
+end
+
+M.configureFormatBeforeSave = configureFormatBeforeSave
+
+--- Configure biome LSP or prettier formatter.
+function M.configureBiomeOrPrettierFormatBeforeSave()
+	local function configure_format()
+		local has_biome = false
+
+		for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+			if client.name == "biome" then
+				has_biome = true
+				break
+			end
+		end
+
+		if has_biome then
+			configureFormatBeforeSave({ lsp_format = "fallback" })
+		else
+			configureFormatBeforeSave({ "prettier" })
+		end
+	end
+
+	configure_format()
+	vim.api.nvim_create_autocmd("LspAttach", { buffer = 0, callback = configure_format })
+end
+
+--- Configure formatter for the current buffer's filetype to run on BufWritePre.
+---
+---@param formatters string[]
 function M.configureFormatBeforeSave(formatters)
 	if os.getenv("NVIM_DIFF") then
 		return

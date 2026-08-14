@@ -15,6 +15,7 @@ args=(
 	--dev /dev
 	--proc /proc
 	--tmpfs /tmp
+	--tmpfs "$XDG_RUNTIME_DIR"
 	--cap-drop ALL
 
 	--ro-bind "/bin" "/bin"
@@ -62,7 +63,7 @@ function add_volume() {
 
 # Create per-project persistent volumes.
 add_volume "$HOME/.cache"
-add_volume "$HOME/.local"
+add_volume "$HOME/.local/state"
 
 args+=(
 	bash

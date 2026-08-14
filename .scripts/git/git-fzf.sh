@@ -207,7 +207,7 @@ function browse_commit_files {
 		--bind 'enter:execute(echo {2..} | pbcopy)' \
 		--bind "ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down" \
 		--bind "shift-up:preview-top,shift-down:preview-bottom" \
-		--bind "ctrl-o:execute(show-file-diff $commit {2..})" \
+		--bind "ctrl-o:execute(show-file-diff $commit {2..} | less -R)" \
 		--bind "esc:abort" \
 		--preview "show-file-diff $commit {2..}" \
 		--preview-window=right:60%:wrap \

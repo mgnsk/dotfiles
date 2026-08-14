@@ -1,3 +1,6 @@
+-- Enable lua byte-compilation cache.
+vim.loader.enable()
+
 vim.o.termguicolors = true
 vim.o.foldenable = false
 vim.o.showcmd = false
@@ -44,7 +47,6 @@ vim.g.clipboard = {
 		["*"] = require("vim.ui.clipboard.osc52").paste("*"),
 	},
 }
-
 
 vim.keymap.set("v", "Y", [["+y<CR><Up>]], { desc = "Big yank (system clipboard)" })
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape from insert mode" })

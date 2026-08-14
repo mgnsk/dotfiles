@@ -1,0 +1,8 @@
+include ./config.common
+
+# This instance only ever has a single virtual output, created by wlroots'
+# headless backend (see start-vnc.sh). Give it a sensible resolution.
+output HEADLESS-1 resolution 1920x1080
+
+# AUTOSTART
+exec bash $HOME/.scripts/sway-startup-vnc.sh

@@ -17,10 +17,6 @@ args=(
 	--tmpfs /tmp
 	--cap-drop ALL
 
-	# Wayland.
-	--setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
-	--ro-bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
-
 	--ro-bind "/bin" "/bin"
 	--ro-bind "/usr" "/usr"
 	--ro-bind "/lib" "/lib"
@@ -66,7 +62,6 @@ function add_volume() {
 
 # Create per-project persistent volumes.
 add_volume "$HOME/.cache"
-add_volume "$HOME/.config/Code"
 add_volume "$HOME/.local"
 
 args+=(

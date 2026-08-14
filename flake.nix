@@ -113,6 +113,7 @@
           nvim-plugins-tree-sitter-balafon.packages.x86_64-linux.nvimParser
         ])
         ++ (with devpkgs.vimPlugins; [
+          SchemaStore-nvim
           blink-cmp
           conform-nvim
           fzf-lua

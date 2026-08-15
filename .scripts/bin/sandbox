@@ -54,7 +54,7 @@ function add_volume() {
 	volume_name="${project//\//_}-$(echo -n "$project" | sha256sum | cut -c1-8)"
 
 	host_path="$HOME/.ide/$volume_name/$container_path"
-	
+
 	# Detect if path is a directory (ends with /) or file
 	if [[ "$container_path" == */ ]]; then
 		mkdir -p "$host_path"
@@ -70,10 +70,11 @@ function add_volume() {
 
 # Create per-project persistent volumes.
 add_volume "$HOME/.cache/"
+add_volume "$HOME/.claude.json"
 add_volume "$HOME/.claude/"
 add_volume "$HOME/.config/gh/"
+add_volume "$HOME/.gemini/"
 add_volume "$HOME/.local/state/"
-add_volume "$HOME/.claude.json"
 
 args+=(
 	bash

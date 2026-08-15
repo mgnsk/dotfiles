@@ -224,7 +224,6 @@
         bat
         buf
         caddy
-        claude-code
         coreutils
         cspell
         cuetools
@@ -241,7 +240,6 @@
         gh
         gh-tpl
         git
-        github-copilot-cli
         glibcLocalesUtf8
         glow
         gnugrep
@@ -271,6 +269,11 @@
         vivid
         wget
         which
+
+        # AI.
+        antigravity-cli
+        claude-code
+        github-copilot-cli
 
         # Bash.
         bash-language-server

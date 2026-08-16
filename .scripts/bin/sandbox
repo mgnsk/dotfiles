@@ -24,11 +24,14 @@ args=(
 	--ro-bind "/lib64" "/lib64"
 	--ro-bind "/etc" "/etc"
 	--ro-bind "/nix" "/nix"
+	--ro-bind "/opt" "/opt"
 
+	--ro-bind "$HOME/.1password" "$HOME/.1password"
 	--ro-bind "$HOME/.gitconfig_local" "$HOME/.gitconfig_local"
 
 	--bind "$HOME/go" "$HOME/go"
 	--bind "$PWD" "$PWD"
+
 )
 
 # Detect current project root.

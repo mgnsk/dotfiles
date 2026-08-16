@@ -25,6 +25,8 @@ args=(
 	--ro-bind "/etc" "/etc"
 	--ro-bind "/nix" "/nix"
 
+	--ro-bind "$HOME/.gitconfig_local" "$HOME/.gitconfig_local"
+
 	--bind "$HOME/go" "$HOME/go"
 	--bind "$PWD" "$PWD"
 )

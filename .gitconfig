@@ -34,6 +34,7 @@
 	format = ssh
 [gpg "ssh"]
 	program = "/opt/1Password/op-ssh-sign"
+	allowedSignersFile = ~/.config/git/allowed_signers
 [include]
 	path = ~/.gitconfig_local
 [pull]

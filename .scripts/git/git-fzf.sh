@@ -113,7 +113,7 @@ function git-view {
 
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
-	git show --color -i --perl-regexp $gitflags "$query" "$commit" |
+	git show --show-signature --color -i --perl-regexp $gitflags "$query" "$commit" |
 		diff-highlight |
 		highlight "$query"
 }
@@ -238,7 +238,7 @@ fzf \
 	--bind 'enter:execute(echo {1} | pbcopy)' \
 	--bind "ctrl-e:execute(browse_commit_files {1})" \
 	--bind "ctrl-l:execute-silent(gh_browse {1})" \
-	--bind "ctrl-o:execute(git show --color {1} | diff-highlight | less -R)" \
+	--bind "ctrl-o:execute(git show --show-signature --color {1} | diff-highlight | less -R)" \
 	--bind "ctrl-v:execute(nvim -c 'lua show_commit()' {1})" \
 	--bind "ctrl-f:execute-silent(toggle-git-mode)+reload($FZF_DEFAULT_COMMAND)" \
 	--bind "ctrl-p:execute-silent(toggle-grep-passthrough)+reload($FZF_DEFAULT_COMMAND)" \

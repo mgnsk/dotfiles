@@ -22,8 +22,48 @@ function cleanup {
 
 trap cleanup EXIT
 
+# Generic key-value state store: each key is a file under $tmpdir, so
+# toggle bindings and reload/preview callbacks - each a separate process -
+# can share state across the whole fzf session.
+#
+# Usage:
+#   fzf-state <key>          # get: print the current value
+#   fzf-state <key> <val>    # set: write <val> for <key>
+#   fzf-state <key> <a> <b>  # toggle: set to <b> if currently <a>,
+#                            # otherwise set to <a> - used directly in
+#                            # --bind so no per-toggle function is needed
+function fzf-state {
+	key="$1"
+	a="${2:-}"
+	b="${3:-}"
+
+	if [ -z "$a" ]; then
+		cat "$tmpdir/$key" 2>/dev/null
+	elif [ -z "$b" ]; then
+		echo "$a" >"$tmpdir/$key"
+	else
+		current=$(cat "$tmpdir/$key" 2>/dev/null)
+		newval="$a"
+		[ "$current" == "$a" ] && newval="$b"
+		echo "$newval" >"$tmpdir/$key"
+	fi
+}
+
+export -f fzf-state
+
+# Git search mode - default message mode.
+# The --grep flag searches from commit messages ("message" state).
+# The -G flag searches from diff content ("diff" state).
+fzf-state git message
+
+# Grep highlight mode - default passthrough mode.
+# When passthrough is enabled, append "|$" to query - grep highlights the matches but shows all lines.
+# When passthrough is disabled, grep only shows the matched lines.
+fzf-state highlight passthrough
+
 function highlight {
-	grepsuffix=$(cat "$tmpdir/grep_suffix")
+	grepsuffix=""
+	[ "$(fzf-state highlight)" == "passthrough" ] && grepsuffix="|$"
 
 	# Bold black on yellow background.
 	export GREP_COLORS='ms=1;30;103'
@@ -32,37 +72,6 @@ function highlight {
 }
 
 export -f highlight
-
-# Grep mode - default passthrough mode.
-echo "|$" >"$tmpdir/grep_suffix"
-
-# Toggle the grep passthrough mode.
-# When passthrough is enabled, append "|$" to query - grep highlights the matches but shows all lines.
-# When passthrough is disabled, grep only shows the matched lines.
-function toggle-grep-passthrough {
-	if grep -q "|" "$tmpdir/grep_suffix"; then
-		echo "" >"$tmpdir/grep_suffix"
-	else
-		echo "|$" >"$tmpdir/grep_suffix"
-	fi
-}
-
-export -f toggle-grep-passthrough
-
-# Git flags.
-# The default --grep flag searches from commit messages.
-# The -G flag searches from diff content.
-echo "--grep" >"$tmpdir/git_flags"
-
-function toggle-git-mode {
-	if grep -q "grep" "$tmpdir/git_flags"; then
-		echo "-G" >"$tmpdir/git_flags"
-	else
-		echo "--grep" >"$tmpdir/git_flags"
-	fi
-}
-
-export -f toggle-git-mode
 
 function git-search {
 	set -euo pipefail
@@ -74,7 +83,8 @@ function git-search {
 		query=""
 	fi
 
-	gitflags=$(cat "$tmpdir/git_flags")
+	gitflags="-G"
+	[ "$(fzf-state git)" == "message" ] && gitflags="--grep"
 
 	if [ "$target" == "log" ]; then
 		# Note: we need gitflags unquoted:
@@ -109,7 +119,8 @@ function git-view {
 		query=""
 	fi
 
-	gitflags=$(cat "$tmpdir/git_flags")
+	gitflags="-G"
+	[ "$(fzf-state git)" == "message" ] && gitflags="--grep"
 
 	# Note: we need gitflags unquoted:
 	# shellcheck disable=SC2086
@@ -164,21 +175,8 @@ function commit-files-header {
 export -f commit-files-header
 
 function fzf-header {
-	gitflags=$(cat "$tmpdir/git_flags")
-	gitmode=""
-	if [ "$gitflags" == "--grep" ]; then
-		gitmode="message"
-	elif [ "$gitflags" == "-G" ]; then
-		gitmode="diff"
-	fi
-
-	grepsuffix=$(cat "$tmpdir/grep_suffix")
-	grepmode=""
-	if [ "$grepsuffix" == "" ]; then
-		grepmode="grep"
-	else
-		grepmode="passthrough"
-	fi
+	gitmode=$(fzf-state git)
+	grepmode=$(fzf-state highlight)
 
 	header=""
 	header+="<enter copy commit sha>\n"
@@ -240,8 +238,8 @@ fzf \
 	--bind "ctrl-l:execute-silent(gh_browse {1})" \
 	--bind "ctrl-o:execute(git show --show-signature --color {1} | diff-highlight | less -R)" \
 	--bind "ctrl-v:execute(nvim -c 'lua show_commit()' {1})" \
-	--bind "ctrl-f:execute-silent(toggle-git-mode)+reload($FZF_DEFAULT_COMMAND)" \
-	--bind "ctrl-p:execute-silent(toggle-grep-passthrough)+reload($FZF_DEFAULT_COMMAND)" \
+	--bind "ctrl-f:execute-silent(fzf-state git message diff)+reload($FZF_DEFAULT_COMMAND)" \
+	--bind "ctrl-p:execute-silent(fzf-state highlight passthrough grep)+reload($FZF_DEFAULT_COMMAND)" \
 	--preview 'git-view {1} {q}' \
 	--preview-window=right:50%:wrap \
 	--style=minimal \

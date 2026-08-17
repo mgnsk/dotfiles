@@ -34,13 +34,10 @@ args=(
 
 )
 
-# Detect current project root.
+# Detect current git project root.
+# Falls back to HOME (the dotfiles repo) when
+# outside of a specific repo.
 project=$(git rev-parse --show-toplevel)
-
-# Fall back to PWD if no repo found.
-if [[ "$project" == "$HOME" ]]; then
-	project="$PWD"
-fi
 
 # Read bind all files tracked by dotfiles git.
 for f in $(git -C "$HOME" ls-tree -r master --name-only); do

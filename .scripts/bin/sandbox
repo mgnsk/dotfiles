@@ -6,6 +6,7 @@ args=(
 	--unshare-all
 	--share-net
 	--die-with-parent
+	--cap-drop ALL
 
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 
@@ -21,7 +22,6 @@ args=(
 	--proc /proc
 	--tmpfs /tmp
 	--tmpfs "$XDG_RUNTIME_DIR"
-	--cap-drop ALL
 
 	--ro-bind "/bin" "/bin"
 	--ro-bind "/usr" "/usr"
@@ -91,6 +91,7 @@ add_volume "$HOME/.claude/"
 add_volume "$HOME/.config/gh/"
 add_volume "$HOME/.gemini/"
 add_volume "$HOME/.local/state/"
+add_volume "$HOME/.npm/"
 
 args+=(
 	bash

@@ -52,7 +52,7 @@ project=$(git rev-parse --show-toplevel)
 # (SSH auth, commit signing) is gated behind a tmux popup confirmation.
 agent_proxy_dir=$(mktemp -d)
 agent_proxy_sock="$agent_proxy_dir/agent.sock"
-"$(dirname "$0")/ssh-agent-guard" "$HOME/.1password/agent.sock" "$agent_proxy_sock" "$project" &
+"$(dirname "$0")/ssh-agent-guard" "$HOME/.1password/agent.sock" "$agent_proxy_sock" &
 agent_proxy_pid=$!
 trap 'kill "$agent_proxy_pid" 2>/dev/null; rm -rf "$agent_proxy_dir"' EXIT
 

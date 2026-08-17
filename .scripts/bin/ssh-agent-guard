@@ -94,6 +94,21 @@ def cache_identities(payload):
         pass
 
 
+def peer_pid(sock):
+    """PID of the process on the other end of a connected AF_UNIX socket."""
+    creds = sock.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, struct.calcsize("3i"))
+    pid, _uid, _gid = struct.unpack("3i", creds)
+    return pid
+
+
+def peer_cwd(sock):
+    """Best-effort cwd of the process on the other end of sock, read from the host's /proc."""
+    try:
+        return os.readlink(f"/proc/{peer_pid(sock)}/cwd")
+    except OSError:
+        return "unknown"
+
+
 def clean(s, limit=200):
     """Strip non-printable chars (e.g. ANSI escapes) and truncate for safe display.
 
@@ -105,7 +120,7 @@ def clean(s, limit=200):
     return s if len(s) <= limit else s[:limit] + "…"
 
 
-def confirm_via_tmux(label, key_fp, key_comment):
+def confirm_via_tmux(cwd, key_comment):
     """Block on a tmux popup asking to approve a sign request.
 
     Returns False immediately, without showing a popup, if there's no
@@ -113,7 +128,7 @@ def confirm_via_tmux(label, key_fp, key_comment):
 
     All request-derived text is written to a file and merely `cat`, never
     interpolated into the popup's shell command string - that command runs
-    on the host outside the sandbox, so untrusted text (comment, label)
+    on the host outside the sandbox, so untrusted text (comment, cwd)
     must never be treated as shell syntax there.
     """
     if "TMUX" not in os.environ:
@@ -128,8 +143,7 @@ def confirm_via_tmux(label, key_fp, key_comment):
         info_fd, info_path = tempfile.mkstemp(prefix="ssh-agent-guard-info-")
         with os.fdopen(info_fd, "w", encoding="utf-8") as f:
             f.write("Allow SSH agent to sign?\n\n")
-            f.write(f"  sandbox:  {clean(label)}\n")
-            f.write(f"  key:      {key_fp}\n")
+            f.write(f"  cwd:      {clean(cwd)}\n")
             f.write(f"  comment:  {clean(key_comment or 'unknown')}\n")
 
         popup_cmd = (
@@ -161,7 +175,7 @@ def confirm_via_tmux(label, key_fp, key_comment):
             os.unlink(info_path)
 
 
-def handle_client(client, upstream_path, label):
+def handle_client(client, upstream_path):
     """Relay one client connection to the upstream agent, gating sign requests."""
     try:
         upstream = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -188,7 +202,7 @@ def handle_client(client, upstream_path, label):
                     key_fp = "unknown"
                 with IDENTITY_LOCK:
                     key_comment = IDENTITY_COMMENTS.get(key_fp)
-                if not confirm_via_tmux(label, key_fp, key_comment):
+                if not confirm_via_tmux(peer_cwd(client), key_comment):
                     write_frame(client, bytes([SSH_AGENT_FAILURE]))
                     continue
 
@@ -211,7 +225,6 @@ def main():
     """Listen on argv[2], proxying each connection to argv[1]."""
     upstream_path = sys.argv[1]
     listen_path = sys.argv[2]
-    label = sys.argv[3] if len(sys.argv) > 3 else "sandbox"
 
     if os.path.exists(listen_path):
         os.unlink(listen_path)
@@ -223,7 +236,7 @@ def main():
     while True:
         client, _ = server.accept()
         threading.Thread(
-            target=handle_client, args=(client, upstream_path, label), daemon=True
+            target=handle_client, args=(client, upstream_path), daemon=True
         ).start()
 
 

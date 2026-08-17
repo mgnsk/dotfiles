@@ -63,7 +63,10 @@ def read_uint32(buf, offset):
 def read_string(buf, offset):
     """Read a length-prefixed byte string from buf at offset. Returns (value, new_offset)."""
     length, offset = read_uint32(buf, offset)
-    return buf[offset:offset + length], offset + length
+    end = offset + length
+    if end > len(buf):
+        raise struct.error("string length exceeds buffer")
+    return buf[offset:end], end
 
 
 def fingerprint(key_blob):
@@ -117,24 +120,25 @@ def confirm_via_tmux(label, key_fp, key_comment):
         return False
 
     channel = f"ssh-agent-guard-{uuid.uuid4().hex}"
-    marker_fd, marker = tempfile.mkstemp(prefix="ssh-agent-guard-marker-")
-    os.close(marker_fd)
-
-    info_fd, info_path = tempfile.mkstemp(prefix="ssh-agent-guard-info-")
-    with os.fdopen(info_fd, "w", encoding="utf-8") as f:
-        f.write("Allow SSH agent to sign?\n\n")
-        f.write(f"  sandbox:  {clean(label)}\n")
-        f.write(f"  key:      {key_fp}\n")
-        f.write(f"  comment:  {clean(key_comment or 'unknown')}\n")
-
-    popup_cmd = (
-        f"cat {shlex.quote(info_path)}; "
-        f'read -p "[y/N] " a; '
-        f'if [[ "$a" == [yY] ]]; then echo yes > {shlex.quote(marker)}; fi; '
-        f"tmux wait-for -S {channel}"
-    )
-
+    marker = info_path = None
     try:
+        marker_fd, marker = tempfile.mkstemp(prefix="ssh-agent-guard-marker-")
+        os.close(marker_fd)
+
+        info_fd, info_path = tempfile.mkstemp(prefix="ssh-agent-guard-info-")
+        with os.fdopen(info_fd, "w", encoding="utf-8") as f:
+            f.write("Allow SSH agent to sign?\n\n")
+            f.write(f"  sandbox:  {clean(label)}\n")
+            f.write(f"  key:      {key_fp}\n")
+            f.write(f"  comment:  {clean(key_comment or 'unknown')}\n")
+
+        popup_cmd = (
+            f"cat {shlex.quote(info_path)}; "
+            f'read -p "[y/N] " a; '
+            f'if [[ "$a" == [yY] ]]; then echo yes > {shlex.quote(marker)}; fi; '
+            f"tmux wait-for -S {channel}"
+        )
+
         with subprocess.Popen(["tmux", "display-popup", "-E", "-w", "76", popup_cmd]) as popup:
 
             def watch_popup():
@@ -151,8 +155,10 @@ def confirm_via_tmux(label, key_fp, key_comment):
         with open(marker, encoding="utf-8") as f:
             return f.read().strip() == "yes"
     finally:
-        os.unlink(marker)
-        os.unlink(info_path)
+        if marker:
+            os.unlink(marker)
+        if info_path:
+            os.unlink(info_path)
 
 
 def handle_client(client, upstream_path, label):
@@ -169,6 +175,8 @@ def handle_client(client, upstream_path, label):
             payload = read_frame(client)
             if payload is None:
                 break
+            if not payload:
+                continue
 
             msg_type = payload[0]
 

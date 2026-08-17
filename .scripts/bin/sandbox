@@ -36,7 +36,6 @@ args=(
 
 	--bind "$HOME/go" "$HOME/go"
 	--bind "$PWD" "$PWD"
-
 )
 
 # Detect current git project root.
@@ -44,20 +43,25 @@ args=(
 # outside of a specific repo.
 project=$(git rev-parse --show-toplevel)
 
-# Read bind all files tracked by dotfiles git.
-for f in $(git -C "$HOME" ls-tree -r master --name-only); do
-	if [[ "$HOME/$f" == "$project"* ]]; then
-		# "$HOME/$f" is inside project, mount it readwrite.
+if [[ "$project" == "$HOME" ]]; then
+	args+=(
+		--bind "$HOME/.git" "$HOME/.git"
+		--setenv GIT_DISCOVERY_ACROSS_FILESYSTEM 1
+	)
+	# Read-write bind all files tracked by dotfiles git.
+	for f in $(git -C "$HOME" ls-tree -r master --name-only); do
 		args+=(
 			--bind "$HOME/$f" "$HOME/$f"
 		)
-	else
-		# "$HOME/$f" is outside of project, mount it readonly.
+	done
+else
+	# Read-only bind all files tracked by dotfiles git.
+	for f in $(git -C "$HOME" ls-tree -r master --name-only); do
 		args+=(
 			--ro-bind "$HOME/$f" "$HOME/$f"
 		)
-	fi
-done
+	done
+fi
 
 function add_volume() {
 	container_path="$1"

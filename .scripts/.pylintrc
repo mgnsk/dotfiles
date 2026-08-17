@@ -1,0 +1,5 @@
+[BASIC]
+# Scripts under bin/ are CLI executables without a .py extension, named
+# like the rest of that directory (hyphenated, e.g. ssh-agent-guard) -
+# not importable modules, so the default snake_case module-rgx doesn't apply.
+module-rgx=[a-z][a-z0-9_-]*$

@@ -35,7 +35,6 @@ args=(
 	--ro-bind /etc/passwd /etc/passwd
 	--ro-bind /etc/group /etc/group
 
-	--ro-bind "$HOME/.1password" "$HOME/.1password"
 	--ro-bind "$HOME/.gitconfig_local" "$HOME/.gitconfig_local"
 
 	--bind "$HOME/go" "$HOME/go"
@@ -46,6 +45,24 @@ args=(
 # Falls back to HOME (the dotfiles repo) when
 # outside of a specific repo.
 project=$(git rev-parse --show-toplevel)
+
+# Start the SSH agent confirmation proxy. Sandboxed processes only ever
+# see this proxy's socket, never the real one - every sign request
+# (SSH auth, commit signing) is gated behind a tmux popup confirmation.
+agent_proxy_dir=$(mktemp -d)
+agent_proxy_sock="$agent_proxy_dir/agent.sock"
+"$(dirname "$0")/ssh-agent-guard" "$HOME/.1password/agent.sock" "$agent_proxy_sock" "$project" &
+agent_proxy_pid=$!
+trap 'kill "$agent_proxy_pid" 2>/dev/null; rm -rf "$agent_proxy_dir"' EXIT
+
+for _ in $(seq 1 50); do
+	[[ -S "$agent_proxy_sock" ]] && break
+	sleep 0.1
+done
+
+args+=(
+	--bind "$agent_proxy_sock" "$HOME/.1password/agent.sock"
+)
 
 if [[ "$project" == "$HOME" ]]; then
 	args+=(

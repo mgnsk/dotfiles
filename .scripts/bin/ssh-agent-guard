@@ -1,0 +1,145 @@
+#!/bin/env python3
+"""SSH agent proxy that gates every sign request behind a tmux popup.
+
+Sits between a sandboxed client and the real SSH agent socket. Identity
+listing is forwarded untouched; sign requests (SSH auth, commit signing)
+only reach the real agent after the user approves a tmux popup prompt.
+"""
+
+import os
+import socket
+import struct
+import subprocess
+import sys
+import tempfile
+import threading
+import uuid
+
+SSH_AGENTC_REQUEST_IDENTITIES = 11
+SSH_AGENTC_SIGN_REQUEST = 13
+SSH_AGENT_FAILURE = 5
+
+
+def recv_exact(sock, n):
+    """Read exactly n bytes from sock, or None if it closes early."""
+    buf = b""
+    while len(buf) < n:
+        chunk = sock.recv(n - len(buf))
+        if not chunk:
+            return None
+        buf += chunk
+    return buf
+
+
+def read_frame(sock):
+    """Read one length-prefixed SSH agent protocol message, or None at EOF."""
+    hdr = recv_exact(sock, 4)
+    if hdr is None:
+        return None
+    (length,) = struct.unpack(">I", hdr)
+    payload = recv_exact(sock, length)
+    if payload is None:
+        return None
+    return payload
+
+
+def write_frame(sock, payload):
+    """Write one length-prefixed SSH agent protocol message."""
+    sock.sendall(struct.pack(">I", len(payload)) + payload)
+
+
+def confirm_via_tmux(label):
+    """Block on a tmux popup asking to approve a sign request.
+
+    Returns False immediately, without showing a popup, if there's no
+    tmux session to show it in or the popup fails to display.
+    """
+    if "TMUX" not in os.environ:
+        return False
+
+    channel = f"ssh-agent-guard-{uuid.uuid4().hex}"
+    marker_fd, marker = tempfile.mkstemp(prefix="ssh-agent-guard-")
+    os.close(marker_fd)
+
+    prompt = f"Allow SSH agent to sign ({label})? [y/N] "
+    popup_cmd = (
+        f'read -p "{prompt}" a; '
+        f'if [[ "$a" == [yY] ]]; then echo yes > {marker}; fi; '
+        f"tmux wait-for -S {channel}"
+    )
+
+    try:
+        with subprocess.Popen(["tmux", "display-popup", "-E", popup_cmd]) as popup:
+
+            def watch_popup():
+                # If display-popup fails to even launch (e.g. no attached
+                # tmux client), it exits non-zero without ever running
+                # popup_cmd, so the "wait-for -S" signal below would never
+                # fire. Signal it ourselves so we don't hang forever.
+                if popup.wait() != 0:
+                    subprocess.run(["tmux", "wait-for", "-S", channel], check=False)
+
+            threading.Thread(target=watch_popup, daemon=True).start()
+
+            subprocess.run(["tmux", "wait-for", channel], check=False)
+        with open(marker, encoding="utf-8") as f:
+            return f.read().strip() == "yes"
+    finally:
+        os.unlink(marker)
+
+
+def handle_client(client, upstream_path, label):
+    """Relay one client connection to the upstream agent, gating sign requests."""
+    try:
+        upstream = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        upstream.connect(upstream_path)
+    except OSError:
+        client.close()
+        return
+
+    try:
+        while True:
+            payload = read_frame(client)
+            if payload is None:
+                break
+
+            msg_type = payload[0]
+
+            if msg_type == SSH_AGENTC_SIGN_REQUEST and not confirm_via_tmux(label):
+                write_frame(client, bytes([SSH_AGENT_FAILURE]))
+                continue
+
+            write_frame(upstream, payload)
+            response = read_frame(upstream)
+            if response is None:
+                break
+            write_frame(client, response)
+    except OSError:
+        pass
+    finally:
+        client.close()
+        upstream.close()
+
+
+def main():
+    """Listen on argv[2], proxying each connection to argv[1]."""
+    upstream_path = sys.argv[1]
+    listen_path = sys.argv[2]
+    label = sys.argv[3] if len(sys.argv) > 3 else "sandbox"
+
+    if os.path.exists(listen_path):
+        os.unlink(listen_path)
+
+    server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    server.bind(listen_path)
+    server.listen(5)
+
+    while True:
+        client, _ = server.accept()
+        threading.Thread(
+            target=handle_client, args=(client, upstream_path, label), daemon=True
+        ).start()
+
+
+if __name__ == "__main__":
+    main()

@@ -6,7 +6,10 @@ listing is forwarded untouched; sign requests (SSH auth, commit signing)
 only reach the real agent after the user approves a tmux popup prompt.
 """
 
+import base64
+import hashlib
 import os
+import shlex
 import socket
 import struct
 import subprocess
@@ -16,8 +19,12 @@ import threading
 import uuid
 
 SSH_AGENTC_REQUEST_IDENTITIES = 11
+SSH_AGENT_IDENTITIES_ANSWER = 12
 SSH_AGENTC_SIGN_REQUEST = 13
 SSH_AGENT_FAILURE = 5
+
+IDENTITY_COMMENTS = {}
+IDENTITY_LOCK = threading.Lock()
 
 
 def recv_exact(sock, n):
@@ -48,28 +55,87 @@ def write_frame(sock, payload):
     sock.sendall(struct.pack(">I", len(payload)) + payload)
 
 
-def confirm_via_tmux(label):
+def read_uint32(buf, offset):
+    """Read a big-endian uint32 from buf at offset. Returns (value, new_offset)."""
+    return struct.unpack_from(">I", buf, offset)[0], offset + 4
+
+
+def read_string(buf, offset):
+    """Read a length-prefixed byte string from buf at offset. Returns (value, new_offset)."""
+    length, offset = read_uint32(buf, offset)
+    return buf[offset:offset + length], offset + length
+
+
+def fingerprint(key_blob):
+    """SHA256 fingerprint of a key blob, formatted like `ssh-keygen -lf`."""
+    digest = hashlib.sha256(key_blob).digest()
+    return "SHA256:" + base64.b64encode(digest).decode("ascii").rstrip("=")
+
+
+def cache_identities(payload):
+    """Parse an identities-answer response and cache fingerprint -> comment.
+
+    Best-effort: this is display enrichment, not part of the security
+    boundary, so any parse failure is swallowed and simply leaves the
+    cache unchanged.
+    """
+    try:
+        offset = 1
+        nkeys, offset = read_uint32(payload, offset)
+        for _ in range(nkeys):
+            key_blob, offset = read_string(payload, offset)
+            comment, offset = read_string(payload, offset)
+            with IDENTITY_LOCK:
+                IDENTITY_COMMENTS[fingerprint(key_blob)] = comment.decode("utf-8", "replace")
+    except (struct.error, IndexError):
+        pass
+
+
+def clean(s, limit=200):
+    """Strip non-printable chars (e.g. ANSI escapes) and truncate for safe display.
+
+    Applied to every field sourced from the sandboxed side before it is
+    written out for the popup to display, so a crafted comment can't spoof
+    or hide popup content via terminal escape sequences.
+    """
+    s = "".join(c if c.isprintable() else "?" for c in s)
+    return s if len(s) <= limit else s[:limit] + "…"
+
+
+def confirm_via_tmux(label, key_fp, key_comment):
     """Block on a tmux popup asking to approve a sign request.
 
     Returns False immediately, without showing a popup, if there's no
     tmux session to show it in or the popup fails to display.
+
+    All request-derived text is written to a file and merely `cat`, never
+    interpolated into the popup's shell command string - that command runs
+    on the host outside the sandbox, so untrusted text (comment, label)
+    must never be treated as shell syntax there.
     """
     if "TMUX" not in os.environ:
         return False
 
     channel = f"ssh-agent-guard-{uuid.uuid4().hex}"
-    marker_fd, marker = tempfile.mkstemp(prefix="ssh-agent-guard-")
+    marker_fd, marker = tempfile.mkstemp(prefix="ssh-agent-guard-marker-")
     os.close(marker_fd)
 
-    prompt = f"Allow SSH agent to sign ({label})? [y/N] "
+    info_fd, info_path = tempfile.mkstemp(prefix="ssh-agent-guard-info-")
+    with os.fdopen(info_fd, "w", encoding="utf-8") as f:
+        f.write("Allow SSH agent to sign?\n\n")
+        f.write(f"  sandbox:  {clean(label)}\n")
+        f.write(f"  key:      {key_fp}\n")
+        f.write(f"  comment:  {clean(key_comment or 'unknown')}\n")
+
     popup_cmd = (
-        f'read -p "{prompt}" a; '
-        f'if [[ "$a" == [yY] ]]; then echo yes > {marker}; fi; '
+        f"cat {shlex.quote(info_path)}; "
+        f'read -p "[y/N] " a; '
+        f'if [[ "$a" == [yY] ]]; then echo yes > {shlex.quote(marker)}; fi; '
         f"tmux wait-for -S {channel}"
     )
 
     try:
-        with subprocess.Popen(["tmux", "display-popup", "-E", popup_cmd]) as popup:
+        with subprocess.Popen(["tmux", "display-popup", "-E", "-w", "76", popup_cmd]) as popup:
 
             def watch_popup():
                 # If display-popup fails to even launch (e.g. no attached
@@ -86,6 +152,7 @@ def confirm_via_tmux(label):
             return f.read().strip() == "yes"
     finally:
         os.unlink(marker)
+        os.unlink(info_path)
 
 
 def handle_client(client, upstream_path, label):
@@ -105,14 +172,25 @@ def handle_client(client, upstream_path, label):
 
             msg_type = payload[0]
 
-            if msg_type == SSH_AGENTC_SIGN_REQUEST and not confirm_via_tmux(label):
-                write_frame(client, bytes([SSH_AGENT_FAILURE]))
-                continue
+            if msg_type == SSH_AGENTC_SIGN_REQUEST:
+                try:
+                    key_blob, _ = read_string(payload, 1)
+                    key_fp = fingerprint(key_blob)
+                except (struct.error, IndexError):
+                    key_fp = "unknown"
+                with IDENTITY_LOCK:
+                    key_comment = IDENTITY_COMMENTS.get(key_fp)
+                if not confirm_via_tmux(label, key_fp, key_comment):
+                    write_frame(client, bytes([SSH_AGENT_FAILURE]))
+                    continue
 
             write_frame(upstream, payload)
             response = read_frame(upstream)
             if response is None:
                 break
+            is_identities_answer = response and response[0] == SSH_AGENT_IDENTITIES_ANSWER
+            if msg_type == SSH_AGENTC_REQUEST_IDENTITIES and is_identities_answer:
+                cache_identities(response)
             write_frame(client, response)
     except OSError:
         pass

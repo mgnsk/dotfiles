@@ -46,7 +46,7 @@ project=$(git rev-parse --show-toplevel)
 
 # Read bind all files tracked by dotfiles git.
 for f in $(git -C "$HOME" ls-tree -r master --name-only); do
-	if ! echo "$HOME/$f" | grep -q "^$PWD"; then
+	if [[ "$HOME/$f" != "$PWD"* ]]; then
 		# "$HOME/$f" is outside of "$PWD", mount it readonly.
 		args+=(
 			--ro-bind "$HOME/$f" "$HOME/$f"

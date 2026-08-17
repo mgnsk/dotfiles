@@ -36,6 +36,7 @@ args=(
 	--ro-bind /etc/group /etc/group
 
 	--ro-bind "$HOME/.gitconfig_local" "$HOME/.gitconfig_local"
+	--ro-bind-try "$HOME/.ssh/known_hosts" "$HOME/.ssh/known_hosts"
 
 	--bind "$HOME/go" "$HOME/go"
 	--bind "$PWD" "$PWD"

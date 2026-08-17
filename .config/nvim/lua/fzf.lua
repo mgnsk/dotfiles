@@ -115,53 +115,55 @@ vim.keymap.set("n", "<leader>U", function()
 	return require("fzf-lua").undotree()
 end, { desc = "FZF undotree" })
 
-require("fzf-lua").setup({
-	winopts = {
-		fullscreen = true,
-		border = "none",
-		preview = {
+vim.schedule(function()
+	require("fzf-lua").setup({
+		winopts = {
+			fullscreen = true,
 			border = "none",
-			delay = 0,
-			wrap = "wrap",
-			scrollbar = "none",
+			preview = {
+				border = "none",
+				delay = 0,
+				wrap = "wrap",
+				scrollbar = "none",
+			},
 		},
-	},
-	previewers = {
-		builtin = {
-			syntax = true,
-			syntax_limit_b = require("util").treesitter_max_filesize,
+		previewers = {
+			builtin = {
+				syntax = true,
+				syntax_limit_b = require("util").treesitter_max_filesize,
+			},
 		},
-	},
-	files = {
-		fd_opts = "--type f --hidden --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'",
-	},
-	grep = {
-		rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/ --glob=!node_modules/ --glob=!vendor/",
-	},
-	defaults = {
-		git_icons = false,
-		file_icons = false,
-	},
-	git = {
-		bcommits = {
-			cmd = make_git_log_search_cmd(" --follow {file}"),
-			preview_pager = "diff-highlight",
-			actions = create_git_log_actions(1),
-			preview = [[name=$(bash ~/.scripts/git/get-old-filename.sh {1} {file}); git show --color {1} -- "$name"]],
+		files = {
+			fd_opts = "--type f --hidden --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'",
 		},
-		commits = {
-			cmd = make_git_log_search_cmd(""),
-			preview_pager = "diff-highlight",
-			actions = create_git_log_actions(1),
+		grep = {
+			rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512 --hidden --glob=!.git/ --glob=!node_modules/ --glob=!vendor/",
 		},
-	},
-	lsp = {
-		async_or_timeout = true,
-	},
-	keymap = {
-		builtin = {
-			["<C-d>"] = "preview-page-down",
-			["<C-u>"] = "preview-page-up",
+		defaults = {
+			git_icons = false,
+			file_icons = false,
 		},
-	},
-})
+		git = {
+			bcommits = {
+				cmd = make_git_log_search_cmd(" --follow {file}"),
+				preview_pager = "diff-highlight",
+				actions = create_git_log_actions(1),
+				preview = [[name=$(bash ~/.scripts/git/get-old-filename.sh {1} {file}); git show --color {1} -- "$name"]],
+			},
+			commits = {
+				cmd = make_git_log_search_cmd(""),
+				preview_pager = "diff-highlight",
+				actions = create_git_log_actions(1),
+			},
+		},
+		lsp = {
+			async_or_timeout = true,
+		},
+		keymap = {
+			builtin = {
+				["<C-d>"] = "preview-page-down",
+				["<C-u>"] = "preview-page-up",
+			},
+		},
+	})
+end)

@@ -62,6 +62,13 @@ end
 vscode.setup(cfg)
 vscode.load()
 
-require("colorizer").setup({
-	filetypes = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml", "dosini" },
-})
+vim.schedule(function()
+	require("colorizer").setup({
+		filetypes = { "lua", "html", "css", "less", "typescriptreact", "conf", "toml", "dosini" },
+	})
+
+	-- colorizer only attaches via a FileType autocmd registered inside setup(),
+	-- so it misses the buffer that was already open when setup() was deferred.
+	-- Re-fire that autocmd group to catch it.
+	vim.cmd.doautoall("ColorizerSetup FileType")
+end)

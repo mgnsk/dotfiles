@@ -87,23 +87,32 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
-vim.lsp.config("*", {
-	capabilities = require("blink.cmp").get_lsp_capabilities(),
-	root_markers = { ".git" },
-})
+vim.schedule(function()
+	vim.lsp.config("*", {
+		capabilities = require("blink.cmp").get_lsp_capabilities(),
+		root_markers = { ".git" },
+	})
 
-vim.lsp.enable({
-	"luals",
-	"gopls",
-	"tsgo",
-	"biome", -- TODO: use as formatter
-	"bashls",
-	"phpactor",
-	"jsonnet_ls",
-	"buf_ls",
-	"nil_ls",
-	"helm_ls",
-	"ty",
-	"yamlls",
-	"ansiblels",
-})
+	vim.lsp.enable({
+		"luals",
+		"gopls",
+		"tsgo",
+		"biome", -- TODO: use as formatter
+		"bashls",
+		"phpactor",
+		"jsonnet_ls",
+		"buf_ls",
+		"nil_ls",
+		"helm_ls",
+		"ty",
+		"yamlls",
+		"ansiblels",
+	})
+
+	-- vim.lsp.enable()'s own retroactive-attach check (v:vim_did_enter /
+	-- did_filetype()) is only true synchronously right after a buffer opens,
+	-- so by the time this scheduled callback runs it's gone stale for the
+	-- file opened from the command line. Re-fire the same targeted autocmd
+	-- group it uses internally to attach to already-open buffers.
+	vim.cmd.doautoall("nvim.lsp.enable FileType")
+end)

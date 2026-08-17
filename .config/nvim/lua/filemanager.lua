@@ -9,37 +9,39 @@ vim.g.netrw_preview = 1
 vim.g.netrw_alto = 0
 vim.g.netrw_winsize = 30
 
-require("oil").setup({
-	use_default_keymaps = false,
-	keymaps = {
-		["<CR>"] = "actions.select",
-		["<C-v>"] = {
-			"actions.select",
-			opts = { vertical = true },
-			desc = "Open the entry in a vertical split",
+vim.schedule(function()
+	require("oil").setup({
+		use_default_keymaps = false,
+		keymaps = {
+			["<CR>"] = "actions.select",
+			["<C-v>"] = {
+				"actions.select",
+				opts = { vertical = true },
+				desc = "Open the entry in a vertical split",
+			},
+			["<C-s>"] = {
+				"actions.select",
+				opts = { horizontal = true },
+				desc = "Open the entry in a horizontal split",
+			},
+			["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
+			["<C-p>"] = "actions.preview",
+			["-"] = "actions.parent",
 		},
-		["<C-s>"] = {
-			"actions.select",
-			opts = { horizontal = true },
-			desc = "Open the entry in a horizontal split",
+		skip_confirm_for_simple_edits = true,
+		view_options = {
+			show_hidden = true,
+			-- Note: these settings correspond to the order of `ls -Alhv --group-directories-first`.
+			natural_order = false,
+			sort = {
+				{ "type", "asc" },
+				{ "name", "asc" },
+			},
 		},
-		["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
-		["<C-p>"] = "actions.preview",
-		["-"] = "actions.parent",
-	},
-	skip_confirm_for_simple_edits = true,
-	view_options = {
-		show_hidden = true,
-		-- Note: these settings correspond to the order of `ls -Alhv --group-directories-first`.
-		natural_order = false,
-		sort = {
-			{ "type", "asc" },
-			{ "name", "asc" },
-		},
-	},
-	-- Don't disable netrw.
-	default_file_explorer = false,
-})
+		-- Don't disable netrw.
+		default_file_explorer = false,
+	})
+end)
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "oil_preview",

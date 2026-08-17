@@ -5,17 +5,19 @@ vim.keymap.set(
 	{ desc = "Select the current buffer when resolving git conflicts using vim-fugitive" }
 )
 
-require("gitsigns").setup({
-	signs = {
-		add = { text = "+" },
-		change = { text = "~" },
-		delete = { text = "-" },
-		topdelete = { text = "‾" },
-		changedelete = { text = "~" },
-		untracked = { text = "┆" },
-	},
-	status_formatter = nil, -- Use default
-})
+vim.schedule(function()
+	require("gitsigns").setup({
+		signs = {
+			add = { text = "+" },
+			change = { text = "~" },
+			delete = { text = "-" },
+			topdelete = { text = "‾" },
+			changedelete = { text = "~" },
+			untracked = { text = "┆" },
+		},
+		status_formatter = nil, -- Use default
+	})
+end)
 
 vim.keymap.set("n", "gn", function()
 	require("gitsigns").nav_hunk("next")

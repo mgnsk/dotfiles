@@ -2,16 +2,21 @@
 
 set -e
 
-unset TMPDIR
-unset TMP
-unset TMUX
-unset TMUX_PANE
-
 args=(
 	--unshare-all
 	--share-net
 	--die-with-parent
+
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
+
+	# Discard so that we get a fresh tmp.
+	--unsetenv TMPDIR
+	--unsetenv TMP
+
+	# Allow nested tmux in sandbox.
+	--unsetenv TMUX
+	--unsetenv TMUX_PANE
+
 	--dev /dev
 	--proc /proc
 	--tmpfs /tmp

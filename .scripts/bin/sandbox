@@ -4,6 +4,8 @@ set -eu
 
 args=(
 	--unshare-all
+	--unshare-user
+	--disable-userns
 	--share-net
 	--die-with-parent
 	--cap-drop ALL

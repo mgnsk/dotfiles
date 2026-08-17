@@ -35,6 +35,8 @@ export FZF_DEFAULT_COMMAND="fd --type f --hidden --no-ignore-vcs --exclude '.git
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --no-ignore-vcs --exclude '.git/'"
 
+export SSH_AUTH_SOCK=~/.1password/agent.sock
+
 if [[ "$THEME" == "light" ]]; then
 	# https://github.com/Mofiqul/vscode.nvim/blob/main/extra/fzf/vscode-light
 	export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"'

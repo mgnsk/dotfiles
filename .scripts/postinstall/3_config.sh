@@ -142,14 +142,56 @@ set_option /etc/default/grub GRUB_SAVEDEFAULT true
 sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-# Configure profile-sync-daemon for brave and brave-origin.
+# Configure profile-sync-daemon for brave.
 cat <<-'EOF' | sudo tee /usr/share/psd/browsers/brave >/dev/null
 	DIRArr[0]="$XDG_CONFIG_HOME/BraveSoftware/Brave-Browser"
 	PSNAME="brave"
 EOF
+
+# Configure profile-sync-daemon for brave-origin.
 cat <<-'EOF' | sudo tee /usr/share/psd/browsers/brave-origin >/dev/null
 	DIRArr[0]="$XDG_CONFIG_HOME/BraveSoftware/Brave-Origin"
 	PSNAME="brave-origin"
+EOF
+
+# Configure profile-sync-daemon for librewolf.
+# TODO: wait for https://aur.archlinux.org/packages/profile-sync-daemon-librewolf to update.
+cat <<-'EOF' | sudo tee /usr/share/psd/browsers/librewolf >/dev/null
+	if [[ -d "$XDG_CONFIG_HOME/librewolf/librewolf" ]]; then
+	    index=0
+	    PSNAME="$browser"
+	    while read -r profileItem; do
+	        if [[ $(echo "$profileItem" | cut -c1) = "/" ]]; then
+	            # path is not relative
+	            DIRArr[$index]="$profileItem"
+	        else
+	            # we need to append the default path to give a
+	            # fully qualified path
+	            DIRArr[$index]="$XDG_CONFIG_HOME/librewolf/librewolf/$profileItem"
+	        fi
+	        (( index=index+1 ))
+	    done < <(grep '^[Pp]ath=' "$XDG_CONFIG_HOME/librewolf/librewolf/profiles.ini" | sed 's/[Pp]ath=//')
+	fi
+
+	check_suffix=1
+
+	if [[ -d "$HOME"/.librewolf ]]; then
+	    index=0
+	    PSNAME="$browser"
+	    while read -r profileItem; do
+	        if [[ $(echo "$profileItem" | cut -c1) = "/" ]]; then
+	            # path is not relative
+	            DIRArr[$index]="$profileItem"
+	        else
+	            # we need to append the default path to give a
+	            # fully qualified path
+	            DIRArr[$index]="$HOME/.librewolf/$profileItem"
+	        fi
+	        (( index=index+1 ))
+	    done < <(grep '[Pp]'ath= "$HOME"/.librewolf/profiles.ini | sed 's/[Pp]ath=//')
+	fi
+
+	check_suffix=1
 EOF
 
 # Enable profile-sync-daemon.

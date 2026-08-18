@@ -106,6 +106,7 @@ packages=(
 	libreoffice-fresh
 	libreoffice-fresh-et
 	firefox
+	librewolf
 	profile-sync-daemon
 
 	# File management.

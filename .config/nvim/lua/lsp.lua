@@ -90,7 +90,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 vim.schedule(function()
 	vim.lsp.config("*", {
 		capabilities = require("blink.cmp").get_lsp_capabilities(),
-		root_markers = { ".git" },
+	})
+
+	vim.lsp.config("biome", {
+		root_dir = function(bufnr, on_dir)
+			local root = vim.fs.root(bufnr, { "biome.json", "biome.jsonc", ".biome.json", ".biome.jsonc" })
+			if root then
+				on_dir(root)
+			end
+		end,
 	})
 
 	vim.lsp.enable({

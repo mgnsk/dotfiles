@@ -2,7 +2,9 @@
 return {
 	cmd = { "lua-language-server", "--force-accept-workspace" },
 	filetypes = { "lua" },
-	root_markers = {},
+	root_dir = function(_, on_dir)
+		on_dir(vim.fn.getcwd())
+	end,
 	settings = {
 		Lua = {
 			workspace = {

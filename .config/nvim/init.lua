@@ -120,8 +120,9 @@ vim.api.nvim_create_user_command("CopyPath", function()
 		return
 	end
 
-	vim.fn.setreg("+", file)
-end, { desc = "Copy current file path to system clipboard" })
+	local relative = vim.fn.fnamemodify(file, ":.")
+	vim.fn.setreg("+", relative)
+end, { desc = "Copy current file path relative to cwd to system clipboard" })
 
 vim.cmd.packloadall()
 

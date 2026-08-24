@@ -2,14 +2,6 @@ vim.o.foldnestmax = 3
 vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 
-vim.keymap.set({ "n", "v" }, "<CR>", function()
-	if vim.fn.mode() == "v" then
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("an", true, false, true), "v", false)
-	else
-		vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("van", true, false, true), "v", false)
-	end
-end, { desc = "Treesitter incremental select" })
-
 vim.keymap.set({ "v" }, "<Tab>", function()
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("an", true, false, true), "v", false)
 end, { desc = "Treesitter incremental select increase" })
@@ -42,6 +34,16 @@ vim.api.nvim_create_autocmd("FileType", {
 			-- TODO: not working
 			vim.wo.foldmethod = "expr"
 			vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
+			-- Buffer-local so this never shadows quickfix/loclist's builtin
+			-- <CR>-jumps-to-entry behavior in non-code windows.
+			vim.keymap.set({ "n", "v" }, "<CR>", function()
+				if vim.fn.mode() == "v" then
+					vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("an", true, false, true), "v", false)
+				else
+					vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("van", true, false, true), "v", false)
+				end
+			end, { buffer = buf, desc = "Treesitter incremental select" })
 		end)
 	end,
 })

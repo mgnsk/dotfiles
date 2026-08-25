@@ -33,8 +33,7 @@ export GIT_LOG_PRETTY_FORMAT='%C(yellow)%h%Creset%x1f%ct%x1f%Creset%s%C(cyan)%d%
 export FZF_DEFAULT_OPTS="--layout=reverse --marker='>' --pointer='>' --style=minimal --no-unicode --no-mouse"
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --no-ignore-vcs --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type d --hidden --no-ignore-vcs --exclude '.git/'"
-export FZF_ALT_C_OPTS="--no-sort"
+export FZF_ALT_C_COMMAND="fd --type d --hidden --no-ignore-vcs --exclude '.git/' | awk -F'/' '{print NF, \$0}' | sort -n | cut -d' ' -f2-"
 
 export SSH_AUTH_SOCK=~/.1password/agent.sock
 

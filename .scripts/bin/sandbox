@@ -44,6 +44,7 @@ args=(
 # Falls back to HOME (the dotfiles repo) when
 # outside of a specific repo.
 project=$(git rev-parse --show-toplevel)
+volume_name="${project//\//_}-$(echo -n "$project" | sha256sum | cut -c1-8)"
 
 # Start the SSH agent confirmation proxy. Sandboxed processes only ever
 # see this proxy's socket, never the real one - every sign request
@@ -52,7 +53,6 @@ agent_proxy_dir=$(mktemp -d)
 agent_proxy_sock="$agent_proxy_dir/agent.sock"
 "$(dirname "$0")/ssh-agent-guard" "$HOME/.1password/agent.sock" "$agent_proxy_sock" &
 agent_proxy_pid=$!
-trap 'kill "$agent_proxy_pid" 2>/dev/null; rm -rf "$agent_proxy_dir"' EXIT
 
 for _ in $(seq 1 50); do
 	[[ -S "$agent_proxy_sock" ]] && break
@@ -61,6 +61,59 @@ done
 
 args+=(
 	--bind "$agent_proxy_sock" "$HOME/.1password/agent.sock"
+)
+
+# Start a private, ephemeral D-Bus session bus with a fake Secret Service
+# on it, so sandboxed gh can store its auth token there instead of in
+# plaintext in ~/.config/gh/hosts.yml. Sandboxed processes only ever see
+# this bus's socket, never a real session bus - this is NOT the same as
+# the xdg-dbus-proxy setup this repo used to have (removed in 368b084),
+# which forwarded the *real* session bus into the sandbox. The secrets
+# database lives outside the sandbox and is never bind-mounted in, only
+# the D-Bus socket is, so it can only be reached through the Secret
+# Service API.
+secrets_dir=$(mktemp -d)
+secrets_bus_sock="$secrets_dir/bus.sock"
+secrets_bus_conf="$secrets_dir/bus.conf"
+secrets_ready="$secrets_dir/ready"
+secrets_db="$HOME/.ide/$volume_name/secrets.sqlite3"
+mkdir -p "$(dirname "$secrets_db")"
+
+cat >"$secrets_bus_conf" <<EOF
+<!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+<busconfig>
+  <type>session</type>
+  <listen>unix:path=$secrets_bus_sock</listen>
+  <auth>EXTERNAL</auth>
+  <policy context="default">
+    <allow send_destination="*" eavesdrop="true"/>
+    <allow eavesdrop="true"/>
+    <allow own="*"/>
+  </policy>
+</busconfig>
+EOF
+
+dbus-daemon --config-file="$secrets_bus_conf" --nofork --nopidfile &
+secrets_bus_pid=$!
+
+"$(dirname "$0")/secret-service-guard" "unix:path=$secrets_bus_sock" "$secrets_db" "$secrets_ready" &
+secrets_guard_pid=$!
+
+trap 'kill "$agent_proxy_pid" "$secrets_bus_pid" "$secrets_guard_pid" 2>/dev/null; rm -rf "$agent_proxy_dir" "$secrets_dir"' EXIT
+
+for _ in $(seq 1 50); do
+	[[ -S "$secrets_bus_sock" ]] && break
+	sleep 0.1
+done
+for _ in $(seq 1 50); do
+	[[ -e "$secrets_ready" ]] && break
+	sleep 0.1
+done
+
+args+=(
+	--bind "$secrets_bus_sock" "$XDG_RUNTIME_DIR/bus"
+	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
 )
 
 if [[ "$project" == "$HOME" ]]; then
@@ -85,9 +138,6 @@ fi
 
 function add_volume() {
 	container_path="$1"
-
-	# Replace every (//) slash (\/) with underscore (_) and append a unique hash.
-	volume_name="${project//\//_}-$(echo -n "$project" | sha256sum | cut -c1-8)"
 
 	host_path="$HOME/.ide/$volume_name/$container_path"
 

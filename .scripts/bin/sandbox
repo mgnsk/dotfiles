@@ -16,10 +16,6 @@ args=(
 	--unsetenv TMPDIR
 	--unsetenv TMP
 
-	# Allow nested tmux in sandbox.
-	--unsetenv TMUX
-	--unsetenv TMUX_PANE
-
 	--dev /dev
 	--proc /proc
 	--tmpfs /tmp

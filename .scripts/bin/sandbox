@@ -64,11 +64,10 @@ args+=(
 )
 
 # Start a private, ephemeral D-Bus session bus with a fake Secret Service
-# on it, so sandboxed gh can store its auth token there instead of in
-# plaintext in ~/.config/gh/hosts.yml. Sandboxed processes only ever see
-# this bus's socket, never a real session bus - this is NOT the same as
-# the xdg-dbus-proxy setup this repo used to have (removed in 368b084),
-# which forwarded the *real* session bus into the sandbox. The secrets
+# on it, so sandboxed processes can store credentials via libsecret
+# instead of falling back to plaintext files (e.g. gh's auth token, which
+# would otherwise land in ~/.config/gh/hosts.yml). Sandboxed processes
+# only ever see this bus's socket, never a real session bus. The secrets
 # database lives outside the sandbox and is never bind-mounted in, only
 # the D-Bus socket is, so it can only be reached through the Secret
 # Service API.

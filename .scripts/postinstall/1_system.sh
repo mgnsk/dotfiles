@@ -46,6 +46,7 @@ packages=(
 	iotop
 	powertop
 	arch-audit
+	reflector
 
 	# Identity and passwords.
 	kwallet

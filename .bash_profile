@@ -40,7 +40,7 @@ function pre {
 }
 
 # TTY1: start sway at login if available.
-if test -z "$DISPLAY" -a "$XDG_VTNR" = 1; then
+if test -z "$DISPLAY" -a -z "$WAYLAND_DISPLAY" -a "$XDG_VTNR" = 1; then
 	if command -v sway &>/dev/null; then
 		export XDG_CURRENT_DESKTOP=sway
 		pre

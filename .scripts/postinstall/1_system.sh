@@ -47,6 +47,8 @@ packages=(
 	powertop
 	arch-audit
 	reflector
+	bubblewrap
+	passt
 
 	# Identity and passwords.
 	kwallet

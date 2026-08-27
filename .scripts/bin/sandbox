@@ -6,15 +6,31 @@ args=(
 	--unshare-all
 	--unshare-user
 	--disable-userns
+	# pasta maps the invoking user to uid 0 in its own userns; pin the real
+	# uid/gid so bwrap doesn't inherit that and look like real root.
+	--uid "$(id -u)"
+	--gid "$(id -g)"
+	# Retains the netns bwrap starts in - a fresh one from `pasta --config-net`
+	# below, not the host's. Sharing the host's would also expose its abstract
+	# AF_UNIX namespace (e.g. @/tmp/.X11-unix/X0 - Xwayland here accepts
+	# unauthenticated local connections, so XTEST against every X client).
 	--share-net
 	--die-with-parent
 	--cap-drop ALL
 
+	# Otherwise the host env passes through untouched, e.g. a GitHub token in
+	# the host shell would reach the API directly, bypassing gh-guard's popup.
+	# Only what's needed is passed through below; the rest comes from .bashrc.
+	--clearenv
+	--setenv HOME "$HOME"
+	--setenv USER "$USER"
+	--setenv LOGNAME "$USER"
+	--setenv SHELL "$SHELL"
+	--setenv TERM "$TERM"
+	--setenv COLORTERM "${COLORTERM:-}"
+	--setenv LANG "${LANG:-en_US.UTF-8}"
+	--setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
-
-	# Discard so that we get a fresh tmp.
-	--unsetenv TMPDIR
-	--unsetenv TMP
 
 	--dev /dev
 	--proc /proc
@@ -36,19 +52,54 @@ args=(
 	--ro-bind "$HOME/.gitconfig_local" "$HOME/.gitconfig_local"
 	--ro-bind-try "$HOME/.ssh/known_hosts" "$HOME/.ssh/known_hosts"
 
-	--bind "$HOME/go" "$HOME/go"
+	# Shared across projects: content-addressed and checksum-verified by go
+	# itself. $HOME/go/bin is NOT shared - it's on the host's $PATH, so it
+	# gets a per-project volume below instead.
+	--bind "$HOME/go/pkg" "$HOME/go/pkg"
 	--bind "$PWD" "$PWD"
 )
 
-# Detect current git project root.
-# Falls back to HOME (the dotfiles repo) when
-# outside of a specific repo.
+# Pass through as-is rather than hardcoding a store path that changes on
+# the next `nix flake update`.
+if [[ -n "${NIX_SSL_CERT_FILE:-}" ]]; then
+	args+=(--setenv NIX_SSL_CERT_FILE "$NIX_SSL_CERT_FILE")
+fi
+
+mkdir -p "$HOME/go/pkg"
+
+# Declared before any guard starts: under `set -u`/`set -e`, a trap that
+# references an unset var or a `kill` on an already-dead pid would abort
+# and skip the rest of cleanup.
+agent_proxy_dir=""
+agent_proxy_pid=""
+secrets_dir=""
+secrets_bus_pid=""
+secrets_guard_pid=""
+gh_proxy_dir=""
+gh_proxy_pid=""
+
+function cleanup() {
+	local pid dir
+	for pid in "$agent_proxy_pid" "$secrets_bus_pid" "$secrets_guard_pid" "$gh_proxy_pid"; do
+		if [[ -n "$pid" ]]; then
+			kill "$pid" 2>/dev/null || true
+		fi
+	done
+	for dir in "$agent_proxy_dir" "$secrets_dir" "$gh_proxy_dir"; do
+		if [[ -n "$dir" ]]; then
+			rm -rf "$dir"
+		fi
+	done
+}
+
+trap cleanup EXIT
+
+# Falls back to HOME (the dotfiles repo) when outside a specific repo.
 project=$(git rev-parse --show-toplevel)
 volume_name="${project//\//_}-$(echo -n "$project" | sha256sum | cut -c1-8)"
 
-# Start the SSH agent confirmation proxy. Sandboxed processes only ever
-# see this proxy's socket, never the real one - every sign request
-# (SSH auth, commit signing) is gated behind a tmux popup confirmation.
+# Sandboxed processes only see this proxy's socket, never the real one -
+# every sign request is gated behind a tmux popup confirmation.
 agent_proxy_dir=$(mktemp -d)
 agent_proxy_sock="$agent_proxy_dir/agent.sock"
 "$(dirname "$0")/ssh-agent-guard" "$HOME/.1password/agent.sock" "$agent_proxy_sock" &
@@ -63,20 +114,19 @@ args+=(
 	--bind "$agent_proxy_sock" "$HOME/.1password/agent.sock"
 )
 
-# Start a private, ephemeral D-Bus session bus with a fake Secret Service
-# on it, so sandboxed processes can store credentials via libsecret
-# instead of falling back to plaintext files (e.g. gh's auth token, which
-# would otherwise land in ~/.config/gh/hosts.yml). Sandboxed processes
-# only ever see this bus's socket, never a real session bus. The secrets
-# database lives outside the sandbox and is never bind-mounted in, only
-# the D-Bus socket is, so it can only be reached through the Secret
-# Service API.
+# Private, ephemeral D-Bus bus with a fake Secret Service, so credentials go
+# through libsecret instead of plaintext files (e.g. gh's hosts.yml). The
+# database itself is never bind-mounted in, only the socket, so it's only
+# reachable through the Secret Service API.
 secrets_dir=$(mktemp -d)
 secrets_bus_sock="$secrets_dir/bus.sock"
 secrets_bus_conf="$secrets_dir/bus.conf"
 secrets_ready="$secrets_dir/ready"
 secrets_db="$HOME/.ide/$volume_name/secrets.sqlite3"
 mkdir -p "$(dirname "$secrets_db")"
+# The database holds credentials in plaintext; secret-service-guard keeps the
+# file itself at 0600, this keeps the directory around it just as private.
+chmod 700 "$(dirname "$secrets_db")"
 
 cat >"$secrets_bus_conf" <<EOF
 <!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
@@ -99,8 +149,6 @@ secrets_bus_pid=$!
 "$(dirname "$0")/secret-service-guard" "unix:path=$secrets_bus_sock" "$secrets_db" "$secrets_ready" &
 secrets_guard_pid=$!
 
-trap 'kill "$agent_proxy_pid" "$secrets_bus_pid" "$secrets_guard_pid" 2>/dev/null; rm -rf "$agent_proxy_dir" "$secrets_dir"' EXIT
-
 for _ in $(seq 1 50); do
 	[[ -S "$secrets_bus_sock" ]] && break
 	sleep 0.1
@@ -115,24 +163,51 @@ args+=(
 	--setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$XDG_RUNTIME_DIR/bus"
 )
 
+# Sandboxed `gh` is relayed to gh-guard, which execs the HOST's own `gh`
+# with its real login - per-sandbox OAuth state was hitting GitHub's cap on
+# simultaneously valid tokens and silently invalidating older logins. First
+# invocation per session is gated behind a tmux popup; later ones forward
+# silently.
+gh_proxy_dir=$(mktemp -d)
+gh_proxy_sock="$gh_proxy_dir/gh.sock"
+"$(dirname "$0")/gh-guard" "$gh_proxy_sock" &
+gh_proxy_pid=$!
+
+for _ in $(seq 1 50); do
+	[[ -S "$gh_proxy_sock" ]] && break
+	sleep 0.1
+done
+
+args+=(
+	--bind "$gh_proxy_sock" "$XDG_RUNTIME_DIR/gh-guard.sock"
+	# Read-only: this is the same inode as the host's bin/gh-client, which
+	# sits on the host's PATH - a --bind would let the sandbox rewrite it
+	# for code execution on the host next run.
+	--ro-bind "$(dirname "$0")/gh-client" "$XDG_RUNTIME_DIR/gh-shim/gh"
+	--setenv PATH "$XDG_RUNTIME_DIR/gh-shim:$PATH"
+)
+
 if [[ "$project" == "$HOME" ]]; then
 	args+=(
 		--bind "$HOME/.git" "$HOME/.git"
 		--setenv GIT_DISCOVERY_ACROSS_FILESYSTEM 1
 	)
-	# Read-write bind all files tracked by dotfiles git.
-	for f in $(git -C "$HOME" ls-tree -r master --name-only); do
+	# Read-write bind all files tracked by dotfiles git, including bin/sandbox
+	# and the guards themselves - editing the dotfiles repo is the point of
+	# this mode, not a boundary. -z/-d '': avoids word-splitting or C-quoting
+	# mangling names with whitespace.
+	while IFS= read -r -d '' f; do
 		args+=(
 			--bind "$HOME/$f" "$HOME/$f"
 		)
-	done
+	done < <(git -C "$HOME" ls-tree -r -z master --name-only)
 else
 	# Read-only bind all files tracked by dotfiles git.
-	for f in $(git -C "$HOME" ls-tree -r master --name-only); do
+	while IFS= read -r -d '' f; do
 		args+=(
 			--ro-bind "$HOME/$f" "$HOME/$f"
 		)
-	done
+	done < <(git -C "$HOME" ls-tree -r -z master --name-only)
 fi
 
 function add_volume() {
@@ -157,13 +232,19 @@ function add_volume() {
 add_volume "$HOME/.cache/"
 add_volume "$HOME/.claude.json"
 add_volume "$HOME/.claude/"
-add_volume "$HOME/.config/gh/"
 add_volume "$HOME/.gemini/"
 add_volume "$HOME/.local/state/"
 add_volume "$HOME/.npm/"
+# $HOME/go/bin sits on the host's $PATH; a per-project volume keeps
+# `go install` working without any project's build reaching the host's
+# PATH (or another project's).
+add_volume "$HOME/go/bin/"
 
 args+=(
 	bash
 )
 
-bwrap "${args[@]}"
+# pasta creates a fresh net namespace with a userspace TAP and spawns bwrap
+# inside it; bwrap's --share-net above just retains it. --config-net has
+# pasta assign address/route/DNS itself, since nothing inside runs DHCP.
+pasta --config-net -- bwrap "${args[@]}"

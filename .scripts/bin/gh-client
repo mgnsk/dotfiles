@@ -1,0 +1,120 @@
+#!/bin/env python3
+"""gh shim for the sandbox.
+
+Bind-mounted at $XDG_RUNTIME_DIR/gh-shim/gh and put ahead of everything
+else on PATH, so any `gh` invocation inside the sandbox lands here instead
+of the unauthenticated nix-store gh. Forwards the invocation - cwd, argv,
+stdin - to gh-guard over a Unix socket; gh-guard runs outside the sandbox,
+execs the host's own authenticated `gh`, and relays stdout/stderr/exit
+code back.
+"""
+
+import json
+import os
+import socket
+import struct
+import sys
+import threading
+
+HEADER = 0x01
+STDIN_CHUNK = 0x02
+STDIN_EOF = 0x03
+STDOUT_CHUNK = 0x10
+STDERR_CHUNK = 0x11
+EXIT_CODE = 0x12
+DENIED = 0x13
+
+# Forwarded so the guard can tell an interactive terminal from a script/CI
+# caller - gh's own isatty check always sees a pipe, since its real stdout
+# is the socket relay, not whatever gh-client is attached to.
+TTY_ENV_VARS = ("NO_COLOR", "CLICOLOR", "CLICOLOR_FORCE", "GH_FORCE_TTY")
+
+
+def write_frame(sock, frame_type, payload):
+    sock.sendall(bytes([frame_type]) + struct.pack(">I", len(payload)) + payload)
+
+
+def read_frame(sock):
+    """Read one (type, payload) frame, or None at EOF."""
+    hdr = recv_exact(sock, 5)
+    if hdr is None:
+        return None
+    frame_type = hdr[0]
+    (length,) = struct.unpack(">I", hdr[1:])
+    payload = recv_exact(sock, length)
+    if payload is None:
+        return None
+    return frame_type, payload
+
+
+def recv_exact(sock, n):
+    buf = b""
+    while len(buf) < n:
+        chunk = sock.recv(n - len(buf))
+        if not chunk:
+            return None
+        buf += chunk
+    return buf
+
+
+def relay_stdin(sock):
+    """Forward stdin to the guard, byte-for-byte, until EOF."""
+    try:
+        while True:
+            chunk = os.read(0, 65536)
+            if not chunk:
+                break
+            write_frame(sock, STDIN_CHUNK, chunk)
+        write_frame(sock, STDIN_EOF, b"")
+    except OSError:
+        pass
+
+
+def main():
+    sock_path = os.path.join(os.environ["XDG_RUNTIME_DIR"], "gh-guard.sock")
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.connect(sock_path)
+
+    isatty = sys.stdout.isatty()
+    columns = None
+    if isatty:
+        try:
+            columns = os.get_terminal_size(sys.stdout.fileno()).columns
+        except OSError:
+            pass
+
+    header = json.dumps(
+        {
+            "cwd": os.getcwd(),
+            "argv": sys.argv[1:],
+            "isatty": isatty,
+            "columns": columns,
+            "env": {k: os.environ[k] for k in TTY_ENV_VARS if k in os.environ},
+        }
+    ).encode()
+    write_frame(sock, HEADER, header)
+
+    threading.Thread(target=relay_stdin, args=(sock,), daemon=True).start()
+
+    while True:
+        frame = read_frame(sock)
+        if frame is None:
+            sys.stderr.write("gh-client: guard connection closed unexpectedly\n")
+            sys.exit(1)
+        frame_type, payload = frame
+        if frame_type == STDOUT_CHUNK:
+            sys.stdout.buffer.write(payload)
+            sys.stdout.buffer.flush()
+        elif frame_type == STDERR_CHUNK:
+            sys.stderr.buffer.write(payload)
+            sys.stderr.buffer.flush()
+        elif frame_type == EXIT_CODE:
+            (code,) = struct.unpack(">I", payload)
+            sys.exit(code)
+        elif frame_type == DENIED:
+            sys.stderr.write(payload.decode("utf-8", "replace"))
+            sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,327 @@
+#!/bin/env python3
+"""gh proxy for the sandbox.
+
+Runs outside the sandbox, listening on a private socket that bin/sandbox
+bind-mounts in at $XDG_RUNTIME_DIR/gh-guard.sock. A sandboxed `gh`
+invocation is actually bin/gh-client, which forwards its cwd/argv/stdin
+here; this execs the host's own authenticated `gh` and relays
+stdout/stderr/exit code back in real time.
+
+The first invocation in a sandbox session (this process's lifetime) is
+gated behind a blocking tmux popup confirmation. Approving authorizes
+every later `gh` call this session without asking again - this is a
+coarse, session-level grant, not a per-command gate, since arbitrary `gh`
+commands are the normal, expected use here, not a rare privileged
+operation.
+
+Note what that grant covers: past it, argv and cwd are both wholly
+sandbox-chosen, and `gh` shells out to `git`, which honours repo-local
+config (core.fsmonitor, core.sshCommand, aliases) in whatever directory it
+is pointed at. So approving is closer to "run host commands as me" than to
+"read my GitHub token". This isn't new reach - bin/sandbox already
+bind-mounts $PWD read-write, so the sandbox can plant a .git/config the
+host user's own git will read - but it is the real size of the grant.
+"""
+
+import json
+import os
+import shlex
+import signal
+import socket
+import struct
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+
+HEADER = 0x01
+STDIN_CHUNK = 0x02
+STDIN_EOF = 0x03
+STDOUT_CHUNK = 0x10
+STDERR_CHUNK = 0x11
+EXIT_CODE = 0x12
+DENIED = 0x13
+
+TTY_ENV_VARS = ("NO_COLOR", "CLICOLOR", "CLICOLOR_FORCE", "GH_FORCE_TTY")
+
+AUTHORIZED = threading.Event()
+FIRST_PROMPT_LOCK = threading.Lock()
+
+
+def write_frame(sock, lock, frame_type, payload):
+    with lock:
+        sock.sendall(bytes([frame_type]) + struct.pack(">I", len(payload)) + payload)
+
+
+def read_frame(sock):
+    """Read one (type, payload) frame, or None at EOF."""
+    hdr = recv_exact(sock, 5)
+    if hdr is None:
+        return None
+    frame_type = hdr[0]
+    (length,) = struct.unpack(">I", hdr[1:])
+    payload = recv_exact(sock, length)
+    if payload is None:
+        return None
+    return frame_type, payload
+
+
+def recv_exact(sock, n):
+    buf = b""
+    while len(buf) < n:
+        chunk = sock.recv(n - len(buf))
+        if not chunk:
+            return None
+        buf += chunk
+    return buf
+
+
+def clean(s, limit=200):
+    """Strip non-printable chars and truncate for safe display in the popup."""
+    s = "".join(c if c.isprintable() else "?" for c in s)
+    return s if len(s) <= limit else s[:limit] + "…"
+
+
+def confirm_via_tmux(cwd, argv):
+    """Block on a tmux popup asking to authorize sandboxed gh for this session.
+
+    Returns False immediately, without showing a popup, if there's no
+    tmux session to show it in.
+    """
+    if "TMUX" not in os.environ:
+        return False
+
+    channel = f"gh-guard-{os.getpid()}-{time.monotonic_ns()}"
+    marker = info_path = None
+    try:
+        marker_fd, marker = tempfile.mkstemp(prefix="gh-guard-marker-")
+        os.close(marker_fd)
+
+        info_fd, info_path = tempfile.mkstemp(prefix="gh-guard-info-")
+        with os.fdopen(info_fd, "w", encoding="utf-8") as f:
+            f.write("Allow sandboxed `gh` to use your real GitHub CLI login?\n\n")
+            f.write(f"  cwd:      {clean(cwd)}\n")
+            f.write(f"  command:  gh {clean(shlex.join(argv))}\n\n")
+            f.write("Approving allows ALL gh commands for the rest of this\n")
+            f.write("sandbox session without asking again.\n")
+
+        popup_cmd = (
+            f"cat {shlex.quote(info_path)}; "
+            f'read -p "[y/N] " a; '
+            f'if [[ "$a" == [yY] ]]; then echo yes > {shlex.quote(marker)}; fi; '
+            f"tmux wait-for -S {channel}"
+        )
+
+        with subprocess.Popen(["tmux", "display-popup", "-E", "-w", "76", popup_cmd]) as popup:
+
+            def watch_popup():
+                if popup.wait() != 0:
+                    subprocess.run(["tmux", "wait-for", "-S", channel], check=False)
+
+            threading.Thread(target=watch_popup, daemon=True).start()
+
+            subprocess.run(["tmux", "wait-for", channel], check=False)
+        with open(marker, encoding="utf-8") as f:
+            return f.read().strip() == "yes"
+    finally:
+        if marker:
+            os.unlink(marker)
+        if info_path:
+            os.unlink(info_path)
+
+
+def relay_output(process_fd, sock, lock, frame_type):
+    """Forward raw bytes from a subprocess pipe fd to the client as frames."""
+    try:
+        while True:
+            chunk = os.read(process_fd, 65536)
+            if not chunk:
+                return
+            write_frame(sock, lock, frame_type, chunk)
+    except OSError:
+        return
+
+
+def relay_stdin(client, process):
+    """Forward client stdin frames to the subprocess; kill it on an unclean disconnect."""
+    got_eof = False
+    try:
+        while True:
+            frame = read_frame(client)
+            if frame is None:
+                if not got_eof and process.poll() is None:
+                    kill_process_group(process)
+                return
+            frame_type, payload = frame
+            if frame_type == STDIN_CHUNK:
+                try:
+                    process.stdin.write(payload)
+                except (BrokenPipeError, OSError):
+                    pass
+            elif frame_type == STDIN_EOF:
+                got_eof = True
+                try:
+                    process.stdin.close()
+                except OSError:
+                    pass
+    except OSError:
+        if not got_eof and process.poll() is None:
+            kill_process_group(process)
+
+
+def kill_process_group(process):
+    try:
+        pgid = os.getpgid(process.pid)
+        os.killpg(pgid, signal.SIGTERM)
+        for _ in range(20):
+            if process.poll() is not None:
+                return
+            time.sleep(0.1)
+        os.killpg(pgid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+
+
+def build_gh_env(isatty, columns, client_env):
+    """Host env, with the caller's terminal-style prefs layered on top.
+
+    gh's own stdout is always a pipe here (relayed over the socket), so its
+    isatty check would otherwise disable color, spinners, and table
+    formatting unconditionally. GH_FORCE_TTY makes gh treat the run as
+    terminal-attached (columns and all) regardless of that pipe, so set it
+    whenever the sandboxed caller's stdout is a real terminal - unless that
+    caller already expressed an explicit preference via one of these vars.
+    Headless callers (scripts, CI) never report isatty, so they keep gh's
+    normal pipe-detected default instead of forced tty-style output.
+
+    client_env comes straight off the socket, which anything in the
+    sandbox can connect to - not just gh-client. Only ever merge in the
+    whitelisted, string-valued keys: this process execs `gh` by name and
+    resolves it via env["PATH"], so passing through an arbitrary key
+    (PATH above all) would let a sandboxed caller run any binary it wants
+    as the host user.
+    """
+    trusted_env = {k: v for k, v in client_env.items() if k in TTY_ENV_VARS and isinstance(v, str)}
+    env = os.environ.copy()
+    env.update(trusted_env)
+    if isatty and "GH_FORCE_TTY" not in trusted_env:
+        env["GH_FORCE_TTY"] = str(columns) if columns else "1"
+    return env
+
+
+def parse_header(payload):
+    """Validate a client HEADER body, returning (cwd, argv, isatty, columns, env).
+
+    Every field here is parsed ahead of the authorization gate, off a socket
+    anything in the sandbox can open, so none of it may be taken on trust.
+    Anything malformed raises - ValueError here, KeyError or JSONDecodeError
+    from the JSON itself - and the caller turns that into a silent close
+    rather than running `gh` on a header it doesn't understand.
+    """
+    header = json.loads(payload.decode("utf-8"))
+    cwd, argv = header["cwd"], header["argv"]
+    if not isinstance(cwd, str) or not isinstance(argv, list) or not all(
+        isinstance(a, str) for a in argv
+    ):
+        raise ValueError("malformed header: cwd/argv")
+
+    isatty = header.get("isatty", False)
+    if not isinstance(isatty, bool):
+        raise ValueError("malformed header: isatty")
+
+    # bool is an int subclass, and str(True) is not a terminal width.
+    columns = header.get("columns")
+    if columns is not None and (
+        not isinstance(columns, int) or isinstance(columns, bool) or columns <= 0
+    ):
+        raise ValueError("malformed header: columns")
+
+    client_env = header.get("env", {})
+    if not isinstance(client_env, dict):
+        client_env = {}
+
+    return cwd, argv, isatty, columns, client_env
+
+
+def handle_connection(client):
+    lock = threading.Lock()
+    try:
+        header_frame = read_frame(client)
+        if header_frame is None:
+            return
+        frame_type, payload = header_frame
+        if frame_type != HEADER:
+            raise ValueError("expected a HEADER frame")
+        cwd, argv, isatty, columns, client_env = parse_header(payload)
+
+        if not AUTHORIZED.is_set():
+            with FIRST_PROMPT_LOCK:
+                if not AUTHORIZED.is_set():
+                    if confirm_via_tmux(cwd, argv):
+                        AUTHORIZED.set()
+                    else:
+                        write_frame(client, lock, DENIED, b"gh-guard: access declined\n")
+                        return
+
+        try:
+            process = subprocess.Popen(
+                ["gh", *argv],
+                cwd=cwd,
+                env=build_gh_env(isatty, columns, client_env),
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                bufsize=0,
+                start_new_session=True,
+            )
+        except OSError as e:
+            write_frame(client, lock, DENIED, f"gh-guard: failed to start gh: {e}\n".encode())
+            return
+
+        stdout_thread = threading.Thread(
+            target=relay_output, args=(process.stdout.fileno(), client, lock, STDOUT_CHUNK)
+        )
+        stderr_thread = threading.Thread(
+            target=relay_output, args=(process.stderr.fileno(), client, lock, STDERR_CHUNK)
+        )
+        stdin_thread = threading.Thread(target=relay_stdin, args=(client, process), daemon=True)
+        stdout_thread.start()
+        stderr_thread.start()
+        stdin_thread.start()
+
+        process.wait()
+        stdout_thread.join()
+        stderr_thread.join()
+
+        returncode = process.returncode
+        exit_code = returncode if returncode >= 0 else 128 - returncode
+        write_frame(client, lock, EXIT_CODE, struct.pack(">I", exit_code))
+    except (OSError, json.JSONDecodeError, KeyError, ValueError):
+        pass
+    finally:
+        # shutdown() before close(): stdin_thread may still be blocked in
+        # recv() on this same socket, and closing a fd from another thread
+        # while a thread is blocked reading it doesn't reliably unblock
+        # that read on Linux - shutdown() does.
+        try:
+            client.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        client.close()
+
+
+def main():
+    """Listen on argv[1], handling each gh invocation on its own thread."""
+    listen_path = sys.argv[1]
+    server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    server.bind(listen_path)
+    server.listen(5)
+
+    while True:
+        client, _ = server.accept()
+        threading.Thread(target=handle_connection, args=(client,), daemon=True).start()
+
+
+if __name__ == "__main__":
+    main()

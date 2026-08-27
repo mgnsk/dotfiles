@@ -4,6 +4,7 @@
 Sits between a sandboxed client and the real SSH agent socket. Identity
 listing is forwarded untouched; sign requests (SSH auth, commit signing)
 only reach the real agent after the user approves a tmux popup prompt.
+Every other request type is refused outright - see FORWARDABLE.
 """
 
 import base64
@@ -22,6 +23,21 @@ SSH_AGENTC_REQUEST_IDENTITIES = 11
 SSH_AGENT_IDENTITIES_ANSWER = 12
 SSH_AGENTC_SIGN_REQUEST = 13
 SSH_AGENT_FAILURE = 5
+
+# The only two request types that ever reach the real agent. Everything else
+# is answered with SSH_AGENT_FAILURE here and never forwarded: the rest of the
+# protocol *mutates* the agent, and this proxy's whole job is to keep the
+# sandbox from reaching past it. Notably that blocks SSH_AGENTC_LOCK (22),
+# which would otherwise let a sandboxed process lock the user's real agent
+# with a password of its choosing, and REMOVE_IDENTITY/REMOVE_ALL_IDENTITIES
+# (18/19), ADD_IDENTITY (17/25), the smartcard calls (20/21/26) and the
+# open-ended SSH_AGENTC_EXTENSION channel (27) - none of which were gated
+# before, since only sign requests were being checked.
+#
+# Safe against normal use: ssh(1) treats a refused session-bind@openssh.com
+# extension as non-fatal, and `ssh-add -l` / `ssh-keygen -Y sign` (git's ssh
+# commit signing) only ever send the two types below.
+FORWARDABLE = frozenset({SSH_AGENTC_REQUEST_IDENTITIES, SSH_AGENTC_SIGN_REQUEST})
 
 IDENTITY_COMMENTS = {}
 IDENTITY_LOCK = threading.Lock()
@@ -101,12 +117,45 @@ def peer_pid(sock):
     return pid
 
 
-def peer_cwd(sock):
-    """Best-effort cwd of the process on the other end of sock, read from the host's /proc."""
+def peer_cwd(pid):
+    """Best-effort cwd of pid, read from the host's /proc."""
     try:
-        return os.readlink(f"/proc/{peer_pid(sock)}/cwd")
+        return os.readlink(f"/proc/{pid}/cwd")
     except OSError:
         return "unknown"
+
+
+def peer_cmdline(pid):
+    """Best-effort command line of pid, read from the host's /proc."""
+    try:
+        with open(f"/proc/{pid}/cmdline", "rb") as f:
+            raw = f.read()
+    except OSError:
+        return "unknown"
+    parts = raw.split(b"\0")
+    if parts and parts[-1] == b"":
+        parts.pop()
+    if not parts:
+        return "unknown"
+    return " ".join(shlex.quote(p.decode("utf-8", "replace")) for p in parts)
+
+
+def describe_peer(sock):
+    """(cwd, cmdline) of sock's peer, sampled while it still holds the connection.
+
+    SO_PEERCRED gives an authentic pid, but only as of connect() - and /proc
+    here is the *host's*. Sampling it lazily, at the moment a sign request
+    needs a popup, means a peer that has since exited may have had its pid
+    reused by an unrelated host process, and that process's command line
+    would then be what the popup attributes the request to. Reading it once
+    up front, while the peer is provably alive on the other end, keeps the
+    popup describing the process that actually opened the connection.
+    """
+    try:
+        pid = peer_pid(sock)
+    except OSError:
+        return "unknown", "unknown"
+    return peer_cwd(pid), peer_cmdline(pid)
 
 
 def clean(s, limit=200):
@@ -120,7 +169,7 @@ def clean(s, limit=200):
     return s if len(s) <= limit else s[:limit] + "…"
 
 
-def confirm_via_tmux(cwd, key_comment):
+def confirm_via_tmux(cwd, cmdline, key_comment):
     """Block on a tmux popup asking to approve a sign request.
 
     Returns False immediately, without showing a popup, if there's no
@@ -144,6 +193,7 @@ def confirm_via_tmux(cwd, key_comment):
         with os.fdopen(info_fd, "w", encoding="utf-8") as f:
             f.write("Allow SSH agent to sign?\n\n")
             f.write(f"  cwd:      {clean(cwd)}\n")
+            f.write(f"  command:  {clean(cmdline)}\n")
             f.write(f"  comment:  {clean(key_comment or 'unknown')}\n")
 
         popup_cmd = (
@@ -176,7 +226,14 @@ def confirm_via_tmux(cwd, key_comment):
 
 
 def handle_client(client, upstream_path):
-    """Relay one client connection to the upstream agent, gating sign requests."""
+    """Relay one client connection to the upstream agent.
+
+    Only FORWARDABLE request types are relayed at all, and sign requests
+    among them only after the user approves the popup; everything else is
+    answered with SSH_AGENT_FAILURE without upstream ever seeing the frame.
+    """
+    cwd, cmdline = describe_peer(client)
+
     try:
         upstream = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         upstream.connect(upstream_path)
@@ -194,6 +251,10 @@ def handle_client(client, upstream_path):
 
             msg_type = payload[0]
 
+            if msg_type not in FORWARDABLE:
+                write_frame(client, bytes([SSH_AGENT_FAILURE]))
+                continue
+
             if msg_type == SSH_AGENTC_SIGN_REQUEST:
                 try:
                     key_blob, _ = read_string(payload, 1)
@@ -202,7 +263,7 @@ def handle_client(client, upstream_path):
                     key_fp = "unknown"
                 with IDENTITY_LOCK:
                     key_comment = IDENTITY_COMMENTS.get(key_fp)
-                if not confirm_via_tmux(peer_cwd(client), key_comment):
+                if not confirm_via_tmux(cwd, cmdline, key_comment):
                     write_frame(client, bytes([SSH_AGENT_FAILURE]))
                     continue
 

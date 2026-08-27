@@ -305,6 +305,7 @@
         black
         pylint
         python3Packages.dbus-next
+        python3Packages.pytest
         ty
         uv
 

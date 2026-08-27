@@ -121,6 +121,9 @@ bindsym {
 # Reload the config file.
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
+
+# Unstick a runaway pointer grab (see swaywm/sway#5922) without replugging the mouse.
+bindsym $mod+Shift+u fullscreen toggle, fullscreen toggle
 bindsym $mod+Shift+e exec "swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'"
 bindsym $mod+Shift+Backspace exec lock
 # Toggle control center
@@ -150,6 +153,7 @@ input * {
 
 input type:touchpad {
     tap enabled
+    events disabled_on_external_mouse
 }
 
 focus_follows_mouse no

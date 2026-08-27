@@ -89,7 +89,7 @@ function git-search {
 	if [ "$target" == "log" ]; then
 		# Note: we need gitflags unquoted:
 		# shellcheck disable=SC2086
-		git log \
+		git log --tags HEAD \
 			--color --decorate --pretty="format:$GIT_LOG_PRETTY_FORMAT" -i --perl-regexp $gitflags "$query" |
 			python3 ~/.scripts/git/relative_date.py
 	elif [ "$target" == "reflog" ]; then

@@ -57,7 +57,6 @@ args=(
 	# itself. $HOME/go/bin is NOT shared - it's on the host's $PATH, so it
 	# gets a per-project volume below instead.
 	--bind "$HOME/go/pkg" "$HOME/go/pkg"
-	--bind "$PWD" "$PWD"
 )
 
 # Pass through as-is rather than hardcoding a store path that changes on
@@ -240,6 +239,10 @@ add_volume "$HOME/.npm/"
 # `go install` working without any project's build reaching the host's
 # PATH (or another project's).
 add_volume "$HOME/go/bin/"
+
+args+=(
+	--bind "$PWD" "$PWD"
+)
 
 args+=(
 	bash

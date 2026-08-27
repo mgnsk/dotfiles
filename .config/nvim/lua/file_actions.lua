@@ -5,25 +5,12 @@ local M = {}
 ---@param name string
 ---@param config conform.FormatterConfigOverride
 function M.registerFormatter(name, config)
-	if os.getenv("NVIM_DIFF") then
+	if require("util").in_diff_mode() then
 		return
 	end
 
 	require("conform").formatters[name] = config
 end
-
---- Configure formatter for the current buffer's filetype to run on BufWritePre.
----
----@param formatters string[]
-local function configureFormatBeforeSave(formatters)
-	if os.getenv("NVIM_DIFF") then
-		return
-	end
-
-	require("conform").formatters_by_ft[vim.bo.filetype] = formatters
-end
-
-M.configureFormatBeforeSave = configureFormatBeforeSave
 
 --- Configure biome LSP or prettier formatter.
 function M.configureBiomeOrPrettierFormatBeforeSave()
@@ -38,9 +25,9 @@ function M.configureBiomeOrPrettierFormatBeforeSave()
 		end
 
 		if has_biome then
-			configureFormatBeforeSave({ lsp_format = "fallback" })
+			M.configureFormatBeforeSave({ lsp_format = "fallback" })
 		else
-			configureFormatBeforeSave({ "prettier" })
+			M.configureFormatBeforeSave({ "prettier" })
 		end
 	end
 
@@ -52,7 +39,7 @@ end
 ---
 ---@param formatters string[]
 function M.configureFormatBeforeSave(formatters)
-	if os.getenv("NVIM_DIFF") then
+	if require("util").in_diff_mode() then
 		return
 	end
 
@@ -61,7 +48,7 @@ end
 
 --- Configure retab for the current buffer's filetype to run on BufWritePre.
 function M.configureRetabBeforeSave()
-	if os.getenv("NVIM_DIFF") then
+	if require("util").in_diff_mode() then
 		return
 	end
 
@@ -82,7 +69,7 @@ end
 ---
 ---@param linters string[]
 function M.configureLintAfterSave(linters)
-	if os.getenv("NVIM_DIFF") then
+	if require("util").in_diff_mode() then
 		return
 	end
 

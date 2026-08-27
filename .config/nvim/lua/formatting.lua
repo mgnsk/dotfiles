@@ -1,4 +1,4 @@
-if os.getenv("NVIM_DIFF") then
+if require("util").in_diff_mode() then
 	return
 end
 

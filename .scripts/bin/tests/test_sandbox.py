@@ -45,7 +45,7 @@ def _userns_usable():
     if shutil.which("bwrap") is None or shutil.which("pasta") is None:
         return False
     probe = subprocess.run(
-        ["bwrap", "--unshare-all", "--disable-userns", "true"],
+        ["bwrap", "--unshare-all", "--unshare-user", "--disable-userns", "--ro-bind", "/", "/", "true"],
         capture_output=True,
         timeout=10,
     )

@@ -53,6 +53,12 @@ args=(
 	--ro-bind "$HOME/.gitconfig_local" "$HOME/.gitconfig_local"
 	--ro-bind-try "$HOME/.ssh/known_hosts" "$HOME/.ssh/known_hosts"
 
+	# Claude Code policy every sandbox must honor (e.g. suppressing the
+	# Claude-Session commit trailer) - managed settings outrank user/project/
+	# local settings, so the per-project .claude/ volume below can't override
+	# this even though it stays read-write for everything else.
+	--ro-bind "$(dirname "$0")/claude-managed-settings.json" /etc/claude-code/managed-settings.json
+
 	# Shared across projects: content-addressed and checksum-verified by go
 	# itself. $HOME/go/bin is NOT shared - it's on the host's $PATH, so it
 	# gets a per-project volume below instead.

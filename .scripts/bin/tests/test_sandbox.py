@@ -155,6 +155,23 @@ def test_gh_client_shim_is_mounted_read_only(project_dir):
     assert "Read-only file system" in result.stderr
 
 
+def test_claude_managed_settings_are_mounted_read_only(project_dir):
+    """bin/claude-managed-settings.json must land at Claude Code's fixed managed-
+    settings path so every sandbox inherits it (e.g. disabling the Claude-Session
+    commit trailer) regardless of what the project's own .claude/ volume has -
+    and it must not be writable from inside the sandbox.
+    """
+    expected = (BIN_DIR / "claude-managed-settings.json").read_text(encoding="utf-8")
+
+    result = run_sandbox('cat /etc/claude-code/managed-settings.json\n', cwd=project_dir)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == expected
+
+    result = run_sandbox('echo x > /etc/claude-code/managed-settings.json\n', cwd=project_dir)
+    assert result.returncode != 0
+    assert "Read-only file system" in result.stderr
+
+
 def test_go_pkg_is_shared_but_go_bin_is_not(project_dir):
     """$HOME/go/pkg is the module cache: content-addressed and checksum-verified
     by the go tool, safe to share. $HOME/go/bin sits on the *host's* PATH ahead

@@ -1,4 +1,4 @@
-vim.o.background = os.getenv("THEME") or "dark"
+vim.o.background = "light"
 
 local vscode = require("vscode")
 local c = require("vscode.colors").get_colors()
@@ -29,35 +29,10 @@ local cfg = {
 		["@constant.builtin"] = { fg = c.vscYellowOrange, bg = "NONE" },
 		["@constant"] = { link = "@variable" },
 
-		-- typescriptreact: TODO:
-		["typescriptArrowFunc"] = { fg = c.vscFront, bg = "NONE" },
-		-- ["typescriptBlock"] = { fg = c.vscFront, bg = "NONE" },
-		["typescriptImportType"] = { link = "@keyword" },
-		["typescriptFuncKeyword"] = { link = "@keyword" },
-		["typescriptAliasKeyword"] = { link = "@keyword" },
-		["typescriptVariable"] = { link = "@keyword" },
-		["typescriptAsyncFuncKeyword"] = { link = "@keyword" },
-		["typescriptOperator"] = { link = "@keyword" },
-		["typescriptKeywordOp"] = { link = "@keyword" },
-		["typescriptCastKeyword"] = { link = "@keyword" },
-		["typescriptTry"] = { link = "@keyword" },
-		["typescriptExceptions"] = { link = "@keyword" },
-		["typescriptIdentifierName"] = { link = "@variable" }, -- TODO: not working
-		["typescriptNull"] = { link = "@constant.builtin" },
+		TabLineFill = { bg = "NONE" },
+		TabLineSel = { bold = true },
 	},
 }
-
-if vim.o.background == "dark" then
-	local bg = "#101010"
-	cfg.color_overrides.vscBack = bg
-	cfg.group_overrides.TabLine = { fg = c.vscGray, bg = bg }
-	cfg.group_overrides.TabLineFill = { fg = c.vscGray, bg = bg }
-	cfg.group_overrides.TabLineSel = { fg = c.vscGray, bg = bg }
-	cfg.group_overrides.WinSeparator = { fg = bg }
-else
-	cfg.group_overrides.TabLineFill = { bg = "NONE" }
-	cfg.group_overrides.TabLineSel = { bold = true }
-end
 
 vscode.setup(cfg)
 vscode.load()

@@ -31,21 +31,17 @@ export LESS="-R --mouse --wheel-lines=3"
 
 export GIT_LOG_PRETTY_FORMAT='%C(yellow)%h%Creset%x1f%ct%x1f%Creset%s%C(cyan)%d%x1f%Cblue<%an>'
 
-export FZF_DEFAULT_OPTS="--layout=reverse --marker='>' --pointer='>' --style=minimal --no-unicode"
+# https://github.com/Mofiqul/vscode.nvim/blob/main/extra/fzf/vscode-light
+export FZF_DEFAULT_OPTS="--layout=reverse --marker='>' --pointer='>' --style=minimal --no-unicode
+  --color=fg:#000000,fg+:#000000,bg:#FFFFFF,bg+:#F3F3F3
+  --color=hl:#008000,hl+:#AF00DB,info:#AF00DB,marker:#AF00DB
+  --color=prompt:#AF00DB,spinner:#AF00DB,pointer:#AF00DB,header:#008000
+  --color=border:#000000,label:#AF00DB,query:#000000"
 export FZF_DEFAULT_COMMAND="fd --type f --hidden --no-ignore-vcs --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --no-ignore-vcs --exclude '.git/' | awk -F'/' '{print NF, \$0}' | sort -n | cut -d' ' -f2-"
 
 export SSH_AUTH_SOCK=~/.1password/agent.sock
-
-if [[ "$THEME" == "light" ]]; then
-	# https://github.com/Mofiqul/vscode.nvim/blob/main/extra/fzf/vscode-light
-	export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"'
-  --color=fg:#000000,fg+:#000000,bg:#FFFFFF,bg+:#F3F3F3
-  --color=hl:#008000,hl+:#AF00DB,info:#AF00DB,marker:#AF00DB
-  --color=prompt:#AF00DB,spinner:#AF00DB,pointer:#AF00DB,header:#008000
-  --color=border:#000000,label:#AF00DB,query:#000000'
-fi
 
 export LIBRARY_PATH="$HOME/.local/lib"
 

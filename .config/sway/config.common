@@ -162,7 +162,9 @@ focus_follows_mouse no
 # TODO: only if $wallpapers_path exists and at least one file, otherwise we get config syntax error.
 #output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
-for_window [class=".*"] border none
+default_border pixel 1
+smart_borders on
+hide_edge_borders both
 
 for_window [class="REAPER"] border normal, floating enable
 for_window [class="yabridge-host.exe.so"] border normal, floating enable

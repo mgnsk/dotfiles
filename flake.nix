@@ -261,7 +261,6 @@
         ripgrep
         shfmt
         shntool
-        tmux
         tree
         tree-sitter
         tusk-go
@@ -387,8 +386,6 @@
         spirv-tools-lib
         stdenv.cc.cc.lib
         libdisplay-info
-
-        tmux
       ];
 
       winePkgs = with winepkgs; [

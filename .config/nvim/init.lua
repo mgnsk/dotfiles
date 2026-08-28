@@ -11,7 +11,6 @@ vim.o.number = true
 vim.o.signcolumn = "yes"
 vim.o.splitbelow = true
 vim.o.splitright = true
-vim.o.lazyredraw = true
 vim.o.laststatus = 2
 vim.o.wildmenu = true
 vim.o.wrap = true

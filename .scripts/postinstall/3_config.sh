@@ -73,6 +73,11 @@ cat <<-'EOF' | sudo tee /etc/udev/rules.d/99-lowbat.rules >/dev/null
 	SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="[0-5]", RUN+="/usr/bin/systemctl suspend"
 EOF
 
+cat <<-'EOF' | sudo tee /etc/udev/rules.d/50-evoluent-no-autosuspend.rules >/dev/null
+	# Disable USB autosuspend for Evoluent VerticalMouse.
+	ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="1a7c", ATTR{idProduct}=="0195", TEST=="power/control", ATTR{power/control}="on"
+EOF
+
 sudo sensors-detect --auto
 
 # Configure power options.

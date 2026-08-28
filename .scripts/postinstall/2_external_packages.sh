@@ -20,6 +20,7 @@ packages=(
 	libdigidoccpp
 	obmenu-generator
 	qdigidoc4
+	tmux-git
 	web-eid-chrome
 	web-eid-firefox
 )

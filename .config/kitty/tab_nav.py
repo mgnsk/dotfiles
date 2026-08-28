@@ -24,6 +24,5 @@ def handle_result(args: List[str], data: Any, target_window_id: int, boss: BossT
         return
     idx = tabs.index(at)
     delta = -1 if len(args) > 1 and args[1] == 'prev' else 1
-    new_idx = idx + delta
-    if 0 <= new_idx < len(tabs):
-        tm.set_active_tab(tabs[new_idx])
+    new_idx = (idx + delta) % len(tabs)
+    tm.set_active_tab(tabs[new_idx])

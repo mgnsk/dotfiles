@@ -27,6 +27,7 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export PAGER="less -R"
 export MANPAGER="less -R"
+export LESS="-R --mouse --wheel-lines=3"
 
 export GIT_LOG_PRETTY_FORMAT='%C(yellow)%h%Creset%x1f%ct%x1f%Creset%s%C(cyan)%d%x1f%Cblue<%an>'
 

@@ -163,6 +163,7 @@ focus_follows_mouse no
 #output * bg `find $wallpapers_path -type f | shuf -n 1` fill
 
 default_border pixel 1
+default_floating_border pixel 1
 smart_borders on
 hide_edge_borders both
 

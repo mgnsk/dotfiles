@@ -1,3 +1,22 @@
+-- Nix installs plugins as a single packpath entry
+-- (`pack/*/start/<hash>-vimplugin-<name>/`) whose store hash changes on every
+-- rebuild, so discover plugin dirs from packpath at startup rather than
+-- hardcoding a path.
+--- @return string[]
+local function plugin_library()
+	local dirs = {}
+
+	for _, packpath in ipairs(vim.opt.packpath:get()) do
+		for _, dir in ipairs(vim.fn.glob(packpath .. "/pack/*/start/*", true, true)) do
+			if vim.fn.isdirectory(dir .. "/lua") == 1 then
+				table.insert(dirs, dir)
+			end
+		end
+	end
+
+	return dirs
+end
+
 --- @type vim.lsp.Config
 return {
 	cmd = { "lua-language-server", "--force-accept-workspace" },
@@ -17,7 +36,7 @@ return {
 		Lua = {
 			workspace = {
 				checkThirdParty = false,
-				library = { vim.env.VIMRUNTIME },
+				library = vim.list_extend({ vim.env.VIMRUNTIME }, plugin_library()),
 			},
 			completion = {
 				enable = true,

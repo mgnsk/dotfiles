@@ -273,6 +273,7 @@
         antigravity-cli
         claude-code
         github-copilot-cli
+        mcp-nixos
 
         # Bash.
         bash-language-server

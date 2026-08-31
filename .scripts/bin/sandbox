@@ -29,6 +29,7 @@ args=(
 	--setenv TERM "$TERM"
 	--setenv COLORTERM "${COLORTERM:-}"
 	--setenv LANG "${LANG:-en_US.UTF-8}"
+	--setenv PYTHONPATH "${PYTHONPATH:-}"
 	--setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
 	--setenv CUSTOM_HOST "$CUSTOM_HOST"

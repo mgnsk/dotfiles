@@ -13,14 +13,6 @@ from conftest import load_module, recv_raw_frame, send_raw_frame
 gh_guard = load_module("gh-guard")
 
 
-@pytest.fixture(autouse=True)
-def reset_authorized():
-    """AUTHORIZED is shared module-level state across handle_connection calls."""
-    gh_guard.AUTHORIZED.clear()
-    yield
-    gh_guard.AUTHORIZED.clear()
-
-
 @pytest.fixture
 def sock_pair():
     a, b = socket.socketpair()
@@ -57,6 +49,35 @@ def test_read_frame_returns_none_on_close_mid_payload(sock_pair):
     assert gh_guard.read_frame(b) is None
 
 
+def test_read_frame_rejects_oversized_header_without_blocking_on_payload(sock_pair):
+    """A HEADER's length prefix is attacker-controlled (this socket is reachable by
+    anything in the sandbox); claiming ~4 GiB must not make gh-guard try to buffer it."""
+    a, b = sock_pair
+    a.sendall(bytes([gh_guard.HEADER]) + struct.pack(">I", gh_guard.MAX_HEADER_SIZE + 1))
+    assert gh_guard.read_frame(b) is None
+
+
+def test_read_frame_rejects_oversized_non_header_frame(sock_pair):
+    a, b = sock_pair
+    a.sendall(bytes([gh_guard.STDIN_CHUNK]) + struct.pack(">I", gh_guard.MAX_FRAME_SIZE + 1))
+    assert gh_guard.read_frame(b) is None
+
+
+def test_read_frame_accepts_header_at_the_size_limit(sock_pair):
+    """A payload this size overflows the socketpair's buffer, so the send must run
+    concurrently with the read - sendall would otherwise block on a full buffer forever."""
+    a, b = sock_pair
+    payload = b"x" * gh_guard.MAX_HEADER_SIZE
+    sender = threading.Thread(
+        target=a.sendall, args=(bytes([gh_guard.HEADER]) + struct.pack(">I", len(payload)) + payload,)
+    )
+    sender.start()
+    frame_type, received = gh_guard.read_frame(b)
+    sender.join(timeout=5)
+    assert frame_type == gh_guard.HEADER
+    assert received == payload
+
+
 def test_recv_exact_returns_requested_bytes(sock_pair):
     a, b = sock_pair
     a.sendall(b"abcdef")
@@ -77,17 +98,11 @@ def test_clean_strips_nonprintable():
     assert gh_guard.clean("\x1b[31mred\x1b[0m") == "?[31mred?[0m"
 
 
-def test_clean_truncates_long_strings():
-    assert gh_guard.clean("a" * 250) == "a" * 200 + "…"
-
-
-def test_clean_no_truncation_at_exact_limit():
-    s = "a" * 200
+def test_clean_does_not_truncate_long_strings():
+    """A crafted argv shouldn't be able to hide its tail past some display cutoff -
+    what's shown must be exactly what gets executed."""
+    s = "a" * 5000
     assert gh_guard.clean(s) == s
-
-
-def test_clean_respects_custom_limit():
-    assert gh_guard.clean("abcdef", limit=3) == "abc…"
 
 
 # -- build_gh_env() --------------------------------------------------------
@@ -193,7 +208,59 @@ def test_confirm_via_tmux_denied_leaves_marker_empty(monkeypatch, tmp_path):
     assert not os.path.exists(created[1])
 
 
+def test_confirm_via_tmux_info_text_includes_cwd_and_command(monkeypatch, tmp_path):
+    monkeypatch.setenv("TMUX", "session")
+    created = _patch_tempfile_dir(monkeypatch, tmp_path)
+    seen_info_text = {}
+
+    def fake_popen(cmd, *a, **k):
+        info_path = created[1]
+        with open(info_path, encoding="utf-8") as f:
+            seen_info_text["text"] = f.read()
+        return _FakePopup()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: None)
+
+    gh_guard.confirm_via_tmux("/my/project", ["issue", "create", "--title", "test with spaces"])
+    text = seen_info_text["text"]
+    assert "cwd:      /my/project" in text
+    assert "command:  gh issue create --title 'test with spaces'" in text
+
+
+def test_confirm_via_tmux_info_text_handles_empty_argv(monkeypatch, tmp_path):
+    monkeypatch.setenv("TMUX", "session")
+    created = _patch_tempfile_dir(monkeypatch, tmp_path)
+    seen_info_text = {}
+
+    def fake_popen(cmd, *a, **k):
+        info_path = created[1]
+        with open(info_path, encoding="utf-8") as f:
+            seen_info_text["text"] = f.read()
+        return _FakePopup()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: None)
+
+    gh_guard.confirm_via_tmux("/my/project", [])
+    text = seen_info_text["text"]
+    assert "cwd:      /my/project" in text
+    assert "command:  gh\n" in text
+
+
 # -- parse_header() --------------------------------------------------------
+
+
+def _header(cwd="/tmp", argv=None, isatty=False, columns=None, env=None):
+    return json.dumps(
+        {
+            "cwd": cwd,
+            "argv": argv or [],
+            "isatty": isatty,
+            "columns": columns,
+            "env": env or {},
+        }
+    ).encode()
 
 
 def test_parse_header_accepts_a_well_formed_header():
@@ -242,7 +309,38 @@ def test_parse_header_rejects_non_json():
         gh_guard.parse_header(b"not json")
 
 
+# -- cwd_is_contained() --------------------------------------------------------
+
+
+def test_cwd_is_contained_accepts_root_itself():
+    assert gh_guard.cwd_is_contained("/tmp/proj", "/tmp/proj") is True
+
+
+def test_cwd_is_contained_accepts_subdirectory():
+    assert gh_guard.cwd_is_contained("/tmp/proj/sub/dir", "/tmp/proj") is True
+
+
+def test_cwd_is_contained_rejects_sibling_directory():
+    """A sibling with the root as a string prefix (/tmp/proj-evil vs /tmp/proj) must not
+    pass a naive startswith check."""
+    assert gh_guard.cwd_is_contained("/tmp/proj-evil", "/tmp/proj") is False
+
+
+def test_cwd_is_contained_rejects_unrelated_path():
+    assert gh_guard.cwd_is_contained("/home/other/repo", "/tmp/proj") is False
+
+
+def test_cwd_is_contained_resolves_dotdot_escape():
+    assert gh_guard.cwd_is_contained("/tmp/proj/../../etc", "/tmp/proj") is False
+
+
 # -- handle_connection() --------------------------------------------------------
+
+# Matches the default cwd ("/tmp") in _header() and the "/tmp/work" used by a
+# few tests below - handle_connection now refuses any cwd outside the project
+# root it's given, so tests not exercising that check need one that contains
+# their header's cwd.
+PROJECT_ROOT = "/tmp"
 
 
 class _FD:
@@ -279,20 +377,9 @@ class _FakeProcess:
             os.close(fd)
 
 
-def _header(cwd="/tmp", argv=None, isatty=False, columns=None, env=None):
-    return json.dumps(
-        {
-            "cwd": cwd,
-            "argv": argv or [],
-            "isatty": isatty,
-            "columns": columns,
-            "env": env or {},
-        }
-    ).encode()
+def test_handle_connection_approved_runs_gh_and_relays_output_and_exit_code(monkeypatch):
+    monkeypatch.setattr(gh_guard, "confirm_via_tmux", lambda cwd, argv: True)
 
-
-def test_handle_connection_authorized_relays_output_and_exit_code(monkeypatch):
-    gh_guard.AUTHORIZED.set()
     ours, theirs = socket.socketpair()
     send_raw_frame(theirs, gh_guard.HEADER, _header(cwd="/tmp/work", argv=["pr", "status"]))
 
@@ -306,7 +393,7 @@ def test_handle_connection_authorized_relays_output_and_exit_code(monkeypatch):
     monkeypatch.setattr(subprocess, "Popen", fake_popen)
 
     try:
-        gh_guard.handle_connection(ours)
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
 
         frames = []
         while True:
@@ -318,8 +405,6 @@ def test_handle_connection_authorized_relays_output_and_exit_code(monkeypatch):
         fake_process.close()
         theirs.close()
 
-    # stdout/stderr are relayed by two independently-scheduled threads, so
-    # their relative order isn't guaranteed - only that EXIT_CODE is last.
     assert set(frames[:-1]) == {
         (gh_guard.STDOUT_CHUNK, b"out-data"),
         (gh_guard.STDERR_CHUNK, b"err-data"),
@@ -330,26 +415,78 @@ def test_handle_connection_authorized_relays_output_and_exit_code(monkeypatch):
     assert kwargs["cwd"] == "/tmp/work"
 
 
-def test_handle_connection_denied_without_tmux_never_spawns_gh(monkeypatch):
-    monkeypatch.delenv("TMUX", raising=False)
-    ours, theirs = socket.socketpair()
-    send_raw_frame(theirs, gh_guard.HEADER, _header(argv=["pr", "status"]))
+def test_handle_connection_denied_sends_denied_frame_and_never_spawns_gh(monkeypatch):
+    monkeypatch.setattr(gh_guard, "confirm_via_tmux", lambda cwd, argv: False)
 
-    monkeypatch.setattr(
-        subprocess, "Popen", lambda *a, **k: (_ for _ in ()).throw(AssertionError("denied"))
-    )
+    ours, theirs = socket.socketpair()
+    send_raw_frame(theirs, gh_guard.HEADER, _header(cwd="/tmp/work", argv=["pr", "status"]))
+
+    popen_called = False
+
+    def fake_popen(cmd, **kwargs):
+        nonlocal popen_called
+        popen_called = True
+        return _FakeProcess()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
 
     try:
-        gh_guard.handle_connection(ours)
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
+
         frame = recv_raw_frame(theirs)
-        assert frame[0] == gh_guard.DENIED
+        assert frame is not None
+        frame_type, payload = frame
+        assert frame_type == gh_guard.DENIED
+        assert b"declined" in payload
         assert recv_raw_frame(theirs) is None
     finally:
         theirs.close()
 
+    assert not popen_called
+
+
+def test_handle_connection_rejects_cwd_outside_project_root_without_prompting(monkeypatch):
+    confirm_called = False
+
+    def fake_confirm(cwd, argv):
+        nonlocal confirm_called
+        confirm_called = True
+        return True
+
+    monkeypatch.setattr(gh_guard, "confirm_via_tmux", fake_confirm)
+
+    ours, theirs = socket.socketpair()
+    send_raw_frame(
+        theirs, gh_guard.HEADER, _header(cwd="/somewhere/else", argv=["pr", "status"])
+    )
+
+    popen_called = False
+
+    def fake_popen(cmd, **kwargs):
+        nonlocal popen_called
+        popen_called = True
+        return _FakeProcess()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+
+    try:
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
+
+        frame = recv_raw_frame(theirs)
+        assert frame is not None
+        frame_type, payload = frame
+        assert frame_type == gh_guard.DENIED
+        assert b"outside the sandboxed project" in payload
+        assert recv_raw_frame(theirs) is None
+    finally:
+        theirs.close()
+
+    assert not confirm_called, "must refuse before ever asking the user to approve"
+    assert not popen_called
+
 
 def test_handle_connection_forwards_tty_hints_from_a_valid_header(monkeypatch):
-    gh_guard.AUTHORIZED.set()
+    monkeypatch.setattr(gh_guard, "confirm_via_tmux", lambda cwd, argv: True)
     monkeypatch.delenv("GH_FORCE_TTY", raising=False)
     ours, theirs = socket.socketpair()
     send_raw_frame(theirs, gh_guard.HEADER, _header(argv=["pr", "list"], isatty=True, columns=80))
@@ -364,7 +501,7 @@ def test_handle_connection_forwards_tty_hints_from_a_valid_header(monkeypatch):
     monkeypatch.setattr(subprocess, "Popen", fake_popen)
 
     try:
-        gh_guard.handle_connection(ours)
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
     finally:
         fake_process.close()
         theirs.close()
@@ -373,9 +510,28 @@ def test_handle_connection_forwards_tty_hints_from_a_valid_header(monkeypatch):
     assert kwargs["env"]["GH_FORCE_TTY"] == "80"
 
 
+def test_handle_connection_popen_oserror_sends_denied_frame(monkeypatch):
+    monkeypatch.setattr(gh_guard, "confirm_via_tmux", lambda cwd, argv: True)
+    ours, theirs = socket.socketpair()
+    send_raw_frame(theirs, gh_guard.HEADER, _header(argv=["pr", "status"]))
+
+    def fake_popen(*a, **k):
+        raise OSError("binary not found")
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+
+    try:
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
+        frame = recv_raw_frame(theirs)
+        assert frame is not None
+        frame_type, payload = frame
+        assert frame_type == gh_guard.DENIED
+        assert b"failed to start gh" in payload
+    finally:
+        theirs.close()
+
+
 def test_handle_connection_rejects_non_header_first_frame(monkeypatch):
-    """The frame type is part of the contract, not decoration."""
-    gh_guard.AUTHORIZED.set()
     ours, theirs = socket.socketpair()
     send_raw_frame(theirs, gh_guard.STDIN_CHUNK, _header(argv=["pr", "status"]))
 
@@ -384,7 +540,7 @@ def test_handle_connection_rejects_non_header_first_frame(monkeypatch):
     )
 
     try:
-        gh_guard.handle_connection(ours)
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
         assert recv_raw_frame(theirs) is None
     finally:
         theirs.close()
@@ -399,18 +555,11 @@ def test_handle_connection_rejects_non_header_first_frame(monkeypatch):
         ("columns", "80"),
         ("columns", 0),
         ("columns", -1),
-        ("columns", True),  # bool is an int subclass, but not a terminal width
+        ("columns", True),
         ("columns", {}),
     ],
 )
 def test_handle_connection_rejects_malformed_tty_hints(field, value, monkeypatch):
-    """These reach build_gh_env and land in the environment `gh` runs under.
-
-    AUTHORIZED is set so the only thing that can reject the connection here is
-    the type checking - the whole header is parsed ahead of the auth gate, off
-    a socket anything in the sandbox can open.
-    """
-    gh_guard.AUTHORIZED.set()
     ours, theirs = socket.socketpair()
     send_raw_frame(theirs, gh_guard.HEADER, _header(**{field: value}))
 
@@ -419,21 +568,19 @@ def test_handle_connection_rejects_malformed_tty_hints(field, value, monkeypatch
     )
 
     try:
-        gh_guard.handle_connection(ours)
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
         assert recv_raw_frame(theirs) is None
     finally:
         theirs.close()
 
 
 def test_handle_connection_malformed_header_closes_quietly():
-    # Header validation happens before the auth check, so AUTHORIZED state
-    # doesn't matter here - this never reaches confirm_via_tmux/subprocess.
     ours, theirs = socket.socketpair()
     bad_header = json.dumps({"argv": ["pr"]}).encode()  # missing "cwd"
     send_raw_frame(theirs, gh_guard.HEADER, bad_header)
 
     try:
-        gh_guard.handle_connection(ours)
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
         assert recv_raw_frame(theirs) is None
     finally:
         theirs.close()
@@ -447,3 +594,87 @@ def test_kill_process_group_terminates_real_process():
     gh_guard.kill_process_group(process)
     process.wait(timeout=2)
     assert process.poll() is not None
+
+
+# -- relay_output() / relay_stdin() ---------------------------------------------
+
+
+def test_relay_output_forwards_pipe_bytes_to_socket(sock_pair):
+    a, b = sock_pair
+    r, w = os.pipe()
+    os.write(w, b"hello from pipe")
+    os.close(w)
+    lock = threading.Lock()
+
+    t = threading.Thread(target=gh_guard.relay_output, args=(r, a, lock, gh_guard.STDOUT_CHUNK))
+    t.start()
+    t.join(timeout=2)
+    os.close(r)
+
+    frame_type, payload = gh_guard.read_frame(b)
+    assert frame_type == gh_guard.STDOUT_CHUNK
+    assert payload == b"hello from pipe"
+
+
+def test_relay_stdin_forwards_chunks_and_closes_on_eof(sock_pair):
+    a, b = sock_pair
+
+    class MockStdin:
+        def __init__(self):
+            self.data = bytearray()
+            self.closed = False
+
+        def write(self, chunk):
+            self.data.extend(chunk)
+
+        def close(self):
+            self.closed = True
+
+    class MockProcess:
+        def __init__(self):
+            self.stdin = MockStdin()
+            self.pid = 12345
+
+        def poll(self):
+            return 0
+
+    proc = MockProcess()
+    t = threading.Thread(target=gh_guard.relay_stdin, args=(b, proc))
+    t.start()
+
+    _write(a, gh_guard.STDIN_CHUNK, b"chunk1")
+    _write(a, gh_guard.STDIN_CHUNK, b"chunk2")
+    _write(a, gh_guard.STDIN_EOF, b"")
+
+    t.join(timeout=2)
+    assert proc.stdin.data == b"chunk1chunk2"
+    assert proc.stdin.closed is True
+
+
+def test_relay_stdin_kills_process_group_on_unexpected_client_disconnect(sock_pair, monkeypatch):
+    a, b = sock_pair
+
+    class MockProcess:
+        def __init__(self):
+            self.stdin = io.BytesIO()
+            self.pid = 99999
+
+        def poll(self):
+            return None
+
+    proc = MockProcess()
+    killed = False
+
+    def fake_kill(p):
+        nonlocal killed
+        killed = True
+
+    monkeypatch.setattr(gh_guard, "kill_process_group", fake_kill)
+
+    t = threading.Thread(target=gh_guard.relay_stdin, args=(b, proc))
+    t.start()
+
+    a.close()  # Close socket before STDIN_EOF
+    t.join(timeout=2)
+
+    assert killed is True

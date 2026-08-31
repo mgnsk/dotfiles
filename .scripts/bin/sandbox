@@ -171,12 +171,11 @@ args+=(
 
 # Sandboxed `gh` is relayed to gh-guard, which execs the HOST's own `gh`
 # with its real login - per-sandbox OAuth state was hitting GitHub's cap on
-# simultaneously valid tokens and silently invalidating older logins. First
-# invocation per session is gated behind a tmux popup; later ones forward
-# silently.
+# simultaneously valid tokens and silently invalidating older logins. Every
+# invocation is gated behind a tmux popup confirmation.
 gh_proxy_dir=$(mktemp -d)
 gh_proxy_sock="$gh_proxy_dir/gh.sock"
-"$(dirname "$0")/gh-guard" "$gh_proxy_sock" &
+"$(dirname "$0")/gh-guard" "$gh_proxy_sock" "$project" &
 gh_proxy_pid=$!
 
 for _ in $(seq 1 50); do

@@ -4,23 +4,10 @@
 Runs outside the sandbox, listening on a private socket that bin/sandbox
 bind-mounts in at $XDG_RUNTIME_DIR/gh-guard.sock. A sandboxed `gh`
 invocation is actually bin/gh-client, which forwards its cwd/argv/stdin
-here; this execs the host's own authenticated `gh` and relays
-stdout/stderr/exit code back in real time.
-
-The first invocation in a sandbox session (this process's lifetime) is
-gated behind a blocking tmux popup confirmation. Approving authorizes
-every later `gh` call this session without asking again - this is a
-coarse, session-level grant, not a per-command gate, since arbitrary `gh`
-commands are the normal, expected use here, not a rare privileged
-operation.
-
-Note what that grant covers: past it, argv and cwd are both wholly
-sandbox-chosen, and `gh` shells out to `git`, which honours repo-local
-config (core.fsmonitor, core.sshCommand, aliases) in whatever directory it
-is pointed at. So approving is closer to "run host commands as me" than to
-"read my GitHub token". This isn't new reach - bin/sandbox already
-bind-mounts $PWD read-write, so the sandbox can plant a .git/config the
-host user's own git will read - but it is the real size of the grant.
+here; requests whose cwd isn't the project root this instance was started
+for (argv[2]) are refused outright, otherwise this prompts the user for
+confirmation via a tmux popup, and if approved, execs the host's own
+authenticated `gh` and relays stdout/stderr/exit code back in real time.
 """
 
 import json
@@ -45,8 +32,14 @@ DENIED = 0x13
 
 TTY_ENV_VARS = ("NO_COLOR", "CLICOLOR", "CLICOLOR_FORCE", "GH_FORCE_TTY")
 
-AUTHORIZED = threading.Event()
-FIRST_PROMPT_LOCK = threading.Lock()
+# The length prefix is a client-controlled uint32 (up to ~4 GiB), and this
+# socket is reachable by anything in the sandbox, not just gh-client - so
+# recv_exact() must never be let loose on an attacker-chosen length. HEADER
+# is JSON holding just a cwd/argv/env triple and never needs to be large;
+# other frame types carry piped stdin (e.g. `gh release upload`), which can
+# legitimately be big, so they get a much looser cap.
+MAX_HEADER_SIZE = 1 * 1024 * 1024
+MAX_FRAME_SIZE = 64 * 1024 * 1024
 
 
 def write_frame(sock, lock, frame_type, payload):
@@ -55,12 +48,15 @@ def write_frame(sock, lock, frame_type, payload):
 
 
 def read_frame(sock):
-    """Read one (type, payload) frame, or None at EOF."""
+    """Read one (type, payload) frame, or None at EOF or an oversized length."""
     hdr = recv_exact(sock, 5)
     if hdr is None:
         return None
     frame_type = hdr[0]
     (length,) = struct.unpack(">I", hdr[1:])
+    limit = MAX_HEADER_SIZE if frame_type == HEADER else MAX_FRAME_SIZE
+    if length > limit:
+        return None
     payload = recv_exact(sock, length)
     if payload is None:
         return None
@@ -77,58 +73,71 @@ def recv_exact(sock, n):
     return buf
 
 
-def clean(s, limit=200):
-    """Strip non-printable chars and truncate for safe display in the popup."""
-    s = "".join(c if c.isprintable() else "?" for c in s)
-    return s if len(s) <= limit else s[:limit] + "…"
+def clean(s):
+    """Strip non-printable chars for safe display in the popup.
+
+    Deliberately does not truncate: argv order is attacker-controllable
+    (gh accepts flags before or after positionals), so cutting the display
+    at some fixed length would let a crafted command show a harmless
+    prefix while hiding the flags that actually matter past the cutoff -
+    approving something other than what's shown. MAX_HEADER_SIZE bounds
+    the underlying data instead, so there's no unbounded-length case to
+    truncate against.
+    """
+    return "".join(c if c.isprintable() else "?" for c in s)
+
+
+_popup_lock = threading.Lock()
 
 
 def confirm_via_tmux(cwd, argv):
-    """Block on a tmux popup asking to authorize sandboxed gh for this session.
+    """Block on a tmux popup asking to authorize this gh command invocation.
 
-    Returns False immediately, without showing a popup, if there's no
-    tmux session to show it in.
+    Returns False immediately, without showing a popup, if there's no tmux
+    session to show it in or the popup fails to display. Serialized
+    process-wide via _popup_lock so concurrent gh invocations don't collide
+    on display-popup.
     """
     if "TMUX" not in os.environ:
         return False
 
-    channel = f"gh-guard-{os.getpid()}-{time.monotonic_ns()}"
-    marker = info_path = None
-    try:
-        marker_fd, marker = tempfile.mkstemp(prefix="gh-guard-marker-")
-        os.close(marker_fd)
+    with _popup_lock:
+        channel = f"gh-guard-{os.getpid()}-{time.monotonic_ns()}"
+        marker = info_path = None
+        try:
+            marker_fd, marker = tempfile.mkstemp(prefix="gh-guard-marker-")
+            os.close(marker_fd)
 
-        info_fd, info_path = tempfile.mkstemp(prefix="gh-guard-info-")
-        with os.fdopen(info_fd, "w", encoding="utf-8") as f:
-            f.write("Allow sandboxed `gh` to use your real GitHub CLI login?\n\n")
-            f.write(f"  cwd:      {clean(cwd)}\n")
-            f.write(f"  command:  gh {clean(shlex.join(argv))}\n\n")
-            f.write("Approving allows ALL gh commands for the rest of this\n")
-            f.write("sandbox session without asking again.\n")
+            info_fd, info_path = tempfile.mkstemp(prefix="gh-guard-info-")
+            with os.fdopen(info_fd, "w", encoding="utf-8") as f:
+                f.write("Allow sandboxed `gh` command?\n\n")
+                f.write(f"  cwd:      {clean(cwd)}\n")
+                cmd_str = shlex.join(["gh", *argv])
+                f.write(f"  command:  {clean(cmd_str)}\n")
 
-        popup_cmd = (
-            f"cat {shlex.quote(info_path)}; "
-            f'read -p "[y/N] " a; '
-            f'if [[ "$a" == [yY] ]]; then echo yes > {shlex.quote(marker)}; fi; '
-            f"tmux wait-for -S {channel}"
-        )
+            popup_cmd = (
+                f"cat {shlex.quote(info_path)}; "
+                f'read -p "[y/N] " a; '
+                f'if [[ "$a" == [yY] ]]; then echo yes > {shlex.quote(marker)}; fi; '
+                f"tmux wait-for -S {channel}"
+            )
 
-        with subprocess.Popen(["tmux", "display-popup", "-E", "-w", "76", popup_cmd]) as popup:
+            with subprocess.Popen(["tmux", "display-popup", "-E", "-w", "76", popup_cmd]) as popup:
 
-            def watch_popup():
-                if popup.wait() != 0:
-                    subprocess.run(["tmux", "wait-for", "-S", channel], check=False)
+                def watch_popup():
+                    if popup.wait() != 0:
+                        subprocess.run(["tmux", "wait-for", "-S", channel], check=False)
 
-            threading.Thread(target=watch_popup, daemon=True).start()
+                threading.Thread(target=watch_popup, daemon=True).start()
 
-            subprocess.run(["tmux", "wait-for", channel], check=False)
-        with open(marker, encoding="utf-8") as f:
-            return f.read().strip() == "yes"
-    finally:
-        if marker:
-            os.unlink(marker)
-        if info_path:
-            os.unlink(info_path)
+                subprocess.run(["tmux", "wait-for", channel], check=False)
+            with open(marker, encoding="utf-8") as f:
+                return f.read().strip() == "yes"
+        finally:
+            if marker:
+                os.unlink(marker)
+            if info_path:
+                os.unlink(info_path)
 
 
 def relay_output(process_fd, sock, lock, frame_type):
@@ -244,7 +253,26 @@ def parse_header(payload):
     return cwd, argv, isatty, columns, client_env
 
 
-def handle_connection(client):
+def cwd_is_contained(cwd, project_root):
+    """Is cwd the project root bin/sandbox was launched for, or beneath it?
+
+    cwd arrives in the HEADER off a socket anything in the sandbox can
+    open, and gh-guard itself runs unsandboxed with the real host
+    filesystem view - bind-mounts inside the sandbox preserve absolute
+    paths, but nothing stops a header claiming some other host path
+    entirely (another repo, $HOME, ...). realpath resolves symlinks and
+    '..' on the actual host fs so a relative escape can't sneak past the
+    prefix check.
+    """
+    try:
+        cwd_real = os.path.realpath(cwd)
+        root_real = os.path.realpath(project_root)
+    except OSError:
+        return False
+    return cwd_real == root_real or cwd_real.startswith(root_real + os.sep)
+
+
+def handle_connection(client, project_root):
     lock = threading.Lock()
     try:
         header_frame = read_frame(client)
@@ -255,20 +283,24 @@ def handle_connection(client):
             raise ValueError("expected a HEADER frame")
         cwd, argv, isatty, columns, client_env = parse_header(payload)
 
-        if not AUTHORIZED.is_set():
-            with FIRST_PROMPT_LOCK:
-                if not AUTHORIZED.is_set():
-                    if confirm_via_tmux(cwd, argv):
-                        AUTHORIZED.set()
-                    else:
-                        write_frame(client, lock, DENIED, b"gh-guard: access declined\n")
-                        return
+        if not cwd_is_contained(cwd, project_root):
+            write_frame(
+                client, lock, DENIED,
+                b"gh-guard: cwd is outside the sandboxed project, refusing\n",
+            )
+            return
+
+        if not confirm_via_tmux(cwd, argv):
+            write_frame(client, lock, DENIED, b"gh-guard: command declined by user\n")
+            return
+
+        env = build_gh_env(isatty, columns, client_env)
 
         try:
             process = subprocess.Popen(
                 ["gh", *argv],
                 cwd=cwd,
-                env=build_gh_env(isatty, columns, client_env),
+                env=env,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -300,10 +332,6 @@ def handle_connection(client):
     except (OSError, json.JSONDecodeError, KeyError, ValueError):
         pass
     finally:
-        # shutdown() before close(): stdin_thread may still be blocked in
-        # recv() on this same socket, and closing a fd from another thread
-        # while a thread is blocked reading it doesn't reliably unblock
-        # that read on Linux - shutdown() does.
         try:
             client.shutdown(socket.SHUT_RDWR)
         except OSError:
@@ -312,15 +340,20 @@ def handle_connection(client):
 
 
 def main():
-    """Listen on argv[1], handling each gh invocation on its own thread."""
+    """Listen on argv[1] for connections scoped to the argv[2] project root, one thread each."""
     listen_path = sys.argv[1]
+    project_root = sys.argv[2]
+    if os.path.exists(listen_path):
+        os.unlink(listen_path)
     server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     server.bind(listen_path)
     server.listen(5)
 
     while True:
         client, _ = server.accept()
-        threading.Thread(target=handle_connection, args=(client,), daemon=True).start()
+        threading.Thread(
+            target=handle_connection, args=(client, project_root), daemon=True
+        ).start()
 
 
 if __name__ == "__main__":

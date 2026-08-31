@@ -290,12 +290,12 @@
 
         # Lua.
         lua-language-server
-        lua54Packages.luacheck
+        luajitPackages.luacheck
         stylua
 
         # PHP.
-        php85
-        php85Packages.composer
+        php
+        phpPackages.composer
         phpactor
         phpstan
         pint
@@ -303,8 +303,12 @@
         # Python.
         black
         pylint
-        python3Packages.dbus-next
-        python3Packages.pytest
+        (python3.withPackages (
+          ps: with ps; [
+            dbus-next
+            pytest
+          ]
+        ))
         ty
         uv
 

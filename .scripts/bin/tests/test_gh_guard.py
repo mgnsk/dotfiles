@@ -91,6 +91,50 @@ def test_recv_exact_returns_none_on_early_close(sock_pair):
     assert gh_guard.recv_exact(b, 6) is None
 
 
+# -- is_read_only() --------------------------------------------------------
+
+
+def test_is_read_only_matches_prefix_with_trailing_args():
+    assert gh_guard.is_read_only(["pr", "view", "123"]) is True
+
+
+def test_is_read_only_matches_bare_noun_whole_subtree_entries():
+    assert gh_guard.is_read_only(["search", "issues", "foo"]) is True
+    assert gh_guard.is_read_only(["browse"]) is True
+
+
+def test_is_read_only_does_not_match_partial_token_overlap():
+    """List-equality prefix matching, not a string prefix - "prx" must not match "pr"."""
+    assert gh_guard.is_read_only(["prx", "view"]) is False
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["pr", "create"],
+        ["issue", "close", "1"],
+        ["repo", "delete", "x"],
+    ],
+)
+def test_is_read_only_rejects_mutating_verbs_on_a_whitelisted_noun(argv):
+    assert gh_guard.is_read_only(argv) is False
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["api", "repos/x/y"],
+        ["api", "-XGET", "repos/x/y"],
+    ],
+)
+def test_is_read_only_never_matches_gh_api(argv):
+    assert gh_guard.is_read_only(argv) is False
+
+
+def test_is_read_only_rejects_empty_argv():
+    assert gh_guard.is_read_only([]) is False
+
+
 # -- clean() --------------------------------------------------------
 
 
@@ -419,7 +463,7 @@ def test_handle_connection_denied_sends_denied_frame_and_never_spawns_gh(monkeyp
     monkeypatch.setattr(gh_guard, "confirm_via_tmux", lambda cwd, argv: False)
 
     ours, theirs = socket.socketpair()
-    send_raw_frame(theirs, gh_guard.HEADER, _header(cwd="/tmp/work", argv=["pr", "status"]))
+    send_raw_frame(theirs, gh_guard.HEADER, _header(cwd="/tmp/work", argv=["pr", "merge"]))
 
     popen_called = False
 
@@ -482,6 +526,82 @@ def test_handle_connection_rejects_cwd_outside_project_root_without_prompting(mo
         theirs.close()
 
     assert not confirm_called, "must refuse before ever asking the user to approve"
+    assert not popen_called
+
+
+def test_handle_connection_whitelisted_command_runs_without_confirmation(monkeypatch):
+    def fake_confirm(cwd, argv):
+        raise AssertionError("must not prompt for a whitelisted read command")
+
+    monkeypatch.setattr(gh_guard, "confirm_via_tmux", fake_confirm)
+
+    ours, theirs = socket.socketpair()
+    send_raw_frame(theirs, gh_guard.HEADER, _header(cwd="/tmp/work", argv=["pr", "view"]))
+
+    fake_process = _FakeProcess(stdout_data=b"pr-data", returncode=0)
+    popen_calls = []
+
+    def fake_popen(cmd, **kwargs):
+        popen_calls.append((cmd, kwargs))
+        return fake_process
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+
+    try:
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
+
+        frames = []
+        while True:
+            frame = recv_raw_frame(theirs)
+            if frame is None:
+                break
+            frames.append(frame)
+    finally:
+        fake_process.close()
+        theirs.close()
+
+    assert (gh_guard.STDOUT_CHUNK, b"pr-data") in frames
+    assert frames[-1] == (gh_guard.EXIT_CODE, struct.pack(">I", 0))
+    [(cmd, _kwargs)] = popen_calls
+    assert cmd == ["gh", "pr", "view"]
+
+
+def test_handle_connection_non_whitelisted_command_still_prompts(monkeypatch):
+    confirm_calls = []
+
+    def fake_confirm(cwd, argv):
+        confirm_calls.append(argv)
+        return False
+
+    monkeypatch.setattr(gh_guard, "confirm_via_tmux", fake_confirm)
+
+    ours, theirs = socket.socketpair()
+    send_raw_frame(
+        theirs, gh_guard.HEADER,
+        _header(cwd="/tmp/work", argv=["pr", "create", "--title", "x"]),
+    )
+
+    popen_called = False
+
+    def fake_popen(cmd, **kwargs):
+        nonlocal popen_called
+        popen_called = True
+        return _FakeProcess()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+
+    try:
+        gh_guard.handle_connection(ours, PROJECT_ROOT)
+
+        frame = recv_raw_frame(theirs)
+        assert frame is not None
+        frame_type, payload = frame
+        assert frame_type == gh_guard.DENIED
+        assert b"declined" in payload
+    finally:
+        theirs.close()
+
+    assert confirm_calls == [["pr", "create", "--title", "x"]]
     assert not popen_called
 
 

@@ -5,9 +5,15 @@ Runs outside the sandbox, listening on a private socket that bin/sandbox
 bind-mounts in at $XDG_RUNTIME_DIR/gh-guard.sock. A sandboxed `gh`
 invocation is actually bin/gh-client, which forwards its cwd/argv/stdin
 here; requests whose cwd isn't the project root this instance was started
-for (argv[2]) are refused outright, otherwise this prompts the user for
-confirmation via a tmux popup, and if approved, execs the host's own
-authenticated `gh` and relays stdout/stderr/exit code back in real time.
+for (argv[2]) are refused outright, otherwise this either runs immediately
+(READ_ONLY_PREFIXES) or prompts the user for confirmation via a tmux
+popup, and if approved, execs the host's own authenticated `gh` and relays
+stdout/stderr/exit code back in real time.
+
+READ_ONLY_PREFIXES is a fixed allowlist of literal argv prefixes, matched
+against the start of argv with no flag-skipping and no --help
+special-casing; anything that doesn't literally match falls through to the
+tmux prompt. `gh api` is deliberately not on the list.
 """
 
 import json
@@ -31,6 +37,41 @@ EXIT_CODE = 0x12
 DENIED = 0x13
 
 TTY_ENV_VARS = ("NO_COLOR", "CLICOLOR", "CLICOLOR_FORCE", "GH_FORCE_TTY")
+
+# Exact argv prefixes that run without a tmux prompt. Trailing args/flags
+# after a matched prefix are fine (`pr list --limit 5` matches
+# ("pr", "list")); anything else falls through to confirm_via_tmux.
+# `gh api` is deliberately absent - left for a future plan.
+READ_ONLY_PREFIXES = (
+    ("status",),
+    ("auth", "status"),
+    ("browse",),
+    ("search",),
+
+    ("pr", "view"), ("pr", "list"), ("pr", "status"), ("pr", "diff"), ("pr", "checks"),
+    ("issue", "view"), ("issue", "list"), ("issue", "status"),
+    ("repo", "view"), ("repo", "list"),
+    ("release", "view"), ("release", "list"), ("release", "download"),
+    ("run", "view"), ("run", "list"), ("run", "watch"), ("run", "download"),
+    ("workflow", "view"), ("workflow", "list"),
+    ("gist", "view"), ("gist", "list"),
+    ("label", "list"),
+    ("project", "view"), ("project", "list"),
+    ("org", "list"),
+    ("cache", "list"),
+    ("secret", "list"),
+    ("variable", "list"),
+    ("ssh-key", "list"),
+    ("gpg-key", "list"),
+    ("extension", "list"),
+    ("alias", "list"),
+    ("config", "get"), ("config", "list"),
+)
+
+
+def is_read_only(argv):
+    """Does argv literally start with one of the whitelisted read prefixes?"""
+    return any(argv[: len(prefix)] == list(prefix) for prefix in READ_ONLY_PREFIXES)
 
 # The length prefix is a client-controlled uint32 (up to ~4 GiB), and this
 # socket is reachable by anything in the sandbox, not just gh-client - so
@@ -290,7 +331,7 @@ def handle_connection(client, project_root):
             )
             return
 
-        if not confirm_via_tmux(cwd, argv):
+        if not is_read_only(argv) and not confirm_via_tmux(cwd, argv):
             write_frame(client, lock, DENIED, b"gh-guard: command declined by user\n")
             return
 

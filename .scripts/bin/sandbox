@@ -59,7 +59,6 @@ args=(
 	# local settings, so the per-project .claude/ volume below can't override
 	# this even though it stays read-write for everything else.
 	--ro-bind "$(dirname "$0")/claude-managed-settings.json" /etc/claude-code/managed-settings.json
-	--ro-bind "$(dirname "$0")/claude-managed-mcp.json" /etc/claude-code/managed-mcp.json
 
 	# Shared across projects: content-addressed and checksum-verified by go
 	# itself. $HOME/go/bin is NOT shared - it's on the host's $PATH, so it
@@ -193,6 +192,14 @@ args+=(
 	--ro-bind "$(dirname "$0")/gh-client" "$XDG_RUNTIME_DIR/gh-shim/gh"
 	--setenv PATH "$XDG_RUNTIME_DIR/gh-shim:$PATH"
 )
+
+# mcp-nixos is only relevant to projects with their own Nix flake, so it's
+# kept out of every other project's managed MCP config.
+if [[ -f "$project/flake.nix" ]]; then
+	args+=(
+		--ro-bind "$(dirname "$0")/claude-managed-mcp.json" /etc/claude-code/managed-mcp.json
+	)
+fi
 
 if [[ "$project" == "$HOME" ]]; then
 	args+=(

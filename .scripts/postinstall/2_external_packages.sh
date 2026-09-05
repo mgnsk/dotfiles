@@ -15,14 +15,7 @@ makepkg -D "$yaydir" -si --needed
 packages=(
 	1password
 	1password-cli
-	brave-origin-bin
-	downgrade
-	libdigidoccpp
 	obmenu-generator
-	qdigidoc4
-	tmux-git
-	web-eid-chrome
-	web-eid-firefox
 )
 
 yay -S "${packages[@]}"

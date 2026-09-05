@@ -1,9 +1,9 @@
 #!/bin/env python3
 """gh shim for the sandbox.
 
-Bind-mounted at $XDG_RUNTIME_DIR/gh-shim/gh and put ahead of everything
-else on PATH, so any `gh` invocation inside the sandbox lands here instead
-of the unauthenticated nix-store gh. Forwards the invocation - cwd, argv,
+Bind-mounted over $HOME/.nix-profile/bin/gh, the path the nix-store gh
+resolves to on PATH, so any `gh` invocation inside the sandbox lands here
+instead of the unauthenticated nix-store gh. Forwards the invocation - cwd, argv,
 stdin - to gh-guard over a Unix socket; gh-guard runs outside the sandbox,
 execs the host's own authenticated `gh`, and relays stdout/stderr/exit
 code back.

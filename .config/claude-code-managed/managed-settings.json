@@ -1,8 +1,8 @@
 {
-  "env": {
-    "DISABLE_AUTOUPDATER": 1
-  },
   "attribution": {
     "sessionUrl": false
+  },
+  "env": {
+    "DISABLE_AUTOUPDATER": 1
   }
 }

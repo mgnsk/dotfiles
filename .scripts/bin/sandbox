@@ -32,7 +32,6 @@ args=(
 	--setenv PYTHONPATH "${PYTHONPATH:-}"
 	--setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
 	--setenv USERHOST_COLOR '\[\e[0;33m\]'
-	--setenv CUSTOM_HOST "$CUSTOM_HOST"
 
 	--dev /dev
 	--proc /proc
@@ -44,6 +43,7 @@ args=(
 	--ro-bind /lib /lib
 	--ro-bind /lib64 /lib64
 	--ro-bind /nix /nix
+	--ro-bind "$HOME/.nix-profile" "$HOME/.nix-profile"
 	--ro-bind /etc/resolv.conf /etc/resolv.conf
 	--ro-bind /etc/hosts /etc/hosts
 	--ro-bind /etc/ssl /etc/ssl
@@ -53,12 +53,19 @@ args=(
 
 	--ro-bind "$HOME/.gitconfig_local" "$HOME/.gitconfig_local"
 	--ro-bind-try "$HOME/.ssh/known_hosts" "$HOME/.ssh/known_hosts"
+	# Referenced by gpg.ssh.allowedSignersFile (flake.nix), but the file
+	# itself is a plain host file - not home-manager output, not tracked in
+	# dotfiles git - so it needs its own mount like known_hosts above.
+	--ro-bind-try "$HOME/.config/git/allowed_signers" "$HOME/.config/git/allowed_signers"
 
 	# Claude Code policy every sandbox must honor (e.g. suppressing the
 	# Claude-Session commit trailer) - managed settings outrank user/project/
 	# local settings, so the per-project .claude/ volume below can't override
-	# this even though it stays read-write for everything else.
-	--ro-bind "$(dirname "$0")/claude-managed-settings.json" /etc/claude-code/managed-settings.json
+	# this even though it stays read-write for everything else. A plain
+	# dotfiles-tracked file outside ~/.claude/ so that directory stays a
+	# plain per-project volume, read here before the volume below shadows it
+	# inside the sandbox's own mount namespace.
+	--ro-bind "$HOME/.config/claude-code-managed/managed-settings.json" /etc/claude-code/managed-settings.json
 
 	# Shared across projects: content-addressed and checksum-verified by go
 	# itself. $HOME/go/bin is NOT shared - it's on the host's $PATH, so it
@@ -189,16 +196,38 @@ args+=(
 	# Read-only: this is the same inode as the host's bin/gh-client, which
 	# sits on the host's PATH - a --bind would let the sandbox rewrite it
 	# for code execution on the host next run.
-	--ro-bind "$(dirname "$0")/gh-client" "$XDG_RUNTIME_DIR/gh-shim/gh"
-	--setenv PATH "$XDG_RUNTIME_DIR/gh-shim:$PATH"
+	#
+	# Bound over the store path the nix-profile gh symlink resolves to
+	# (bwrap can't mount onto a symlink destination) rather than earlier
+	# on PATH, because .bashrc's `. nix.sh` re-prepends .nix-profile/bin
+	# ahead of anything a plain PATH entry could add, which would
+	# otherwise shadow a shim with the plain unauthenticated nix-store gh.
+	--ro-bind "$(dirname "$0")/gh-client" "$(readlink -f "$HOME/.nix-profile/bin/gh")"
 )
 
 # mcp-nixos is only relevant to projects with their own Nix flake, so it's
 # kept out of every other project's managed MCP config.
 if [[ -f "$project/flake.nix" ]]; then
 	args+=(
-		--ro-bind "$(dirname "$0")/claude-managed-mcp.json" /etc/claude-code/managed-mcp.json
+		--ro-bind "$HOME/.config/claude-code-managed/managed-mcp.json" /etc/claude-code/managed-mcp.json
 	)
+fi
+
+# Read-only bind every file the current home-manager generation renders into
+# $HOME (.gitconfig, .tmux.conf, mpv/fontconfig configs, ...). Once a
+# program's config moves into flake.nix's home-manager modules it drops out
+# of dotfiles git, so the ls-tree loop below stops seeing it - this picks it
+# back up from the generation's home-files store path instead. Cheaper than
+# running `home-manager switch` inside the sandbox: no network/eval, and no
+# activation scripts (systemd units, etc.) running unshared.
+home_manager_profile="$HOME/.local/state/nix/profiles/home-manager"
+if [[ -e "$home_manager_profile" ]]; then
+	home_files="$(readlink -f "$home_manager_profile/home-files")"
+	while IFS= read -r -d '' f; do
+		args+=(
+			--ro-bind "$f" "$HOME/${f#"$home_files"/}"
+		)
+	done < <(find "$home_files" \( -type f -o -type l \) -print0)
 fi
 
 if [[ "$project" == "$HOME" ]]; then
@@ -258,9 +287,14 @@ args+=(
 	--bind "$PWD" "$PWD"
 )
 
-args+=(
-	bash
-)
+# A plain, non-login bash never reads .bash_profile/.profile; --login makes
+# it. The exec trick runs the given command after that same chain, so
+# `sandbox claude` gets it too.
+if [[ $# -gt 0 ]]; then
+	args+=(bash --login -c 'exec "$@"' bash "$@")
+else
+	args+=(bash --login)
+fi
 
 # pasta creates a fresh net namespace with a userspace TAP and spawns bwrap
 # inside it; bwrap's --share-net above just retains it. --config-net has

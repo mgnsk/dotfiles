@@ -1,4 +1,0 @@
-include ./config.common
-
-# AUTOSTART
-exec bash $HOME/.scripts/sway-startup.sh

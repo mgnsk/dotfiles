@@ -6,10 +6,8 @@ set -eu
 
 packages=(
 	# System.
-	man-db
 	mesa
 	base-devel
-	bash-completion
 	realtime-privileges
 	flatpak
 	tailscale
@@ -23,28 +21,16 @@ packages=(
 	vulkan-tools
 	fwupd
 	inetutils # provides hostname
+	openssh
 
 	# Bluetooth.
 	bluez
 	bluez-utils
-	blueman
 
 	# CLI tools.
-	inotify-tools
-	git
-	less
-	vim
-	grim
-	slurp
-	zenity
-	rsync
-	glances
-	fzf
+	git # also nix-managed, but useful when bootstrapping a fresh system before nix
+	vim # also nix-managed, but useful when bootstrapping a fresh system before nix
 	kconfig # provides kwriteconfig6
-	qrencode
-	patchelf
-	iotop
-	powertop
 	arch-audit
 	reflector
 	bubblewrap
@@ -56,85 +42,21 @@ packages=(
 	kwallet-pam
 
 	# Desktop and window management.
-	sway
-	swaybg
+	# swaylock needs a PAM service file at /etc/pam.d/swaylock to authenticate against your password.
+	# Arch's pacman package for swaylock ships that file as part of the package.
+	# The Nix-built swaylock is just a binary — home-manager doesn't (and can't, on a non-NixOS system) install anything into /etc/pam.d.
 	swaylock
-	swayidle
-	swaync
-	libnotify
-	waybar
-	wl-clipboard
 	mate-polkit
-	xorg-xwayland
-	j4-dmenu-desktop
-	wmenu
-	wdisplays
-	nm-connection-editor
-	network-manager-applet
-	gammastep
-	xdg-desktop-portal-wlr
-	xdg-desktop-portal-gtk
-	xdg-user-dirs
-	pavucontrol
-	noto-fonts
-	noto-fonts-cjk
-	noto-fonts-emoji
-	noto-fonts-extra
-	otf-font-awesome
-	kitty
-	alacritty
-	foot
-	geany
-	archlinux-xdg-menu
-	wayvnc
-
-	# Multimedia.
-	vmpk
-	mpv
-	smplayer
-	picard
-	handbrake
-	yt-dlp
-	whipper
-	gimp
-	inkscape
 
 	# Power management.
 	tlp
 	tlpui
 	smartmontools
 
-	# Web and document tools.
-	thunderbird
-	libreoffice-fresh
-	libreoffice-fresh-et
-	firefox
-	librewolf
-	profile-sync-daemon
-
-	# File management.
-	qt6ct
-	dolphin
-	kde-cli-tools
-	kdegraphics-thumbnailers
-	kimageformats
-	qt6-imageformats
-	ffmpegthumbs
-	ark
-	unrar
-	webp-pixbuf-loader
-	gthumb
-	rclone
-	baobab
-	gnome-disk-utility
-
 	# Xorg and Openbox (for TTY2).
 	xorg-server
 	xorg-xinit
 	openbox
-	tint2
-	picom
-	arandr
 
 	# Printing.
 	cups
@@ -145,12 +67,6 @@ packages=(
 	# iOS.
 	libimobiledevice
 	usbmuxd
-
-	# Audio.
-	reaper
-	reapack
-	qjackctl
-	fluidsynth
 )
 
 if lscpu | grep -q Intel; then

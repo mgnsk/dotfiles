@@ -4,10 +4,9 @@ set -e
 
 USER_NAME=$(id -un)
 
-# nix run github:nix-community/home-manager -- switch --flake /home/$USER_NAME#$USER_NAME
-
 export NIX_CONFIG="experimental-features = nix-command flakes"
 
+# nix run github:nix-community/home-manager -- switch --impure --flake /home/$USER_NAME#$USER_NAME
 home-manager switch --impure --flake "/home/$USER_NAME#$USER_NAME"
 
 # Keep /run/opengl-driver pointed at this generation's GPU libs on non-NixOS

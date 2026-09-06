@@ -642,6 +642,8 @@
     {
       inherit packageSets closurePositions;
 
+      formatter.${system} = homepkgs.nixfmt;
+
       homeConfigurations.${username} = inputs.home-manager.lib.homeManagerConfiguration {
         pkgs = homepkgs;
         modules = [

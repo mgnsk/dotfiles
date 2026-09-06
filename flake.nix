@@ -682,7 +682,13 @@
 
             set +e
 
+            # ~/.bashrc sources nix.sh, which unconditionally overwrites
+            # NIX_PROFILES (rather than appending), dropping the yabridge
+            # entry set above. Without it, yabridge's chainloader .so files
+            # can't find libyabridge-{vst2,vst3}.so at runtime and every
+            # bridged plugin fails to load in REAPER.
             source ~/.bashrc
+            export NIX_PROFILES="${audiopkgs.yabridge} $NIX_PROFILES"
           '';
         };
       };

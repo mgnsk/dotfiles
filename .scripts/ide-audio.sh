@@ -105,7 +105,7 @@ WINPLUGINS="$HOME/Shared/Audio/win-plugins"
 # Set up yabridge paths.
 {
 	if [[ -d "$WINPLUGINS/Plugins" ]]; then
-		yabridgectl sync --prune
+		yabridgectl sync --force --prune --verbose
 		yabridgectl status
 	fi
 }

@@ -1,0 +1,33 @@
+#!/bin/env bash
+
+# Manual diagnostic for the vulkan stack REAPER's GUI plugins (LSP, Zam, ...)
+# and dxvk (via wine) rely on. Not part of any Nix activation - GPU driver
+# state lives outside the Nix store on this system and doesn't change often
+# enough to warrant checking on every `home-manager switch`. Run this by
+# hand if a plugin GUI misbehaves or dxvk fails to initialize.
+
+set -e
+
+if lspci -k | grep -q i915; then
+	echo "Detected Intel GPU (i915)"
+	deps=$(ldd /usr/lib/libvulkan_intel.so)
+elif lspci -k | grep -q amdgpu; then
+	echo "Detected AMD GPU (amdgpu)"
+	deps=$(ldd /usr/lib/libvulkan_radeon.so)
+else
+	echo "Unsupported GPU!"
+	exit 1
+fi
+
+if echo "$deps" | grep -q "not found"; then
+	echo "Missing Vulkan dependencies:"
+	echo "$deps" | grep "not found"
+	exit 1
+fi
+
+if ! vulkaninfo &>/dev/null; then
+	vulkaninfo
+	exit 1
+fi
+
+echo "Vulkan looks fine."

@@ -36,6 +36,11 @@
       inputs.nixpkgs.follows = "nixpkgs-home";
     };
 
+    reaper-flake = {
+      url = "github:9Prestidigitator/reaper-flake";
+      inputs.nixpkgs.follows = "nixpkgs-home";
+    };
+
     # Firefox extension packages (vimium, ublock-origin, ...).
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions";
@@ -170,6 +175,29 @@
         '';
       };
 
+      # Upstream RaySession has a dead `from cgitb import text` import
+      # (the imported name is never used) that only breaks once cgitb is
+      # actually removed from the stdlib in Python 3.13+. Strip it so the
+      # patchbay module imports cleanly.
+      #
+      # It also links against real libjack2, but there's no jack1/jack2
+      # server here - only pipewire's JACK-compatible implementation. This
+      # is what `pw-jack` does under the hood: put pipewire's libjack.so.0
+      # ahead of the real one on LD_LIBRARY_PATH so ray-daemon picks it up
+      # instead of failing to find a JACK server.
+      raysessionFixed = homepkgs.raysession.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          sed -i '/^from cgitb import text$/d' \
+            src/gui/patchbay/patchcanvas/portgroup_widget.py
+        '';
+        makeWrapperArgs = (old.makeWrapperArgs or [ ]) ++ [
+          "--prefix"
+          "LD_LIBRARY_PATH"
+          ":"
+          "${homepkgs.pipewire.jack}/lib"
+        ];
+      });
+
       diff-highlight = homepkgs.linkFarm "diff-highlight" [
         {
           name = "bin/diff-highlight";
@@ -303,204 +331,212 @@
         ];
       };
 
-      homePkgs = with homepkgs; [
-        # General.
-        asciinema
-        bash
-        bash-completion
-        bat
-        buf
-        caddy
-        coreutils
-        cspell
-        cuetools
-        curl
-        diff-highlight
-        fd
-        fdupes
-        file
-        findutils
-        fuse
-        gawk
-        gcc
-        gh
-        gh-tpl
-        git
-        glibcLocalesUtf8
-        glow
-        gnugrep
-        gnused
-        go-jsonnet
-        go-task
-        gojq
-        hadolint
-        helm-ls
-        inotify-tools
-        jq
-        jsonnet-language-server
-        just
-        less
-        libxml2
-        man
-        moreutils
-        ncurses
-        patchelf
-        qrcp
-        qrencode
-        rclone
-        ripgrep
-        rsync
-        shfmt
-        shntool
-        tree
-        tree-sitter
-        tusk-go
-        unzip
-        vim
-        vivid
-        wget
-        which
+      homePkgs =
+        with homepkgs;
+        [
+          # General.
+          asciinema
+          bash
+          bash-completion
+          bat
+          buf
+          caddy
+          coreutils
+          cspell
+          cuetools
+          curl
+          diff-highlight
+          fd
+          fdupes
+          file
+          findutils
+          fuse
+          gawk
+          gcc
+          gh
+          gh-tpl
+          git
+          glibcLocalesUtf8
+          glow
+          gnugrep
+          gnused
+          go-jsonnet
+          go-task
+          gojq
+          hadolint
+          helm-ls
+          inotify-tools
+          jq
+          jsonnet-language-server
+          just
+          less
+          libxml2
+          man
+          moreutils
+          ncurses
+          patchelf
+          qrcp
+          qrencode
+          rclone
+          ripgrep
+          rsync
+          shfmt
+          shntool
+          tree
+          tree-sitter
+          tusk-go
+          unzip
+          vim
+          vivid
+          wget
+          which
 
-        # Desktop and file management.
-        arandr
-        ark
-        baobab
-        geany
-        glances
-        gnome-disk-utility
-        grim
-        gthumb
-        iotop
-        kdePackages.ffmpegthumbs
-        kdePackages.kde-cli-tools
-        kdePackages.kdegraphics-thumbnailers
-        kdePackages.kimageformats
-        libnotify
-        libreoffice
-        hunspellDicts.et-ee
-        pavucontrol
-        picom
-        powertop
-        qdigidoc
-        qt6Packages.qt6ct
-        qt6Packages.qtimageformats
-        slurp
-        tint2
-        unrar
-        wdisplays
-        web-eid-app
-        webp-pixbuf-loader
-        wl-clipboard
-        zenity
+          # Desktop and file management.
+          arandr
+          ark
+          baobab
+          geany
+          glances
+          gnome-disk-utility
+          grim
+          gthumb
+          iotop
+          kdePackages.ffmpegthumbs
+          kdePackages.kde-cli-tools
+          kdePackages.kdegraphics-thumbnailers
+          kdePackages.kimageformats
+          libnotify
+          libreoffice
+          hunspellDicts.et-ee
+          pavucontrol
+          picom
+          powertop
+          qdigidoc
+          qt6Packages.qt6ct
+          qt6Packages.qtimageformats
+          slurp
+          tint2
+          unrar
+          wdisplays
+          web-eid-app
+          webp-pixbuf-loader
+          wl-clipboard
+          zenity
 
-        # Multimedia.
-        gimp
-        handbrake
-        inkscape
-        picard
-        smplayer
-        vmpk
-        whipper
-        yt-dlp
+          # Multimedia.
+          gimp
+          handbrake
+          inkscape
+          picard
+          smplayer
+          vmpk
+          whipper
+          yt-dlp
 
-        # AI.
-        antigravity-cli
-        mcp-nixos
+          # AI.
+          antigravity-cli
+          mcp-nixos
 
-        # Bash.
-        bash-language-server
-        shellcheck
-        shfmt
+          # Bash.
+          bash-language-server
+          shellcheck
+          shfmt
 
-        # Git.
-        commitmsgfmt
+          # Git.
+          commitmsgfmt
 
-        # Go.
-        go
-        gopls
-        revive
-        ginkgo
+          # Go.
+          go
+          gopls
+          revive
+          ginkgo
 
-        # Lua.
-        lua-language-server
-        luajitPackages.luacheck
-        stylua
+          # Lua.
+          lua-language-server
+          luajitPackages.luacheck
+          stylua
 
-        # PHP.
-        php
-        phpPackages.composer
-        phpactor
-        phpstan
-        pint
+          # PHP.
+          php
+          phpPackages.composer
+          phpactor
+          phpstan
+          pint
 
-        # Python.
-        black
-        pylint
-        (python3.withPackages (
-          ps: with ps; [
-            dbus-next
-            pytest
-          ]
-        ))
-        ty
-        uv
+          # Python.
+          black
+          pylint
+          (python3.withPackages (
+            ps: with ps; [
+              dbus-next
+              pytest
+            ]
+          ))
+          ty
+          uv
 
-        # Web.
-        biome
-        markdownlint-cli
-        nodejs
-        npm-check-updates
-        pnpm
-        prettier
-        typescript-go
-        yaml-language-server
-        yamllint
+          # Web.
+          biome
+          markdownlint-cli
+          nodejs
+          npm-check-updates
+          pnpm
+          prettier
+          typescript-go
+          yaml-language-server
+          yamllint
 
-        # Ansible.
-        ansible
-        ansible-language-server
-        ansible-lint
+          # Ansible.
+          ansible
+          ansible-language-server
+          ansible-lint
 
-        # Nix.
-        nil
-        nixfmt
+          # Nix.
+          nil
+          nixfmt
 
-        # Neovim.
-        myneovim
+          # Neovim.
+          myneovim
 
-        # Fonts. otf-font-awesome moved from pacman here so nix-built GTK
-        # apps (waybar) can find it through their own fontconfig. Noto Sans
-        # is needed too: "Roboto, Helvetica, Arial" in the waybar style are
-        # not installed anywhere, so Pango skipped straight past them to
-        # Font Awesome (which covers plain ASCII) for regular bar text.
-        font-awesome
-        noto-fonts
-        noto-fonts-cjk-sans
-        noto-fonts-cjk-serif
-        noto-fonts-color-emoji
-        noto-fonts-lgc-plus
+          # Fonts. otf-font-awesome moved from pacman here so nix-built GTK
+          # apps (waybar) can find it through their own fontconfig. Noto Sans
+          # is needed too: "Roboto, Helvetica, Arial" in the waybar style are
+          # not installed anywhere, so Pango skipped straight past them to
+          # Font Awesome (which covers plain ASCII) for regular bar text.
+          font-awesome
+          noto-fonts
+          noto-fonts-cjk-sans
+          noto-fonts-cjk-serif
+          noto-fonts-color-emoji
+          noto-fonts-lgc-plus
 
-        # Sway companions (sway itself comes from wayland.windowManager.sway.enable).
-        swayidle
-        swaynotificationcenter
-        j4-dmenu-desktop
-        wmenu
-        gammastep
-        wayvnc
-        kdePackages.dolphin
-        networkmanagerapplet
-        blueman
-        xwayland
-        xdg-desktop-portal-wlr
-        xdg-desktop-portal-gtk
-      ];
+          # Sway companions (sway itself comes from wayland.windowManager.sway.enable).
+          swayidle
+          swaynotificationcenter
+          j4-dmenu-desktop
+          wmenu
+          gammastep
+          wayvnc
+          kdePackages.dolphin
+          networkmanagerapplet
+          blueman
+          xwayland
+          xdg-desktop-portal-wlr
+          xdg-desktop-portal-gtk
 
-      spirv-tools-lib = audiopkgs.linkFarm "spirv-tools-lib" [
-        {
-          name = "lib/libSPIRV-Tools.so";
-          path = "${audiopkgs.spirv-tools.lib}/lib/libSPIRV-Tools-shared.so";
-        }
-      ];
+          # Audio.
+          pipewire.jack
+          raysessionFixed
+          qjackctl
+          fluidsynth
+        ]
+        # Plugins, wine and yabridge come from nixpkgs-audio rather than
+        # nixpkgs-home (see winePkgs/clapPlugins/lv2Plugins/vst3Plugins
+        # below) so REAPER works standalone, with no separate dev shell needed.
+        ++ winePkgs
+        ++ clapPlugins
+        ++ lv2Plugins
+        ++ vst3Plugins;
 
       levelrider = audiopkgs.stdenv.mkDerivation {
         name = "levelrider";
@@ -528,34 +564,6 @@
         '';
       };
 
-      audioPkgs = with audiopkgs; [
-        # For LSP and Zam plugins.
-        mesa
-        libGL
-
-        # Complete Vulkan setup to fix Vulkan plugins.
-        libdrm
-        llvmPackages_22.libllvm
-        elfutils
-        zstd
-        libxcb
-        wayland
-        libz
-        libx11
-        libxshmfence
-        libxcb-keysyms
-        libudev-zero
-        expat
-        spirv-tools-lib
-        stdenv.cc.cc.lib
-        libdisplay-info
-
-        reaper
-        reaper-reapack-extension
-        qjackctl
-        fluidsynth
-      ];
-
       winePkgs = with audiopkgs; [
         # Wine and yabridge.
         yabridge
@@ -582,27 +590,16 @@
         chow-phaser
       ];
 
-      makePluginPath =
-        type: paths:
-        builtins.concatStringsSep ";" (
-          map (path: path + "/lib/${type}") (builtins.filter (x: x != null) paths)
-        );
-
-      setIni =
-        file: section: attrs:
-        builtins.concatStringsSep "\n" (
-          audiopkgs.lib.mapAttrsToList (name: value: ''
-            ${audiopkgs.crudini}/bin/crudini --set --ini-options=nospace ${file} ${section} ${name} "${value}"
-          '') attrs
-        );
-
-      # Roots for closurePositions below. Derived from the actual build
-      # outputs (home-manager's merged package list, the audio devShell's
-      # buildInputs) rather than a hand-curated list, so newly added
-      # programs/packages are automatically included without maintenance.
+      # Roots for closurePositions below. nixpkgs-home is derived from the
+      # actual build output (home-manager's merged package list) rather than
+      # a hand-curated list, so newly added programs/packages are
+      # automatically included without maintenance. nixpkgs-audio has to be
+      # hand-curated instead, since its packages are just plain list entries
+      # merged into that same home.packages rather than a separate output of
+      # their own to derive it from.
       packageSets = {
         nixpkgs-home = self.homeConfigurations.${username}.config.home.packages;
-        nixpkgs-audio = self.devShells.${system}.audio.buildInputs;
+        nixpkgs-audio = winePkgs ++ clapPlugins ++ lv2Plugins ++ vst3Plugins;
       };
 
       # For each package set, the meta.position of every package plus its
@@ -643,66 +640,130 @@
       ) packageSets;
     in
     {
-      devShells.${system} = {
-        audio = audiopkgs.mkShellNoCC {
-          buildInputs = [
-            audioPkgs
-            winePkgs
-            clapPlugins
-            lv2Plugins
-            vst3Plugins
-          ];
-          shellHook = ''
-            set -e
-            function cleanup {
-              echo "Exiting audio shell"
-              wineserver -k || true
-            }
-
-            trap cleanup EXIT
-
-            export WINEPREFIX="$HOME/.wine-audio"
-            export LD_LIBRARY_PATH="${audiopkgs.lib.makeLibraryPath winePkgs}:$LD_LIBRARY_PATH"
-            export LD_LIBRARY_PATH="${audiopkgs.lib.makeLibraryPath audioPkgs}:$LD_LIBRARY_PATH"
-            export NIX_PROFILES="${audiopkgs.yabridge} $NIX_PROFILES"
-            export CUSTOM_HOST="ide-audio"
-
-            mkdir -p ~/.config/REAPER/ColorThemes
-            cp ~/Shared/Default_5_Dark_Extended.ReaperThemeZip ~/.config/REAPER/ColorThemes/
-            ${setIni "~/.config/REAPER/reaper.ini" "reaper" {
-              lastthemefn5 = "~/.config/REAPER/ColorThemes/Default_5_Dark_Extended.ReaperThemeZip";
-              clap_path_linux-x86_64 = "~/.clap;${makePluginPath "clap" clapPlugins}";
-              lv2path_linux = "~/.lv2;${makePluginPath "lv2" lv2Plugins}";
-              vstpath = "~/.vst;~/.vst3;${makePluginPath "vst3" vst3Plugins}";
-              ui_scale = "1.0";
-            }}
-
-            echo "Starting audio shell"
-            bash ~/.scripts/ide-audio.sh
-
-            set +e
-
-            # ~/.bashrc sources nix.sh, which unconditionally overwrites
-            # NIX_PROFILES (rather than appending), dropping the yabridge
-            # entry set above. Without it, yabridge's chainloader .so files
-            # can't find libyabridge-{vst2,vst3}.so at runtime and every
-            # bridged plugin fails to load in REAPER.
-            source ~/.bashrc
-            export NIX_PROFILES="${audiopkgs.yabridge} $NIX_PROFILES"
-          '';
-        };
-      };
-
       inherit packageSets closurePositions;
 
       homeConfigurations.${username} = inputs.home-manager.lib.homeManagerConfiguration {
         pkgs = homepkgs;
         modules = [
-          {
+          inputs.reaper-flake.homeModules.reaper
+          ({ lib, ... }: {
             home.username = username;
             home.homeDirectory = "/home/${username}";
             home.stateVersion = "24.05";
             home.packages = homePkgs;
+
+            # Manages ~/.config/REAPER declaratively (theme, ReaPack, plugin
+            # search paths). Plugin store paths (clapPlugins/lv2Plugins/
+            # vst3Plugins, defined above) come from the nixpkgs-audio
+            # channel, same as the wine/yabridge packages folded into
+            # home.packages above - REAPER, its plugins, and the wine bridge
+            # are all always installed, no separate dev shell needed.
+            programs.reaper = {
+              enable = true;
+              configPath = "/home/${username}/.config/REAPER";
+
+              # Adds wine/yabridge libraries to REAPER's LD_LIBRARY_PATH,
+              # inherited by every process it spawns, including the yabridge
+              # wine host. GUI plugin rendering (mesa/vulkan) comes from the
+              # system's own drivers instead of a nixpkgs-audio copy - see
+              # targets.genericLinux.enable below. pipewire.jack goes first
+              # so its libjack.so.0 (pipewire's JACK-compatible
+              # implementation) is found ahead of any real libjack2 - there's
+              # no jack1/jack2 server here, only pipewire's - same fix as
+              # raysessionFixed below, but done here via LD_LIBRARY_PATH
+              # order since REAPER isn't wrapped with pw-jack itself.
+              packages = [ homepkgs.pipewire.jack ] ++ winePkgs;
+
+              extensions.reapack.enable = true;
+
+              theme = {
+                active = "Default_5_Dark_Extended.ReaperThemeZip";
+                colorThemes = [
+                  (builtins.toPath "/home/${username}/Shared/Default_5_Dark_Extended.ReaperThemeZip")
+                ];
+              };
+
+              preferences.plugIns = {
+                vst.searchPaths = map (p: "${p}/lib/vst3") vst3Plugins;
+                clap.searchPaths = map (p: "${p}/lib/clap") clapPlugins;
+                lv2.searchPaths = map (p: "${p}/lib/lv2") lv2Plugins;
+              };
+            };
+
+            # Sets up the Windows-plugin wine prefix that yabridge bridges
+            # into REAPER's VST/VST3/CLAP paths above: a DXVK/GDI+ prefix,
+            # win-plugins symlinked in from ~/Shared/Audio, and a yabridgectl
+            # sync so newly (un)installed Windows plugins pick up chainloader
+            # .so files. Runs on every `home-manager switch` instead of every
+            # `nix develop`, so REAPER works standalone.
+            home.activation.audioWinePrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+              let
+                wineBinPath = audiopkgs.lib.makeBinPath (winePkgs ++ [ audiopkgs.wineWow64Packages.yabridge ]);
+                winPlugins = "/home/${username}/Shared/Audio/win-plugins";
+              in
+              ''
+                export WINEPREFIX=${audiopkgs.lib.escapeShellArg "/home/${username}/.wine-audio"}
+                export PATH=${audiopkgs.lib.escapeShellArg wineBinPath}:$PATH
+
+                # home.sessionVariables.NIX_PROFILES only takes effect in a
+                # fresh login shell, not in the shell that invoked this
+                # activation script, so yabridgectl (used below) can't find
+                # its own libyabridge-chainloader-*.so without this too.
+                export NIX_PROFILES=${audiopkgs.lib.escapeShellArg audiopkgs.yabridge}" $NIX_PROFILES"
+
+                # Needed for some Windows VST plugins (dxvk) and Guitar Pro 5 (gdiplus).
+                if [ ! -d "$WINEPREFIX" ]; then
+                  winetricks -q dxvk
+                  winetricks -q gdiplus
+                fi
+
+                winplugins=${audiopkgs.lib.escapeShellArg winPlugins}
+
+                link_into_prefix() {
+                  target=$1
+                  source=$2
+                  rm -rf "$target"
+                  ln -s "$source" "$target"
+                }
+
+                link_into_prefix "$WINEPREFIX/drive_c/users/${username}/win-plugins" "$winplugins"
+
+                if [ -d "$winplugins/AppData" ]; then
+                  link_into_prefix "$WINEPREFIX/drive_c/users/${username}/AppData" "$winplugins/AppData"
+                fi
+
+                if [ -d "$winplugins/Documents" ]; then
+                  link_into_prefix "$WINEPREFIX/drive_c/users/${username}/Documents" "$winplugins/Documents"
+                fi
+
+                if [ -d "$winplugins/ProgramData" ]; then
+                  ln -sf "$winplugins"/ProgramData/* "$WINEPREFIX"/drive_c/ProgramData/
+                fi
+
+                if [ -d "$winplugins/Program Files" ]; then
+                  ln -sf "$winplugins"/Program\ Files/* "$WINEPREFIX"/drive_c/Program\ Files/
+                fi
+
+                if [ -d "$winplugins/Program Files (x86)" ]; then
+                  ln -sf "$winplugins"/Program\ Files\ \(x86\)/* "$WINEPREFIX"/drive_c/Program\ Files\ \(x86\)/
+                fi
+
+                if [ -d "$winplugins/windows/Fonts" ]; then
+                  ln -sf "$winplugins"/windows/Fonts/* "$WINEPREFIX"/drive_c/windows/Fonts/
+                fi
+
+                if [ -f "$winplugins/custom.reg" ]; then
+                  wine regedit "$winplugins/custom.reg"
+                fi
+
+                link_into_prefix "/home/${username}/.vst3" "/home/${username}/Shared/Audio/vst3"
+
+                if [ -d "$winplugins/Plugins" ]; then
+                  yabridgectl sync --force --prune --verbose
+                  yabridgectl status
+                fi
+              ''
+            );
 
             home.sessionPath = [
               "$HOME/.local/bin"
@@ -735,6 +796,18 @@
               NODE_OPTIONS = "--max_old_space_size=4096";
 
               HISTTIMEFORMAT = "[%F %T] ";
+
+              WINEPREFIX = "/home/${username}/.wine-audio";
+
+              # nix.sh (sourced earlier in ~/.bashrc) unconditionally
+              # overwrites NIX_PROFILES, dropping any prior value. Home
+              # Manager sources this file's generated hm-session-vars.sh
+              # right after nix.sh, so re-asserting the yabridge entry here
+              # re-adds it every shell without fighting nix.sh for order.
+              # Without it, yabridge's chainloader .so files can't find
+              # libyabridge-{vst2,vst3}.so at runtime and every bridged
+              # plugin fails to load in REAPER.
+              NIX_PROFILES = "${audiopkgs.yabridge} $NIX_PROFILES";
             };
 
             programs.home-manager.enable = true;
@@ -2258,7 +2331,7 @@
               WantedBy=default.target
             '';
 
-          }
+          })
         ];
       };
     };

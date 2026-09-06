@@ -16,6 +16,27 @@
         "type": "gitlab"
       }
     },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "reaper-flake",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785627969,
+        "narHash": "sha256-4dtXQk/NMePegK/nWp5NSeuZKLATItOq61lpEvmXqGw=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "427bf4bd9435fdf21321c8cc628c24efc14c0f7a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -171,6 +192,27 @@
         "type": "github"
       }
     },
+    "reaper-flake": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": [
+          "nixpkgs-home"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788316530,
+        "narHash": "sha256-joyID4Vm7ByrmGnw/iSDkIWUoR+a2Jtx7M8gfisc6hk=",
+        "owner": "9Prestidigitator",
+        "repo": "reaper-flake",
+        "rev": "fe0a14502385458106e5683f5ab151e1d867db4e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "9Prestidigitator",
+        "repo": "reaper-flake",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "firefox-addons": "firefox-addons",
@@ -181,7 +223,8 @@
         "nvim-plugin-dumb-autopairs": "nvim-plugin-dumb-autopairs",
         "nvim-plugin-nvim-fundo": "nvim-plugin-nvim-fundo",
         "nvim-plugin-tree-sitter-manager": "nvim-plugin-tree-sitter-manager",
-        "nvim-plugins-tree-sitter-balafon": "nvim-plugins-tree-sitter-balafon"
+        "nvim-plugins-tree-sitter-balafon": "nvim-plugins-tree-sitter-balafon",
+        "reaper-flake": "reaper-flake"
       }
     },
     "systems": {

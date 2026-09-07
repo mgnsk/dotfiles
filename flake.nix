@@ -1528,11 +1528,25 @@
               # module has actually registered the watcher yet, so poll for
               # it too, same as sway-startup.sh used to.
               # Reference: https://github.com/Alexays/Waybar/discussions/1828#discussioncomment-10126615
+              #
+              # DefaultDependencies=false on this unit (and waybar, swayidle,
+              # blueman-applet below): target units automatically complement
+              # every unit in their effective Wants= (i.e. anything
+              # WantedBy=sway-session.target) with a matching After=, unless
+              # that unit sets DefaultDependencies=no (systemd.target(5)).
+              # Since this unit chains After=waybar.service, and waybar.service
+              # is itself After=sway-session.target, that auto-added
+              # "sway-session.target After=wait-for-tray.service" closes a
+              # real ordering cycle - systemd silently drops the losing
+              # units' start jobs to break it, which is why waybar (and
+              # swayidle, and anything chained through wait-for-tray) can
+              # fail to start at all.
               wait-for-tray = {
                 Unit = {
                   Description = "Block until a tray (StatusNotifierWatcher) is registered on the session bus";
                   After = [ "waybar.service" ];
                   Wants = [ "waybar.service" ];
+                  DefaultDependencies = false;
                 };
                 Service = {
                   Type = "oneshot";
@@ -1548,7 +1562,18 @@
               blueman-applet.Unit = {
                 After = [ "wait-for-tray.service" ];
                 Wants = [ "wait-for-tray.service" ];
+                DefaultDependencies = false;
               };
+
+              # waybar and swayidle both carry an explicit
+              # After=sway-session.target (waybar from programs.waybar's own
+              # module, swayidle from services.swayidle below) - see the
+              # wait-for-tray comment above for why that needs
+              # DefaultDependencies=false here too, to stop
+              # sway-session.target auto-ordering itself after them right
+              # back.
+              waybar.Unit.DefaultDependencies = false;
+              swayidle.Unit.DefaultDependencies = false;
 
               network-manager-applet.Unit = {
                 After = [ "wait-for-tray.service" ];

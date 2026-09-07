@@ -1304,6 +1304,32 @@
             xdg.dataFile."systemd/user/xdg-desktop-portal-wlr.service".source =
               "${homepkgs.xdg-desktop-portal-wlr}/share/systemd/user/xdg-desktop-portal-wlr.service";
 
+            # xdg-desktop-portal-wlr.service's upstream unit only checks
+            # ConditionEnvironment=WAYLAND_DISPLAY is *set*, not that it
+            # names a live socket. On a sway restart (crash, session churn)
+            # the compositor can come back on a new socket (wayland-1
+            # instead of wayland-0, say), and this unit - PartOf=
+            # graphical-session.target - gets pulled down and restarted
+            # before systemd --user's environment has been re-imported with
+            # the new value, so it dies trying to connect to the old,
+            # now-gone socket. With the vendor unit's default
+            # Restart=on-failure (100ms backoff) and no StartLimitBurst
+            # override, that burns through the default 5-in-10s restart
+            # budget in under a second and the unit stays dead even once
+            # the environment catches up. This is a systemd drop-in (not a
+            # home-manager systemd.user.services entry) because the latter
+            # would replace the whole unit, including the store-path-pinned
+            # ExecStart= above that home-manager doesn't otherwise know
+            # about.
+            xdg.configFile."systemd/user/xdg-desktop-portal-wlr.service.d/restart-backoff.conf".text = ''
+              [Unit]
+              StartLimitIntervalSec=30
+              StartLimitBurst=5
+
+              [Service]
+              RestartSec=2
+            '';
+
             wayland.windowManager.sway =
               let
                 mod = "Mod4";

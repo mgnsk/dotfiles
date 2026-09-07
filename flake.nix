@@ -515,7 +515,6 @@
           j4-dmenu-desktop
           wmenu
           gammastep
-          wayvnc
           kdePackages.dolphin
           networkmanagerapplet
           blueman
@@ -906,7 +905,7 @@
                 	if command -v sway &>/dev/null; then
                 		export XDG_CURRENT_DESKTOP=sway
                 		pre
-                		exec sway --config ~/.config/sway/config-main
+                		exec sway --config ~/.config/sway/config
                 	fi
                 fi
 
@@ -1042,6 +1041,11 @@
 
             programs.waybar = {
               enable = true;
+
+              systemd = {
+                enable = true;
+                targets = [ "sway-session.target" ];
+              };
 
               settings = [
                 {
@@ -1325,11 +1329,20 @@
               {
                 enable = true;
                 checkConfig = true;
-                systemd.enable = false;
+
+                systemd = {
+                  enable = true;
+                  variables = [
+                    "DISPLAY"
+                    "SWAYSOCK"
+                    "WAYLAND_DISPLAY"
+                    "XDG_CURRENT_DESKTOP"
+                  ];
+                };
 
                 config = {
                   modifier = mod;
-                  bars = [ ]; # waybar is started separately by sway-startup.sh
+                  bars = [ ]; # waybar is a systemd service, see programs.waybar.systemd below
 
                   window = {
                     titlebar = false;
@@ -1442,16 +1455,148 @@
                 '';
               };
 
-            xdg.configFile."sway/config-main".text = ''
-              include ./config
-              exec bash $HOME/.scripts/sway-startup.sh
-            '';
+            # Sway startup companions, as systemd --user services bound to
+            # sway-session.target.
+            services.swayidle =
+              let
+                # swayidle.service's generated unit pins PATH to just bash's
+                # own store path, so PATH-reliant commands like `lock` (from
+                # home.sessionPath) and `swaymsg` (nix-installed sway) won't
+                # resolve there the way they do from an interactive shell or
+                # sway's own `exec` lines - spell them out explicitly.
+                lock = "$HOME/.scripts/bin/lock";
+                swaymsg = "${homepkgs.sway}/bin/swaymsg";
+              in
+              {
+                enable = true;
+                systemdTargets = [ "sway-session.target" ];
 
-            xdg.configFile."sway/config-vnc".text = ''
-              include ./config
-              output HEADLESS-1 resolution 1920x1080
-              exec bash $HOME/.scripts/sway-startup-vnc.sh
-            '';
+                timeouts = [
+                  {
+                    timeout = 3600;
+                    command = lock;
+                  }
+                  {
+                    timeout = 3601;
+                    command = ''${swaymsg} "output * dpms off"'';
+                    resumeCommand = ''${swaymsg} "output * dpms on"'';
+                  }
+                ];
+
+                events.before-sleep = lock;
+              };
+
+            services.network-manager-applet.enable = true;
+
+            services.blueman-applet = {
+              enable = true;
+              systemdTargets = [ "sway-session.target" ];
+            };
+
+            services.swaync.enable = true;
+
+            services.gammastep = {
+              enable = true;
+              provider = "manual";
+              latitude = 59.436962;
+              longitude = 24.753574;
+              tray = true;
+            };
+
+            systemd.user.services = {
+              # Tray-icon apps (blueman-applet, network-manager-applet,
+              # swaync, gammastep's tray indicator) need a
+              # StatusNotifierWatcher on the session bus before they start,
+              # or their icons silently fail to register. Waybar's process
+              # starting (After=waybar.service) doesn't guarantee its tray
+              # module has actually registered the watcher yet, so poll for
+              # it too, same as sway-startup.sh used to.
+              # Reference: https://github.com/Alexays/Waybar/discussions/1828#discussioncomment-10126615
+              wait-for-tray = {
+                Unit = {
+                  Description = "Block until a tray (StatusNotifierWatcher) is registered on the session bus";
+                  After = [ "waybar.service" ];
+                  Wants = [ "waybar.service" ];
+                };
+                Service = {
+                  Type = "oneshot";
+                  ExecStart = "${homepkgs.writeShellScript "wait-for-tray" ''
+                    until dbus-send --session --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames | grep -q org.kde.Status; do
+                      sleep 0.2
+                    done
+                  ''}";
+                };
+                Install.WantedBy = [ "sway-session.target" ];
+              };
+
+              blueman-applet.Unit = {
+                After = [ "wait-for-tray.service" ];
+                Wants = [ "wait-for-tray.service" ];
+              };
+
+              network-manager-applet.Unit = {
+                After = [ "wait-for-tray.service" ];
+                Wants = [ "wait-for-tray.service" ];
+              };
+
+              swaync.Unit = {
+                After = [ "wait-for-tray.service" ];
+                Wants = [ "wait-for-tray.service" ];
+              };
+
+              gammastep.Unit = {
+                After = [ "wait-for-tray.service" ];
+                Wants = [ "wait-for-tray.service" ];
+              };
+
+              # No home-manager module packages these two - both are plain
+              # Arch/pacman system binaries, not nix derivations.
+              pam-kwallet-init = {
+                Unit.Description = "Initialize kwallet PAM integration";
+                Service = {
+                  Type = "oneshot";
+                  ExecStart = "/usr/lib/pam_kwallet_init";
+                };
+                Install.WantedBy = [ "sway-session.target" ];
+              };
+
+              polkit-mate-authentication-agent = {
+                Unit.Description = "MATE PolicyKit authentication agent";
+                Service = {
+                  Type = "simple";
+                  ExecStart = "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1";
+                  Restart = "on-failure";
+                };
+                Install.WantedBy = [ "sway-session.target" ];
+              };
+
+              audio-idle-inhibit = {
+                Unit.Description = "Block idle while audio is playing or being captured";
+                Service = {
+                  Type = "simple";
+                  ExecStart = "${homepkgs.writeShellScript "audio-idle-inhibit" ''
+                    inhibit_duration=25
+                    sleep_duration=5
+
+                    while true; do
+                      if pactl list | grep -q RUNNING; then
+                        echo "INHIBITING" >&2
+                        systemd-inhibit \
+                          --what idle \
+                          --who systemd-audio-idle-inhibit \
+                          --why "audio output or input active" \
+                          --mode block \
+                          sh -c "sleep $inhibit_duration"
+                      else
+                        echo "WAITING" >&2
+                        sleep $sleep_duration
+                      fi
+                    done
+                  ''}";
+                };
+                Install.WantedBy = [ "sway-session.target" ];
+              };
+            };
 
             programs.fzf = {
               enable = true;

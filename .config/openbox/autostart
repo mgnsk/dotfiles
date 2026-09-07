@@ -1,3 +1,0 @@
-picom -b --fade-in-step=0.1 --fade-out-step=0.2
-tint2 &
-gammastep-indicator &

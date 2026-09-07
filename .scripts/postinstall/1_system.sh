@@ -48,7 +48,7 @@ packages=(
 	swaylock
 	mate-polkit
 
-	# Xorg and Openbox (for TTY2).
+	# Xorg (for TTY2).
 	# Nix-built xorg-server doesn't find pacman/distro-installed driver
 	# packages (or vice versa): each package only searches its own store
 	# path by default, with no shared /usr/lib/xorg/modules to fall back on.
@@ -56,8 +56,7 @@ packages=(
 	# so input devices (keyboard/mouse) actually work.
 	xorg-server
 	xorg-xinit
-	openbox
-	tint2
+	xterm
 
 	# Power management.
 	tlp

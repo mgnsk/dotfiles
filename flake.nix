@@ -408,6 +408,8 @@
           libnotify
           libreoffice
           hunspellDicts.et-ee
+          jgmenu
+          openbox
           pavucontrol
           picom
           powertop
@@ -415,6 +417,7 @@
           qt6Packages.qt6ct
           qt6Packages.qtimageformats
           slurp
+          tint2
           unrar
           wdisplays
           web-eid-app
@@ -905,6 +908,15 @@
                 	if command -v sway &>/dev/null; then
                 		export XDG_CURRENT_DESKTOP=sway
                 		pre
+
+                		# Must run here, not as a systemd --user service:
+                		# kwallet's auto-unlock relies on a file descriptor
+                		# pam_kwallet5.so leaves open for the PAM session,
+                		# which only survives fork/exec down this same login
+                		# shell's process tree, not into the separately
+                		# started systemd --user manager.
+                		/usr/lib/pam_kwallet_init
+
                 		exec sway --config ~/.config/sway/config
                 	fi
                 fi
@@ -1553,17 +1565,8 @@
                 Wants = [ "wait-for-tray.service" ];
               };
 
-              # No home-manager module packages these two - both are plain
-              # Arch/pacman system binaries, not nix derivations.
-              pam-kwallet-init = {
-                Unit.Description = "Initialize kwallet PAM integration";
-                Service = {
-                  Type = "oneshot";
-                  ExecStart = "/usr/lib/pam_kwallet_init";
-                };
-                Install.WantedBy = [ "sway-session.target" ];
-              };
-
+              # No home-manager module packages this - it's a plain
+              # Arch/pacman system binary, not a nix derivation.
               polkit-mate-authentication-agent = {
                 Unit.Description = "MATE PolicyKit authentication agent";
                 Service = {
@@ -2062,6 +2065,42 @@
               categories = [ "Graphics" ];
               settings.Keywords = "screenshot;";
             };
+
+            # jgmenu (github.com/jgmenu/jgmenu) replaces obmenu-generator:
+            # right-click on the desktop still opens this static Openbox
+            # pipe-menu (unchanged rc.xml/mousebind), but its one entry now
+            # just launches jgmenu's own self-drawn app menu instead of
+            # piping obmenu-generator-generated XML into Openbox's menu
+            # renderer. jgmenu builds its XDG application list itself
+            # (csv_cmd defaults to "apps"), so no separate desktop-file-path
+            # config is needed the way obmenu-generator required.
+            xdg.configFile."openbox/menu.xml".text = ''
+              <?xml version="1.0" encoding="utf-8"?>
+              <openbox_menu>
+                  <menu id="root-menu" label="OpenBox 3">
+                      <item label="Applications">
+                          <action name="Execute">
+                              <command>jgmenu_run</command>
+                          </action>
+                      </item>
+                      <separator/>
+                      <item label="Terminal">
+                          <action name="Execute">
+                              <command>xterm</command>
+                          </action>
+                      </item>
+                      <separator/>
+                      <item label="Exit">
+                          <action name="Exit"/>
+                      </item>
+                  </menu>
+              </openbox_menu>
+            '';
+
+            xdg.configFile."openbox/autostart".text = ''
+              picom -b --fade-in-step=0.1 --fade-out-step=0.2
+              tint2 &
+            '';
 
             home.file.".config/yabridgectl/config.toml".source =
               (homepkgs.formats.toml { }).generate "yabridgectl-config.toml"

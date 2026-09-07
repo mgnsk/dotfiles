@@ -15,7 +15,6 @@ makepkg -D "$yaydir" -si --needed
 packages=(
 	1password
 	1password-cli
-	obmenu-generator
 )
 
 yay -S "${packages[@]}"

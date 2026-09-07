@@ -28,8 +28,8 @@ packages=(
 	bluez-utils
 
 	# CLI tools.
-	git # also nix-managed, but useful when bootstrapping a fresh system before nix
-	vim # also nix-managed, but useful when bootstrapping a fresh system before nix
+	git     # also nix-managed, but useful when bootstrapping a fresh system before nix
+	vim     # also nix-managed, but useful when bootstrapping a fresh system before nix
 	kconfig # provides kwriteconfig6
 	arch-audit
 	reflector
@@ -48,15 +48,21 @@ packages=(
 	swaylock
 	mate-polkit
 
+	# Xorg and Openbox (for TTY2).
+	# Nix-built xorg-server doesn't find pacman/distro-installed driver
+	# packages (or vice versa): each package only searches its own store
+	# path by default, with no shared /usr/lib/xorg/modules to fall back on.
+	# Pacman's xorg-server + xf86-input-libinput share that path natively,
+	# so input devices (keyboard/mouse) actually work.
+	xorg-server
+	xorg-xinit
+	openbox
+	tint2
+
 	# Power management.
 	tlp
 	tlpui
 	smartmontools
-
-	# Xorg and Openbox (for TTY2).
-	xorg-server
-	xorg-xinit
-	openbox
 
 	# Printing.
 	cups

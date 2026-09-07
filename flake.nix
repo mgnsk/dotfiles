@@ -1463,8 +1463,12 @@
                 # own store path, so PATH-reliant commands like `lock` (from
                 # home.sessionPath) and `swaymsg` (nix-installed sway) won't
                 # resolve there the way they do from an interactive shell or
-                # sway's own `exec` lines - spell them out explicitly.
-                lock = "$HOME/.scripts/bin/lock";
+                # sway's own `exec` lines - spell them out explicitly. Also,
+                # systemd's ExecStart= does its own "$VAR" substitution using
+                # only the unit's Environment= (which doesn't set HOME), so
+                # "$HOME" there silently expands to empty - use the literal
+                # path instead.
+                lock = "/home/${username}/.scripts/bin/lock";
                 swaymsg = "${homepkgs.sway}/bin/swaymsg";
               in
               {

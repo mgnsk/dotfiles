@@ -909,14 +909,6 @@
                 		export XDG_CURRENT_DESKTOP=sway
                 		pre
 
-                		# Must run here, not as a systemd --user service:
-                		# kwallet's auto-unlock relies on a file descriptor
-                		# pam_kwallet5.so leaves open for the PAM session,
-                		# which only survives fork/exec down this same login
-                		# shell's process tree, not into the separately
-                		# started systemd --user manager.
-                		/usr/lib/pam_kwallet_init
-
                 		exec sway --config ~/.config/sway/config
                 	fi
                 fi

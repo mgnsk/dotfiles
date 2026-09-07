@@ -97,10 +97,10 @@ cat <<-'EOF' | sudo tee /etc/pam.d/login >/dev/null
 	#%PAM-1.0
 
 	auth       include      system-local-login
-	auth       optional     pam_kwallet5.so
+	auth       optional     pam_gnome_keyring.so
 	account    include      system-local-login
 	session    include      system-local-login
-	session    optional     pam_kwallet5.so auto_start force_run kwalletd=/usr/bin/ksecretd
+	session    optional     pam_gnome_keyring.so auto_start
 	password   include      system-local-login
 EOF
 

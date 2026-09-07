@@ -37,9 +37,8 @@ packages=(
 	passt
 
 	# Identity and passwords.
-	kwallet
-	kwalletmanager
-	kwallet-pam
+	gnome-keyring
+	seahorse
 
 	# Desktop and window management.
 	# swaylock needs a PAM service file at /etc/pam.d/swaylock to authenticate against your password.

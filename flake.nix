@@ -1804,6 +1804,7 @@
                 set -g set-clipboard on
                 set -g status-style bg=default,fg=colour102
                 set -g mouse on
+                set -g renumber-windows on
 
                 bind-key r source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded"
                 bind-key c new-window -c "#{pane_current_path}"

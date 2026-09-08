@@ -1534,6 +1534,7 @@
               provider = "manual";
               latitude = 59.436962;
               longitude = 24.753574;
+              temperature.night = 5000;
               tray = true;
             };
 

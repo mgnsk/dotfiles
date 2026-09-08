@@ -101,6 +101,21 @@ vim.schedule(function()
 		end,
 	})
 
+	-- flake.nix lives directly in $HOME, which also holds the 1Password
+	-- SSH agent socket (~/.1password/agent.sock); `nix flake archive`
+	-- copies the whole tree and errors out on that socket.
+	vim.lsp.config("nil_ls", {
+		settings = {
+			["nil"] = {
+				nix = {
+					flake = {
+						autoArchive = false,
+					},
+				},
+			},
+		},
+	})
+
 	vim.lsp.enable({
 		"luals",
 		"gopls",

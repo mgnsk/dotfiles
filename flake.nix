@@ -763,6 +763,7 @@
                   wineBinPath = audiopkgs.lib.makeBinPath (winePkgs ++ [ audiopkgs.wineWow64Packages.yabridge ]);
                   winPlugins = "/home/${username}/Shared/Audio/win-plugins";
                 in
+                # bash
                 ''
                   export WINEPREFIX=${audiopkgs.lib.escapeShellArg "/home/${username}/.wine-audio"}
                   export PATH=${audiopkgs.lib.escapeShellArg wineBinPath}:$PATH
@@ -900,87 +901,89 @@
                   qr = "/bin/qrencode -t ANSI256";
                 };
 
-                initExtra = ''
-                  mkdir -p "$HOME/.local/state"
+                initExtra = # bash
+                  ''
+                    mkdir -p "$HOME/.local/state"
 
-                  PROMPT_COMMAND=__prompt_command
+                    PROMPT_COMMAND=__prompt_command
 
-                  __prompt_command() {
-                  	local EXIT="$?"
-                  	PS1=""
+                    __prompt_command() {
+                    	local EXIT="$?"
+                    	PS1=""
 
-                  	history -a
+                    	history -a
 
-                  	local RCol='\[\e[0m\]'
-                  	local Red='\[\e[0;31m\]'
-                  	local Gre='\[\e[0;32m\]'
-                  	local BrBlu='\[\e[0;36m\]'
+                    	local RCol='\[\e[0m\]'
+                    	local Red='\[\e[0;31m\]'
+                    	local Gre='\[\e[0;32m\]'
+                    	local BrBlu='\[\e[0;36m\]'
 
-                  	local userHostColor="''${USERHOST_COLOR:-$BrBlu}"
-                  	local customHost="''${CUSTOM_HOST:-\h}"
+                    	local userHostColor="''${USERHOST_COLOR:-$BrBlu}"
+                    	local customHost="''${CUSTOM_HOST:-\h}"
 
-                  	PS1+="''${RCol}[\t] ''${userHostColor}\u@''${customHost} ''${Gre}\w"
+                    	PS1+="''${RCol}[\t] ''${userHostColor}\u@''${customHost} ''${Gre}\w"
 
-                  	if [ $EXIT != 0 ]; then
-                  		PS1+=" ''${Red}[''${EXIT}]"
-                  	fi
+                    	if [ $EXIT != 0 ]; then
+                    		PS1+=" ''${Red}[''${EXIT}]"
+                    	fi
 
-                  	PS1+=" ''${RCol}\n> "
-                  }
-                '';
+                    	PS1+=" ''${RCol}\n> "
+                    }
+                  '';
 
-                profileExtra = ''
-                  pre() {
-                  	if command -v gsettings &>/dev/null; then
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			gtk-theme 'Adwaita Sans'
+                profileExtra = # bash
+                  ''
+                    pre() {
+                    	if command -v gsettings &>/dev/null; then
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			gtk-theme 'Adwaita Sans'
 
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			icon-theme 'Adwaita Sans'
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			icon-theme 'Adwaita Sans'
 
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			font-name 'Adwaita Sans'
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			font-name 'Adwaita Sans'
 
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			monospace-font-name 'Monospace 11'
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			monospace-font-name 'Monospace 11'
 
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			document-font-name 'Adwaita Sans 11'
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			document-font-name 'Adwaita Sans 11'
 
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			font-antialiasing 'grayscale'
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			font-antialiasing 'grayscale'
 
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			font-hinting 'slight'
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			font-hinting 'slight'
 
-                  		gsettings set "org.gnome.desktop.interface" \
-                  			text-scaling-factor "1.2"
-                  	fi
+                    		gsettings set "org.gnome.desktop.interface" \
+                    			text-scaling-factor "1.2"
+                    	fi
 
-                  	if command -v kbuildsycoca6 &>/dev/null; then
-                  		XDG_MENU_PREFIX=arch- /usr/bin/kbuildsycoca6 --noincremental &>/dev/null
-                  	fi
-                  }
+                    	if command -v kbuildsycoca6 &>/dev/null; then
+                    		XDG_MENU_PREFIX=arch- /usr/bin/kbuildsycoca6 --noincremental &>/dev/null
+                    	fi
+                    }
 
-                  # TTY1: start sway at login if available.
-                  if test -z "$DISPLAY" -a -z "$WAYLAND_DISPLAY" -a "$XDG_VTNR" = 1; then
-                  	if command -v sway &>/dev/null; then
-                  		export XDG_CURRENT_DESKTOP=sway
-                  		pre
+                    # TTY1: start sway at login if available.
+                    if test -z "$DISPLAY" -a -z "$WAYLAND_DISPLAY" -a "$XDG_VTNR" = 1; then
+                    	if command -v sway &>/dev/null; then
+                    		export XDG_CURRENT_DESKTOP=sway
+                    		pre
 
-                  		exec sway --config ~/.config/sway/config
-                  	fi
-                  fi
+                    		exec sway --config ~/.config/sway/config
+                    	fi
+                    fi
 
-                  # TTY2: start openbox at login if available.
-                  if test -z "$DISPLAY" -a "$XDG_VTNR" = 2; then
-                  	if command -v openbox-session &>/dev/null; then
-                  		export XDG_CURRENT_DESKTOP=openbox
-                  		pre
-                  		exec startx
-                  	fi
-                  fi
-                '';
+                    # TTY2: start openbox at login if available.
+                    if test -z "$DISPLAY" -a "$XDG_VTNR" = 2; then
+                    	if command -v openbox-session &>/dev/null; then
+                    		export XDG_CURRENT_DESKTOP=openbox
+                    		pre
+                    		exec startx
+                    	fi
+                    fi
+                  '';
               };
 
               programs.alacritty = {
@@ -1161,111 +1164,112 @@
                   }
                 ];
 
-                style = ''
-                  window#waybar,
-                  #workspaces button {
-                    background-color: rgba(16, 16, 16, 0.97);
-                    /* Icon glyphs come from the font-awesome package (home.packages).
-                       Regular text font comes first: Pango picks, per character, the
-                       first font in this list that has a glyph for it. "Roboto" isn't
-                       actually installed anywhere, so it (and Helvetica/Arial below)
-                       get skipped entirely - Font Awesome 7 Free covers plain ASCII
-                       too, so it was winning every character, icon or not. Noto Sans
-                       (home.packages) is a real installed font, so it wins first now. */
-                    font-family: "Noto Sans", "Font Awesome 7 Free", "Font Awesome 7 Brands", sans-serif;
-                    font-size: 13px;
-                    color: #d4d4d4;
-                  }
-
-                  button {
-                    /* Use box-shadow instead of border so the text isn't offset */
-                    box-shadow: inset 0 -2px transparent;
-                    /* Avoid rounded borders under each button name */
-                    border: none;
-                    border-radius: 0;
-                  }
-
-                  /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-                  button:hover {
-                    background: inherit;
-                    box-shadow: inset 0 -2px #d4d4d4;
-                  }
-
-                  #workspaces button {
-                    padding: 0 5px;
-                  }
-
-                  #workspaces button:hover {
-                    background: rgba(0, 0, 0, 0.2);
-                  }
-
-                  #workspaces button.focused {
-                    background-color: #1a1a1a;
-                    box-shadow: inset 0 -1px #4c4c4c;
-                  }
-
-                  #workspaces button.urgent {
-                    background-color: #eb4d4b;
-                  }
-
-                  #clock,
-                  #battery,
-                  #cpu,
-                  #memory,
-                  #disk,
-                  #temperature,
-                  #backlight,
-                  #network,
-                  #pulseaudio,
-                  #wireplumber,
-                  #custom-media,
-                  #tray,
-                  #mode,
-                  #idle_inhibitor,
-                  #scratchpad,
-                  #mpd {
-                    padding: 0 8px;
-                  }
-
-                  #window,
-                  #workspaces {
-                    margin: 0 4px;
-                  }
-
-                  /* If workspaces is the leftmost module, omit left margin */
-                  .modules-left > widget:first-child > #workspaces {
-                    margin-left: 0;
-                  }
-
-                  /* If workspaces is the rightmost module, omit right margin */
-                  .modules-right > widget:last-child > #workspaces {
-                    margin-right: 0;
-                  }
-
-                  @keyframes blink {
-                    to {
-                      background-color: #d4d4d4;
-                      color: #000000;
+                style = # css
+                  ''
+                    window#waybar,
+                    #workspaces button {
+                      background-color: rgba(16, 16, 16, 0.97);
+                      /* Icon glyphs come from the font-awesome package (home.packages).
+                         Regular text font comes first: Pango picks, per character, the
+                         first font in this list that has a glyph for it. "Roboto" isn't
+                         actually installed anywhere, so it (and Helvetica/Arial below)
+                         get skipped entirely - Font Awesome 7 Free covers plain ASCII
+                         too, so it was winning every character, icon or not. Noto Sans
+                         (home.packages) is a real installed font, so it wins first now. */
+                      font-family: "Noto Sans", "Font Awesome 7 Free", "Font Awesome 7 Brands", sans-serif;
+                      font-size: 13px;
+                      color: #d4d4d4;
                     }
-                  }
 
-                  #battery.critical:not(.charging) {
-                    background-color: #f53c3c;
-                    animation-name: blink;
-                    animation-duration: 0.5s;
-                    animation-timing-function: linear;
-                    animation-iteration-count: infinite;
-                    animation-direction: alternate;
-                  }
+                    button {
+                      /* Use box-shadow instead of border so the text isn't offset */
+                      box-shadow: inset 0 -2px transparent;
+                      /* Avoid rounded borders under each button name */
+                      border: none;
+                      border-radius: 0;
+                    }
 
-                  #network.disconnected {
-                    background-color: #f53c3c;
-                  }
+                    /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+                    button:hover {
+                      background: inherit;
+                      box-shadow: inset 0 -2px #d4d4d4;
+                    }
 
-                  #temperature.critical {
-                    background-color: #eb4d4b;
-                  }
-                '';
+                    #workspaces button {
+                      padding: 0 5px;
+                    }
+
+                    #workspaces button:hover {
+                      background: rgba(0, 0, 0, 0.2);
+                    }
+
+                    #workspaces button.focused {
+                      background-color: #1a1a1a;
+                      box-shadow: inset 0 -1px #4c4c4c;
+                    }
+
+                    #workspaces button.urgent {
+                      background-color: #eb4d4b;
+                    }
+
+                    #clock,
+                    #battery,
+                    #cpu,
+                    #memory,
+                    #disk,
+                    #temperature,
+                    #backlight,
+                    #network,
+                    #pulseaudio,
+                    #wireplumber,
+                    #custom-media,
+                    #tray,
+                    #mode,
+                    #idle_inhibitor,
+                    #scratchpad,
+                    #mpd {
+                      padding: 0 8px;
+                    }
+
+                    #window,
+                    #workspaces {
+                      margin: 0 4px;
+                    }
+
+                    /* If workspaces is the leftmost module, omit left margin */
+                    .modules-left > widget:first-child > #workspaces {
+                      margin-left: 0;
+                    }
+
+                    /* If workspaces is the rightmost module, omit right margin */
+                    .modules-right > widget:last-child > #workspaces {
+                      margin-right: 0;
+                    }
+
+                    @keyframes blink {
+                      to {
+                        background-color: #d4d4d4;
+                        color: #000000;
+                      }
+                    }
+
+                    #battery.critical:not(.charging) {
+                      background-color: #f53c3c;
+                      animation-name: blink;
+                      animation-duration: 0.5s;
+                      animation-timing-function: linear;
+                      animation-iteration-count: infinite;
+                      animation-direction: alternate;
+                    }
+
+                    #network.disconnected {
+                      background-color: #f53c3c;
+                    }
+
+                    #temperature.critical {
+                      background-color: #eb4d4b;
+                    }
+                  '';
               };
 
               # Without this, xdg-desktop-portal-gtk/-wlr are installed as
@@ -1318,14 +1322,15 @@
               # would replace the whole unit, including the store-path-pinned
               # ExecStart= above that home-manager doesn't otherwise know
               # about.
-              xdg.configFile."systemd/user/xdg-desktop-portal-wlr.service.d/restart-backoff.conf".text = ''
-                [Unit]
-                StartLimitIntervalSec=30
-                StartLimitBurst=5
+              xdg.configFile."systemd/user/xdg-desktop-portal-wlr.service.d/restart-backoff.conf".text = # ini
+                ''
+                  [Unit]
+                  StartLimitIntervalSec=30
+                  StartLimitBurst=5
 
-                [Service]
-                RestartSec=2
-              '';
+                  [Service]
+                  RestartSec=2
+                '';
 
               wayland.windowManager.sway =
                 let
@@ -1485,9 +1490,10 @@
                     );
                   };
 
-                  extraConfig = ''
-                    bindsym --release button2 kill
-                  '';
+                  extraConfig = # sway
+                    ''
+                      bindsym --release button2 kill
+                    '';
                 };
 
               # Sway startup companions, as systemd --user services bound to
@@ -1755,42 +1761,43 @@
                 keyMode = "vi";
                 historyLimit = 10000;
                 escapeTime = 0;
-                extraConfig = ''
-                  set -g pane-active-border-style fg=colour0,bg=default
-                  set -g pane-border-style fg=colour0,bg=default
-                  set -g popup-style fg=colour0,bg=default
-                  set -g popup-border-style fg=colour0,bg=default
-                  set -g set-clipboard on
-                  set -g status-style bg=default,fg=colour102
-                  set -g mouse on
-                  set -g renumber-windows on
+                extraConfig = # tmux
+                  ''
+                    set -g pane-active-border-style fg=colour0,bg=default
+                    set -g pane-border-style fg=colour0,bg=default
+                    set -g popup-style fg=colour0,bg=default
+                    set -g popup-border-style fg=colour0,bg=default
+                    set -g set-clipboard on
+                    set -g status-style bg=default,fg=colour102
+                    set -g mouse on
+                    set -g renumber-windows on
 
-                  bind-key r source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded"
-                  bind-key c new-window -c "#{pane_current_path}"
-                  bind-key % split-window -h -c "#{pane_current_path}"
-                  bind-key '"' split-window -v -c "#{pane_current_path}"
+                    bind-key r source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded"
+                    bind-key c new-window -c "#{pane_current_path}"
+                    bind-key % split-window -h -c "#{pane_current_path}"
+                    bind-key '"' split-window -v -c "#{pane_current_path}"
 
-                  bind h select-pane -L
-                  bind j select-pane -D
-                  bind k select-pane -U
-                  bind l select-pane -R
+                    bind h select-pane -L
+                    bind j select-pane -D
+                    bind k select-pane -U
+                    bind l select-pane -R
 
-                  bind < resize-pane -L 1
-                  bind > resize-pane -R 1
-                  bind - resize-pane -D 1
-                  bind + resize-pane -U 1
+                    bind < resize-pane -L 1
+                    bind > resize-pane -R 1
+                    bind - resize-pane -D 1
+                    bind + resize-pane -U 1
 
-                  bind-key m switch-client -T move
-                  bind-key -T move Left  swap-window -d -t -1 \; switch-client -T move
-                  bind-key -T move Right swap-window -d -t +1 \; switch-client -T move
-                  bind-key -T move Escape switch-client -T root
-                  bind-key -T move Enter  switch-client -T root
+                    bind-key m switch-client -T move
+                    bind-key -T move Left  swap-window -d -t -1 \; switch-client -T move
+                    bind-key -T move Right swap-window -d -t +1 \; switch-client -T move
+                    bind-key -T move Escape switch-client -T root
+                    bind-key -T move Enter  switch-client -T root
 
-                  # Middle-click a window tab: close silently if idle (just a shell prompt),
-                  # otherwise ask for confirmation before killing it. confirm-before's -t
-                  # targets a client, not a window, so only the nested kill-window gets -t =.
-                  bind-key -n MouseDown2Status if-shell -F -t = "#{||:#{||:#{==:#{pane_current_command},bash},#{==:#{pane_current_command},zsh}},#{||:#{==:#{pane_current_command},fish},#{==:#{pane_current_command},sh}}}" "kill-window -t =" "confirm-before -p \"Kill window #{window_name} (#{pane_current_command} running)? (y/n)\" \"kill-window -t =\""
-                '';
+                    # Middle-click a window tab: close silently if idle (just a shell prompt),
+                    # otherwise ask for confirmation before killing it. confirm-before's -t
+                    # targets a client, not a window, so only the nested kill-window gets -t =.
+                    bind-key -n MouseDown2Status if-shell -F -t = "#{||:#{||:#{==:#{pane_current_command},bash},#{==:#{pane_current_command},zsh}},#{||:#{==:#{pane_current_command},fish},#{==:#{pane_current_command},sh}}}" "kill-window -t =" "confirm-before -p \"Kill window #{window_name} (#{pane_current_command} running)? (y/n)\" \"kill-window -t =\""
+                  '';
               };
 
               programs.firefox = {
@@ -1940,9 +1947,12 @@
 
               # Brave reads enterprise policies from /etc/brave/policies/managed,
               # which lives outside $HOME - requires sudo on every activation.
-              home.activation.bravePolicies = inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                $DRY_RUN_CMD /usr/bin/sudo install -Dm644 ${bravePolicyFile} /etc/brave/policies/managed/policy.json
-              '';
+              home.activation.bravePolicies =
+                inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ]
+                  # bash
+                  ''
+                    $DRY_RUN_CMD /usr/bin/sudo install -Dm644 ${bravePolicyFile} /etc/brave/policies/managed/policy.json
+                  '';
 
               programs.thunderbird = {
                 enable = true;
@@ -2047,17 +2057,18 @@
                 # No dedicated home-manager option for embeddedbitmap.
                 configFile."local-embeddedbitmap" = {
                   enable = true;
-                  text = ''
-                    <?xml version="1.0"?>
-                    <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-                    <fontconfig>
-                      <match target="font">
-                        <edit mode="assign" name="embeddedbitmap">
-                          <bool>false</bool>
-                        </edit>
-                      </match>
-                    </fontconfig>
-                  '';
+                  text = # xml
+                    ''
+                      <?xml version="1.0"?>
+                      <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+                      <fontconfig>
+                        <match target="font">
+                          <edit mode="assign" name="embeddedbitmap">
+                            <bool>false</bool>
+                          </edit>
+                        </match>
+                      </fontconfig>
+                    '';
                 };
               };
 
@@ -2088,216 +2099,217 @@
 
               programs.tint2 = {
                 enable = true;
-                extraConfig = ''
-                  #---- Generated by tint2conf aa1e ----
-                  # See https://gitlab.com/o9000/tint2/wikis/Configure for
-                  # full documentation of the configuration options.
-                  #-------------------------------------
-                  # Gradients
-                  #-------------------------------------
-                  # Backgrounds
-                  # Background 1: Panel
-                  rounded = 0
-                  border_width = 0
-                  border_sides = TBLR
-                  border_content_tint_weight = 0
-                  background_content_tint_weight = 0
-                  background_color = #000000 60
-                  border_color = #000000 30
-                  background_color_hover = #000000 60
-                  border_color_hover = #000000 30
-                  background_color_pressed = #000000 60
-                  border_color_pressed = #000000 30
+                extraConfig = # ini
+                  ''
+                    #---- Generated by tint2conf aa1e ----
+                    # See https://gitlab.com/o9000/tint2/wikis/Configure for
+                    # full documentation of the configuration options.
+                    #-------------------------------------
+                    # Gradients
+                    #-------------------------------------
+                    # Backgrounds
+                    # Background 1: Panel
+                    rounded = 0
+                    border_width = 0
+                    border_sides = TBLR
+                    border_content_tint_weight = 0
+                    background_content_tint_weight = 0
+                    background_color = #000000 60
+                    border_color = #000000 30
+                    background_color_hover = #000000 60
+                    border_color_hover = #000000 30
+                    background_color_pressed = #000000 60
+                    border_color_pressed = #000000 30
 
-                  # Background 2: Default task, Iconified task
-                  rounded = 4
-                  border_width = 1
-                  border_sides = TBLR
-                  border_content_tint_weight = 0
-                  background_content_tint_weight = 0
-                  background_color = #777777 20
-                  border_color = #777777 30
-                  background_color_hover = #aaaaaa 22
-                  border_color_hover = #eaeaea 44
-                  background_color_pressed = #555555 4
-                  border_color_pressed = #eaeaea 44
+                    # Background 2: Default task, Iconified task
+                    rounded = 4
+                    border_width = 1
+                    border_sides = TBLR
+                    border_content_tint_weight = 0
+                    background_content_tint_weight = 0
+                    background_color = #777777 20
+                    border_color = #777777 30
+                    background_color_hover = #aaaaaa 22
+                    border_color_hover = #eaeaea 44
+                    background_color_pressed = #555555 4
+                    border_color_pressed = #eaeaea 44
 
-                  # Background 3: Active task
-                  rounded = 4
-                  border_width = 1
-                  border_sides = TBLR
-                  border_content_tint_weight = 0
-                  background_content_tint_weight = 0
-                  background_color = #777777 20
-                  border_color = #ffffff 40
-                  background_color_hover = #aaaaaa 22
-                  border_color_hover = #eaeaea 44
-                  background_color_pressed = #555555 4
-                  border_color_pressed = #eaeaea 44
+                    # Background 3: Active task
+                    rounded = 4
+                    border_width = 1
+                    border_sides = TBLR
+                    border_content_tint_weight = 0
+                    background_content_tint_weight = 0
+                    background_color = #777777 20
+                    border_color = #ffffff 40
+                    background_color_hover = #aaaaaa 22
+                    border_color_hover = #eaeaea 44
+                    background_color_pressed = #555555 4
+                    border_color_pressed = #eaeaea 44
 
-                  # Background 4: Urgent task
-                  rounded = 4
-                  border_width = 1
-                  border_sides = TBLR
-                  border_content_tint_weight = 0
-                  background_content_tint_weight = 0
-                  background_color = #aa4400 100
-                  border_color = #aa7733 100
-                  background_color_hover = #cc7700 100
-                  border_color_hover = #aa7733 100
-                  background_color_pressed = #555555 4
-                  border_color_pressed = #aa7733 100
+                    # Background 4: Urgent task
+                    rounded = 4
+                    border_width = 1
+                    border_sides = TBLR
+                    border_content_tint_weight = 0
+                    background_content_tint_weight = 0
+                    background_color = #aa4400 100
+                    border_color = #aa7733 100
+                    background_color_hover = #cc7700 100
+                    border_color_hover = #aa7733 100
+                    background_color_pressed = #555555 4
+                    border_color_pressed = #aa7733 100
 
-                  # Background 5: Tooltip
-                  rounded = 1
-                  border_width = 1
-                  border_sides = TBLR
-                  border_content_tint_weight = 0
-                  background_content_tint_weight = 0
-                  background_color = #222222 100
-                  border_color = #333333 100
-                  background_color_hover = #ffffaa 100
-                  border_color_hover = #000000 100
-                  background_color_pressed = #ffffaa 100
-                  border_color_pressed = #000000 100
+                    # Background 5: Tooltip
+                    rounded = 1
+                    border_width = 1
+                    border_sides = TBLR
+                    border_content_tint_weight = 0
+                    background_content_tint_weight = 0
+                    background_color = #222222 100
+                    border_color = #333333 100
+                    background_color_hover = #ffffaa 100
+                    border_color_hover = #000000 100
+                    background_color_pressed = #ffffaa 100
+                    border_color_pressed = #000000 100
 
-                  #-------------------------------------
-                  # Panel
-                  panel_items = TSC
-                  panel_size = 100% 30
-                  panel_margin = 0 0
-                  panel_padding = 2 0 2
-                  panel_background_id = 1
-                  wm_menu = 1
-                  panel_dock = 0
-                  panel_pivot_struts = 0
-                  panel_position = top center horizontal
-                  panel_layer = top
-                  panel_monitor = all
-                  panel_shrink = 0
-                  autohide = 0
-                  autohide_show_timeout = 0
-                  autohide_hide_timeout = 0.5
-                  autohide_height = 1
-                  strut_policy = follow_size
-                  panel_window_name = tint2
-                  disable_transparency = 1
-                  mouse_effects = 1
-                  font_shadow = 0
-                  mouse_hover_icon_asb = 100 0 10
-                  mouse_pressed_icon_asb = 100 0 0
-                  scale_relative_to_dpi = 0
-                  scale_relative_to_screen_height = 0
+                    #-------------------------------------
+                    # Panel
+                    panel_items = TSC
+                    panel_size = 100% 30
+                    panel_margin = 0 0
+                    panel_padding = 2 0 2
+                    panel_background_id = 1
+                    wm_menu = 1
+                    panel_dock = 0
+                    panel_pivot_struts = 0
+                    panel_position = top center horizontal
+                    panel_layer = top
+                    panel_monitor = all
+                    panel_shrink = 0
+                    autohide = 0
+                    autohide_show_timeout = 0
+                    autohide_hide_timeout = 0.5
+                    autohide_height = 1
+                    strut_policy = follow_size
+                    panel_window_name = tint2
+                    disable_transparency = 1
+                    mouse_effects = 1
+                    font_shadow = 0
+                    mouse_hover_icon_asb = 100 0 10
+                    mouse_pressed_icon_asb = 100 0 0
+                    scale_relative_to_dpi = 0
+                    scale_relative_to_screen_height = 0
 
-                  #-------------------------------------
-                  # Taskbar
-                  taskbar_mode = single_desktop
-                  taskbar_hide_if_empty = 0
-                  taskbar_padding = 0 0 2
-                  taskbar_background_id = 0
-                  taskbar_active_background_id = 0
-                  taskbar_name = 1
-                  taskbar_hide_inactive_tasks = 0
-                  taskbar_hide_different_monitor = 0
-                  taskbar_hide_different_desktop = 0
-                  taskbar_always_show_all_desktop_tasks = 0
-                  taskbar_name_padding = 4 2
-                  taskbar_name_background_id = 0
-                  taskbar_name_active_background_id = 0
-                  taskbar_name_font_color = #e3e3e3 100
-                  taskbar_name_active_font_color = #ffffff 100
-                  taskbar_distribute_size = 0
-                  taskbar_sort_order = none
-                  task_align = left
+                    #-------------------------------------
+                    # Taskbar
+                    taskbar_mode = single_desktop
+                    taskbar_hide_if_empty = 0
+                    taskbar_padding = 0 0 2
+                    taskbar_background_id = 0
+                    taskbar_active_background_id = 0
+                    taskbar_name = 1
+                    taskbar_hide_inactive_tasks = 0
+                    taskbar_hide_different_monitor = 0
+                    taskbar_hide_different_desktop = 0
+                    taskbar_always_show_all_desktop_tasks = 0
+                    taskbar_name_padding = 4 2
+                    taskbar_name_background_id = 0
+                    taskbar_name_active_background_id = 0
+                    taskbar_name_font_color = #e3e3e3 100
+                    taskbar_name_active_font_color = #ffffff 100
+                    taskbar_distribute_size = 0
+                    taskbar_sort_order = none
+                    task_align = left
 
-                  #-------------------------------------
-                  # Task
-                  task_text = 1
-                  task_icon = 1
-                  task_centered = 1
-                  urgent_nb_of_blink = 100000
-                  task_maximum_size = 150 35
-                  task_padding = 2 2 4
-                  task_tooltip = 1
-                  task_thumbnail = 0
-                  task_thumbnail_size = 210
-                  task_font_color = #ffffff 100
-                  task_background_id = 2
-                  task_active_background_id = 3
-                  task_urgent_background_id = 4
-                  task_iconified_background_id = 2
-                  mouse_left = toggle_iconify
-                  mouse_middle = none
-                  mouse_right = close
-                  mouse_scroll_up = toggle
-                  mouse_scroll_down = iconify
+                    #-------------------------------------
+                    # Task
+                    task_text = 1
+                    task_icon = 1
+                    task_centered = 1
+                    urgent_nb_of_blink = 100000
+                    task_maximum_size = 150 35
+                    task_padding = 2 2 4
+                    task_tooltip = 1
+                    task_thumbnail = 0
+                    task_thumbnail_size = 210
+                    task_font_color = #ffffff 100
+                    task_background_id = 2
+                    task_active_background_id = 3
+                    task_urgent_background_id = 4
+                    task_iconified_background_id = 2
+                    mouse_left = toggle_iconify
+                    mouse_middle = none
+                    mouse_right = close
+                    mouse_scroll_up = toggle
+                    mouse_scroll_down = iconify
 
-                  #-------------------------------------
-                  # System tray (notification area)
-                  systray_padding = 0 4 2
-                  systray_background_id = 0
-                  systray_sort = ascending
-                  systray_icon_size = 24
-                  systray_icon_asb = 100 0 0
-                  systray_monitor = 1
-                  systray_name_filter =
+                    #-------------------------------------
+                    # System tray (notification area)
+                    systray_padding = 0 4 2
+                    systray_background_id = 0
+                    systray_sort = ascending
+                    systray_icon_size = 24
+                    systray_icon_asb = 100 0 0
+                    systray_monitor = 1
+                    systray_name_filter =
 
-                  #-------------------------------------
-                  # Launcher
-                  launcher_padding = 2 4 2
-                  launcher_background_id = 0
-                  launcher_icon_background_id = 0
-                  launcher_icon_size = 24
-                  launcher_icon_asb = 100 0 0
-                  launcher_icon_theme_override = 0
-                  startup_notifications = 1
-                  launcher_tooltip = 1
+                    #-------------------------------------
+                    # Launcher
+                    launcher_padding = 2 4 2
+                    launcher_background_id = 0
+                    launcher_icon_background_id = 0
+                    launcher_icon_size = 24
+                    launcher_icon_asb = 100 0 0
+                    launcher_icon_theme_override = 0
+                    startup_notifications = 1
+                    launcher_tooltip = 1
 
-                  #-------------------------------------
-                  # Clock
-                  time1_format = %H:%M
-                  time2_format = %A %d %B
-                  time1_timezone =
-                  time2_timezone =
-                  clock_font_color = #ffffff 100
-                  clock_padding = 2 0
-                  clock_background_id = 0
-                  clock_tooltip =
-                  clock_tooltip_timezone =
-                  clock_lclick_command =
-                  clock_rclick_command = orage
-                  clock_mclick_command =
-                  clock_uwheel_command =
-                  clock_dwheel_command =
+                    #-------------------------------------
+                    # Clock
+                    time1_format = %H:%M
+                    time2_format = %A %d %B
+                    time1_timezone =
+                    time2_timezone =
+                    clock_font_color = #ffffff 100
+                    clock_padding = 2 0
+                    clock_background_id = 0
+                    clock_tooltip =
+                    clock_tooltip_timezone =
+                    clock_lclick_command =
+                    clock_rclick_command = orage
+                    clock_mclick_command =
+                    clock_uwheel_command =
+                    clock_dwheel_command =
 
-                  #-------------------------------------
-                  # Battery
-                  battery_tooltip = 1
-                  battery_low_status = 10
-                  battery_low_cmd = xmessage 'tint2: Battery low!'
-                  battery_full_cmd =
-                  battery_font_color = #ffffff 100
-                  bat1_format =
-                  bat2_format =
-                  battery_padding = 1 0
-                  battery_background_id = 0
-                  battery_hide = 101
-                  battery_lclick_command =
-                  battery_rclick_command =
-                  battery_mclick_command =
-                  battery_uwheel_command =
-                  battery_dwheel_command =
-                  ac_connected_cmd =
-                  ac_disconnected_cmd =
+                    #-------------------------------------
+                    # Battery
+                    battery_tooltip = 1
+                    battery_low_status = 10
+                    battery_low_cmd = xmessage 'tint2: Battery low!'
+                    battery_full_cmd =
+                    battery_font_color = #ffffff 100
+                    bat1_format =
+                    bat2_format =
+                    battery_padding = 1 0
+                    battery_background_id = 0
+                    battery_hide = 101
+                    battery_lclick_command =
+                    battery_rclick_command =
+                    battery_mclick_command =
+                    battery_uwheel_command =
+                    battery_dwheel_command =
+                    ac_connected_cmd =
+                    ac_disconnected_cmd =
 
-                  #-------------------------------------
-                  # Tooltip
-                  tooltip_show_timeout = 0.5
-                  tooltip_hide_timeout = 0.1
-                  tooltip_padding = 4 4
-                  tooltip_background_id = 5
-                  tooltip_font_color = #dddddd 100
-                '';
+                    #-------------------------------------
+                    # Tooltip
+                    tooltip_show_timeout = 0.5
+                    tooltip_hide_timeout = 0.1
+                    tooltip_padding = 4 4
+                    tooltip_background_id = 5
+                    tooltip_font_color = #dddddd 100
+                  '';
               };
 
               # dolphinrc/kdeglobals are structured KDE-INI files with no
@@ -2393,173 +2405,177 @@
                 </openbox_menu>
               '';
 
-              xdg.configFile."openbox/autostart".text = ''
-                picom -b --fade-in-step=0.1 --fade-out-step=0.2
-                tint2 &
-              '';
+              xdg.configFile."openbox/autostart".text = # bash
+                ''
+                  picom -b --fade-in-step=0.1 --fade-out-step=0.2
+                  tint2 &
+                '';
 
               # KXMLGUI toolbar/menu layout - XML, not INI, so it doesn't fit
               # plasma-manager's configFile group->key->value generator.
               # Lives under XDG_DATA_HOME, not XDG_CONFIG_HOME.
-              xdg.dataFile."kxmlgui5/dolphin/dolphinui.rc".text = ''
-                <?xml version='1.0'?>
-                <!DOCTYPE gui SYSTEM 'kpartgui.dtd'>
-                <gui name="dolphin" version="49">
-                 <MenuBar>
-                  <Menu name="file">
-                   <Action name="new_menu"/>
-                   <Action name="file_new"/>
-                   <Action name="new_tab"/>
-                   <Action name="file_close"/>
-                   <Action name="undo_close_tab"/>
-                   <Separator/>
-                   <Action name="add_to_places"/>
-                   <Separator/>
-                   <Action name="renamefile"/>
-                   <Action name="duplicate"/>
-                   <Action name="movetotrash"/>
-                   <Action name="deletefile"/>
-                   <Separator/>
-                   <Action name="show_target"/>
-                   <Separator/>
-                   <Action name="properties"/>
-                  </Menu>
-                  <Menu name="edit">
-                   <Action name="edit_cut"/>
-                   <Action name="edit_copy"/>
-                   <Action name="copy_location"/>
-                   <Action name="edit_paste"/>
-                   <Separator/>
-                   <Action name="show_filter_bar"/>
-                   <Action name="edit_find"/>
-                   <Separator/>
-                   <Action name="toggle_selection_mode"/>
-                   <Action name="copy_to_inactive_split_view"/>
-                   <Action name="move_to_inactive_split_view"/>
-                   <Action name="edit_select_all"/>
-                   <Action name="invert_selection"/>
-                  </Menu>
-                  <Menu name="view">
-                   <Action name="view_zoom_in"/>
-                   <Action name="view_zoom_reset"/>
-                   <Action name="view_zoom_out"/>
-                   <Separator/>
-                   <Action name="sort"/>
-                   <Action name="group_by"/>
-                   <Action name="view_mode"/>
-                   <Action name="additional_info"/>
-                   <Action name="show_preview"/>
-                   <Action name="show_hidden_files"/>
-                   <Action name="act_as_admin"/>
-                   <Separator/>
-                   <Action name="restore_view_settings_default"/>
-                   <Action name="view_properties"/>
-                   <Separator/>
-                   <Action name="split_view_menu"/>
-                   <Action name="popout_split_view"/>
-                   <Action name="focus_inactive_split_view"/>
-                   <Action name="split_stash"/>
-                   <Action name="redisplay"/>
-                   <Action name="stop"/>
-                   <Separator/>
-                   <Action name="panels"/>
-                   <Menu icon="edit-select-text" name="location_bar">
-                    <text context="@title:menu">Location Bar</text>
-                    <Action name="editable_location"/>
-                    <Action name="replace_location"/>
-                   </Menu>
-                  </Menu>
-                  <Menu name="go">
-                   <Action name="bookmarks"/>
-                   <Action name="closed_tabs"/>
-                  </Menu>
-                  <Menu name="tools">
-                   <Action name="open_preferred_search_tool"/>
-                   <Action name="open_terminal"/>
-                   <Action name="open_terminal_here"/>
-                   <Action name="manage_disk_space"/>
-                   <Action name="compare_files"/>
-                   <Action name="change_remote_encoding"/>
-                  </Menu>
-                  <Menu name="settings">
-                   <Action name="window_color_sheme"/>
-                  </Menu>
-                 </MenuBar>
-                 <ToolBar alreadyVisited="1" name="mainToolBar" noMerge="1">
-                  <Action name="view_settings"/>
-                  <text context="@title:menu" translationDomain="dolphin">Main Toolbar</text>
-                  <Action name="go_back"/>
-                  <Action name="go_forward"/>
-                  <Action name="go_up"/>
-                  <Action name="view_redisplay"/>
-                  <Action name="url_navigators"/>
-                  <Action name="split_view"/>
-                  <Action name="toggle_search"/>
-                  <Action name="hamburger_menu"/>
-                 </ToolBar>
-                 <State name="new_file">
-                  <disable>
-                   <Action name="edit_undo"/>
-                   <Action name="edit_redo"/>
-                   <Action name="edit_cut"/>
-                   <Action name="renamefile"/>
-                   <Action name="movetotrash"/>
-                   <Action name="deletefile"/>
-                   <Action name="invert_selection"/>
-                   <Separator/>
-                   <Action name="go_back"/>
-                   <Action name="go_forward"/>
-                  </disable>
-                 </State>
-                 <State name="has_selection">
-                  <enable>
-                   <Action name="invert_selection"/>
-                  </enable>
-                 </State>
-                 <State name="has_no_selection">
-                  <disable>
-                   <Action name="delete_shortcut"/>
-                   <Action name="invert_selection"/>
-                  </disable>
-                 </State>
-                 <ActionProperties scheme="Default">
-                  <Action name="compact" priority="0"/>
-                  <Action name="details" priority="0"/>
-                  <Action name="edit_copy" priority="0"/>
-                  <Action name="edit_cut" priority="0"/>
-                  <Action name="edit_paste" priority="0"/>
-                  <Action name="go_back" priority="0"/>
-                  <Action name="go_forward" priority="0"/>
-                  <Action name="go_home" priority="0"/>
-                  <Action name="go_up" priority="0"/>
-                  <Action name="icons" priority="0"/>
-                  <Action name="stop" priority="0"/>
-                  <Action name="toggle_filter" priority="0"/>
-                  <Action name="toggle_search" priority="0"/>
-                  <Action name="view_mode" priority="0"/>
-                  <Action name="view_redisplay" priority="0" shortcut="F5; Ctrl+R"/>
-                  <Action name="view_settings" priority="0"/>
-                  <Action name="view_zoom_in" priority="0"/>
-                  <Action name="view_zoom_out" priority="0"/>
-                  <Action name="view_zoom_reset" priority="0"/>
-                 </ActionProperties>
-                </gui>
-              '';
+              xdg.dataFile."kxmlgui5/dolphin/dolphinui.rc".text = # xml
+                ''
+                  <?xml version='1.0'?>
+                  <!DOCTYPE gui SYSTEM 'kpartgui.dtd'>
+                  <gui name="dolphin" version="49">
+                   <MenuBar>
+                    <Menu name="file">
+                     <Action name="new_menu"/>
+                     <Action name="file_new"/>
+                     <Action name="new_tab"/>
+                     <Action name="file_close"/>
+                     <Action name="undo_close_tab"/>
+                     <Separator/>
+                     <Action name="add_to_places"/>
+                     <Separator/>
+                     <Action name="renamefile"/>
+                     <Action name="duplicate"/>
+                     <Action name="movetotrash"/>
+                     <Action name="deletefile"/>
+                     <Separator/>
+                     <Action name="show_target"/>
+                     <Separator/>
+                     <Action name="properties"/>
+                    </Menu>
+                    <Menu name="edit">
+                     <Action name="edit_cut"/>
+                     <Action name="edit_copy"/>
+                     <Action name="copy_location"/>
+                     <Action name="edit_paste"/>
+                     <Separator/>
+                     <Action name="show_filter_bar"/>
+                     <Action name="edit_find"/>
+                     <Separator/>
+                     <Action name="toggle_selection_mode"/>
+                     <Action name="copy_to_inactive_split_view"/>
+                     <Action name="move_to_inactive_split_view"/>
+                     <Action name="edit_select_all"/>
+                     <Action name="invert_selection"/>
+                    </Menu>
+                    <Menu name="view">
+                     <Action name="view_zoom_in"/>
+                     <Action name="view_zoom_reset"/>
+                     <Action name="view_zoom_out"/>
+                     <Separator/>
+                     <Action name="sort"/>
+                     <Action name="group_by"/>
+                     <Action name="view_mode"/>
+                     <Action name="additional_info"/>
+                     <Action name="show_preview"/>
+                     <Action name="show_hidden_files"/>
+                     <Action name="act_as_admin"/>
+                     <Separator/>
+                     <Action name="restore_view_settings_default"/>
+                     <Action name="view_properties"/>
+                     <Separator/>
+                     <Action name="split_view_menu"/>
+                     <Action name="popout_split_view"/>
+                     <Action name="focus_inactive_split_view"/>
+                     <Action name="split_stash"/>
+                     <Action name="redisplay"/>
+                     <Action name="stop"/>
+                     <Separator/>
+                     <Action name="panels"/>
+                     <Menu icon="edit-select-text" name="location_bar">
+                      <text context="@title:menu">Location Bar</text>
+                      <Action name="editable_location"/>
+                      <Action name="replace_location"/>
+                     </Menu>
+                    </Menu>
+                    <Menu name="go">
+                     <Action name="bookmarks"/>
+                     <Action name="closed_tabs"/>
+                    </Menu>
+                    <Menu name="tools">
+                     <Action name="open_preferred_search_tool"/>
+                     <Action name="open_terminal"/>
+                     <Action name="open_terminal_here"/>
+                     <Action name="manage_disk_space"/>
+                     <Action name="compare_files"/>
+                     <Action name="change_remote_encoding"/>
+                    </Menu>
+                    <Menu name="settings">
+                     <Action name="window_color_sheme"/>
+                    </Menu>
+                   </MenuBar>
+                   <ToolBar alreadyVisited="1" name="mainToolBar" noMerge="1">
+                    <Action name="view_settings"/>
+                    <text context="@title:menu" translationDomain="dolphin">Main Toolbar</text>
+                    <Action name="go_back"/>
+                    <Action name="go_forward"/>
+                    <Action name="go_up"/>
+                    <Action name="view_redisplay"/>
+                    <Action name="url_navigators"/>
+                    <Action name="split_view"/>
+                    <Action name="toggle_search"/>
+                    <Action name="hamburger_menu"/>
+                   </ToolBar>
+                   <State name="new_file">
+                    <disable>
+                     <Action name="edit_undo"/>
+                     <Action name="edit_redo"/>
+                     <Action name="edit_cut"/>
+                     <Action name="renamefile"/>
+                     <Action name="movetotrash"/>
+                     <Action name="deletefile"/>
+                     <Action name="invert_selection"/>
+                     <Separator/>
+                     <Action name="go_back"/>
+                     <Action name="go_forward"/>
+                    </disable>
+                   </State>
+                   <State name="has_selection">
+                    <enable>
+                     <Action name="invert_selection"/>
+                    </enable>
+                   </State>
+                   <State name="has_no_selection">
+                    <disable>
+                     <Action name="delete_shortcut"/>
+                     <Action name="invert_selection"/>
+                    </disable>
+                   </State>
+                   <ActionProperties scheme="Default">
+                    <Action name="compact" priority="0"/>
+                    <Action name="details" priority="0"/>
+                    <Action name="edit_copy" priority="0"/>
+                    <Action name="edit_cut" priority="0"/>
+                    <Action name="edit_paste" priority="0"/>
+                    <Action name="go_back" priority="0"/>
+                    <Action name="go_forward" priority="0"/>
+                    <Action name="go_home" priority="0"/>
+                    <Action name="go_up" priority="0"/>
+                    <Action name="icons" priority="0"/>
+                    <Action name="stop" priority="0"/>
+                    <Action name="toggle_filter" priority="0"/>
+                    <Action name="toggle_search" priority="0"/>
+                    <Action name="view_mode" priority="0"/>
+                    <Action name="view_redisplay" priority="0" shortcut="F5; Ctrl+R"/>
+                    <Action name="view_settings" priority="0"/>
+                    <Action name="view_zoom_in" priority="0"/>
+                    <Action name="view_zoom_out" priority="0"/>
+                    <Action name="view_zoom_reset" priority="0"/>
+                   </ActionProperties>
+                  </gui>
+                '';
 
               # No home-manager module for luacheck; verbatim Lua, not data.
-              xdg.configFile."luacheck/.luacheckrc".text = ''
-                globals = { "vim" }
-              '';
+              xdg.configFile."luacheck/.luacheckrc".text = # lua
+                ''
+                  globals = { "vim" }
+                '';
 
               # User-level makepkg.conf override (XDG_CONFIG_HOME/pacman/makepkg.conf).
               # Arch/pacman-specific; no home-manager module and its
               # shell-array syntax doesn't fit a pkgs.formats.* generator.
-              xdg.configFile."pacman/makepkg.conf".text = ''
-                MAKEFLAGS="--jobs=$(nproc)"
-                BUILDDIR=/tmp/makepkg
-                OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug lto)
-                PACMAN_AUTH=sudo
-              '';
+              xdg.configFile."pacman/makepkg.conf".text = # bash
+                ''
+                  MAKEFLAGS="--jobs=$(nproc)"
+                  BUILDDIR=/tmp/makepkg
+                  OPTIONS=(strip docs !libtool !staticlibs emptydirs zipman purge !debug lto)
+                  PACMAN_AUTH=sudo
+                '';
 
               # Consumed by .scripts/bin/sandbox, which bind-mounts these by
               # literal path into /etc/claude-code/ inside the sandbox
@@ -2610,11 +2626,12 @@
                       BGImagePath=""/>
               '';
 
-              home.file."Shared/Audio/win-plugins/AppData/Roaming/Ugritone/VerbCore/config.cfg".text = ''
-                <?xml version="1.0" encoding="UTF-8"?>
+              home.file."Shared/Audio/win-plugins/AppData/Roaming/Ugritone/VerbCore/config.cfg".text = # xml
+                ''
+                  <?xml version="1.0" encoding="UTF-8"?>
 
-                <root userDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\VerbCore"/>
-              '';
+                  <root userDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\VerbCore"/>
+                '';
 
               home.file.".config/yamllint/config".source =
                 (homepkgs.formats.yaml { }).generate "yamllint-config"

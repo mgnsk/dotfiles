@@ -649,7 +649,13 @@
         pkgs = homepkgs;
         modules = [
           inputs.reaper-flake.homeModules.reaper
-          ({ lib, pkgs, config, ... }:
+          (
+            {
+              lib,
+              pkgs,
+              config,
+              ...
+            }:
             let
               # fetchurl's output is a store path, so its linked file name in
               # ColorThemes/ carries the store hash prefix - derive `active`
@@ -692,1712 +698,1660 @@
                 '';
                 meta = config.programs.reaper.package.meta or { };
               };
-            in {
-            home.username = username;
-            home.homeDirectory = "/home/${username}";
-            home.stateVersion = "24.05";
-            home.packages = homePkgs ++ [ reaperNoNet ];
-
-            # Manages ~/.config/REAPER declaratively (theme, ReaPack, plugin
-            # search paths). Plugin store paths (clapPlugins/lv2Plugins/
-            # vst3Plugins, defined above) come from the nixpkgs-audio
-            # channel, same as the wine/yabridge packages folded into
-            # home.packages above - REAPER, its plugins, and the wine bridge
-            # are all always installed, no separate dev shell needed.
-            programs.reaper = {
-              enable = true;
-              configPath = "/home/${username}/.config/REAPER";
-
-              # Installed separately as reaperNoNet above (network-namespaced);
-              # this default, unsandboxed package must stay off PATH or the
-              # two would collide over bin/reaper.
-              installPackage = false;
-
-              # Adds wine/yabridge libraries to REAPER's LD_LIBRARY_PATH,
-              # inherited by every process it spawns, including the yabridge
-              # wine host. GUI plugin rendering (mesa/vulkan) comes from the
-              # system's own drivers instead of a nixpkgs-audio copy - see
-              # targets.genericLinux.enable below. pipewire.jack goes first
-              # so its libjack.so.0 (pipewire's JACK-compatible
-              # implementation) is found ahead of any real libjack2 - there's
-              # no jack1/jack2 server here, only pipewire's - same fix as
-              # raysessionFixed below, but done here via LD_LIBRARY_PATH
-              # order since REAPER isn't wrapped with pw-jack itself.
-              packages = [ homepkgs.pipewire.jack ] ++ winePkgs;
-
-              extensions.reapack.enable = true;
-
-              theme = {
-                active = builtins.baseNameOf "${reaperTheme}";
-                colorThemes = [ reaperTheme ];
-              };
-
-              preferences.plugIns = {
-                vst.searchPaths = map (p: "${p}/lib/vst3") vst3Plugins;
-                clap.searchPaths = map (p: "${p}/lib/clap") clapPlugins;
-                lv2.searchPaths = map (p: "${p}/lib/lv2") lv2Plugins;
-              };
-            };
-
-            # Sets up the Windows-plugin wine prefix that yabridge bridges
-            # into REAPER's VST/VST3/CLAP paths above: a DXVK/GDI+ prefix,
-            # win-plugins symlinked in from ~/Shared/Audio, and a yabridgectl
-            # sync so newly (un)installed Windows plugins pick up chainloader
-            # .so files. Runs on every `home-manager switch` instead of every
-            # `nix develop`, so REAPER works standalone.
-            home.activation.audioWinePrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-              let
-                wineBinPath = audiopkgs.lib.makeBinPath (winePkgs ++ [ audiopkgs.wineWow64Packages.yabridge ]);
-                winPlugins = "/home/${username}/Shared/Audio/win-plugins";
-              in
-              ''
-                export WINEPREFIX=${audiopkgs.lib.escapeShellArg "/home/${username}/.wine-audio"}
-                export PATH=${audiopkgs.lib.escapeShellArg wineBinPath}:$PATH
-
-                # home.sessionVariables.NIX_PROFILES only takes effect in a
-                # fresh login shell, not in the shell that invoked this
-                # activation script, so yabridgectl (used below) can't find
-                # its own libyabridge-chainloader-*.so without this too.
-                export NIX_PROFILES=${audiopkgs.lib.escapeShellArg audiopkgs.yabridge}" $NIX_PROFILES"
-
-                # Needed for some Windows VST plugins (dxvk) and Guitar Pro 5 (gdiplus).
-                if [ ! -d "$WINEPREFIX" ]; then
-                  winetricks -q dxvk
-                  winetricks -q gdiplus
-                fi
-
-                winplugins=${audiopkgs.lib.escapeShellArg winPlugins}
-
-                link_into_prefix() {
-                  target=$1
-                  source=$2
-                  rm -rf "$target"
-                  ln -s "$source" "$target"
-                }
-
-                link_into_prefix "$WINEPREFIX/drive_c/users/${username}/win-plugins" "$winplugins"
-
-                if [ -d "$winplugins/AppData" ]; then
-                  link_into_prefix "$WINEPREFIX/drive_c/users/${username}/AppData" "$winplugins/AppData"
-                fi
-
-                if [ -d "$winplugins/Documents" ]; then
-                  link_into_prefix "$WINEPREFIX/drive_c/users/${username}/Documents" "$winplugins/Documents"
-                fi
-
-                if [ -d "$winplugins/ProgramData" ]; then
-                  ln -sf "$winplugins"/ProgramData/* "$WINEPREFIX"/drive_c/ProgramData/
-                fi
-
-                if [ -d "$winplugins/Program Files" ]; then
-                  ln -sf "$winplugins"/Program\ Files/* "$WINEPREFIX"/drive_c/Program\ Files/
-                fi
-
-                if [ -d "$winplugins/Program Files (x86)" ]; then
-                  ln -sf "$winplugins"/Program\ Files\ \(x86\)/* "$WINEPREFIX"/drive_c/Program\ Files\ \(x86\)/
-                fi
-
-                if [ -d "$winplugins/windows/Fonts" ]; then
-                  ln -sf "$winplugins"/windows/Fonts/* "$WINEPREFIX"/drive_c/windows/Fonts/
-                fi
-
-                if [ -f "$winplugins/custom.reg" ]; then
-                  wine regedit "$winplugins/custom.reg"
-                fi
-
-                link_into_prefix "/home/${username}/.vst3" "/home/${username}/Shared/Audio/vst3"
-
-                if [ -d "$winplugins/Plugins" ]; then
-                  yabridgectl sync --force --prune --verbose
-                  yabridgectl status
-                fi
-              ''
-            );
-
-            home.sessionPath = [
-              "$HOME/.local/bin"
-              "$HOME/go/bin"
-              "/usr/share/git/diff-highlight"
-              "$HOME/.scripts/bin"
-            ];
-
-            home.sessionVariables = {
-              THEME = "light";
-              GLAMOUR_STYLE = "light";
-              GLOW_STYLE = "light";
-
-              EDITOR = "nvim";
-              VISUAL = "nvim";
-              PAGER = "less -R";
-              MANPAGER = "less -R";
-              LESS = "-R --mouse --wheel-lines=3";
-
-              GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h%Creset%x1f%ct%x1f%Creset%s%C(cyan)%d%x1f%Cblue<%an>";
-
-              LS_COLORS = lsColors;
-
-              SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
-
-              LIBRARY_PATH = "$HOME/.local/lib";
-
-              ANSIBLE_NOCOWS = "1";
-
-              NODE_OPTIONS = "--max_old_space_size=4096";
-
-              HISTTIMEFORMAT = "[%F %T] ";
-
-              WINEPREFIX = "/home/${username}/.wine-audio";
-
-              # nix.sh (sourced earlier in ~/.bashrc) unconditionally
-              # overwrites NIX_PROFILES, dropping any prior value. Home
-              # Manager sources this file's generated hm-session-vars.sh
-              # right after nix.sh, so re-asserting the yabridge entry here
-              # re-adds it every shell without fighting nix.sh for order.
-              # Without it, yabridge's chainloader .so files can't find
-              # libyabridge-{vst2,vst3}.so at runtime and every bridged
-              # plugin fails to load in REAPER.
-              NIX_PROFILES = "${audiopkgs.yabridge} $NIX_PROFILES";
-            };
-
-            programs.home-manager.enable = true;
-
-            # Nix-built GUI programs (alacritty, kitty, ...) link against
-            # glvnd, which on NixOS finds GPU drivers via /run/opengl-driver.
-            # That path doesn't exist on Arch, so EGL/GLX finds zero vendor
-            # ICDs and every OpenGL window fails to open. This symlinks the
-            # Mesa drivers from this flake's nixpkgs into /run/opengl-driver
-            # (one-time `sudo .../non-nixos-gpu-setup` after switching).
-            targets.genericLinux.enable = true;
-
-            programs.bash = {
-              enable = true;
-              enableCompletion = true;
-
-              historyFile = "/home/${username}/.local/state/.bash_history";
-              historyFileSize = -1;
-              historySize = -1;
-              shellOptions = [ "histappend" ];
-
-              shellAliases = {
-                ls = "/bin/ls -hv --group-directories-first --color=auto";
-                l = "/bin/ls -Alhv --group-directories-first --color=auto";
-                ltr = "/bin/ls -hvlatr --group-directories-first --color=auto";
-                ".." = "cd ..";
-                grep = "/bin/grep --color=auto";
-                qr = "/bin/qrencode -t ANSI256";
-              };
-
-              initExtra = ''
-                mkdir -p "$HOME/.local/state"
-
-                PROMPT_COMMAND=__prompt_command
-
-                __prompt_command() {
-                	local EXIT="$?"
-                	PS1=""
-
-                	history -a
-
-                	local RCol='\[\e[0m\]'
-                	local Red='\[\e[0;31m\]'
-                	local Gre='\[\e[0;32m\]'
-                	local BrBlu='\[\e[0;36m\]'
-
-                	local userHostColor="''${USERHOST_COLOR:-$BrBlu}"
-                	local customHost="''${CUSTOM_HOST:-\h}"
-
-                	PS1+="''${RCol}[\t] ''${userHostColor}\u@''${customHost} ''${Gre}\w"
-
-                	if [ $EXIT != 0 ]; then
-                		PS1+=" ''${Red}[''${EXIT}]"
-                	fi
-
-                	PS1+=" ''${RCol}\n> "
-                }
-              '';
-
-              profileExtra = ''
-                pre() {
-                	if command -v gsettings &>/dev/null; then
-                		gsettings set "org.gnome.desktop.interface" \
-                			gtk-theme 'Adwaita Sans'
-
-                		gsettings set "org.gnome.desktop.interface" \
-                			icon-theme 'Adwaita Sans'
-
-                		gsettings set "org.gnome.desktop.interface" \
-                			font-name 'Adwaita Sans'
-
-                		gsettings set "org.gnome.desktop.interface" \
-                			monospace-font-name 'Monospace 11'
-
-                		gsettings set "org.gnome.desktop.interface" \
-                			document-font-name 'Adwaita Sans 11'
-
-                		gsettings set "org.gnome.desktop.interface" \
-                			font-antialiasing 'grayscale'
-
-                		gsettings set "org.gnome.desktop.interface" \
-                			font-hinting 'slight'
-
-                		gsettings set "org.gnome.desktop.interface" \
-                			text-scaling-factor "1.2"
-                	fi
-
-                	if command -v kbuildsycoca6 &>/dev/null; then
-                		XDG_MENU_PREFIX=arch- /usr/bin/kbuildsycoca6 --noincremental &>/dev/null
-                	fi
-                }
-
-                # TTY1: start sway at login if available.
-                if test -z "$DISPLAY" -a -z "$WAYLAND_DISPLAY" -a "$XDG_VTNR" = 1; then
-                	if command -v sway &>/dev/null; then
-                		export XDG_CURRENT_DESKTOP=sway
-                		pre
-
-                		exec sway --config ~/.config/sway/config
-                	fi
-                fi
-
-                # TTY2: start openbox at login if available.
-                if test -z "$DISPLAY" -a "$XDG_VTNR" = 2; then
-                	if command -v openbox-session &>/dev/null; then
-                		export XDG_CURRENT_DESKTOP=openbox
-                		pre
-                		exec startx
-                	fi
-                fi
-              '';
-            };
-
-            programs.alacritty = {
-              enable = true;
-              settings = {
-                font.size = 12;
-                font.normal.family = "monospace";
-
-                colors = {
-                  primary = {
-                    background = "#FFFFFF";
-                    foreground = "#000000";
-                  };
-                  selection = {
-                    text = "#000000";
-                    background = "#d7ba7d";
-                  };
-                  cursor.cursor = "#cccccc";
-                  normal = {
-                    black = "#000000";
-                    red = "#c72e0f";
-                    green = "#008000";
-                    yellow = "#795e25";
-                    blue = "#007acc";
-                    magenta = "#af00db";
-                    cyan = "#56b6c2";
-                    white = "#000000";
-                  };
-                  bright.black = "#808080";
-                };
-              };
-            };
-
-            programs.foot = {
-              enable = true;
-              settings = {
-                main = {
-                  pad = "2x1";
-                  font = "monospace:size=12";
-                };
-
-                # Non-solarized colors, see:
-                # https://codeberg.org/dnkl/foot/commit/3cf11bfea9e4787998c538bd312c456fd8287fd1
-                "colors-dark" = {
-                  alpha = 1.0;
-                  background = "ffffff";
-                  foreground = "000000";
-
-                  selection-foreground = "000000";
-                  selection-background = "d7ba7d";
-
-                  cursor = "ffffff cccccc";
-
-                  regular0 = "000000";
-                  regular1 = "c72e0f";
-                  regular2 = "008000";
-                  regular3 = "795e25";
-                  regular4 = "007acc";
-                  regular5 = "af00db";
-                  regular6 = "56b6c2";
-                  regular7 = "000000";
-
-                  bright0 = "808080";
-                };
-              };
-            };
-
-            programs.kitty = {
-              enable = true;
-
-              settings = {
-                text_composition_strategy = "legacy";
-                shell_integration = "no-cursor";
-                enable_audio_bell = false;
-                enabled_layouts = "splits";
-
-                tab_bar_style = "custom";
-                tab_bar_align = "left";
-                tab_activity_symbol = "!-";
-                bell_on_tab = "!-";
-                tab_title_template = "{index}:{tab.active_exe}{bell_symbol or activity_symbol}";
-                active_tab_title_template = "{index}:{tab.active_exe}{bell_symbol or activity_symbol or '*'}";
-                active_tab_font_style = "bold";
-
-                font_family = "monospace";
-                font_size = 12;
-              };
-
-              keybindings = {
-                "ctrl+equal" = "change_font_size all +1.0";
-                "ctrl+plus" = "change_font_size all +1.0";
-                "ctrl+kp_add" = "change_font_size all +1.0";
-                "ctrl+minus" = "change_font_size all -1.0";
-                "ctrl+kp_subtract" = "change_font_size all -1.0";
-
-                # Tmux-like mapping for tabs and windows.
-                "ctrl+b>c" = "new_tab_with_cwd";
-                "ctrl+b>n" = "kitten tab_nav.py next";
-                "ctrl+b>p" = "kitten tab_nav.py prev";
-
-                "ctrl+b>\"" = "launch --location=hsplit --cwd=current";
-                "ctrl+b>%" = "launch --location=vsplit --cwd=current";
-
-                "ctrl+b>h" = "neighboring_window left";
-                "ctrl+b>j" = "neighboring_window down";
-                "ctrl+b>k" = "neighboring_window up";
-                "ctrl+b>l" = "neighboring_window right";
-
-                "ctrl+b>[" = "kitten kitty_grab/grab.py";
-
-                "ctrl+shift+o" = ''kitten hints --program "xdg-open"'';
-              };
-
-              # themes/light.conf, tab_bar.py, tab_nav.py and the kitty_grab
-              # submodule stay as plain files in ~/.config/kitty - not
-              # nix-managed.
-              extraConfig = ''
-                include themes/''${THEME}.conf
-              '';
-            };
-
-            programs.waybar = {
-              enable = true;
-
-              systemd = {
+            in
+            {
+              home.username = username;
+              home.homeDirectory = "/home/${username}";
+              home.stateVersion = "24.05";
+              home.packages = homePkgs ++ [ reaperNoNet ];
+
+              # Manages ~/.config/REAPER declaratively (theme, ReaPack, plugin
+              # search paths). Plugin store paths (clapPlugins/lv2Plugins/
+              # vst3Plugins, defined above) come from the nixpkgs-audio
+              # channel, same as the wine/yabridge packages folded into
+              # home.packages above - REAPER, its plugins, and the wine bridge
+              # are all always installed, no separate dev shell needed.
+              programs.reaper = {
                 enable = true;
-                targets = [ "sway-session.target" ];
+                configPath = "/home/${username}/.config/REAPER";
+
+                # Installed separately as reaperNoNet above (network-namespaced);
+                # this default, unsandboxed package must stay off PATH or the
+                # two would collide over bin/reaper.
+                installPackage = false;
+
+                # Adds wine/yabridge libraries to REAPER's LD_LIBRARY_PATH,
+                # inherited by every process it spawns, including the yabridge
+                # wine host. GUI plugin rendering (mesa/vulkan) comes from the
+                # system's own drivers instead of a nixpkgs-audio copy - see
+                # targets.genericLinux.enable below. pipewire.jack goes first
+                # so its libjack.so.0 (pipewire's JACK-compatible
+                # implementation) is found ahead of any real libjack2 - there's
+                # no jack1/jack2 server here, only pipewire's - same fix as
+                # raysessionFixed below, but done here via LD_LIBRARY_PATH
+                # order since REAPER isn't wrapped with pw-jack itself.
+                packages = [ homepkgs.pipewire.jack ] ++ winePkgs;
+
+                extensions.reapack.enable = true;
+
+                theme = {
+                  active = builtins.baseNameOf "${reaperTheme}";
+                  colorThemes = [ reaperTheme ];
+                };
+
+                preferences.plugIns = {
+                  vst.searchPaths = map (p: "${p}/lib/vst3") vst3Plugins;
+                  clap.searchPaths = map (p: "${p}/lib/clap") clapPlugins;
+                  lv2.searchPaths = map (p: "${p}/lib/lv2") lv2Plugins;
+                };
               };
 
-              settings = [
-                {
-                  # "layer" = "top";
-                  position = "bottom";
-                  height = 24;
-                  # width = 1280;
+              # Sets up the Windows-plugin wine prefix that yabridge bridges
+              # into REAPER's VST/VST3/CLAP paths above: a DXVK/GDI+ prefix,
+              # win-plugins symlinked in from ~/Shared/Audio, and a yabridgectl
+              # sync so newly (un)installed Windows plugins pick up chainloader
+              # .so files. Runs on every `home-manager switch` instead of every
+              # `nix develop`, so REAPER works standalone.
+              home.activation.audioWinePrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+                let
+                  wineBinPath = audiopkgs.lib.makeBinPath (winePkgs ++ [ audiopkgs.wineWow64Packages.yabridge ]);
+                  winPlugins = "/home/${username}/Shared/Audio/win-plugins";
+                in
+                ''
+                  export WINEPREFIX=${audiopkgs.lib.escapeShellArg "/home/${username}/.wine-audio"}
+                  export PATH=${audiopkgs.lib.escapeShellArg wineBinPath}:$PATH
 
-                  "modules-left" = [ "sway/workspaces" ];
-                  "modules-center" = [ "sway/window" ];
-                  "modules-right" = [
-                    "cpu"
-                    "memory"
-                    "disk"
-                    "temperature"
-                    "backlight"
-                    "battery"
-                    "pulseaudio"
-                    "tray"
-                    "clock"
-                  ];
+                  # home.sessionVariables.NIX_PROFILES only takes effect in a
+                  # fresh login shell, not in the shell that invoked this
+                  # activation script, so yabridgectl (used below) can't find
+                  # its own libyabridge-chainloader-*.so without this too.
+                  export NIX_PROFILES=${audiopkgs.lib.escapeShellArg audiopkgs.yabridge}" $NIX_PROFILES"
 
-                  "sway/window".on-click = "swaymsg kill";
+                  # Needed for some Windows VST plugins (dxvk) and Guitar Pro 5 (gdiplus).
+                  if [ ! -d "$WINEPREFIX" ]; then
+                    winetricks -q dxvk
+                    winetricks -q gdiplus
+                  fi
 
-                  tray.spacing = 10;
+                  winplugins=${audiopkgs.lib.escapeShellArg winPlugins}
 
-                  clock = {
-                    "tooltip-format" = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-                    "format-alt" = "{:%Y-%m-%d}";
-                  };
-
-                  cpu = {
-                    format = "{usage}% ";
-                    tooltip = false;
-                  };
-
-                  memory.format = "{}% ";
-
-                  disk = {
-                    interval = 30;
-                    format = "{percentage_used}% ";
-                  };
-
-                  temperature = {
-                    "critical-threshold" = 80;
-                    format = "{temperatureC}°C {icon}";
-                    "format-icons" = [
-                      ""
-                      ""
-                      ""
-                    ];
-                  };
-
-                  backlight = {
-                    format = "{percent}% {icon}";
-                    "format-icons" = [ "" ];
-                  };
-
-                  battery = {
-                    states = {
-                      warning = 30;
-                      critical = 15;
-                    };
-                    format = "{capacity}% {icon}";
-                    "format-charging" = "{capacity}% ";
-                    "format-plugged" = "{capacity}% ";
-                    "format-alt" = "{time} {icon}";
-                    "format-icons" = [
-                      ""
-                      ""
-                      ""
-                      ""
-                      ""
-                    ];
-                  };
-
-                  pulseaudio = {
-                    format = "{volume}% {icon} {format_source}";
-                    "format-bluetooth" = "{volume}% {icon} {format_source}";
-                    "format-bluetooth-muted" = " {icon} {format_source}";
-                    "format-muted" = " {format_source}";
-                    "format-source" = "{volume}% ";
-                    "format-source-muted" = "";
-                    "format-icons" = {
-                      headphone = "";
-                      "hands-free" = "";
-                      headset = "";
-                      phone = "";
-                      portable = "";
-                      car = "";
-                      default = [
-                        ""
-                        ""
-                        ""
-                      ];
-                    };
-                    "on-click" = "pavucontrol";
-                  };
-
-                  "sway/workspaces" = {
-                    "disable-scroll-wraparound" = true;
-                    "enable-bar-scroll" = true;
-                  };
-                }
-              ];
-
-              style = ''
-                window#waybar,
-                #workspaces button {
-                  background-color: rgba(16, 16, 16, 0.97);
-                  /* Icon glyphs come from the font-awesome package (home.packages).
-                     Regular text font comes first: Pango picks, per character, the
-                     first font in this list that has a glyph for it. "Roboto" isn't
-                     actually installed anywhere, so it (and Helvetica/Arial below)
-                     get skipped entirely - Font Awesome 7 Free covers plain ASCII
-                     too, so it was winning every character, icon or not. Noto Sans
-                     (home.packages) is a real installed font, so it wins first now. */
-                  font-family: "Noto Sans", "Font Awesome 7 Free", "Font Awesome 7 Brands", sans-serif;
-                  font-size: 13px;
-                  color: #d4d4d4;
-                }
-
-                button {
-                  /* Use box-shadow instead of border so the text isn't offset */
-                  box-shadow: inset 0 -2px transparent;
-                  /* Avoid rounded borders under each button name */
-                  border: none;
-                  border-radius: 0;
-                }
-
-                /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-                button:hover {
-                  background: inherit;
-                  box-shadow: inset 0 -2px #d4d4d4;
-                }
-
-                #workspaces button {
-                  padding: 0 5px;
-                }
-
-                #workspaces button:hover {
-                  background: rgba(0, 0, 0, 0.2);
-                }
-
-                #workspaces button.focused {
-                  background-color: #1a1a1a;
-                  box-shadow: inset 0 -1px #4c4c4c;
-                }
-
-                #workspaces button.urgent {
-                  background-color: #eb4d4b;
-                }
-
-                #clock,
-                #battery,
-                #cpu,
-                #memory,
-                #disk,
-                #temperature,
-                #backlight,
-                #network,
-                #pulseaudio,
-                #wireplumber,
-                #custom-media,
-                #tray,
-                #mode,
-                #idle_inhibitor,
-                #scratchpad,
-                #mpd {
-                  padding: 0 8px;
-                }
-
-                #window,
-                #workspaces {
-                  margin: 0 4px;
-                }
-
-                /* If workspaces is the leftmost module, omit left margin */
-                .modules-left > widget:first-child > #workspaces {
-                  margin-left: 0;
-                }
-
-                /* If workspaces is the rightmost module, omit right margin */
-                .modules-right > widget:last-child > #workspaces {
-                  margin-right: 0;
-                }
-
-                @keyframes blink {
-                  to {
-                    background-color: #d4d4d4;
-                    color: #000000;
+                  link_into_prefix() {
+                    target=$1
+                    source=$2
+                    rm -rf "$target"
+                    ln -s "$source" "$target"
                   }
-                }
 
-                #battery.critical:not(.charging) {
-                  background-color: #f53c3c;
-                  animation-name: blink;
-                  animation-duration: 0.5s;
-                  animation-timing-function: linear;
-                  animation-iteration-count: infinite;
-                  animation-direction: alternate;
-                }
+                  link_into_prefix "$WINEPREFIX/drive_c/users/${username}/win-plugins" "$winplugins"
 
-                #network.disconnected {
-                  background-color: #f53c3c;
-                }
+                  if [ -d "$winplugins/AppData" ]; then
+                    link_into_prefix "$WINEPREFIX/drive_c/users/${username}/AppData" "$winplugins/AppData"
+                  fi
 
-                #temperature.critical {
-                  background-color: #eb4d4b;
-                }
-              '';
-            };
+                  if [ -d "$winplugins/Documents" ]; then
+                    link_into_prefix "$WINEPREFIX/drive_c/users/${username}/Documents" "$winplugins/Documents"
+                  fi
 
-            # Without this, xdg-desktop-portal-gtk/-wlr are installed as
-            # packages but have no systemd/D-Bus service unit registering
-            # them, so portal calls (file pickers, etc.) fail with
-            # "Could not activate remote peer ...: unknown unit".
-            xdg.portal = {
-              enable = true;
-              extraPortals = with homepkgs; [
-                xdg-desktop-portal-gtk
-                xdg-desktop-portal-wlr
+                  if [ -d "$winplugins/ProgramData" ]; then
+                    ln -sf "$winplugins"/ProgramData/* "$WINEPREFIX"/drive_c/ProgramData/
+                  fi
+
+                  if [ -d "$winplugins/Program Files" ]; then
+                    ln -sf "$winplugins"/Program\ Files/* "$WINEPREFIX"/drive_c/Program\ Files/
+                  fi
+
+                  if [ -d "$winplugins/Program Files (x86)" ]; then
+                    ln -sf "$winplugins"/Program\ Files\ \(x86\)/* "$WINEPREFIX"/drive_c/Program\ Files\ \(x86\)/
+                  fi
+
+                  if [ -d "$winplugins/windows/Fonts" ]; then
+                    ln -sf "$winplugins"/windows/Fonts/* "$WINEPREFIX"/drive_c/windows/Fonts/
+                  fi
+
+                  if [ -f "$winplugins/custom.reg" ]; then
+                    wine regedit "$winplugins/custom.reg"
+                  fi
+
+                  link_into_prefix "/home/${username}/.vst3" "/home/${username}/Shared/Audio/vst3"
+
+                  if [ -d "$winplugins/Plugins" ]; then
+                    yabridgectl sync --force --prune --verbose
+                    yabridgectl status
+                  fi
+                ''
+              );
+
+              home.sessionPath = [
+                "$HOME/.local/bin"
+                "$HOME/go/bin"
+                "/usr/share/git/diff-highlight"
+                "$HOME/.scripts/bin"
               ];
-              config.sway = {
-                default = [
-                  "wlr"
-                  "gtk"
-                ];
-                "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+
+              home.sessionVariables = {
+                THEME = "light";
+                GLAMOUR_STYLE = "light";
+                GLOW_STYLE = "light";
+
+                EDITOR = "nvim";
+                VISUAL = "nvim";
+                PAGER = "less -R";
+                MANPAGER = "less -R";
+                LESS = "-R --mouse --wheel-lines=3";
+
+                GIT_LOG_PRETTY_FORMAT = "%C(yellow)%h%Creset%x1f%ct%x1f%Creset%s%C(cyan)%d%x1f%Cblue<%an>";
+
+                LS_COLORS = lsColors;
+
+                SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
+
+                LIBRARY_PATH = "$HOME/.local/lib";
+
+                ANSIBLE_NOCOWS = "1";
+
+                NODE_OPTIONS = "--max_old_space_size=4096";
+
+                HISTTIMEFORMAT = "[%F %T] ";
+
+                WINEPREFIX = "/home/${username}/.wine-audio";
+
+                # nix.sh (sourced earlier in ~/.bashrc) unconditionally
+                # overwrites NIX_PROFILES, dropping any prior value. Home
+                # Manager sources this file's generated hm-session-vars.sh
+                # right after nix.sh, so re-asserting the yabridge entry here
+                # re-adds it every shell without fighting nix.sh for order.
+                # Without it, yabridge's chainloader .so files can't find
+                # libyabridge-{vst2,vst3}.so at runtime and every bridged
+                # plugin fails to load in REAPER.
+                NIX_PROFILES = "${audiopkgs.yabridge} $NIX_PROFILES";
               };
-            };
 
-            # The D-Bus service files above declare SystemdService=, so
-            # D-Bus asks systemd --user to start these units by name. But
-            # systemd --user's UnitPath is a fixed list (see `systemctl
-            # --user show -p UnitPath`) that does NOT include arbitrary
-            # $XDG_DATA_DIRS entries like ~/.nix-profile/share/systemd/user
-            # (only the flatpak dir gets that special-casing, hardcoded in
-            # systemd itself) - only $XDG_DATA_HOME/systemd/user
-            # (~/.local/share/systemd/user). Symlink the units there
-            # directly so systemd can actually find and start them.
-            xdg.dataFile."systemd/user/xdg-desktop-portal-gtk.service".source =
-              "${homepkgs.xdg-desktop-portal-gtk}/share/systemd/user/xdg-desktop-portal-gtk.service";
-            xdg.dataFile."systemd/user/xdg-desktop-portal-wlr.service".source =
-              "${homepkgs.xdg-desktop-portal-wlr}/share/systemd/user/xdg-desktop-portal-wlr.service";
+              programs.home-manager.enable = true;
 
-            # xdg-desktop-portal-wlr.service's upstream unit only checks
-            # ConditionEnvironment=WAYLAND_DISPLAY is *set*, not that it
-            # names a live socket. On a sway restart (crash, session churn)
-            # the compositor can come back on a new socket (wayland-1
-            # instead of wayland-0, say), and this unit - PartOf=
-            # graphical-session.target - gets pulled down and restarted
-            # before systemd --user's environment has been re-imported with
-            # the new value, so it dies trying to connect to the old,
-            # now-gone socket. With the vendor unit's default
-            # Restart=on-failure (100ms backoff) and no StartLimitBurst
-            # override, that burns through the default 5-in-10s restart
-            # budget in under a second and the unit stays dead even once
-            # the environment catches up. This is a systemd drop-in (not a
-            # home-manager systemd.user.services entry) because the latter
-            # would replace the whole unit, including the store-path-pinned
-            # ExecStart= above that home-manager doesn't otherwise know
-            # about.
-            xdg.configFile."systemd/user/xdg-desktop-portal-wlr.service.d/restart-backoff.conf".text = ''
-              [Unit]
-              StartLimitIntervalSec=30
-              StartLimitBurst=5
+              # Nix-built GUI programs link against
+              # glvnd, which on NixOS finds GPU drivers via /run/opengl-driver.
+              # That path doesn't exist on Arch, so EGL/GLX finds zero vendor
+              # ICDs and every OpenGL window fails to open. This symlinks the
+              # Mesa drivers from this flake's nixpkgs into /run/opengl-driver
+              # (one-time `sudo .../non-nixos-gpu-setup` after switching).
+              targets.genericLinux.enable = true;
 
-              [Service]
-              RestartSec=2
-            '';
-
-            wayland.windowManager.sway =
-              let
-                mod = "Mod4";
-
-                workspaceBindings = homepkgs.lib.listToAttrs (
-                  homepkgs.lib.flatten (
-                    homepkgs.lib.genList (
-                      i:
-                      let
-                        n = i + 1;
-                        key = if n == 10 then "0" else toString n;
-                      in
-                      [
-                        {
-                          name = "${mod}+${key}";
-                          value = "workspace number ${toString n}";
-                        }
-                        {
-                          name = "${mod}+Control+${key}";
-                          value = "workspace number ${toString (n + 10)}";
-                        }
-                        {
-                          name = "${mod}+Shift+${key}";
-                          value = "move container to workspace number ${toString n}";
-                        }
-                        {
-                          name = "${mod}+Control+Shift+${key}";
-                          value = "move container to workspace number ${toString (n + 10)}";
-                        }
-                      ]
-                    ) 10
-                  )
-                );
-              in
-              {
+              programs.bash = {
                 enable = true;
-                checkConfig = true;
+                enableCompletion = true;
+
+                historyFile = "/home/${username}/.local/state/.bash_history";
+                historyFileSize = -1;
+                historySize = -1;
+                shellOptions = [ "histappend" ];
+
+                shellAliases = {
+                  ls = "/bin/ls -hv --group-directories-first --color=auto";
+                  l = "/bin/ls -Alhv --group-directories-first --color=auto";
+                  ltr = "/bin/ls -hvlatr --group-directories-first --color=auto";
+                  ".." = "cd ..";
+                  grep = "/bin/grep --color=auto";
+                  qr = "/bin/qrencode -t ANSI256";
+                };
+
+                initExtra = ''
+                  mkdir -p "$HOME/.local/state"
+
+                  PROMPT_COMMAND=__prompt_command
+
+                  __prompt_command() {
+                  	local EXIT="$?"
+                  	PS1=""
+
+                  	history -a
+
+                  	local RCol='\[\e[0m\]'
+                  	local Red='\[\e[0;31m\]'
+                  	local Gre='\[\e[0;32m\]'
+                  	local BrBlu='\[\e[0;36m\]'
+
+                  	local userHostColor="''${USERHOST_COLOR:-$BrBlu}"
+                  	local customHost="''${CUSTOM_HOST:-\h}"
+
+                  	PS1+="''${RCol}[\t] ''${userHostColor}\u@''${customHost} ''${Gre}\w"
+
+                  	if [ $EXIT != 0 ]; then
+                  		PS1+=" ''${Red}[''${EXIT}]"
+                  	fi
+
+                  	PS1+=" ''${RCol}\n> "
+                  }
+                '';
+
+                profileExtra = ''
+                  pre() {
+                  	if command -v gsettings &>/dev/null; then
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			gtk-theme 'Adwaita Sans'
+
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			icon-theme 'Adwaita Sans'
+
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			font-name 'Adwaita Sans'
+
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			monospace-font-name 'Monospace 11'
+
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			document-font-name 'Adwaita Sans 11'
+
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			font-antialiasing 'grayscale'
+
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			font-hinting 'slight'
+
+                  		gsettings set "org.gnome.desktop.interface" \
+                  			text-scaling-factor "1.2"
+                  	fi
+
+                  	if command -v kbuildsycoca6 &>/dev/null; then
+                  		XDG_MENU_PREFIX=arch- /usr/bin/kbuildsycoca6 --noincremental &>/dev/null
+                  	fi
+                  }
+
+                  # TTY1: start sway at login if available.
+                  if test -z "$DISPLAY" -a -z "$WAYLAND_DISPLAY" -a "$XDG_VTNR" = 1; then
+                  	if command -v sway &>/dev/null; then
+                  		export XDG_CURRENT_DESKTOP=sway
+                  		pre
+
+                  		exec sway --config ~/.config/sway/config
+                  	fi
+                  fi
+
+                  # TTY2: start openbox at login if available.
+                  if test -z "$DISPLAY" -a "$XDG_VTNR" = 2; then
+                  	if command -v openbox-session &>/dev/null; then
+                  		export XDG_CURRENT_DESKTOP=openbox
+                  		pre
+                  		exec startx
+                  	fi
+                  fi
+                '';
+              };
+
+              programs.alacritty = {
+                enable = true;
+                settings = {
+                  font.size = 12;
+                  font.normal.family = "monospace";
+
+                  colors = {
+                    primary = {
+                      background = "#FFFFFF";
+                      foreground = "#000000";
+                    };
+                    selection = {
+                      text = "#000000";
+                      background = "#d7ba7d";
+                    };
+                    cursor.cursor = "#cccccc";
+                    normal = {
+                      black = "#000000";
+                      red = "#c72e0f";
+                      green = "#008000";
+                      yellow = "#795e25";
+                      blue = "#007acc";
+                      magenta = "#af00db";
+                      cyan = "#56b6c2";
+                      white = "#000000";
+                    };
+                    bright.black = "#808080";
+                  };
+                };
+              };
+
+              programs.foot = {
+                enable = true;
+                settings = {
+                  main = {
+                    pad = "2x1";
+                    font = "monospace:size=12";
+                  };
+
+                  # Non-solarized colors, see:
+                  # https://codeberg.org/dnkl/foot/commit/3cf11bfea9e4787998c538bd312c456fd8287fd1
+                  "colors-dark" = {
+                    alpha = 1.0;
+                    background = "ffffff";
+                    foreground = "000000";
+
+                    selection-foreground = "000000";
+                    selection-background = "d7ba7d";
+
+                    cursor = "ffffff cccccc";
+
+                    regular0 = "000000";
+                    regular1 = "c72e0f";
+                    regular2 = "008000";
+                    regular3 = "795e25";
+                    regular4 = "007acc";
+                    regular5 = "af00db";
+                    regular6 = "56b6c2";
+                    regular7 = "000000";
+
+                    bright0 = "808080";
+                  };
+                };
+              };
+
+              programs.waybar = {
+                enable = true;
 
                 systemd = {
                   enable = true;
-                  variables = [
-                    "DISPLAY"
-                    "SWAYSOCK"
-                    "WAYLAND_DISPLAY"
-                    "XDG_CURRENT_DESKTOP"
-                  ];
+                  targets = [ "sway-session.target" ];
                 };
 
-                config = {
-                  modifier = mod;
-                  bars = [ ]; # waybar is a systemd service, see programs.waybar.systemd below
+                settings = [
+                  {
+                    # "layer" = "top";
+                    position = "bottom";
+                    height = 24;
+                    # width = 1280;
 
-                  window = {
-                    titlebar = false;
-                    border = 1;
-                    hideEdgeBorders = "both";
-                    commands = [
-                      {
-                        criteria.title = "^(Picture in picture)|(Picture-in-Picture)$";
-                        command = "floating enable, sticky enable, border none, move position 1000 0";
-                      }
-                      {
-                        criteria.class = "REAPER";
-                        command = "border normal, floating enable";
-                      }
-                      {
-                        criteria.class = "yabridge-host.exe.so";
-                        command = "border normal, floating enable";
-                      }
+                    "modules-left" = [ "sway/workspaces" ];
+                    "modules-center" = [ "sway/window" ];
+                    "modules-right" = [
+                      "cpu"
+                      "memory"
+                      "disk"
+                      "temperature"
+                      "backlight"
+                      "battery"
+                      "pulseaudio"
+                      "tray"
+                      "clock"
                     ];
-                  };
 
-                  floating = {
-                    titlebar = false;
-                    border = 1;
-                    modifier = "${mod} normal";
-                    criteria = [
-                      { app_id = "zenity"; }
-                      { app_id = "xdg-desktop-portal-.*"; }
-                      { title = "KeePassXC - (.*)Access Request"; }
-                      { title = "Unlock Database - KeePassXC"; }
-                      { app_id = "eu.web-eid.web-eid"; }
-                      {
-                        app_id = "thunar";
-                        title = "^Rename";
-                      }
-                      { app_id = "org.kde.keditfiletype"; }
-                    ];
-                  };
+                    "sway/window".on-click = "swaymsg kill";
 
-                  focus.followMouse = "no";
-                  gaps.smartBorders = "on";
+                    tray.spacing = 10;
 
-                  input = {
-                    "*" = {
-                      xkb_layout = "us,ee";
-                      xkb_options = "caps:escape,grp:win_space_toggle";
+                    clock = {
+                      "tooltip-format" = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+                      "format-alt" = "{:%Y-%m-%d}";
                     };
-                    "type:touchpad" = {
-                      tap = "enabled";
-                      events = "disabled_on_external_mouse";
+
+                    cpu = {
+                      format = "{usage}% ";
+                      tooltip = false;
                     };
-                  };
 
-                  seat."seat0".hide_cursor = "3000";
+                    memory.format = "{}% ";
 
-                  modes.resize = {
-                    Left = "resize shrink width 10 px or 10 ppt";
-                    Down = "resize grow height 10 px or 10 ppt";
-                    Up = "resize shrink height 10 px or 10 ppt";
-                    Right = "resize grow width 10 px or 10 ppt";
-                    Return = ''mode "default"'';
-                    Escape = ''mode "default"'';
-                  };
+                    disk = {
+                      interval = 30;
+                      format = "{percentage_used}% ";
+                    };
 
-                  keybindings = homepkgs.lib.mkForce (
-                    {
-                      "${mod}+Return" = "exec foot";
-                      "${mod}+q" = "kill";
-                      "${mod}+d" =
-                        ''exec j4-dmenu-desktop --no-generic --dmenu='wmenu -i -f "Monospace 11"' --term='foot' '';
+                    temperature = {
+                      "critical-threshold" = 80;
+                      format = "{temperatureC}°C {icon}";
+                      "format-icons" = [
+                        ""
+                        ""
+                        ""
+                      ];
+                    };
 
-                      "${mod}+h" = "focus left";
-                      "${mod}+j" = "focus down";
-                      "${mod}+k" = "focus up";
-                      "${mod}+l" = "focus right";
-                      "${mod}+Shift+h" = "move left";
-                      "${mod}+Shift+j" = "move down";
-                      "${mod}+Shift+k" = "move up";
-                      "${mod}+Shift+l" = "move right";
+                    backlight = {
+                      format = "{percent}% {icon}";
+                      "format-icons" = [ "" ];
+                    };
 
-                      "${mod}+s" = "split h";
-                      "${mod}+v" = "split v";
-                      "${mod}+f" = "fullscreen toggle";
+                    battery = {
+                      states = {
+                        warning = 30;
+                        critical = 15;
+                      };
+                      format = "{capacity}% {icon}";
+                      "format-charging" = "{capacity}% ";
+                      "format-plugged" = "{capacity}% ";
+                      "format-alt" = "{time} {icon}";
+                      "format-icons" = [
+                        ""
+                        ""
+                        ""
+                        ""
+                        ""
+                      ];
+                    };
 
-                      "${mod}+Shift+space" = "floating toggle, sticky toggle";
-                      "${mod}+a" = "focus parent";
+                    pulseaudio = {
+                      format = "{volume}% {icon} {format_source}";
+                      "format-bluetooth" = "{volume}% {icon} {format_source}";
+                      "format-bluetooth-muted" = " {icon} {format_source}";
+                      "format-muted" = " {format_source}";
+                      "format-source" = "{volume}% ";
+                      "format-source-muted" = "";
+                      "format-icons" = {
+                        headphone = "";
+                        "hands-free" = "";
+                        headset = "";
+                        phone = "";
+                        portable = "";
+                        car = "";
+                        default = [
+                          ""
+                          ""
+                          ""
+                        ];
+                      };
+                      "on-click" = "pavucontrol";
+                    };
 
-                      "${mod}+Control+h" = "workspace prev";
-                      "${mod}+Control+l" = "workspace next";
-                      "${mod}+Tab" = "workspace back_and_forth";
-                      "Alt+Tab" = "workspace back_and_forth";
-                      "${mod}+Shift+Tab" = "workspace prev_on_output";
-                      "Alt+Shift+Tab" = "workspace prev_on_output";
+                    "sway/workspaces" = {
+                      "disable-scroll-wraparound" = true;
+                      "enable-bar-scroll" = true;
+                    };
+                  }
+                ];
 
-                      "${mod}+Shift+c" = "reload";
-                      "${mod}+Shift+r" = "restart";
-                      "${mod}+Shift+u" = "fullscreen toggle, fullscreen toggle";
-                      "${mod}+Shift+e" = ''exec "swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'"'';
-                      "${mod}+Shift+BackSpace" = "exec lock";
-                      "${mod}+Shift+n" = "exec swaync-client -t -sw";
-                      "${mod}+o" = "exec dolphin";
-                      "${mod}+r" = "mode resize";
+                style = ''
+                  window#waybar,
+                  #workspaces button {
+                    background-color: rgba(16, 16, 16, 0.97);
+                    /* Icon glyphs come from the font-awesome package (home.packages).
+                       Regular text font comes first: Pango picks, per character, the
+                       first font in this list that has a glyph for it. "Roboto" isn't
+                       actually installed anywhere, so it (and Helvetica/Arial below)
+                       get skipped entirely - Font Awesome 7 Free covers plain ASCII
+                       too, so it was winning every character, icon or not. Noto Sans
+                       (home.packages) is a real installed font, so it wins first now. */
+                    font-family: "Noto Sans", "Font Awesome 7 Free", "Font Awesome 7 Brands", sans-serif;
+                    font-size: 13px;
+                    color: #d4d4d4;
+                  }
+
+                  button {
+                    /* Use box-shadow instead of border so the text isn't offset */
+                    box-shadow: inset 0 -2px transparent;
+                    /* Avoid rounded borders under each button name */
+                    border: none;
+                    border-radius: 0;
+                  }
+
+                  /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+                  button:hover {
+                    background: inherit;
+                    box-shadow: inset 0 -2px #d4d4d4;
+                  }
+
+                  #workspaces button {
+                    padding: 0 5px;
+                  }
+
+                  #workspaces button:hover {
+                    background: rgba(0, 0, 0, 0.2);
+                  }
+
+                  #workspaces button.focused {
+                    background-color: #1a1a1a;
+                    box-shadow: inset 0 -1px #4c4c4c;
+                  }
+
+                  #workspaces button.urgent {
+                    background-color: #eb4d4b;
+                  }
+
+                  #clock,
+                  #battery,
+                  #cpu,
+                  #memory,
+                  #disk,
+                  #temperature,
+                  #backlight,
+                  #network,
+                  #pulseaudio,
+                  #wireplumber,
+                  #custom-media,
+                  #tray,
+                  #mode,
+                  #idle_inhibitor,
+                  #scratchpad,
+                  #mpd {
+                    padding: 0 8px;
+                  }
+
+                  #window,
+                  #workspaces {
+                    margin: 0 4px;
+                  }
+
+                  /* If workspaces is the leftmost module, omit left margin */
+                  .modules-left > widget:first-child > #workspaces {
+                    margin-left: 0;
+                  }
+
+                  /* If workspaces is the rightmost module, omit right margin */
+                  .modules-right > widget:last-child > #workspaces {
+                    margin-right: 0;
+                  }
+
+                  @keyframes blink {
+                    to {
+                      background-color: #d4d4d4;
+                      color: #000000;
                     }
-                    // workspaceBindings
-                  );
-                };
+                  }
 
-                extraConfig = ''
-                  bindsym --release button2 kill
+                  #battery.critical:not(.charging) {
+                    background-color: #f53c3c;
+                    animation-name: blink;
+                    animation-duration: 0.5s;
+                    animation-timing-function: linear;
+                    animation-iteration-count: infinite;
+                    animation-direction: alternate;
+                  }
+
+                  #network.disconnected {
+                    background-color: #f53c3c;
+                  }
+
+                  #temperature.critical {
+                    background-color: #eb4d4b;
+                  }
                 '';
               };
 
-            # Sway startup companions, as systemd --user services bound to
-            # sway-session.target.
-            services.swayidle =
-              let
-                # swayidle.service's generated unit pins PATH to just bash's
-                # own store path, so PATH-reliant commands like `lock` (from
-                # home.sessionPath) and `swaymsg` (nix-installed sway) won't
-                # resolve there the way they do from an interactive shell or
-                # sway's own `exec` lines - spell them out explicitly. Also,
-                # systemd's ExecStart= does its own "$VAR" substitution using
-                # only the unit's Environment= (which doesn't set HOME), so
-                # "$HOME" there silently expands to empty - use the literal
-                # path instead.
-                lock = "/home/${username}/.scripts/bin/lock";
-                swaymsg = "${homepkgs.sway}/bin/swaymsg";
-              in
-              {
+              # Without this, xdg-desktop-portal-gtk/-wlr are installed as
+              # packages but have no systemd/D-Bus service unit registering
+              # them, so portal calls (file pickers, etc.) fail with
+              # "Could not activate remote peer ...: unknown unit".
+              xdg.portal = {
+                enable = true;
+                extraPortals = with homepkgs; [
+                  xdg-desktop-portal-gtk
+                  xdg-desktop-portal-wlr
+                ];
+                config.sway = {
+                  default = [
+                    "wlr"
+                    "gtk"
+                  ];
+                  "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+                };
+              };
+
+              # The D-Bus service files above declare SystemdService=, so
+              # D-Bus asks systemd --user to start these units by name. But
+              # systemd --user's UnitPath is a fixed list (see `systemctl
+              # --user show -p UnitPath`) that does NOT include arbitrary
+              # $XDG_DATA_DIRS entries like ~/.nix-profile/share/systemd/user
+              # (only the flatpak dir gets that special-casing, hardcoded in
+              # systemd itself) - only $XDG_DATA_HOME/systemd/user
+              # (~/.local/share/systemd/user). Symlink the units there
+              # directly so systemd can actually find and start them.
+              xdg.dataFile."systemd/user/xdg-desktop-portal-gtk.service".source =
+                "${homepkgs.xdg-desktop-portal-gtk}/share/systemd/user/xdg-desktop-portal-gtk.service";
+              xdg.dataFile."systemd/user/xdg-desktop-portal-wlr.service".source =
+                "${homepkgs.xdg-desktop-portal-wlr}/share/systemd/user/xdg-desktop-portal-wlr.service";
+
+              # xdg-desktop-portal-wlr.service's upstream unit only checks
+              # ConditionEnvironment=WAYLAND_DISPLAY is *set*, not that it
+              # names a live socket. On a sway restart (crash, session churn)
+              # the compositor can come back on a new socket (wayland-1
+              # instead of wayland-0, say), and this unit - PartOf=
+              # graphical-session.target - gets pulled down and restarted
+              # before systemd --user's environment has been re-imported with
+              # the new value, so it dies trying to connect to the old,
+              # now-gone socket. With the vendor unit's default
+              # Restart=on-failure (100ms backoff) and no StartLimitBurst
+              # override, that burns through the default 5-in-10s restart
+              # budget in under a second and the unit stays dead even once
+              # the environment catches up. This is a systemd drop-in (not a
+              # home-manager systemd.user.services entry) because the latter
+              # would replace the whole unit, including the store-path-pinned
+              # ExecStart= above that home-manager doesn't otherwise know
+              # about.
+              xdg.configFile."systemd/user/xdg-desktop-portal-wlr.service.d/restart-backoff.conf".text = ''
+                [Unit]
+                StartLimitIntervalSec=30
+                StartLimitBurst=5
+
+                [Service]
+                RestartSec=2
+              '';
+
+              wayland.windowManager.sway =
+                let
+                  mod = "Mod4";
+
+                  workspaceBindings = homepkgs.lib.listToAttrs (
+                    homepkgs.lib.flatten (
+                      homepkgs.lib.genList (
+                        i:
+                        let
+                          n = i + 1;
+                          key = if n == 10 then "0" else toString n;
+                        in
+                        [
+                          {
+                            name = "${mod}+${key}";
+                            value = "workspace number ${toString n}";
+                          }
+                          {
+                            name = "${mod}+Control+${key}";
+                            value = "workspace number ${toString (n + 10)}";
+                          }
+                          {
+                            name = "${mod}+Shift+${key}";
+                            value = "move container to workspace number ${toString n}";
+                          }
+                          {
+                            name = "${mod}+Control+Shift+${key}";
+                            value = "move container to workspace number ${toString (n + 10)}";
+                          }
+                        ]
+                      ) 10
+                    )
+                  );
+                in
+                {
+                  enable = true;
+                  checkConfig = true;
+
+                  systemd = {
+                    enable = true;
+                    variables = [
+                      "DISPLAY"
+                      "SWAYSOCK"
+                      "WAYLAND_DISPLAY"
+                      "XDG_CURRENT_DESKTOP"
+                    ];
+                  };
+
+                  config = {
+                    modifier = mod;
+                    bars = [ ]; # waybar is a systemd service, see programs.waybar.systemd below
+
+                    window = {
+                      titlebar = false;
+                      border = 1;
+                      hideEdgeBorders = "both";
+                      commands = [
+                        {
+                          criteria.title = "^(Picture in picture)|(Picture-in-Picture)$";
+                          command = "floating enable, sticky enable, border none, move position 1000 0";
+                        }
+                        {
+                          criteria.class = "REAPER";
+                          command = "border normal, floating enable";
+                        }
+                        {
+                          criteria.class = "yabridge-host.exe.so";
+                          command = "border normal, floating enable";
+                        }
+                      ];
+                    };
+
+                    floating = {
+                      titlebar = false;
+                      border = 1;
+                      modifier = "${mod} normal";
+                      criteria = [
+                        { app_id = "zenity"; }
+                        { app_id = "xdg-desktop-portal-.*"; }
+                        { title = "KeePassXC - (.*)Access Request"; }
+                        { title = "Unlock Database - KeePassXC"; }
+                        { app_id = "eu.web-eid.web-eid"; }
+                        {
+                          app_id = "thunar";
+                          title = "^Rename";
+                        }
+                        { app_id = "org.kde.keditfiletype"; }
+                      ];
+                    };
+
+                    focus.followMouse = "no";
+                    gaps.smartBorders = "on";
+
+                    input = {
+                      "*" = {
+                        xkb_layout = "us,ee";
+                        xkb_options = "caps:escape,grp:win_space_toggle";
+                      };
+                      "type:touchpad" = {
+                        tap = "enabled";
+                        events = "disabled_on_external_mouse";
+                      };
+                    };
+
+                    seat."seat0".hide_cursor = "3000";
+
+                    modes.resize = {
+                      Left = "resize shrink width 10 px or 10 ppt";
+                      Down = "resize grow height 10 px or 10 ppt";
+                      Up = "resize shrink height 10 px or 10 ppt";
+                      Right = "resize grow width 10 px or 10 ppt";
+                      Return = ''mode "default"'';
+                      Escape = ''mode "default"'';
+                    };
+
+                    keybindings = homepkgs.lib.mkForce (
+                      {
+                        "${mod}+Return" = "exec foot";
+                        "${mod}+q" = "kill";
+                        "${mod}+d" =
+                          ''exec j4-dmenu-desktop --no-generic --dmenu='wmenu -i -f "Monospace 11"' --term='foot' '';
+
+                        "${mod}+h" = "focus left";
+                        "${mod}+j" = "focus down";
+                        "${mod}+k" = "focus up";
+                        "${mod}+l" = "focus right";
+                        "${mod}+Shift+h" = "move left";
+                        "${mod}+Shift+j" = "move down";
+                        "${mod}+Shift+k" = "move up";
+                        "${mod}+Shift+l" = "move right";
+
+                        "${mod}+s" = "split h";
+                        "${mod}+v" = "split v";
+                        "${mod}+f" = "fullscreen toggle";
+
+                        "${mod}+Shift+space" = "floating toggle, sticky toggle";
+                        "${mod}+a" = "focus parent";
+
+                        "${mod}+Control+h" = "workspace prev";
+                        "${mod}+Control+l" = "workspace next";
+                        "${mod}+Tab" = "workspace back_and_forth";
+                        "Alt+Tab" = "workspace back_and_forth";
+                        "${mod}+Shift+Tab" = "workspace prev_on_output";
+                        "Alt+Shift+Tab" = "workspace prev_on_output";
+
+                        "${mod}+Shift+c" = "reload";
+                        "${mod}+Shift+r" = "restart";
+                        "${mod}+Shift+u" = "fullscreen toggle, fullscreen toggle";
+                        "${mod}+Shift+e" = ''exec "swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'"'';
+                        "${mod}+Shift+BackSpace" = "exec lock";
+                        "${mod}+Shift+n" = "exec swaync-client -t -sw";
+                        "${mod}+o" = "exec dolphin";
+                        "${mod}+r" = "mode resize";
+                      }
+                      // workspaceBindings
+                    );
+                  };
+
+                  extraConfig = ''
+                    bindsym --release button2 kill
+                  '';
+                };
+
+              # Sway startup companions, as systemd --user services bound to
+              # sway-session.target.
+              services.swayidle =
+                let
+                  # swayidle.service's generated unit pins PATH to just bash's
+                  # own store path, so PATH-reliant commands like `lock` (from
+                  # home.sessionPath) and `swaymsg` (nix-installed sway) won't
+                  # resolve there the way they do from an interactive shell or
+                  # sway's own `exec` lines - spell them out explicitly. Also,
+                  # systemd's ExecStart= does its own "$VAR" substitution using
+                  # only the unit's Environment= (which doesn't set HOME), so
+                  # "$HOME" there silently expands to empty - use the literal
+                  # path instead.
+                  lock = "/home/${username}/.scripts/bin/lock";
+                  swaymsg = "${homepkgs.sway}/bin/swaymsg";
+                in
+                {
+                  enable = true;
+                  systemdTargets = [ "sway-session.target" ];
+
+                  timeouts = [
+                    {
+                      timeout = 3600;
+                      command = lock;
+                    }
+                    {
+                      timeout = 3601;
+                      command = ''${swaymsg} "output * dpms off"'';
+                      resumeCommand = ''${swaymsg} "output * dpms on"'';
+                    }
+                  ];
+
+                  events.before-sleep = lock;
+                };
+
+              services.network-manager-applet.enable = true;
+
+              services.blueman-applet = {
                 enable = true;
                 systemdTargets = [ "sway-session.target" ];
-
-                timeouts = [
-                  {
-                    timeout = 3600;
-                    command = lock;
-                  }
-                  {
-                    timeout = 3601;
-                    command = ''${swaymsg} "output * dpms off"'';
-                    resumeCommand = ''${swaymsg} "output * dpms on"'';
-                  }
-                ];
-
-                events.before-sleep = lock;
               };
 
-            services.network-manager-applet.enable = true;
+              services.swaync.enable = true;
 
-            services.blueman-applet = {
-              enable = true;
-              systemdTargets = [ "sway-session.target" ];
-            };
+              services.gammastep = {
+                enable = true;
+                provider = "manual";
+                latitude = 59.436962;
+                longitude = 24.753574;
+                temperature.night = 5000;
+                tray = true;
+              };
 
-            services.swaync.enable = true;
+              systemd.user.services = {
+                # Tray-icon apps (blueman-applet, network-manager-applet,
+                # swaync, gammastep's tray indicator) need a
+                # StatusNotifierWatcher on the session bus before they start,
+                # or their icons silently fail to register. Waybar's process
+                # starting (After=waybar.service) doesn't guarantee its tray
+                # module has actually registered the watcher yet, so poll for
+                # it too, same as sway-startup.sh used to.
+                # Reference: https://github.com/Alexays/Waybar/discussions/1828#discussioncomment-10126615
+                #
+                # DefaultDependencies=false on this unit (and waybar, swayidle,
+                # blueman-applet below): target units automatically complement
+                # every unit in their effective Wants= (i.e. anything
+                # WantedBy=sway-session.target) with a matching After=, unless
+                # that unit sets DefaultDependencies=no (systemd.target(5)).
+                # Since this unit chains After=waybar.service, and waybar.service
+                # is itself After=sway-session.target, that auto-added
+                # "sway-session.target After=wait-for-tray.service" closes a
+                # real ordering cycle - systemd silently drops the losing
+                # units' start jobs to break it, which is why waybar (and
+                # swayidle, and anything chained through wait-for-tray) can
+                # fail to start at all.
+                wait-for-tray = {
+                  Unit = {
+                    Description = "Block until a tray (StatusNotifierWatcher) is registered on the session bus";
+                    After = [ "waybar.service" ];
+                    Wants = [ "waybar.service" ];
+                    DefaultDependencies = false;
+                  };
+                  Service = {
+                    Type = "oneshot";
+                    ExecStart = "${homepkgs.writeShellScript "wait-for-tray" ''
+                      until dbus-send --session --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames | grep -q org.kde.Status; do
+                        sleep 0.2
+                      done
+                    ''}";
+                  };
+                  Install.WantedBy = [ "sway-session.target" ];
+                };
 
-            services.gammastep = {
-              enable = true;
-              provider = "manual";
-              latitude = 59.436962;
-              longitude = 24.753574;
-              temperature.night = 5000;
-              tray = true;
-            };
-
-            systemd.user.services = {
-              # Tray-icon apps (blueman-applet, network-manager-applet,
-              # swaync, gammastep's tray indicator) need a
-              # StatusNotifierWatcher on the session bus before they start,
-              # or their icons silently fail to register. Waybar's process
-              # starting (After=waybar.service) doesn't guarantee its tray
-              # module has actually registered the watcher yet, so poll for
-              # it too, same as sway-startup.sh used to.
-              # Reference: https://github.com/Alexays/Waybar/discussions/1828#discussioncomment-10126615
-              #
-              # DefaultDependencies=false on this unit (and waybar, swayidle,
-              # blueman-applet below): target units automatically complement
-              # every unit in their effective Wants= (i.e. anything
-              # WantedBy=sway-session.target) with a matching After=, unless
-              # that unit sets DefaultDependencies=no (systemd.target(5)).
-              # Since this unit chains After=waybar.service, and waybar.service
-              # is itself After=sway-session.target, that auto-added
-              # "sway-session.target After=wait-for-tray.service" closes a
-              # real ordering cycle - systemd silently drops the losing
-              # units' start jobs to break it, which is why waybar (and
-              # swayidle, and anything chained through wait-for-tray) can
-              # fail to start at all.
-              wait-for-tray = {
-                Unit = {
-                  Description = "Block until a tray (StatusNotifierWatcher) is registered on the session bus";
-                  After = [ "waybar.service" ];
-                  Wants = [ "waybar.service" ];
+                blueman-applet.Unit = {
+                  After = [ "wait-for-tray.service" ];
+                  Wants = [ "wait-for-tray.service" ];
                   DefaultDependencies = false;
                 };
-                Service = {
-                  Type = "oneshot";
-                  ExecStart = "${homepkgs.writeShellScript "wait-for-tray" ''
-                    until dbus-send --session --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames | grep -q org.kde.Status; do
-                      sleep 0.2
-                    done
-                  ''}";
-                };
-                Install.WantedBy = [ "sway-session.target" ];
-              };
 
-              blueman-applet.Unit = {
-                After = [ "wait-for-tray.service" ];
-                Wants = [ "wait-for-tray.service" ];
-                DefaultDependencies = false;
-              };
+                # waybar and swayidle both carry an explicit
+                # After=sway-session.target (waybar from programs.waybar's own
+                # module, swayidle from services.swayidle below) - see the
+                # wait-for-tray comment above for why that needs
+                # DefaultDependencies=false here too, to stop
+                # sway-session.target auto-ordering itself after them right
+                # back.
+                waybar.Unit.DefaultDependencies = false;
+                swayidle.Unit.DefaultDependencies = false;
 
-              # waybar and swayidle both carry an explicit
-              # After=sway-session.target (waybar from programs.waybar's own
-              # module, swayidle from services.swayidle below) - see the
-              # wait-for-tray comment above for why that needs
-              # DefaultDependencies=false here too, to stop
-              # sway-session.target auto-ordering itself after them right
-              # back.
-              waybar.Unit.DefaultDependencies = false;
-              swayidle.Unit.DefaultDependencies = false;
-
-              network-manager-applet.Unit = {
-                After = [ "wait-for-tray.service" ];
-                Wants = [ "wait-for-tray.service" ];
-              };
-
-              swaync.Unit = {
-                After = [ "wait-for-tray.service" ];
-                Wants = [ "wait-for-tray.service" ];
-              };
-
-              gammastep.Unit = {
-                After = [ "wait-for-tray.service" ];
-                Wants = [ "wait-for-tray.service" ];
-              };
-
-              # No home-manager module packages this - it's a plain
-              # Arch/pacman system binary, not a nix derivation.
-              polkit-mate-authentication-agent = {
-                Unit.Description = "MATE PolicyKit authentication agent";
-                Service = {
-                  Type = "simple";
-                  ExecStart = "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1";
-                  Restart = "on-failure";
-                };
-                Install.WantedBy = [ "sway-session.target" ];
-              };
-
-              audio-idle-inhibit = {
-                Unit.Description = "Block idle while audio is playing or being captured";
-                Service = {
-                  Type = "simple";
-                  ExecStart = "${homepkgs.writeShellScript "audio-idle-inhibit" ''
-                    inhibit_duration=25
-                    sleep_duration=5
-
-                    while true; do
-                      if pactl list | grep -q RUNNING; then
-                        echo "INHIBITING" >&2
-                        systemd-inhibit \
-                          --what idle \
-                          --who systemd-audio-idle-inhibit \
-                          --why "audio output or input active" \
-                          --mode block \
-                          sh -c "sleep $inhibit_duration"
-                      else
-                        echo "WAITING" >&2
-                        sleep $sleep_duration
-                      fi
-                    done
-                  ''}";
-                };
-                Install.WantedBy = [ "sway-session.target" ];
-              };
-            };
-
-            programs.fzf = {
-              enable = true;
-              enableBashIntegration = true;
-
-              defaultCommand = "fd --type f --hidden --no-ignore-vcs --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'";
-              fileWidget.command = "fd --type f --hidden --no-ignore-vcs --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'";
-              changeDirWidget.command = "fd --type d --hidden --no-ignore-vcs --exclude '.git/'";
-
-              defaultOptions = [
-                "--layout=reverse"
-                "--marker='>'"
-                "--pointer='>'"
-                "--style=minimal"
-                "--no-unicode"
-              ];
-
-              colors = {
-                fg = "#000000";
-                "fg+" = "#000000";
-                bg = "#FFFFFF";
-                "bg+" = "#F3F3F3";
-                hl = "#008000";
-                "hl+" = "#AF00DB";
-                info = "#AF00DB";
-                marker = "#AF00DB";
-                prompt = "#AF00DB";
-                spinner = "#AF00DB";
-                pointer = "#AF00DB";
-                header = "#008000";
-                border = "#000000";
-                label = "#AF00DB";
-                query = "#000000";
-              };
-            };
-
-            programs.direnv = {
-              enable = true;
-              enableBashIntegration = true;
-            };
-
-            programs.git = {
-              enable = true;
-              includes = [ { path = "~/.gitconfig_local"; } ];
-              settings = {
-                alias = {
-                  st = "status";
-                  co = "checkout";
-                  ns = "diff --name-status";
-                  lg = "!bash ~/.scripts/git/lg.sh";
-                  lb = "!bash ~/.scripts/git/lb.sh";
-                  logs = "!bash ~/.scripts/git/git-fzf.sh log";
-                  reflogs = "!bash ~/.scripts/git/git-fzf.sh reflog";
-                  msn = "!bash ~/.scripts/git/mergesquashn.sh";
-                  snag = "!bash ~/.scripts/git/snag.sh";
-                  squashall = "!bash ~/.scripts/git/squashall.sh";
-                  sw = "!bash ~/.scripts/git/switch-fzf.sh";
-                  stat = "!bash ~/.scripts/git/stat.sh";
-                  alias = "!git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /";
-                  web = "!gh repo view --web";
-                };
-                mergetool.keepBackup = false;
-                diff = {
-                  algorithm = "histogram";
-                  mnemonicPrefix = true;
-                  renames = true;
-                };
-                "mergetool \"nvim\"".cmd = ''NVIM_DIFF=1 nvim -f -c "Gvdiffsplit!" "$MERGED"'';
-                merge.tool = "nvim";
-                commit = {
-                  gpgsign = true;
-                  verbose = true;
-                };
-                gpg.format = "ssh";
-                "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
-                pull.ff = "only";
-                pager = {
-                  log = "diff-highlight | less";
-                  show = "diff-highlight | less";
-                  diff = "diff-highlight | less";
-                };
-                tag.sort = "version:refname";
-                branch.sort = "-committerdate";
-                init.defaultBranch = "main";
-                push = {
-                  default = "simple";
-                  autoSetupRemote = true;
-                  followTags = true;
-                };
-                fetch = {
-                  prune = true;
-                  pruneTags = true;
-                  all = true;
-                };
-              };
-            };
-
-            programs.tmux = {
-              enable = true;
-              keyMode = "vi";
-              historyLimit = 10000;
-              escapeTime = 0;
-              extraConfig = ''
-                set -g pane-active-border-style fg=colour0,bg=default
-                set -g pane-border-style fg=colour0,bg=default
-                set -g popup-style fg=colour0,bg=default
-                set -g popup-border-style fg=colour0,bg=default
-                set -g set-clipboard on
-                set -g status-style bg=default,fg=colour102
-                set -g mouse on
-                set -g renumber-windows on
-
-                bind-key r source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded"
-                bind-key c new-window -c "#{pane_current_path}"
-                bind-key % split-window -h -c "#{pane_current_path}"
-                bind-key '"' split-window -v -c "#{pane_current_path}"
-
-                bind h select-pane -L
-                bind j select-pane -D
-                bind k select-pane -U
-                bind l select-pane -R
-
-                bind < resize-pane -L 1
-                bind > resize-pane -R 1
-                bind - resize-pane -D 1
-                bind + resize-pane -U 1
-
-                bind-key m switch-client -T move
-                bind-key -T move Left  swap-window -d -t -1 \; switch-client -T move
-                bind-key -T move Right swap-window -d -t +1 \; switch-client -T move
-                bind-key -T move Escape switch-client -T root
-                bind-key -T move Enter  switch-client -T root
-
-                # Middle-click a window tab: close silently if idle (just a shell prompt),
-                # otherwise ask for confirmation before killing it. confirm-before's -t
-                # targets a client, not a window, so only the nested kill-window gets -t =.
-                bind-key -n MouseDown2Status if-shell -F -t = "#{||:#{||:#{==:#{pane_current_command},bash},#{==:#{pane_current_command},zsh}},#{||:#{==:#{pane_current_command},fish},#{==:#{pane_current_command},sh}}}" "kill-window -t =" "confirm-before -p \"Kill window #{window_name} (#{pane_current_command} running)? (y/n)\" \"kill-window -t =\""
-              '';
-            };
-
-            programs.firefox = {
-              enable = true;
-              package = homepkgs.firefox-bin;
-              configPath = ".mozilla/firefox";
-
-              # web-eid needs its native messaging host manifest linked in
-              # for the extension to talk to the smart card app.
-              nativeMessagingHosts = [ homepkgs.web-eid-app ];
-
-              # Enterprise policies: unlike profile `settings` (which just
-              # seeds prefs.js), these lock the prefs so they can't be
-              # changed from about:config or the Settings UI.
-              policies = {
-                DisableTelemetry = true;
-                DisablePocket = true;
-                PasswordManagerEnabled = false;
-                NetworkPrediction = false;
-                DNSOverHTTPS = {
-                  Enabled = false;
-                  Locked = true;
-                };
-                EnableTrackingProtection = {
-                  Value = true;
-                  Locked = true;
-                  Category = "strict";
+                network-manager-applet.Unit = {
+                  After = [ "wait-for-tray.service" ];
+                  Wants = [ "wait-for-tray.service" ];
                 };
 
-                Preferences = {
-                  # Reopen previous windows and tabs on startup.
-                  "browser.startup.page" = {
-                    Value = 3;
-                    Status = "locked";
-                  };
+                swaync.Unit = {
+                  After = [ "wait-for-tray.service" ];
+                  Wants = [ "wait-for-tray.service" ];
+                };
 
-                  # Disable built-in AI features.
-                  "browser.ml.chat.enabled" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "browser.ml.chat.page" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "browser.ml.linkPreview.enabled" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "extensions.ml.enabled" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "pdfjs.enableAltText" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "browser.smartwindow.memories.generateFromConversation" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "browser.smartwindow.memories.generateFromHistory" = {
-                    Value = false;
-                    Status = "locked";
-                  };
+                gammastep.Unit = {
+                  After = [ "wait-for-tray.service" ];
+                  Wants = [ "wait-for-tray.service" ];
+                };
 
-                  # Disable sponsored content on the new tab page.
-                  "browser.newtabpage.activity-stream.showSponsored" = {
-                    Value = false;
-                    Status = "locked";
+                # No home-manager module packages this - it's a plain
+                # Arch/pacman system binary, not a nix derivation.
+                polkit-mate-authentication-agent = {
+                  Unit.Description = "MATE PolicyKit authentication agent";
+                  Service = {
+                    Type = "simple";
+                    ExecStart = "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1";
+                    Restart = "on-failure";
                   };
-                  "browser.newtabpage.activity-stream.showSponsoredCheckboxes" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "browser.newtabpage.activity-stream.showSponsoredTopSites" = {
-                    Value = false;
-                    Status = "locked";
-                  };
+                  Install.WantedBy = [ "sway-session.target" ];
+                };
 
-                  # Disable smart tab groups and translations.
-                  "browser.tabs.groups.smart.enabled" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "browser.tabs.groups.smart.userEnabled" = {
-                    Value = false;
-                    Status = "locked";
-                  };
-                  "browser.translations.enable" = {
-                    Value = false;
-                    Status = "locked";
-                  };
+                audio-idle-inhibit = {
+                  Unit.Description = "Block idle while audio is playing or being captured";
+                  Service = {
+                    Type = "simple";
+                    ExecStart = "${homepkgs.writeShellScript "audio-idle-inhibit" ''
+                      inhibit_duration=25
+                      sleep_duration=5
 
-                  # Use 1Password instead of Firefox's built-in card autofill.
-                  "extensions.formautofill.creditCards.enabled" = {
-                    Value = false;
-                    Status = "locked";
+                      while true; do
+                        if pactl list | grep -q RUNNING; then
+                          echo "INHIBITING" >&2
+                          systemd-inhibit \
+                            --what idle \
+                            --who systemd-audio-idle-inhibit \
+                            --why "audio output or input active" \
+                            --mode block \
+                            sh -c "sleep $inhibit_duration"
+                        else
+                          echo "WAITING" >&2
+                          sleep $sleep_duration
+                        fi
+                      done
+                    ''}";
                   };
-
-                  "sidebar.visibility" = {
-                    Value = "hide-on-close";
-                    Status = "locked";
-                  };
+                  Install.WantedBy = [ "sway-session.target" ];
                 };
               };
 
-              profiles.${username} = {
-                id = 0;
-
-                settings = {
-                  "extensions.autoDisableScopes" = 0;
-                };
-
-                extensions.packages = with firefoxAddons; [
-                  vimium
-                  ublock-origin
-                  multi-account-containers
-                  onepassword-password-manager
-                  web-eid
-                ];
-              };
-            };
-
-            # Multi-Account Containers has no Chromium equivalent (relies on
-            # Firefox's contextual identities API), so it's omitted here.
-            programs.brave-origin = {
-              enable = true;
-              package = homepkgs.brave-origin;
-
-              # web-eid needs its native messaging host manifest linked in
-              # for the extension to talk to the smart card app.
-              nativeMessagingHosts = [ homepkgs.web-eid-app ];
-
-              # Middle-click autoscroll is disabled by default on Linux,
-              # since middle-click is traditionally reserved for primary
-              # selection paste there.
-              commandLineArgs = [ "--enable-blink-features=MiddleClickAutoscroll" ];
-
-              extensions = [
-                { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
-                { id = "cjpalhdlnbpafiamejdnhcphjbkeiagm"; } # uBlock Origin
-                { id = "aeblfdkhhhdcdjpifhhbdiojplfjncoa"; } # 1Password
-                { id = "ncibgoaomkmdpilpocfeponihegamlic"; } # Web eID
-              ];
-            };
-
-            # Brave reads enterprise policies from /etc/brave/policies/managed,
-            # which lives outside $HOME - requires sudo on every activation.
-            home.activation.bravePolicies = inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-              $DRY_RUN_CMD /usr/bin/sudo install -Dm644 ${bravePolicyFile} /etc/brave/policies/managed/policy.json
-            '';
-
-            programs.thunderbird = {
-              enable = true;
-              package = homepkgs.thunderbird;
-
-              profiles.${username} = {
-                isDefault = true;
-
-                settings = {
-                  # Auto-enable the extensions below instead of requiring a
-                  # manual enable in the Add-ons Manager.
-                  "extensions.autoDisableScopes" = 0;
-
-                  # Vertical layout: folder pane, message list and message
-                  # pane side by side (0 = classic, 1 = wide).
-                  "mail.pane_config.dynamic" = 2;
-
-                  # Compact density (1 = default, 2 = relaxed).
-                  "mail.uidensity" = 0;
-
-                  # Table view for the message list instead of cards.
-                  "mail.threadpane.listview" = 1;
-
-                  # Threaded, sorted by date ascending so the newest message
-                  # is at the bottom. Only applies to folders the first time
-                  # they are opened - each folder stores its own sort after
-                  # that, changed via View > Sort By / Apply Views To Folder.
-                  "mailnews.default_view_flags" = 1;
-                  "mailnews.default_sort_type" = 18;
-                  "mailnews.default_sort_order" = 1;
-                };
-
-                extensions = [
-                  dkimVerifierExtension
-                ];
-              };
-            };
-
-            programs.mpv = {
-              enable = true;
-              config = {
-                profile = "gpu-hq";
-                hwdec = "auto";
-                keep-open = "yes";
-                save-position-on-quit = "yes";
-                force-seekable = "yes";
-                vo = "gpu-next";
-                gpu-api = "vulkan";
-                volume = 100;
-                volume-max = 100;
-                script-opts = "ytdl_hook-ytdl_path=yt-dlp";
-              };
-              bindings = {
-                WHEEL_UP = "seek 1";
-                WHEEL_DOWN = "seek -1";
-                "Shift+WHEEL_UP" = "add volume 2";
-                "Shift+WHEEL_DOWN" = "add volume -2";
-                MBTN_MID = "quit";
-              };
-            };
-
-            qt = {
-              enable = true;
-              platformTheme.name = "qt6ct";
-              qt6ctSettings = {
-                Appearance = {
-                  custom_palette = false;
-                  standard_dialogs = "default";
-                  style = "Fusion";
-                };
-                Fonts = {
-                  fixed = "\"Monospace,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\"";
-                  general = "\"Cantarell,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,Regular\"";
-                };
-                Interface = {
-                  activate_item_on_single_click = 2;
-                  buttonbox_layout = 0;
-                  cursor_flash_time = 1000;
-                  dialog_buttons_have_icons = 1;
-                  double_click_interval = 400;
-                  gui_effects = "@Invalid()";
-                  keyboard_scheme = 2;
-                  menus_have_icons = true;
-                  show_shortcuts_in_context_menus = true;
-                  stylesheets = "@Invalid()";
-                  toolbutton_style = 4;
-                  underline_shortcut = 1;
-                  wheel_scroll_lines = 3;
-                };
-                Troubleshooting = {
-                  force_raster_widgets = 1;
-                };
-              };
-            };
-
-            fonts.fontconfig = {
-              enable = true;
-              antialiasing = true;
-              hinting = "slight";
-              subpixelRendering = "none";
-
-              # No dedicated home-manager option for embeddedbitmap.
-              configFile."local-embeddedbitmap" = {
+              programs.fzf = {
                 enable = true;
-                text = ''
-                  <?xml version="1.0"?>
-                  <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-                  <fontconfig>
-                    <match target="font">
-                      <edit mode="assign" name="embeddedbitmap">
-                        <bool>false</bool>
-                      </edit>
-                    </match>
-                  </fontconfig>
+                enableBashIntegration = true;
+
+                defaultCommand = "fd --type f --hidden --no-ignore-vcs --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'";
+                fileWidget.command = "fd --type f --hidden --no-ignore-vcs --exclude '.git/' --exclude 'node_modules/' --exclude 'vendor/'";
+                changeDirWidget.command = "fd --type d --hidden --no-ignore-vcs --exclude '.git/'";
+
+                defaultOptions = [
+                  "--layout=reverse"
+                  "--marker='>'"
+                  "--pointer='>'"
+                  "--style=minimal"
+                  "--no-unicode"
+                ];
+
+                colors = {
+                  fg = "#000000";
+                  "fg+" = "#000000";
+                  bg = "#FFFFFF";
+                  "bg+" = "#F3F3F3";
+                  hl = "#008000";
+                  "hl+" = "#AF00DB";
+                  info = "#AF00DB";
+                  marker = "#AF00DB";
+                  prompt = "#AF00DB";
+                  spinner = "#AF00DB";
+                  pointer = "#AF00DB";
+                  header = "#008000";
+                  border = "#000000";
+                  label = "#AF00DB";
+                  query = "#000000";
+                };
+              };
+
+              programs.direnv = {
+                enable = true;
+                enableBashIntegration = true;
+              };
+
+              programs.git = {
+                enable = true;
+                includes = [ { path = "~/.gitconfig_local"; } ];
+                settings = {
+                  alias = {
+                    st = "status";
+                    co = "checkout";
+                    ns = "diff --name-status";
+                    lg = "!bash ~/.scripts/git/lg.sh";
+                    lb = "!bash ~/.scripts/git/lb.sh";
+                    logs = "!bash ~/.scripts/git/git-fzf.sh log";
+                    reflogs = "!bash ~/.scripts/git/git-fzf.sh reflog";
+                    msn = "!bash ~/.scripts/git/mergesquashn.sh";
+                    snag = "!bash ~/.scripts/git/snag.sh";
+                    squashall = "!bash ~/.scripts/git/squashall.sh";
+                    sw = "!bash ~/.scripts/git/switch-fzf.sh";
+                    stat = "!bash ~/.scripts/git/stat.sh";
+                    alias = "!git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /";
+                    web = "!gh repo view --web";
+                  };
+                  mergetool.keepBackup = false;
+                  diff = {
+                    algorithm = "histogram";
+                    mnemonicPrefix = true;
+                    renames = true;
+                  };
+                  "mergetool \"nvim\"".cmd = ''NVIM_DIFF=1 nvim -f -c "Gvdiffsplit!" "$MERGED"'';
+                  merge.tool = "nvim";
+                  commit = {
+                    gpgsign = true;
+                    verbose = true;
+                  };
+                  gpg.format = "ssh";
+                  "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
+                  pull.ff = "only";
+                  pager = {
+                    log = "diff-highlight | less";
+                    show = "diff-highlight | less";
+                    diff = "diff-highlight | less";
+                  };
+                  tag.sort = "version:refname";
+                  branch.sort = "-committerdate";
+                  init.defaultBranch = "main";
+                  push = {
+                    default = "simple";
+                    autoSetupRemote = true;
+                    followTags = true;
+                  };
+                  fetch = {
+                    prune = true;
+                    pruneTags = true;
+                    all = true;
+                  };
+                };
+              };
+
+              programs.tmux = {
+                enable = true;
+                keyMode = "vi";
+                historyLimit = 10000;
+                escapeTime = 0;
+                extraConfig = ''
+                  set -g pane-active-border-style fg=colour0,bg=default
+                  set -g pane-border-style fg=colour0,bg=default
+                  set -g popup-style fg=colour0,bg=default
+                  set -g popup-border-style fg=colour0,bg=default
+                  set -g set-clipboard on
+                  set -g status-style bg=default,fg=colour102
+                  set -g mouse on
+                  set -g renumber-windows on
+
+                  bind-key r source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded"
+                  bind-key c new-window -c "#{pane_current_path}"
+                  bind-key % split-window -h -c "#{pane_current_path}"
+                  bind-key '"' split-window -v -c "#{pane_current_path}"
+
+                  bind h select-pane -L
+                  bind j select-pane -D
+                  bind k select-pane -U
+                  bind l select-pane -R
+
+                  bind < resize-pane -L 1
+                  bind > resize-pane -R 1
+                  bind - resize-pane -D 1
+                  bind + resize-pane -U 1
+
+                  bind-key m switch-client -T move
+                  bind-key -T move Left  swap-window -d -t -1 \; switch-client -T move
+                  bind-key -T move Right swap-window -d -t +1 \; switch-client -T move
+                  bind-key -T move Escape switch-client -T root
+                  bind-key -T move Enter  switch-client -T root
+
+                  # Middle-click a window tab: close silently if idle (just a shell prompt),
+                  # otherwise ask for confirmation before killing it. confirm-before's -t
+                  # targets a client, not a window, so only the nested kill-window gets -t =.
+                  bind-key -n MouseDown2Status if-shell -F -t = "#{||:#{||:#{==:#{pane_current_command},bash},#{==:#{pane_current_command},zsh}},#{||:#{==:#{pane_current_command},fish},#{==:#{pane_current_command},sh}}}" "kill-window -t =" "confirm-before -p \"Kill window #{window_name} (#{pane_current_command} running)? (y/n)\" \"kill-window -t =\""
                 '';
               };
-            };
 
-            programs.github-copilot-cli = {
-              enable = true;
-              package = homepkgs.github-copilot-cli;
+              programs.firefox = {
+                enable = true;
+                package = homepkgs.firefox-bin;
+                configPath = ".mozilla/firefox";
 
-              # Matches the pre-existing config location; the module
-              # defaults to ~/.copilot instead of the XDG config dir.
-              configDir = "/home/${username}/.config/copilot";
+                # web-eid needs its native messaging host manifest linked in
+                # for the extension to talk to the smart card app.
+                nativeMessagingHosts = [ homepkgs.web-eid-app ];
 
-              settings = {
-                theme = "auto";
-                banner = "never";
-              };
-            };
+                # Enterprise policies: unlike profile `settings` (which just
+                # seeds prefs.js), these lock the prefs so they can't be
+                # changed from about:config or the Settings UI.
+                policies = {
+                  DisableTelemetry = true;
+                  DisablePocket = true;
+                  PasswordManagerEnabled = false;
+                  NetworkPrediction = false;
+                  DNSOverHTTPS = {
+                    Enabled = false;
+                    Locked = true;
+                  };
+                  EnableTrackingProtection = {
+                    Value = true;
+                    Locked = true;
+                    Category = "strict";
+                  };
 
-            # No `settings` block - the module always writes
-            # ~/.claude/settings.json as a read-only store symlink with no
-            # mutable option, which breaks anything Claude Code itself needs
-            # to write there (/effort, /theme, /plugin, ...). Left for the
-            # CLI to own outright; set theme/notifications/plugins once by
-            # hand after switching.
-            programs.claude-code = {
-              enable = true;
-              package = homepkgs.claude-code;
-            };
-
-            nix.package = homepkgs.nix;
-            nix.settings.experimental-features = [
-              "nix-command"
-              "flakes"
-            ];
-
-            xdg.enable = true;
-
-            # Replaces the manual `xdg-user-dirs-update` call from
-            # postinstall/3_config.sh, which used to run before dotfiles/
-            # home-manager even existed on a fresh install. This runs as
-            # part of `home-manager switch` activation instead.
-            xdg.userDirs.enable = true;
-            xdg.userDirs.createDirectories = true;
-            xdg.userDirs.setSessionVariables = false;
-
-            xdg.desktopEntries.colorpick = {
-              name = "Color Picker";
-              exec = ''/usr/bin/bash -c "bash ~/.scripts/colorpick.sh"'';
-              categories = [ "Graphics" ];
-              settings.Keywords = "color;colorpick;";
-            };
-
-            xdg.desktopEntries.screenshot = {
-              name = "Screenshot";
-              exec = ''/usr/bin/bash -c "bash ~/.scripts/screenshot.sh"'';
-              categories = [ "Graphics" ];
-              settings.Keywords = "screenshot;";
-            };
-
-            # jgmenu (github.com/jgmenu/jgmenu) replaces obmenu-generator:
-            # right-click on the desktop still opens this static Openbox
-            # pipe-menu (unchanged rc.xml/mousebind), but its one entry now
-            # just launches jgmenu's own self-drawn app menu instead of
-            # piping obmenu-generator-generated XML into Openbox's menu
-            # renderer. jgmenu builds its XDG application list itself
-            # (csv_cmd defaults to "apps"), so no separate desktop-file-path
-            # config is needed the way obmenu-generator required.
-            xdg.configFile."openbox/menu.xml".text = ''
-              <?xml version="1.0" encoding="utf-8"?>
-              <openbox_menu>
-                  <menu id="root-menu" label="OpenBox 3">
-                      <item label="Applications">
-                          <action name="Execute">
-                              <command>jgmenu_run</command>
-                          </action>
-                      </item>
-                      <separator/>
-                      <item label="Terminal">
-                          <action name="Execute">
-                              <command>xterm</command>
-                          </action>
-                      </item>
-                      <separator/>
-                      <item label="Exit">
-                          <action name="Exit"/>
-                      </item>
-                  </menu>
-              </openbox_menu>
-            '';
-
-            xdg.configFile."openbox/autostart".text = ''
-              picom -b --fade-in-step=0.1 --fade-out-step=0.2
-              tint2 &
-            '';
-
-            home.file.".config/yabridgectl/config.toml".source =
-              (homepkgs.formats.toml { }).generate "yabridgectl-config.toml"
-                {
-                  plugin_dirs = [ "/home/${username}/Shared/Audio/win-plugins/Plugins" ];
-                  vst2_location = "centralized";
-                  no_verify = false;
-                  blacklist = [ ];
-                };
-
-            home.file."Shared/Audio/win-plugins/custom.reg".text = ''
-              Windows Registry Editor Version 5.00
-
-              [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Fonts]
-              "Guitar Pro 5 (TrueType)"="Guitar Pro 5.ttf"
-
-              [HKEY_LOCAL_MACHINE\Software\Wow6432Node\Arobas Music\Guitar Pro 5]
-              "InstallFolder"="C:\\Program Files (x86)\\Guitar Pro 5"
-            '';
-
-            home.file."Shared/Audio/win-plugins/AppData/Roaming/Ugritone/Ampenstein/config.xml".text = ''
-              <?xml version="1.0" encoding="UTF-8"?>
-
-              <root pluginDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\Processors"
-                    IRPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\Impulse Responses"
-                    flipChannels="0" temporarySaveAmpStatesForEachSlot="1" UserPresetsPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\User Presets"
-                    BGImagePath=""/>
-            '';
-
-            home.file."Shared/Audio/win-plugins/AppData/Roaming/Ugritone/VerbCore/config.cfg".text = ''
-              <?xml version="1.0" encoding="UTF-8"?>
-
-              <root userDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\VerbCore"/>
-            '';
-
-            home.file.".config/yamllint/config".source =
-              (homepkgs.formats.yaml { }).generate "yamllint-config"
-                {
-                  "yaml-files" = [
-                    "*.yaml"
-                    "*.yml"
-                    ".yamllint"
-                  ];
-
-                  rules = {
-                    anchors = "enable";
-                    braces = "enable";
-                    brackets = "enable";
-                    colons = "enable";
-                    commas = "enable";
-                    comments = {
-                      require-starting-space = true;
-                      ignore-shebangs = true;
-                      min-spaces-from-content = 1;
+                  Preferences = {
+                    # Reopen previous windows and tabs on startup.
+                    "browser.startup.page" = {
+                      Value = 3;
+                      Status = "locked";
                     };
-                    comments-indentation.level = "warning";
-                    document-end = "disable";
-                    document-start.level = "warning";
-                    empty-lines = "enable";
-                    empty-values = "disable";
-                    float-values = "disable";
-                    hyphens = "enable";
-                    indentation = {
-                      spaces = "consistent";
-                      indent-sequences = "consistent";
-                      check-multi-line-strings = false;
+
+                    # Disable built-in AI features.
+                    "browser.ml.chat.enabled" = {
+                      Value = false;
+                      Status = "locked";
                     };
-                    key-duplicates = "enable";
-                    key-ordering = "disable";
-                    line-length = "disable";
-                    new-line-at-end-of-file = "enable";
-                    new-lines = "enable";
-                    octal-values = "disable";
-                    quoted-strings = "disable";
-                    trailing-spaces = "enable";
-                    truthy.level = "warning";
+                    "browser.ml.chat.page" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "browser.ml.linkPreview.enabled" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "extensions.ml.enabled" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "pdfjs.enableAltText" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "browser.smartwindow.memories.generateFromConversation" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "browser.smartwindow.memories.generateFromHistory" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+
+                    # Disable sponsored content on the new tab page.
+                    "browser.newtabpage.activity-stream.showSponsored" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "browser.newtabpage.activity-stream.showSponsoredCheckboxes" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "browser.newtabpage.activity-stream.showSponsoredTopSites" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+
+                    # Disable smart tab groups and translations.
+                    "browser.tabs.groups.smart.enabled" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "browser.tabs.groups.smart.userEnabled" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+                    "browser.translations.enable" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+
+                    # Use 1Password instead of Firefox's built-in card autofill.
+                    "extensions.formautofill.creditCards.enabled" = {
+                      Value = false;
+                      Status = "locked";
+                    };
+
+                    "sidebar.visibility" = {
+                      Value = "hide-on-close";
+                      Status = "locked";
+                    };
                   };
                 };
 
-            home.file.".config/containers/storage.conf".source =
-              (homepkgs.formats.toml { }).generate "containers-storage.conf"
-                {
-                  storage.driver = "overlay";
+                profiles.${username} = {
+                  id = 0;
+
+                  settings = {
+                    "extensions.autoDisableScopes" = 0;
+                  };
+
+                  extensions.packages = with firefoxAddons; [
+                    vimium
+                    ublock-origin
+                    multi-account-containers
+                    onepassword-password-manager
+                    web-eid
+                  ];
                 };
+              };
 
-            # This is a *template* unit (%i = remote name), instantiated
-            # per-remote at runtime by postinstall/6_rclone_mount.sh via
-            # `systemctl --user enable --now rclone@$remote`. It's kept as
-            # raw text rather than systemd.user.services."rclone@" because
-            # that module always turns Install.WantedBy into an eager
-            # ~/.config/systemd/user/default.target.wants/rclone@.service
-            # symlink pointing at the bare, uninstantiated template - which
-            # systemd can't start and fails at every login. Writing the file
-            # directly avoids that footgun while still needing the
-            # [Install] section for `systemctl enable` to work per-instance.
-            # https://github.com/rclone/rclone/wiki/Systemd-rclone-mount#systemd
-            xdg.configFile."systemd/user/rclone@.service".text = ''
-              [Unit]
-              Description=RClone mount of users remote %i using filesystem permissions
-              Documentation=http://rclone.org/docs/
-              After=network-online.target
+              # Multi-Account Containers has no Chromium equivalent (relies on
+              # Firefox's contextual identities API), so it's omitted here.
+              programs.brave-origin = {
+                enable = true;
+                package = homepkgs.brave-origin;
+
+                # web-eid needs its native messaging host manifest linked in
+                # for the extension to talk to the smart card app.
+                nativeMessagingHosts = [ homepkgs.web-eid-app ];
+
+                # Middle-click autoscroll is disabled by default on Linux,
+                # since middle-click is traditionally reserved for primary
+                # selection paste there.
+                commandLineArgs = [ "--enable-blink-features=MiddleClickAutoscroll" ];
+
+                extensions = [
+                  { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
+                  { id = "cjpalhdlnbpafiamejdnhcphjbkeiagm"; } # uBlock Origin
+                  { id = "aeblfdkhhhdcdjpifhhbdiojplfjncoa"; } # 1Password
+                  { id = "ncibgoaomkmdpilpocfeponihegamlic"; } # Web eID
+                ];
+              };
+
+              # Brave reads enterprise policies from /etc/brave/policies/managed,
+              # which lives outside $HOME - requires sudo on every activation.
+              home.activation.bravePolicies = inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                $DRY_RUN_CMD /usr/bin/sudo install -Dm644 ${bravePolicyFile} /etc/brave/policies/managed/policy.json
+              '';
+
+              programs.thunderbird = {
+                enable = true;
+                package = homepkgs.thunderbird;
+
+                profiles.${username} = {
+                  isDefault = true;
+
+                  settings = {
+                    # Auto-enable the extensions below instead of requiring a
+                    # manual enable in the Add-ons Manager.
+                    "extensions.autoDisableScopes" = 0;
+
+                    # Vertical layout: folder pane, message list and message
+                    # pane side by side (0 = classic, 1 = wide).
+                    "mail.pane_config.dynamic" = 2;
+
+                    # Compact density (1 = default, 2 = relaxed).
+                    "mail.uidensity" = 0;
+
+                    # Table view for the message list instead of cards.
+                    "mail.threadpane.listview" = 1;
+
+                    # Threaded, sorted by date ascending so the newest message
+                    # is at the bottom. Only applies to folders the first time
+                    # they are opened - each folder stores its own sort after
+                    # that, changed via View > Sort By / Apply Views To Folder.
+                    "mailnews.default_view_flags" = 1;
+                    "mailnews.default_sort_type" = 18;
+                    "mailnews.default_sort_order" = 1;
+                  };
+
+                  extensions = [
+                    dkimVerifierExtension
+                  ];
+                };
+              };
+
+              programs.mpv = {
+                enable = true;
+                config = {
+                  profile = "gpu-hq";
+                  hwdec = "auto";
+                  keep-open = "yes";
+                  save-position-on-quit = "yes";
+                  force-seekable = "yes";
+                  vo = "gpu-next";
+                  gpu-api = "vulkan";
+                  volume = 100;
+                  volume-max = 100;
+                  script-opts = "ytdl_hook-ytdl_path=yt-dlp";
+                };
+                bindings = {
+                  WHEEL_UP = "seek 1";
+                  WHEEL_DOWN = "seek -1";
+                  "Shift+WHEEL_UP" = "add volume 2";
+                  "Shift+WHEEL_DOWN" = "add volume -2";
+                  MBTN_MID = "quit";
+                };
+              };
+
+              qt = {
+                enable = true;
+                platformTheme.name = "qt6ct";
+                qt6ctSettings = {
+                  Appearance = {
+                    custom_palette = false;
+                    standard_dialogs = "default";
+                    style = "Fusion";
+                  };
+                  Fonts = {
+                    fixed = "\"Monospace,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\"";
+                    general = "\"Cantarell,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,Regular\"";
+                  };
+                  Interface = {
+                    activate_item_on_single_click = 2;
+                    buttonbox_layout = 0;
+                    cursor_flash_time = 1000;
+                    dialog_buttons_have_icons = 1;
+                    double_click_interval = 400;
+                    gui_effects = "@Invalid()";
+                    keyboard_scheme = 2;
+                    menus_have_icons = true;
+                    show_shortcuts_in_context_menus = true;
+                    stylesheets = "@Invalid()";
+                    toolbutton_style = 4;
+                    underline_shortcut = 1;
+                    wheel_scroll_lines = 3;
+                  };
+                  Troubleshooting = {
+                    force_raster_widgets = 1;
+                  };
+                };
+              };
+
+              fonts.fontconfig = {
+                enable = true;
+                antialiasing = true;
+                hinting = "slight";
+                subpixelRendering = "none";
+
+                # No dedicated home-manager option for embeddedbitmap.
+                configFile."local-embeddedbitmap" = {
+                  enable = true;
+                  text = ''
+                    <?xml version="1.0"?>
+                    <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+                    <fontconfig>
+                      <match target="font">
+                        <edit mode="assign" name="embeddedbitmap">
+                          <bool>false</bool>
+                        </edit>
+                      </match>
+                    </fontconfig>
+                  '';
+                };
+              };
+
+              programs.github-copilot-cli = {
+                enable = true;
+                package = homepkgs.github-copilot-cli;
+
+                # Matches the pre-existing config location; the module
+                # defaults to ~/.copilot instead of the XDG config dir.
+                configDir = "/home/${username}/.config/copilot";
+
+                settings = {
+                  theme = "auto";
+                  banner = "never";
+                };
+              };
+
+              # No `settings` block - the module always writes
+              # ~/.claude/settings.json as a read-only store symlink with no
+              # mutable option, which breaks anything Claude Code itself needs
+              # to write there (/effort, /theme, /plugin, ...). Left for the
+              # CLI to own outright; set theme/notifications/plugins once by
+              # hand after switching.
+              programs.claude-code = {
+                enable = true;
+                package = homepkgs.claude-code;
+              };
+
+              nix.package = homepkgs.nix;
+              nix.settings.experimental-features = [
+                "nix-command"
+                "flakes"
+              ];
+
+              xdg.enable = true;
+
+              # Replaces the manual `xdg-user-dirs-update` call from
+              # postinstall/3_config.sh, which used to run before dotfiles/
+              # home-manager even existed on a fresh install. This runs as
+              # part of `home-manager switch` activation instead.
+              xdg.userDirs.enable = true;
+              xdg.userDirs.createDirectories = true;
+              xdg.userDirs.setSessionVariables = false;
+
+              xdg.desktopEntries.colorpick = {
+                name = "Color Picker";
+                exec = ''/usr/bin/bash -c "bash ~/.scripts/colorpick.sh"'';
+                categories = [ "Graphics" ];
+                settings.Keywords = "color;colorpick;";
+              };
+
+              xdg.desktopEntries.screenshot = {
+                name = "Screenshot";
+                exec = ''/usr/bin/bash -c "bash ~/.scripts/screenshot.sh"'';
+                categories = [ "Graphics" ];
+                settings.Keywords = "screenshot;";
+              };
+
+              # jgmenu (github.com/jgmenu/jgmenu) replaces obmenu-generator:
+              # right-click on the desktop still opens this static Openbox
+              # pipe-menu (unchanged rc.xml/mousebind), but its one entry now
+              # just launches jgmenu's own self-drawn app menu instead of
+              # piping obmenu-generator-generated XML into Openbox's menu
+              # renderer. jgmenu builds its XDG application list itself
+              # (csv_cmd defaults to "apps"), so no separate desktop-file-path
+              # config is needed the way obmenu-generator required.
+              xdg.configFile."openbox/menu.xml".text = ''
+                <?xml version="1.0" encoding="utf-8"?>
+                <openbox_menu>
+                    <menu id="root-menu" label="OpenBox 3">
+                        <item label="Applications">
+                            <action name="Execute">
+                                <command>jgmenu_run</command>
+                            </action>
+                        </item>
+                        <separator/>
+                        <item label="Terminal">
+                            <action name="Execute">
+                                <command>xterm</command>
+                            </action>
+                        </item>
+                        <separator/>
+                        <item label="Exit">
+                            <action name="Exit"/>
+                        </item>
+                    </menu>
+                </openbox_menu>
+              '';
+
+              xdg.configFile."openbox/autostart".text = ''
+                picom -b --fade-in-step=0.1 --fade-out-step=0.2
+                tint2 &
+              '';
+
+              home.file.".config/yabridgectl/config.toml".source =
+                (homepkgs.formats.toml { }).generate "yabridgectl-config.toml"
+                  {
+                    plugin_dirs = [ "/home/${username}/Shared/Audio/win-plugins/Plugins" ];
+                    vst2_location = "centralized";
+                    no_verify = false;
+                    blacklist = [ ];
+                  };
+
+              home.file."Shared/Audio/win-plugins/custom.reg".text = ''
+                Windows Registry Editor Version 5.00
+
+                [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Fonts]
+                "Guitar Pro 5 (TrueType)"="Guitar Pro 5.ttf"
+
+                [HKEY_LOCAL_MACHINE\Software\Wow6432Node\Arobas Music\Guitar Pro 5]
+                "InstallFolder"="C:\\Program Files (x86)\\Guitar Pro 5"
+              '';
+
+              home.file."Shared/Audio/win-plugins/AppData/Roaming/Ugritone/Ampenstein/config.xml".text = ''
+                <?xml version="1.0" encoding="UTF-8"?>
+
+                <root pluginDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\Processors"
+                      IRPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\Impulse Responses"
+                      flipChannels="0" temporarySaveAmpStatesForEachSlot="1" UserPresetsPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\User Presets"
+                      BGImagePath=""/>
+              '';
+
+              home.file."Shared/Audio/win-plugins/AppData/Roaming/Ugritone/VerbCore/config.cfg".text = ''
+                <?xml version="1.0" encoding="UTF-8"?>
+
+                <root userDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\VerbCore"/>
+              '';
+
+              home.file.".config/yamllint/config".source =
+                (homepkgs.formats.yaml { }).generate "yamllint-config"
+                  {
+                    "yaml-files" = [
+                      "*.yaml"
+                      "*.yml"
+                      ".yamllint"
+                    ];
+
+                    rules = {
+                      anchors = "enable";
+                      braces = "enable";
+                      brackets = "enable";
+                      colons = "enable";
+                      commas = "enable";
+                      comments = {
+                        require-starting-space = true;
+                        ignore-shebangs = true;
+                        min-spaces-from-content = 1;
+                      };
+                      comments-indentation.level = "warning";
+                      document-end = "disable";
+                      document-start.level = "warning";
+                      empty-lines = "enable";
+                      empty-values = "disable";
+                      float-values = "disable";
+                      hyphens = "enable";
+                      indentation = {
+                        spaces = "consistent";
+                        indent-sequences = "consistent";
+                        check-multi-line-strings = false;
+                      };
+                      key-duplicates = "enable";
+                      key-ordering = "disable";
+                      line-length = "disable";
+                      new-line-at-end-of-file = "enable";
+                      new-lines = "enable";
+                      octal-values = "disable";
+                      quoted-strings = "disable";
+                      trailing-spaces = "enable";
+                      truthy.level = "warning";
+                    };
+                  };
+
+              home.file.".config/containers/storage.conf".source =
+                (homepkgs.formats.toml { }).generate "containers-storage.conf"
+                  {
+                    storage.driver = "overlay";
+                  };
+
+              # This is a *template* unit (%i = remote name), instantiated
+              # per-remote at runtime by postinstall/6_rclone_mount.sh via
+              # `systemctl --user enable --now rclone@$remote`. It's kept as
+              # raw text rather than systemd.user.services."rclone@" because
+              # that module always turns Install.WantedBy into an eager
+              # ~/.config/systemd/user/default.target.wants/rclone@.service
+              # symlink pointing at the bare, uninstantiated template - which
+              # systemd can't start and fails at every login. Writing the file
+              # directly avoids that footgun while still needing the
+              # [Install] section for `systemctl enable` to work per-instance.
+              # https://github.com/rclone/rclone/wiki/Systemd-rclone-mount#systemd
+              xdg.configFile."systemd/user/rclone@.service".text = ''
+                [Unit]
+                Description=RClone mount of users remote %i using filesystem permissions
+                Documentation=http://rclone.org/docs/
+                After=network-online.target
 
 
-              [Service]
-              Type=notify
-              #Set up environment
-              Environment=REMOTE_NAME="%i"
-              Environment=REMOTE_PATH="/"
-              Environment=MOUNT_DIR="/mnt/%u/%i"
-              Environment=POST_MOUNT_SCRIPT=""
-              Environment=RCLONE_CONF="%h/.config/rclone/rclone.conf"
-              Environment=RCLONE_TEMP_DIR="%h/.cache/rclone/%u/%i"
-              Environment=RCLONE_RC_ON="false"
+                [Service]
+                Type=notify
+                #Set up environment
+                Environment=REMOTE_NAME="%i"
+                Environment=REMOTE_PATH="/"
+                Environment=MOUNT_DIR="/mnt/%u/%i"
+                Environment=POST_MOUNT_SCRIPT=""
+                Environment=RCLONE_CONF="%h/.config/rclone/rclone.conf"
+                Environment=RCLONE_TEMP_DIR="%h/.cache/rclone/%u/%i"
+                Environment=RCLONE_RC_ON="false"
 
-              #Default arguments for rclone mount. Can be overridden in the environment file
-              Environment=RCLONE_MOUNT_ATTR_TIMEOUT="1s"
-              #TODO: figure out default for the following parameter
-              Environment=RCLONE_MOUNT_DAEMON_TIMEOUT="UNKNOWN_DEFAULT"
-              Environment=RCLONE_MOUNT_DIR_CACHE_TIME="1m"
-              Environment=RCLONE_MOUNT_DIR_PERMS="0777"
-              Environment=RCLONE_MOUNT_FILE_PERMS="0666"
-              Environment=RCLONE_MOUNT_GID="%G"
-              Environment=RCLONE_MOUNT_MAX_READ_AHEAD="128k"
-              Environment=RCLONE_MOUNT_POLL_INTERVAL="1m0s"
-              Environment=RCLONE_MOUNT_UID="%U"
-              Environment=RCLONE_MOUNT_UMASK="022"
-              Environment=RCLONE_MOUNT_VFS_CACHE_MAX_AGE="1h0m0s"
-              Environment=RCLONE_MOUNT_VFS_CACHE_MAX_SIZE="off"
-              Environment=RCLONE_MOUNT_VFS_CACHE_MODE="writes"
-              Environment=RCLONE_MOUNT_VFS_CACHE_POLL_INTERVAL="1m0s"
-              Environment=RCLONE_MOUNT_VFS_READ_CHUNK_SIZE="128M"
-              Environment=RCLONE_MOUNT_VFS_READ_CHUNK_SIZE_LIMIT="off"
-              #TODO: figure out default for the following parameter
-              Environment=RCLONE_MOUNT_VOLNAME="UNKNOWN_DEFAULT"
+                #Default arguments for rclone mount. Can be overridden in the environment file
+                Environment=RCLONE_MOUNT_ATTR_TIMEOUT="1s"
+                #TODO: figure out default for the following parameter
+                Environment=RCLONE_MOUNT_DAEMON_TIMEOUT="UNKNOWN_DEFAULT"
+                Environment=RCLONE_MOUNT_DIR_CACHE_TIME="1m"
+                Environment=RCLONE_MOUNT_DIR_PERMS="0777"
+                Environment=RCLONE_MOUNT_FILE_PERMS="0666"
+                Environment=RCLONE_MOUNT_GID="%G"
+                Environment=RCLONE_MOUNT_MAX_READ_AHEAD="128k"
+                Environment=RCLONE_MOUNT_POLL_INTERVAL="1m0s"
+                Environment=RCLONE_MOUNT_UID="%U"
+                Environment=RCLONE_MOUNT_UMASK="022"
+                Environment=RCLONE_MOUNT_VFS_CACHE_MAX_AGE="1h0m0s"
+                Environment=RCLONE_MOUNT_VFS_CACHE_MAX_SIZE="off"
+                Environment=RCLONE_MOUNT_VFS_CACHE_MODE="writes"
+                Environment=RCLONE_MOUNT_VFS_CACHE_POLL_INTERVAL="1m0s"
+                Environment=RCLONE_MOUNT_VFS_READ_CHUNK_SIZE="128M"
+                Environment=RCLONE_MOUNT_VFS_READ_CHUNK_SIZE_LIMIT="off"
+                #TODO: figure out default for the following parameter
+                Environment=RCLONE_MOUNT_VOLNAME="UNKNOWN_DEFAULT"
 
-              #Overwrite default environment settings with settings from the file if present
-              EnvironmentFile=-%h/.config/rclone/%i.env
+                #Overwrite default environment settings with settings from the file if present
+                EnvironmentFile=-%h/.config/rclone/%i.env
 
-              #Check that rclone is installed
-              ExecStartPre=${homepkgs.coreutils}/bin/test -x ${homepkgs.rclone}/bin/rclone
+                #Check that rclone is installed
+                ExecStartPre=${homepkgs.coreutils}/bin/test -x ${homepkgs.rclone}/bin/rclone
 
-              #Check the mount directory
-              ExecStartPre=${homepkgs.coreutils}/bin/test -d "''${MOUNT_DIR}"
-              ExecStartPre=${homepkgs.coreutils}/bin/test -w "''${MOUNT_DIR}"
-              #TODO: Add test for MOUNT_DIR being empty -> ExecStartPre=${homepkgs.coreutils}/bin/test -z "$(ls -A "''${MOUNT_DIR}")"
+                #Check the mount directory
+                ExecStartPre=${homepkgs.coreutils}/bin/test -d "''${MOUNT_DIR}"
+                ExecStartPre=${homepkgs.coreutils}/bin/test -w "''${MOUNT_DIR}"
+                #TODO: Add test for MOUNT_DIR being empty -> ExecStartPre=${homepkgs.coreutils}/bin/test -z "$(ls -A "''${MOUNT_DIR}")"
 
-              #Check the rclone configuration file
-              ExecStartPre=${homepkgs.coreutils}/bin/test -f "''${RCLONE_CONF}"
-              ExecStartPre=${homepkgs.coreutils}/bin/test -r "''${RCLONE_CONF}"
-              #TODO: add test that the remote is configured for the rclone configuration
+                #Check the rclone configuration file
+                ExecStartPre=${homepkgs.coreutils}/bin/test -f "''${RCLONE_CONF}"
+                ExecStartPre=${homepkgs.coreutils}/bin/test -r "''${RCLONE_CONF}"
+                #TODO: add test that the remote is configured for the rclone configuration
 
-              #Mount rclone fs
-              ExecStart=${homepkgs.rclone}/bin/rclone mount \
-                          --config="''${RCLONE_CONF}" \
-              #See additional items for access control below for information about the following 2 flags
-              #            --allow-other \
-              #            --default-permissions \
-                          --rc="''${RCLONE_RC_ON}" \
-                          --cache-tmp-upload-path="''${RCLONE_TEMP_DIR}/upload" \
-                          --cache-chunk-path="''${RCLONE_TEMP_DIR}/chunks" \
-                          --cache-workers=8 \
-                          --cache-writes \
-                          --cache-dir="''${RCLONE_TEMP_DIR}/vfs" \
-                          --cache-db-path="''${RCLONE_TEMP_DIR}/db" \
-                          --no-modtime \
-                          --drive-use-trash \
-                          --stats=0 \
-                          --checkers=16 \
-                          --bwlimit=40M \
-                          --cache-info-age=60m \
-                          --attr-timeout="''${RCLONE_MOUNT_ATTR_TIMEOUT}" \
-              #TODO: Include this once a proper default value is determined
-              #           --daemon-timeout="''${RCLONE_MOUNT_DAEMON_TIMEOUT}" \
-                          --dir-cache-time="''${RCLONE_MOUNT_DIR_CACHE_TIME}" \
-                          --dir-perms="''${RCLONE_MOUNT_DIR_PERMS}" \
-                          --file-perms="''${RCLONE_MOUNT_FILE_PERMS}" \
-                          --gid="''${RCLONE_MOUNT_GID}" \
-                          --max-read-ahead="''${RCLONE_MOUNT_MAX_READ_AHEAD}" \
-                          --poll-interval="''${RCLONE_MOUNT_POLL_INTERVAL}" \
-                          --uid="''${RCLONE_MOUNT_UID}" \
-                          --umask="''${RCLONE_MOUNT_UMASK}" \
-                          --vfs-cache-max-age="''${RCLONE_MOUNT_VFS_CACHE_MAX_AGE}" \
-                          --vfs-cache-max-size="''${RCLONE_MOUNT_VFS_CACHE_MAX_SIZE}" \
-                          --vfs-cache-mode="''${RCLONE_MOUNT_VFS_CACHE_MODE}" \
-                          --vfs-cache-poll-interval="''${RCLONE_MOUNT_VFS_CACHE_POLL_INTERVAL}" \
-                          --vfs-read-chunk-size="''${RCLONE_MOUNT_VFS_READ_CHUNK_SIZE}" \
-                          --vfs-read-chunk-size-limit="''${RCLONE_MOUNT_VFS_READ_CHUNK_SIZE_LIMIT}" \
-              #TODO: Include this once a proper default value is determined
-              #            --volname="''${RCLONE_MOUNT_VOLNAME}"
-                          "''${REMOTE_NAME}:''${REMOTE_PATH}" "''${MOUNT_DIR}"
+                #Mount rclone fs
+                ExecStart=${homepkgs.rclone}/bin/rclone mount \
+                            --config="''${RCLONE_CONF}" \
+                #See additional items for access control below for information about the following 2 flags
+                #            --allow-other \
+                #            --default-permissions \
+                            --rc="''${RCLONE_RC_ON}" \
+                            --cache-tmp-upload-path="''${RCLONE_TEMP_DIR}/upload" \
+                            --cache-chunk-path="''${RCLONE_TEMP_DIR}/chunks" \
+                            --cache-workers=8 \
+                            --cache-writes \
+                            --cache-dir="''${RCLONE_TEMP_DIR}/vfs" \
+                            --cache-db-path="''${RCLONE_TEMP_DIR}/db" \
+                            --no-modtime \
+                            --drive-use-trash \
+                            --stats=0 \
+                            --checkers=16 \
+                            --bwlimit=40M \
+                            --cache-info-age=60m \
+                            --attr-timeout="''${RCLONE_MOUNT_ATTR_TIMEOUT}" \
+                #TODO: Include this once a proper default value is determined
+                #           --daemon-timeout="''${RCLONE_MOUNT_DAEMON_TIMEOUT}" \
+                            --dir-cache-time="''${RCLONE_MOUNT_DIR_CACHE_TIME}" \
+                            --dir-perms="''${RCLONE_MOUNT_DIR_PERMS}" \
+                            --file-perms="''${RCLONE_MOUNT_FILE_PERMS}" \
+                            --gid="''${RCLONE_MOUNT_GID}" \
+                            --max-read-ahead="''${RCLONE_MOUNT_MAX_READ_AHEAD}" \
+                            --poll-interval="''${RCLONE_MOUNT_POLL_INTERVAL}" \
+                            --uid="''${RCLONE_MOUNT_UID}" \
+                            --umask="''${RCLONE_MOUNT_UMASK}" \
+                            --vfs-cache-max-age="''${RCLONE_MOUNT_VFS_CACHE_MAX_AGE}" \
+                            --vfs-cache-max-size="''${RCLONE_MOUNT_VFS_CACHE_MAX_SIZE}" \
+                            --vfs-cache-mode="''${RCLONE_MOUNT_VFS_CACHE_MODE}" \
+                            --vfs-cache-poll-interval="''${RCLONE_MOUNT_VFS_CACHE_POLL_INTERVAL}" \
+                            --vfs-read-chunk-size="''${RCLONE_MOUNT_VFS_READ_CHUNK_SIZE}" \
+                            --vfs-read-chunk-size-limit="''${RCLONE_MOUNT_VFS_READ_CHUNK_SIZE_LIMIT}" \
+                #TODO: Include this once a proper default value is determined
+                #            --volname="''${RCLONE_MOUNT_VOLNAME}"
+                            "''${REMOTE_NAME}:''${REMOTE_PATH}" "''${MOUNT_DIR}"
 
-              #Execute Post Mount Script if specified
-              ExecStartPost=${homepkgs.bash}/bin/sh -c "''${POST_MOUNT_SCRIPT}"
+                #Execute Post Mount Script if specified
+                ExecStartPost=${homepkgs.bash}/bin/sh -c "''${POST_MOUNT_SCRIPT}"
 
-              #Unmount rclone fs
-              ExecStop=${homepkgs.fuse}/bin/fusermount -u "''${MOUNT_DIR}"
+                #Unmount rclone fs
+                ExecStop=${homepkgs.fuse}/bin/fusermount -u "''${MOUNT_DIR}"
 
-              #Restart info
-              Restart=always
-              RestartSec=10
+                #Restart info
+                Restart=always
+                RestartSec=10
 
-              [Install]
-              WantedBy=default.target
-            '';
+                [Install]
+                WantedBy=default.target
+              '';
 
-          })
+            }
+          )
         ];
       };
     };

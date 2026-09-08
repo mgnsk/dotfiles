@@ -8,8 +8,6 @@ local cfg = {
 	-- Enable italic comment
 	italic_comments = true,
 
-	-- Pin light-theme blues to their shade before Mofiqul/vscode.nvim@6439ed8
-	-- retuned the palette (darker vscLightBlue/vscAccentBlue).
 	color_overrides = {
 		vscLightBlue = "#0451A5",
 		vscAccentBlue = "#4FC1FF",
@@ -22,6 +20,10 @@ local cfg = {
 		SpellLocal = { link = "SpellBad" },
 		Type = { fg = c.vscBlueGreen, bg = "NONE" },
 		TypeDef = { fg = c.vscBlueGreen, bg = "NONE" },
+		String = { fg = c.vscOrange, bg = "NONE" },
+		Character = { fg = c.vscOrange, bg = "NONE" },
+		["@string"] = { fg = c.vscOrange, bg = "NONE" },
+		["@string.regexp"] = { fg = c.vscOrange, bg = "NONE" },
 		QuickfixLine = { fg = "NONE", bg = c.vscTabCurrent },
 		StatusLine = { fg = "NONE", bg = "NONE" },
 		["@variable.builtin"] = { fg = c.vscLightBlue, bg = "NONE" },

@@ -2690,68 +2690,66 @@
                     storage.driver = "overlay";
                   };
 
-              home.file."revive.toml".source =
-                (homepkgs.formats.toml { }).generate "revive.toml"
-                  {
-                    ignoreGeneratedHeader = false;
-                    severity = "warning";
-                    confidence = 0.8;
-                    errorCode = 0;
-                    warningCode = 0;
+              home.file."revive.toml".source = (homepkgs.formats.toml { }).generate "revive.toml" {
+                ignoreGeneratedHeader = false;
+                severity = "warning";
+                confidence = 0.8;
+                errorCode = 0;
+                warningCode = 0;
 
-                    rule = {
-                      context-keys-type = { };
-                      time-naming = { };
-                      var-declaration = { };
-                      unexported-return = { };
-                      errorf = { };
-                      blank-imports = { };
-                      context-as-argument = { };
-                      error-return = { };
-                      error-strings = { };
-                      error-naming = { };
-                      exported = { };
-                      if-return = { };
-                      increment-decrement = { };
-                      var-naming = { };
-                      package-comments = { };
-                      range = { };
-                      receiver-naming = { };
-                      indent-error-flow = { };
-                      cyclomatic.arguments = [ 30 ];
-                      empty-block = { };
-                      superfluous-else = { };
-                      confusing-naming = { };
-                      get-return = { };
-                      confusing-results = { };
-                      deep-exit = { };
-                      unused-parameter = { };
-                      unreachable-code = { };
-                      flag-parameter = { };
-                      unnecessary-stmt = { };
-                      struct-tag = { };
-                      modifies-value-receiver = { };
-                      constant-logical-expr = { };
-                      bool-literal-in-expr = { };
-                      redefines-builtin-id = { };
-                      range-val-in-closure = { };
-                      range-val-address = { };
-                      waitgroup-by-value = { };
-                      atomic = { };
-                      call-to-gc = { };
-                      duplicated-imports = { };
-                      import-shadowing = { };
-                      unused-receiver = { };
-                      unhandled-error = { };
-                      cognitive-complexity.arguments = [ 30 ];
-                      string-of-int = { };
-                      early-return = { };
-                      unconditional-recursion = { };
-                      identical-branches = { };
-                      defer = { };
-                      unexported-naming = { };
-                    };
-                  };
+                rule = {
+                  context-keys-type = { };
+                  time-naming = { };
+                  var-declaration = { };
+                  unexported-return = { };
+                  errorf = { };
+                  blank-imports = { };
+                  context-as-argument = { };
+                  error-return = { };
+                  error-strings = { };
+                  error-naming = { };
+                  exported = { };
+                  if-return = { };
+                  increment-decrement = { };
+                  var-naming = { };
+                  package-comments = { };
+                  range = { };
+                  receiver-naming = { };
+                  indent-error-flow = { };
+                  cyclomatic.arguments = [ 30 ];
+                  empty-block = { };
+                  superfluous-else = { };
+                  confusing-naming = { };
+                  get-return = { };
+                  confusing-results = { };
+                  deep-exit = { };
+                  unused-parameter = { };
+                  unreachable-code = { };
+                  flag-parameter = { };
+                  unnecessary-stmt = { };
+                  struct-tag = { };
+                  modifies-value-receiver = { };
+                  constant-logical-expr = { };
+                  bool-literal-in-expr = { };
+                  redefines-builtin-id = { };
+                  range-val-in-closure = { };
+                  range-val-address = { };
+                  waitgroup-by-value = { };
+                  atomic = { };
+                  call-to-gc = { };
+                  duplicated-imports = { };
+                  import-shadowing = { };
+                  unused-receiver = { };
+                  unhandled-error = { };
+                  cognitive-complexity.arguments = [ 30 ];
+                  string-of-int = { };
+                  early-return = { };
+                  unconditional-recursion = { };
+                  identical-branches = { };
+                  defer = { };
+                  unexported-naming = { };
+                };
+              };
 
               # This is a *template* unit (%i = remote name), instantiated
               # per-remote at runtime by postinstall/6_rclone_mount.sh via

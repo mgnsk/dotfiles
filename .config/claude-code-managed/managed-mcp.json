@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "mcp-nixos": {
-      "args": [],
-      "command": "mcp-nixos",
-      "type": "stdio"
-    }
-  }
-}

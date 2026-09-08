@@ -1,8 +1,0 @@
-{
-  "attribution": {
-    "sessionUrl": false
-  },
-  "env": {
-    "DISABLE_AUTOUPDATER": 1
-  }
-}

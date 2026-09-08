@@ -124,10 +124,135 @@ def test_is_read_only_rejects_mutating_verbs_on_a_whitelisted_noun(argv):
     "argv",
     [
         ["api", "repos/x/y"],
+        ["api", "user"],
+        ["api", "/repos/x/y"],
+        ["api", "-X", "GET", "repos/x/y"],
         ["api", "-XGET", "repos/x/y"],
+        ["api", "--method", "GET", "repos/x/y"],
+        ["api", "--method=GET", "repos/x/y"],
+        ["api", "--method", "head", "repos/x/y"],
+        ["api", "repos/x/y", "-X", "GET"],
+        ["api", "-i", "--paginate", "-q", ".foo", "repos/x/y"],
+        ["api", "-H", "Accept: application/json", "repos/x/y"],
+        ["api", "--", "repos/x/y"],
     ],
 )
-def test_is_read_only_never_matches_gh_api(argv):
+def test_is_read_only_matches_plain_gh_api_reads(argv):
+    assert gh_guard.is_read_only(argv) is True
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["api", "-X", "POST", "repos/x/y"],
+        ["api", "-XPOST", "repos/x/y"],
+        ["api", "--method", "PATCH", "repos/x/y"],
+        ["api", "--method=DELETE", "repos/x/y"],
+        ["api", "-X", "PUT", "repos/x/y"],
+    ],
+)
+def test_is_read_only_rejects_gh_api_with_a_mutating_method(argv):
+    assert gh_guard.is_read_only(argv) is False
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["api", "repos/x/y/issues", "-f", "body=hi"],
+        ["api", "repos/x/y/issues", "-F", "body=hi"],
+        ["api", "repos/x/y/issues", "--raw-field", "body=hi"],
+        ["api", "repos/x/y/issues", "--field", "body=hi"],
+        ["api", "repos/x/y", "--input", "file.json"],
+        ["api", "repos/x/y", "--input=file.json"],
+        # Documented pattern (send -f fields as a GET query string) - still
+        # requires confirmation, since it keeps the parser from having to
+        # also reason about field values.
+        ["api", "-X", "GET", "search/issues", "-f", "q=is:open"],
+    ],
+)
+def test_is_read_only_rejects_gh_api_with_a_body_flag(argv):
+    assert gh_guard.is_read_only(argv) is False
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["api", "--hostname", "evil.example.com", "repos/x/y"],
+        ["api", "repos/x/y", "--hostname", "evil.example.com"],
+        ["api", "https://evil.example.com/x"],
+        ["api", "http://evil.example.com/x"],
+    ],
+)
+def test_is_read_only_rejects_gh_api_host_overrides(argv):
+    """--hostname / an absolute-URL endpoint sends a request to an
+    arbitrary host from the (unsandboxed) host machine - not a GitHub
+    write, and confirmed locally that gh doesn't attach its stored token
+    for a host it has no credentials for, so not a credential leak either
+    - but still an SSRF-style network-policy bypass worth blocking."""
+    assert gh_guard.is_read_only(argv) is False
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["api", "graphql"],
+        ["api", "/graphql"],
+        ["api", "GraphQL"],
+        ["api", "graphql/"],
+    ],
+)
+def test_is_read_only_rejects_gh_api_graphql_even_without_a_body_flag(argv):
+    """Belt-and-suspenders alongside the body-flag check: graphql can't do
+    anything without a body flag today, but block the endpoint itself too
+    in case a future gh flag adds another way to carry one."""
+    assert gh_guard.is_read_only(argv) is False
+
+
+def test_is_read_only_matches_protocol_relative_looking_endpoint():
+    """`//example.com/` has no "://" so it isn't caught by the absolute-URL
+    check - but verified against real `gh api --verbose //example.com/`
+    that gh sends this as a literal path under api.github.com
+    ("Request to https://api.github.com//example.com/"), not as a
+    protocol-relative URL to example.com. So True here is correct, not a
+    bypass: gh uses the same "://" heuristic gh-guard does."""
+    assert gh_guard.is_read_only(["api", "//example.com/"]) is True
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        # A mutating flag hidden behind a long run of harmless ones.
+        ["api", "-i", "-q", ".x", "--paginate", "repos/x/y", "--jq", ".y",
+         "-H", "A: B", "--cache", "60s", "-X", "POST"],
+        # `--` disables flag parsing for the rest of argv (matching cobra),
+        # so a "-f" after it is just a second positional, not a body flag -
+        # denied for having 3 positionals, same as gh would error on arg
+        # count rather than silently run it.
+        ["api", "repos/x/y", "--", "-f", "evil=1"],
+        # --hostname fed as another flag's value never gets parsed as its
+        # own flag by either gh-guard or real pflag (the preceding
+        # value-flag greedily consumes the very next token) - inert on
+        # both sides - but this now has 2 positionals regardless.
+        ["api", "-H", "--hostname", "evil.com", "repos/x/y"],
+    ],
+)
+def test_is_read_only_rejects_gh_api_with_a_hidden_write_attempt(argv):
+    assert gh_guard.is_read_only(argv) is False
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["api"],  # missing endpoint
+        ["api", "repos/x/y", "repos/a/b"],  # two positionals
+        ["api", "--nonexistent-flag", "repos/x/y"],  # unrecognized long flag
+        ["api", "-z", "repos/x/y"],  # unrecognized short flag
+        ["api", "repos/x/y", "-X"],  # value flag missing its value
+        ["api", "repos/x/y", "--method"],
+        ["api", "--silent=true", "repos/x/y"],  # bool flag given a value
+    ],
+)
+def test_is_read_only_fails_closed_on_unparseable_gh_api_argv(argv):
     assert gh_guard.is_read_only(argv) is False
 
 

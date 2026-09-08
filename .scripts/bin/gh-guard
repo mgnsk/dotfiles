@@ -13,7 +13,9 @@ stdout/stderr/exit code back in real time.
 READ_ONLY_PREFIXES is a fixed allowlist of literal argv prefixes, matched
 against the start of argv with no flag-skipping and no --help
 special-casing; anything that doesn't literally match falls through to the
-tmux prompt. `gh api` is deliberately not on the list.
+tmux prompt. `gh api` isn't a fixed prefix - the same subcommand reads or
+writes depending on its flags - so it's handled separately by
+gh_api_is_read_only(), which walks its argv instead of matching a prefix.
 """
 
 import json
@@ -41,7 +43,7 @@ TTY_ENV_VARS = ("NO_COLOR", "CLICOLOR", "CLICOLOR_FORCE", "GH_FORCE_TTY")
 # Exact argv prefixes that run without a tmux prompt. Trailing args/flags
 # after a matched prefix are fine (`pr list --limit 5` matches
 # ("pr", "list")); anything else falls through to confirm_via_tmux.
-# `gh api` is deliberately absent - left for a future plan.
+# `gh api` is handled separately below by gh_api_is_read_only().
 READ_ONLY_PREFIXES = (
     ("status",),
     ("auth", "status"),
@@ -71,7 +73,153 @@ READ_ONLY_PREFIXES = (
 
 def is_read_only(argv):
     """Does argv literally start with one of the whitelisted read prefixes?"""
+    if argv[:1] == ["api"]:
+        return gh_api_is_read_only(argv[1:])
     return any(argv[: len(prefix)] == list(prefix) for prefix in READ_ONLY_PREFIXES)
+
+
+# `gh api`'s flags, from `gh api --help` (gh 2.99.0). Boolean flags take no
+# value; value flags do, and are tagged with what that value affects:
+#   "method"   - the HTTP method (-X/--method)
+#   "body"     - adds/replaces the request body, and silently flips gh's
+#                default method to POST (-f/-F/--raw-field/--field/--input)
+#   "hostname" - overrides the destination host (--hostname)
+#   "opaque"   - none of the above; doesn't affect read/write-ness
+_API_BOOL_FLAGS = frozenset((
+    "--allow-escape-sequences", "-i", "--include", "--paginate",
+    "--silent", "--slurp", "--verbose", "--help",
+))
+_API_VALUE_FLAGS = {
+    "--cache": "opaque",
+    "-H": "opaque", "--header": "opaque",
+    "-q": "opaque", "--jq": "opaque",
+    "-p": "opaque", "--preview": "opaque",
+    "-t": "opaque", "--template": "opaque",
+    "--hostname": "hostname",
+    "-X": "method", "--method": "method",
+    "-f": "body", "--raw-field": "body",
+    "-F": "body", "--field": "body",
+    "--input": "body",
+}
+_API_SHORT_VALUE_FLAGS = frozenset(f for f in _API_VALUE_FLAGS if len(f) == 2)
+
+
+def gh_api_is_read_only(args):
+    """Is `gh api <args>` a plain GET/HEAD with no body and no host override?
+
+    `args` is argv with the leading "api" token already stripped. Unlike
+    is_read_only()'s prefix match, `gh api` reads or writes depending on
+    its flags, and pflag/cobra let those flags land before or after the
+    endpoint positional - so this walks the whole argv rather than
+    matching a prefix. Anything the walk doesn't fully recognize - an
+    unknown flag, a value flag missing its value, more than one positional
+    - returns False (fail closed to the tmux prompt), same as the default
+    for anything not on READ_ONLY_PREFIXES.
+
+    Three things disqualify a call regardless of method:
+      - a body flag (-f/-F/--raw-field/--field/--input): these can carry
+        an arbitrary request body, including a GraphQL query/mutation via
+        `gh api graphql -f query=...` - the only way to put a body on that
+        endpoint at all, so also caught again below by the graphql check.
+      - --hostname, or an endpoint that is itself an absolute URL
+        (scheme://...): gh will dial straight out to any host named this
+        way - confirmed locally for both forms, including that a bare
+        `//host/path` endpoint (no "://") is NOT treated as protocol-
+        relative, it's just a literal path under the configured host, so
+        only an actual scheme separator needs to be checked. Confirmed
+        separately that gh does NOT attach its stored token for a host
+        it has no credentials for (no Authorization header went out to
+        an unconfigured hostname), so this isn't a credential leak - it's
+        an unauthenticated SSRF-style request out of the sandbox from the
+        host machine, bypassing whatever network policy the sandbox
+        itself has. Worth blocking regardless of the missing token.
+      - the endpoint being graphql: belt-and-suspenders alongside the body
+        flag check, in case a future gh flag adds another way to carry a
+        GraphQL body.
+    """
+    method = None
+    has_body_flag = False
+    has_hostname_flag = False
+    endpoint = None
+    positional_count = 0
+    end_of_flags = False
+    i = 0
+
+    while i < len(args):
+        tok = args[i]
+
+        if not end_of_flags and tok == "--":
+            end_of_flags = True
+            i += 1
+            continue
+
+        if not end_of_flags and tok.startswith("--") and len(tok) > 2:
+            name, sep, inline_value = tok.partition("=")
+            if name in _API_BOOL_FLAGS:
+                if sep:
+                    return False
+                i += 1
+                continue
+            if name in _API_VALUE_FLAGS:
+                if sep:
+                    value = inline_value
+                    i += 1
+                else:
+                    if i + 1 >= len(args):
+                        return False
+                    value = args[i + 1]
+                    i += 2
+                kind = _API_VALUE_FLAGS[name]
+                if kind == "method":
+                    method = value.upper()
+                elif kind == "body":
+                    has_body_flag = True
+                elif kind == "hostname":
+                    has_hostname_flag = True
+                continue
+            return False  # unrecognized long flag
+
+        if not end_of_flags and tok.startswith("-") and tok != "-" and len(tok) >= 2:
+            short = tok[:2]
+            if short == "-i" and len(tok) == 2:
+                i += 1
+                continue
+            if short in _API_SHORT_VALUE_FLAGS:
+                if len(tok) > 2:
+                    value = tok[2:]
+                    i += 1
+                else:
+                    if i + 1 >= len(args):
+                        return False
+                    value = args[i + 1]
+                    i += 2
+                kind = _API_VALUE_FLAGS[short]
+                if kind == "method":
+                    method = value.upper()
+                elif kind == "body":
+                    has_body_flag = True
+                elif kind == "hostname":
+                    has_hostname_flag = True
+                continue
+            return False  # unrecognized short flag / cluster
+
+        positional_count += 1
+        if positional_count == 1:
+            endpoint = tok
+        i += 1
+
+    if positional_count != 1 or endpoint is None:
+        return False
+    if has_body_flag or has_hostname_flag:
+        return False
+    if "://" in endpoint:
+        return False
+    normalized_endpoint = endpoint.lstrip("/").lower()
+    if normalized_endpoint == "graphql" or normalized_endpoint.startswith("graphql/"):
+        return False
+    if method is not None and method not in ("GET", "HEAD"):
+        return False
+    return True
 
 # The length prefix is a client-controlled uint32 (up to ~4 GiB), and this
 # socket is reachable by anything in the sandbox, not just gh-client - so

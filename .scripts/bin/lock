@@ -2,15 +2,21 @@
 
 set -euo pipefail
 
+# swayidle invokes this script (before-sleep, idle timeout) via a systemd
+# --user unit whose PATH is pinned to just bash's own store path, so PATH
+# lookups for system binaries fail there even though they succeed when this
+# script is run interactively (e.g. via the sway keybinding). Use absolute
+# paths for those so the lock is applied the same way on every trigger.
+
 # Lock the screen.
-swaylock -f -c 000000
+/usr/bin/swaylock -f -c 000000
 
 # Lock the session.
-loginctl lock-session
+/usr/bin/loginctl lock-session
 
 # Lock 1password manually if it is running (it does not respect DBUS locking).
-if command -v 1password &>/dev/null; then
+if command -v /usr/bin/1password &>/dev/null; then
 	if pidof 1password; then
-		1password --lock
+		/usr/bin/1password --lock
 	fi
 fi

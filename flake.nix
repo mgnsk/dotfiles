@@ -649,7 +649,7 @@
         pkgs = homepkgs;
         modules = [
           inputs.reaper-flake.homeModules.reaper
-          ({ lib, pkgs, ... }:
+          ({ lib, pkgs, config, ... }:
             let
               # fetchurl's output is a store path, so its linked file name in
               # ColorThemes/ carries the store hash prefix - derive `active`
@@ -659,11 +659,44 @@
                 url = "https://stash.reaper.fm/30492/Default_5_Dark_Extended.ReaperThemeZip";
                 sha256 = "0zbjnrxbd0pzjf1ll8m94ji06spxv9yhmjmc7l4pw9nwcdw5gl4z";
               };
+
+              # Wraps the reaper-flake launcher (config.programs.reaper.package,
+              # the one that already injects -cfgfile) in `unshare --net
+              # --map-current-user`, the same manual invocation used before
+              # this was made declarative - a fresh, interface-less network
+              # namespace that every child process (wine, the yabridge host,
+              # in-process VST/CLAP/LV2 plugins, ReaPack's own update checks)
+              # inherits too, so nothing REAPER spawns can reach the network.
+              # --map-current-user keeps this unprivileged (no setuid/
+              # capabilities needed) and, unlike bwrap, plain `unshare -n`
+              # doesn't touch the mount namespace, so X11/Wayland/PipeWire
+              # sockets keep working with no extra bind-mounting.
+              #
+              # Pass `--net` as the first argument (e.g. `reaper --net`) to
+              # skip the namespace and get a normal, internet-connected
+              # REAPER for one run - useful for a ReaPack sync or similar.
+              reaperNoNet = pkgs.symlinkJoin {
+                name = "reaper-no-net";
+                paths = [ config.programs.reaper.package ];
+                postBuild = ''
+                  rm -f "$out/bin/reaper"
+                  cat > "$out/bin/reaper" <<'EOF'
+                  #!${pkgs.runtimeShell}
+                  if [ "$1" = "--net" ]; then
+                    shift
+                    exec ${lib.escapeShellArg "${config.programs.reaper.package}/bin/reaper"} "$@"
+                  fi
+                  exec ${lib.escapeShellArg "${pkgs.util-linux}/bin/unshare"} --net --map-current-user -- ${lib.escapeShellArg "${config.programs.reaper.package}/bin/reaper"} "$@"
+                  EOF
+                  chmod +x "$out/bin/reaper"
+                '';
+                meta = config.programs.reaper.package.meta or { };
+              };
             in {
             home.username = username;
             home.homeDirectory = "/home/${username}";
             home.stateVersion = "24.05";
-            home.packages = homePkgs;
+            home.packages = homePkgs ++ [ reaperNoNet ];
 
             # Manages ~/.config/REAPER declaratively (theme, ReaPack, plugin
             # search paths). Plugin store paths (clapPlugins/lv2Plugins/
@@ -674,6 +707,11 @@
             programs.reaper = {
               enable = true;
               configPath = "/home/${username}/.config/REAPER";
+
+              # Installed separately as reaperNoNet above (network-namespaced);
+              # this default, unsandboxed package must stay off PATH or the
+              # two would collide over bin/reaper.
+              installPackage = false;
 
               # Adds wine/yabridge libraries to REAPER's LD_LIBRARY_PATH,
               # inherited by every process it spawns, including the yabridge

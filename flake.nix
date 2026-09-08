@@ -649,7 +649,17 @@
         pkgs = homepkgs;
         modules = [
           inputs.reaper-flake.homeModules.reaper
-          ({ lib, ... }: {
+          ({ lib, pkgs, ... }:
+            let
+              # fetchurl's output is a store path, so its linked file name in
+              # ColorThemes/ carries the store hash prefix - derive `active`
+              # from the same path instead of hardcoding the plain file name,
+              # so the two always agree.
+              reaperTheme = pkgs.fetchurl {
+                url = "https://stash.reaper.fm/30492/Default_5_Dark_Extended.ReaperThemeZip";
+                sha256 = "0zbjnrxbd0pzjf1ll8m94ji06spxv9yhmjmc7l4pw9nwcdw5gl4z";
+              };
+            in {
             home.username = username;
             home.homeDirectory = "/home/${username}";
             home.stateVersion = "24.05";
@@ -680,10 +690,8 @@
               extensions.reapack.enable = true;
 
               theme = {
-                active = "Default_5_Dark_Extended.ReaperThemeZip";
-                colorThemes = [
-                  (builtins.toPath "/home/${username}/Shared/Default_5_Dark_Extended.ReaperThemeZip")
-                ];
+                active = builtins.baseNameOf "${reaperTheme}";
+                colorThemes = [ reaperTheme ];
               };
 
               preferences.plugIns = {

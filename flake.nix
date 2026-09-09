@@ -581,6 +581,20 @@
         wineRelease = "staging";
       };
 
+      # Modern Wine merged the separate wine/wine64 loader binaries into a
+      # single arch-detecting `wine` binary, but winetricks (as packaged in
+      # nixpkgs-audio) still expects a `wine64` binary to exist for 64-bit
+      # WINEPREFIX setup (see winetricks_early_wine_arch/w_expand_env). Without
+      # this, winetricks silently constructs a nonexistent "wine64" path and
+      # every `wine cmd.exe` call it makes to query the environment (e.g.
+      # %AppData%) returns nothing, so it dies mid-activation before dxvk/
+      # gdiplus get installed. A plain symlink is enough since the unified
+      # binary already handles both architectures.
+      wine64Shim = audiopkgs.runCommand "wine64-shim" { } ''
+        mkdir -p "$out/bin"
+        ln -s "${bitbridgeWine}/bin/wine" "$out/bin/wine64"
+      '';
+
       # yabridge built from upstream git master instead of nixpkgs' package,
       # because nixpkgs' pkgs/by-name/ya/yabridge hardcodes
       # -Dbitbridge=false and patches libyabridge to drop 32-bit support
@@ -798,6 +812,7 @@
         yabridgeGitMaster
         yabridgectlGitMaster
         bitbridgeWine
+        wine64Shim
         audiopkgs.winetricks
       ];
 

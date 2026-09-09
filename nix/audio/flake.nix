@@ -353,6 +353,37 @@
             sha256 = "0zbjnrxbd0pzjf1ll8m94ji06spxv9yhmjmc7l4pw9nwcdw5gl4z";
           };
 
+          # nixpkgs' xwayland-satellite is on 0.8.2, which has a rendering
+          # regression: GPU-composited child/popup windows (WPF dropdowns,
+          # and - confirmed live here - DXVK-rendered wine VST GUIs like
+          # Xfer OTT) show as solid black instead of their real content.
+          # Reported and bisected upstream to 0.8.2 commit 3273a0f
+          # (github.com/Supreeeme/xwayland-satellite issue #468, open as
+          # of 2026-09), confirmed working on 0.8.1 and on real XWayland.
+          # Pinned back to 0.8.1 - still has the popup-position fix this
+          # was brought in for (issue #293) - until #468 is fixed
+          # upstream. Hashes are nixpkgs' own pre-bump ones, from the
+          # 0.8.1->0.8.2 version-bump commit (84702aa153).
+          xwaylandSatellite081Src = audiopkgs.fetchFromGitHub {
+            owner = "Supreeeme";
+            repo = "xwayland-satellite";
+            tag = "v0.8.1";
+            hash = "sha256-BUE41HjLIGPjq3U8VXPjf8asH8GaMI7FYdgrIHKFMXA=";
+          };
+
+          # cargoHash alone doesn't propagate through overrideAttrs here -
+          # buildRustPackage's cargoDeps vendor derivation is bound to the
+          # original finalAttrs.cargoHash, not the overridden one - so the
+          # vendor directory has to be overridden directly instead.
+          xwaylandSatelliteStable = audiopkgs.xwayland-satellite.overrideAttrs (old: {
+            version = "0.8.1";
+            src = xwaylandSatellite081Src;
+            cargoDeps = audiopkgs.rustPlatform.fetchCargoVendor {
+              src = xwaylandSatellite081Src;
+              hash = "sha256-16L6gsvze+m7XCJlOA1lsPNELE3D364ef2FTdkh0rVY=";
+            };
+          });
+
           # Wraps the reaper-flake launcher (config.programs.reaper.package,
           # the one that already injects -cfgfile) in `unshare --net
           # --map-current-user`, the same manual invocation used before
@@ -372,7 +403,7 @@
           # Also starts a private xwayland-satellite instance on a spare
           # X display and points only this REAPER invocation at it via
           # $DISPLAY (inherited by wine, the yabridge host and every
-          # plugin GUI it spawns) - see refactor.md for the full writeup.
+          # plugin GUI it spawns).
           # sway's own built-in XWayland has an unresolved override-redirect
           # popup positioning bug (ICCCM gives no reliable way to tell
           # a popup from a toplevel), which is what causes yabridge-hosted
@@ -400,7 +431,7 @@
               }
 
               disp_num=$(find_free_display)
-              ${lib.escapeShellArg "${audiopkgs.xwayland-satellite}/bin/xwayland-satellite"} ":$disp_num" &
+              ${lib.escapeShellArg "${xwaylandSatelliteStable}/bin/xwayland-satellite"} ":$disp_num" &
               satellite_pid=$!
               trap 'kill "$satellite_pid" 2>/dev/null' EXIT
 
@@ -434,7 +465,7 @@
             # Also used internally by reaperNoNet above; kept on PATH too
             # so it can be run/inspected by hand (RUST_LOG=debug
             # xwayland-satellite :N) when debugging the wrapper.
-            audiopkgs.xwayland-satellite
+            xwaylandSatelliteStable
           ]
           ++ audioPkgs;
 

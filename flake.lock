@@ -1,5 +1,19 @@
 {
   "nodes": {
+    "audio": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "path": "./nix/audio",
+        "type": "path"
+      },
+      "original": {
+        "path": "./nix/audio",
+        "type": "path"
+      },
+      "parent": []
+    },
     "firefox-addons": {
       "flake": false,
       "locked": {
@@ -75,13 +89,13 @@
         "type": "github"
       }
     },
-    "nixpkgs-audio": {
+    "nixpkgs": {
       "locked": {
-        "lastModified": 1788614874,
-        "narHash": "sha256-7QYjT2vHLuX9Z1pdxHXDKCbh1CR3D/2rywB9Tx0MPRg=",
+        "lastModified": 1788881743,
+        "narHash": "sha256-2V9GZGvPfrNzxFozhI9dcqV+c3QdA8YZrvAAzqEB+dI=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+        "rev": "d6524aaca2ff07876657ae2b323f24be4874944b",
         "type": "github"
       },
       "original": {
@@ -238,9 +252,9 @@
     },
     "root": {
       "inputs": {
+        "audio": "audio",
         "firefox-addons": "firefox-addons",
         "home-manager": "home-manager",
-        "nixpkgs-audio": "nixpkgs-audio",
         "nixpkgs-home": "nixpkgs-home",
         "nvim-plugin-autotabline": "nvim-plugin-autotabline",
         "nvim-plugin-dumb-autopairs": "nvim-plugin-dumb-autopairs",

@@ -1,32 +1,5 @@
-{
-  audiopkgs,
-  homepkgs,
-  username,
-}:
+{ audiopkgs }:
 let
-  # Upstream RaySession has a dead `from cgitb import text` import
-  # (the imported name is never used) that only breaks once cgitb is
-  # actually removed from the stdlib in Python 3.13+. Strip it so the
-  # patchbay module imports cleanly.
-  #
-  # It also links against real libjack2, but there's no jack1/jack2
-  # server here - only pipewire's JACK-compatible implementation. This
-  # is what `pw-jack` does under the hood: put pipewire's libjack.so.0
-  # ahead of the real one on LD_LIBRARY_PATH so ray-daemon picks it up
-  # instead of failing to find a JACK server.
-  raysessionFixed = homepkgs.raysession.overrideAttrs (old: {
-    postPatch = (old.postPatch or "") + ''
-      sed -i '/^from cgitb import text$/d' \
-        src/gui/patchbay/patchcanvas/portgroup_widget.py
-    '';
-    makeWrapperArgs = (old.makeWrapperArgs or [ ]) ++ [
-      "--prefix"
-      "LD_LIBRARY_PATH"
-      ":"
-      "${homepkgs.pipewire.jack}/lib"
-    ];
-  });
-
   levelrider = audiopkgs.stdenv.mkDerivation {
     name = "levelrider";
     src = audiopkgs.fetchFromGitHub {
@@ -333,6 +306,29 @@ in
       ...
     }:
     let
+      # Upstream RaySession has a dead `from cgitb import text` import
+      # (the imported name is never used) that only breaks once cgitb is
+      # actually removed from the stdlib in Python 3.13+. Strip it so the
+      # patchbay module imports cleanly.
+      #
+      # It also links against real libjack2, but there's no jack1/jack2
+      # server here - only pipewire's JACK-compatible implementation. This
+      # is what `pw-jack` does under the hood: put pipewire's libjack.so.0
+      # ahead of the real one on LD_LIBRARY_PATH so ray-daemon picks it up
+      # instead of failing to find a JACK server.
+      raysessionFixed = pkgs.raysession.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          sed -i '/^from cgitb import text$/d' \
+            src/gui/patchbay/patchcanvas/portgroup_widget.py
+        '';
+        makeWrapperArgs = (old.makeWrapperArgs or [ ]) ++ [
+          "--prefix"
+          "LD_LIBRARY_PATH"
+          ":"
+          "${pkgs.pipewire.jack}/lib"
+        ];
+      });
+
       # fetchurl's output is a store path, so its linked file name in
       # ColorThemes/ carries the store hash prefix - derive `active`
       # from the same path instead of hardcoding the plain file name,
@@ -379,8 +375,8 @@ in
       home.packages = [
         pkgs.pipewire.jack
         raysessionFixed
-        homepkgs.qjackctl
-        homepkgs.fluidsynth
+        pkgs.qjackctl
+        pkgs.fluidsynth
         reaperNoNet
       ]
       ++ winePkgs
@@ -396,7 +392,7 @@ in
       # are all always installed, no separate dev shell needed.
       programs.reaper = {
         enable = true;
-        configPath = "/home/${username}/.config/REAPER";
+        configPath = "/home/${config.home.username}/.config/REAPER";
 
         # Installed separately as reaperNoNet above (network-namespaced);
         # this default, unsandboxed package must stay off PATH or the
@@ -413,7 +409,7 @@ in
         # no jack1/jack2 server here, only pipewire's - same fix as
         # raysessionFixed below, but done here via LD_LIBRARY_PATH
         # order since REAPER isn't wrapped with pw-jack itself.
-        packages = [ homepkgs.pipewire.jack ] ++ winePkgs;
+        packages = [ pkgs.pipewire.jack ] ++ winePkgs;
 
         extensions.reapack.enable = true;
 
@@ -438,11 +434,11 @@ in
       home.activation.audioWinePrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] (
         let
           wineBinPath = audiopkgs.lib.makeBinPath (winePkgs ++ [ bitbridgeWine ]);
-          winPlugins = "/home/${username}/Shared/Audio/win-plugins";
+          winPlugins = "/home/${config.home.username}/Shared/Audio/win-plugins";
         in
         # bash
         ''
-          export WINEPREFIX=${audiopkgs.lib.escapeShellArg "/home/${username}/.wine-audio"}
+          export WINEPREFIX=${audiopkgs.lib.escapeShellArg "/home/${config.home.username}/.wine-audio"}
           export PATH=${audiopkgs.lib.escapeShellArg wineBinPath}:$PATH
 
           # home.sessionVariables.NIX_PROFILES only takes effect in a
@@ -466,14 +462,14 @@ in
             ln -s "$source" "$target"
           }
 
-          link_into_prefix "$WINEPREFIX/drive_c/users/${username}/win-plugins" "$winplugins"
+          link_into_prefix "$WINEPREFIX/drive_c/users/${config.home.username}/win-plugins" "$winplugins"
 
           if [ -d "$winplugins/AppData" ]; then
-            link_into_prefix "$WINEPREFIX/drive_c/users/${username}/AppData" "$winplugins/AppData"
+            link_into_prefix "$WINEPREFIX/drive_c/users/${config.home.username}/AppData" "$winplugins/AppData"
           fi
 
           if [ -d "$winplugins/Documents" ]; then
-            link_into_prefix "$WINEPREFIX/drive_c/users/${username}/Documents" "$winplugins/Documents"
+            link_into_prefix "$WINEPREFIX/drive_c/users/${config.home.username}/Documents" "$winplugins/Documents"
           fi
 
           if [ -d "$winplugins/ProgramData" ]; then
@@ -496,7 +492,7 @@ in
             wine regedit "$winplugins/custom.reg"
           fi
 
-          link_into_prefix "/home/${username}/.vst3" "/home/${username}/Shared/Audio/vst3"
+          link_into_prefix "/home/${config.home.username}/.vst3" "/home/${config.home.username}/Shared/Audio/vst3"
 
           if [ -d "$winplugins/Plugins" ]; then
             yabridgectl sync --force --prune --verbose
@@ -506,7 +502,7 @@ in
       );
 
       home.sessionVariables = {
-        WINEPREFIX = "/home/${username}/.wine-audio";
+        WINEPREFIX = "/home/${config.home.username}/.wine-audio";
 
         # nix.sh (sourced earlier in ~/.bashrc) unconditionally
         # overwrites NIX_PROFILES, dropping any prior value. Home
@@ -520,9 +516,9 @@ in
       };
 
       home.file.".config/yabridgectl/config.toml".source =
-        (homepkgs.formats.toml { }).generate "yabridgectl-config.toml"
+        (pkgs.formats.toml { }).generate "yabridgectl-config.toml"
           {
-            plugin_dirs = [ "/home/${username}/Shared/Audio/win-plugins/Plugins" ];
+            plugin_dirs = [ "/home/${config.home.username}/Shared/Audio/win-plugins/Plugins" ];
             vst2_location = "centralized";
             no_verify = false;
             blacklist = [ ];
@@ -541,9 +537,9 @@ in
       home.file."Shared/Audio/win-plugins/AppData/Roaming/Ugritone/Ampenstein/config.xml".text = ''
         <?xml version="1.0" encoding="UTF-8"?>
 
-        <root pluginDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\Processors"
-              IRPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\Impulse Responses"
-              flipChannels="0" temporarySaveAmpStatesForEachSlot="1" UserPresetsPath="C:\users\${username}\win-plugins\Plugins\Ugritone\Ampenstein\User Presets"
+        <root pluginDataPath="C:\users\${config.home.username}\win-plugins\Plugins\Ugritone\Ampenstein\Processors"
+              IRPath="C:\users\${config.home.username}\win-plugins\Plugins\Ugritone\Ampenstein\Impulse Responses"
+              flipChannels="0" temporarySaveAmpStatesForEachSlot="1" UserPresetsPath="C:\users\${config.home.username}\win-plugins\Plugins\Ugritone\Ampenstein\User Presets"
               BGImagePath=""/>
       '';
 
@@ -551,7 +547,7 @@ in
         ''
           <?xml version="1.0" encoding="UTF-8"?>
 
-          <root userDataPath="C:\users\${username}\win-plugins\Plugins\Ugritone\VerbCore"/>
+          <root userDataPath="C:\users\${config.home.username}\win-plugins\Plugins\Ugritone\VerbCore"/>
         '';
     };
 }

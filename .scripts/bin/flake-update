@@ -2,7 +2,20 @@
 
 set -eu
 
-HM_OUTPUT=".#homeConfigurations.$(id -un).activationPackage"
+# Prefer a home-manager flake's activationPackage (the main dotfiles
+# flake); fall back to packages.<system>.default for any other flake (e.g.
+# nix/audio), which exists there for exactly this purpose.
+build_target() {
+	local hm_output=".#homeConfigurations.$(id -un).activationPackage"
+	if nix eval --impure --json "$hm_output" >/dev/null 2>&1; then
+		echo "$hm_output"
+		return
+	fi
+
+	local system
+	system=$(nix eval --impure --raw --expr 'builtins.currentSystem')
+	echo ".#packages.$system.default"
+}
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 	echo "Not inside a git repository, aborting." >&2
@@ -135,7 +148,9 @@ if [[ ${#INPUTS[@]} -eq 0 ]]; then
 	exit 1
 fi
 
-OLD_STORE_PATH=$(nix build --impure --show-trace --no-link --print-out-paths "$HM_OUTPUT")
+BUILD_TARGET=$(build_target)
+
+OLD_STORE_PATH=$(nix build --impure --show-trace --no-link --print-out-paths "$BUILD_TARGET")
 
 for input in "${INPUTS[@]}"; do
 	echo "Updating $input"
@@ -152,7 +167,7 @@ for input in "${INPUTS[@]}"; do
 done
 
 # Build the new output and get its store path.
-NEW_STORE_PATH=$(nix build --impure --show-trace --no-link --print-out-paths "$HM_OUTPUT")
+NEW_STORE_PATH=$(nix build --impure --show-trace --no-link --print-out-paths "$BUILD_TARGET")
 
 # Show package version changes.
 nix store diff-closures "$OLD_STORE_PATH" "$NEW_STORE_PATH"

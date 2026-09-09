@@ -2,8 +2,9 @@
   description = "ide";
 
   inputs = {
-    nixpkgs-audio.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-home.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+
+    audio.url = "path:./nix/audio";
 
     # Neovim plugins not in nixpkgs.
     nvim-plugin-tree-sitter-manager = {
@@ -60,13 +61,6 @@
       system = "x86_64-linux";
       username = builtins.getEnv "USER";
 
-      audiopkgs = import inputs.nixpkgs-audio {
-        inherit system;
-        config = {
-          allowUnfree = true;
-        };
-      };
-
       homepkgs = import inputs.nixpkgs-home {
         inherit system;
         config = {
@@ -74,8 +68,7 @@
         };
       };
 
-      audio = import ./nix/audio.nix { inherit audiopkgs homepkgs username; };
-      inherit (audio)
+      inherit (inputs.audio.packages.${system})
         winePkgs
         clapPlugins
         lv2Plugins
@@ -518,25 +511,23 @@
           xdg-desktop-portal-wlr
           xdg-desktop-portal-gtk
         ]
-        # Plugins, wine and yabridge come from nixpkgs-audio rather than
-        # nixpkgs-home (see nix/audio.nix) so REAPER works standalone,
-        # with no separate dev shell needed. Gated to audioHosts like
-        # audio.homeModule below, so non-audio hosts don't build/download
-        # any of it.
+        # Plugins, wine and yabridge come from the audio flake (nix/audio,
+        # its own flake with its own nixpkgs pin and lock file) rather than
+        # nixpkgs-home, so REAPER works standalone, with no separate dev
+        # shell needed. Gated to audioHosts like inputs.audio.homeModules.audio
+        # below, so non-audio hosts don't build/download any of it.
         ++ homepkgs.lib.optionals (builtins.elem hostname audioHosts) (
           winePkgs ++ clapPlugins ++ lv2Plugins ++ vst3Plugins
         );
 
-      # Roots for closurePositions below. nixpkgs-home is derived from the
-      # actual build output (home-manager's merged package list) rather than
-      # a hand-curated list, so newly added programs/packages are
-      # automatically included without maintenance. nixpkgs-audio has to be
-      # hand-curated instead, since its packages are just plain list entries
-      # merged into that same home.packages rather than a separate output of
-      # their own to derive it from.
+      # Roots for closurePositions below, derived from the actual build
+      # output (home-manager's merged package list) rather than a
+      # hand-curated list, so newly added programs/packages are
+      # automatically included without maintenance. The audio flake
+      # (nix/audio) tracks its own packageSets/closurePositions for its own
+      # nixpkgs pin.
       packageSets = {
         nixpkgs-home = self.homeConfigurations.${username}.config.home.packages;
-        nixpkgs-audio = winePkgs ++ clapPlugins ++ lv2Plugins ++ vst3Plugins;
       };
 
       # For each package set, the meta.position of every package plus its
@@ -587,7 +578,7 @@
           inputs.reaper-flake.homeModules.reaper
           inputs.plasma-manager.homeModules.plasma-manager
         ]
-        ++ homepkgs.lib.optional (builtins.elem hostname audioHosts) audio.homeModule
+        ++ homepkgs.lib.optional (builtins.elem hostname audioHosts) inputs.audio.homeModules.audio
         ++ [
           (
             {

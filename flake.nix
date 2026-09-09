@@ -664,6 +664,11 @@
 
                 initExtra = # bash
                   ''
+                    # Bash computes $HOSTNAME itself at startup but never exports
+                    # it; export it so child processes (e.g. nix eval in
+                    # flake.nix, for the audioHosts check) can see it too.
+                    export HOSTNAME
+
                     mkdir -p "$HOME/.local/state"
 
                     PROMPT_COMMAND=__prompt_command

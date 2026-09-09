@@ -82,6 +82,9 @@
         vst3Plugins
         ;
 
+      hostname = builtins.getEnv "HOSTNAME";
+      audioHosts = [ "probook" ];
+
       mozillaAddons = import inputs.firefox-addons { pkgs = homepkgs; };
       firefoxAddons = mozillaAddons.firefox-addons;
 
@@ -582,7 +585,9 @@
         modules = [
           inputs.reaper-flake.homeModules.reaper
           inputs.plasma-manager.homeModules.plasma-manager
-          audio.homeModule
+        ]
+        ++ homepkgs.lib.optional (builtins.elem hostname audioHosts) audio.homeModule
+        ++ [
           (
             {
               lib,

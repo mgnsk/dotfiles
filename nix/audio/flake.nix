@@ -18,21 +18,13 @@
       };
 
       audio = import ./audio.nix { inherit audiopkgs; };
-      inherit (audio)
-        winePkgs
-        clapPlugins
-        lv2Plugins
-        vst3Plugins
-        homeModule
-        ;
-
-      allPackages = winePkgs ++ clapPlugins ++ lv2Plugins ++ vst3Plugins;
+      inherit (audio) audioPkgs homeModule;
 
       # Roots for closurePositions below, hand-curated since these packages
       # are just plain list entries rather than a derivable module output
       # (unlike the main flake's nixpkgs-home set, which is derived from
       # home-manager's own merged package list).
-      packageSets.nixpkgs = allPackages;
+      packageSets.nixpkgs = audioPkgs;
 
       # For packageSets.nixpkgs, the meta.position of every package plus its
       # full transitive build closure, deduplicated by drvPath. Used by
@@ -78,7 +70,7 @@
       homeModules.audio = homeModule;
 
       packages.${system} = {
-        audioPkgs = allPackages;
+        inherit audioPkgs;
 
         # Not otherwise a single buildable output - exists so `flake-update`
         # (run from this directory) has something to build and
@@ -87,7 +79,7 @@
         # flake.
         default = audiopkgs.symlinkJoin {
           name = "audio";
-          paths = allPackages;
+          paths = audioPkgs;
         };
       };
     };

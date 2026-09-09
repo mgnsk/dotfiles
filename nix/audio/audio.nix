@@ -260,11 +260,12 @@ let
     };
   };
 
+  # Wine and yabridge. yabridge/yabridgectl are built from upstream git
+  # master (see yabridgeGitMaster/yabridgectlGitMaster above) rather than
+  # nixpkgs' packages, to get 32-bit bitbridge support back on a current
+  # Wine. Kept as its own list since homeModule also needs just these on
+  # REAPER's LD_LIBRARY_PATH (not the plugins below).
   winePkgs = [
-    # Wine and yabridge. yabridge/yabridgectl are built from upstream
-    # git master (see yabridgeGitMaster/yabridgectlGitMaster above)
-    # rather than nixpkgs' packages, to get 32-bit bitbridge support
-    # back on a current Wine.
     yabridgeGitMaster
     yabridgectlGitMaster
     bitbridgeWine
@@ -272,6 +273,9 @@ let
     audiopkgs.winetricks
   ];
 
+  # Kept apart from each other (rather than one plain list) since
+  # homeModule below wires each format into its own REAPER
+  # preferences.plugIns.<format>.searchPaths.
   clapPlugins = with audiopkgs; [
     airwin2rack
     surge-xt
@@ -289,14 +293,11 @@ let
   vst3Plugins = with audiopkgs; [
     chow-phaser
   ];
+
+  audioPkgs = winePkgs ++ clapPlugins ++ lv2Plugins ++ vst3Plugins;
 in
 {
-  inherit
-    winePkgs
-    clapPlugins
-    lv2Plugins
-    vst3Plugins
-    ;
+  inherit audioPkgs;
 
   homeModule =
     {
@@ -379,10 +380,7 @@ in
         pkgs.fluidsynth
         reaperNoNet
       ]
-      ++ winePkgs
-      ++ clapPlugins
-      ++ lv2Plugins
-      ++ vst3Plugins;
+      ++ audioPkgs;
 
       # Manages ~/.config/REAPER declaratively (theme, ReaPack, plugin
       # search paths). Plugin store paths (clapPlugins/lv2Plugins/

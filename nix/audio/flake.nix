@@ -353,24 +353,22 @@
             sha256 = "0zbjnrxbd0pzjf1ll8m94ji06spxv9yhmjmc7l4pw9nwcdw5gl4z";
           };
 
-          # nixpkgs' xwayland-satellite is on 0.8.2, which has a rendering
-          # regression: GPU-composited child/popup windows (WPF dropdowns,
-          # and - confirmed live here - DXVK-rendered wine VST GUIs like
-          # Xfer OTT) show as solid black instead of their real content.
-          # Reported and bisected upstream to 0.8.2 commit 3273a0f
-          # (github.com/Supreeeme/xwayland-satellite issue #468, open as
-          # of 2026-09), confirmed working on 0.8.1 and on real XWayland.
-          # Pinned back to 0.8.1 - still has the popup-position fix this
-          # was brought in for (issue #293) - until #468 is fixed
-          # upstream. Hashes are nixpkgs' own pre-bump ones, from the
-          # 0.8.1->0.8.2 version-bump commit (84702aa153).
-          # Unreleased commit past 0.8.2, fixing #468/#278 (popup focus
-          # handling) properly upstream instead of via the 0.8.1 pin
-          # this replaces. Does NOT fix the separate Vulkan/DXVK
-          # black-window bug (see xwayland-satellite-vulkan-issue.md) -
-          # that needs subsurface support satellite doesn't have yet -
-          # but is otherwise the best available base. Bump deliberately;
-          # re-pin to a tagged release once one exists past this commit.
+          # nixpkgs' xwayland-satellite (0.8.2 as of this writing) has a
+          # rendering regression - GPU-composited child/popup windows,
+          # including DXVK-rendered wine VST GUIs like Xfer OTT, showed
+          # as solid black instead of their real content - and pinning
+          # back to 0.8.1 alone wasn't enough either, since a separate
+          # bug (wine's nested Vulkan/GL "client window" never getting a
+          # Wayland surface of its own) also needed a fix that hadn't
+          # been tagged yet. Tracking this specific unreleased commit
+          # (post-0.8.2 main, fixing upstream issues #468/#278/#470 and
+          # whatever combination of the surrounding commits fixed the
+          # Vulkan black-window bug - see refactor.md's "Resolved"
+          # section for the full history and the not-fully-pinned-down
+          # "why") gets both fixed at once, confirmed live. Bump
+          # deliberately; re-pin to a proper tagged release once one
+          # exists past this commit (same caveat as yabridgeGitMaster's
+          # pin comment elsewhere in this file).
           xwaylandSatelliteSrc = audiopkgs.fetchFromGitHub {
             owner = "Supreeeme";
             repo = "xwayland-satellite";
@@ -415,12 +413,16 @@
           # popup positioning bug (ICCCM gives no reliable way to tell
           # a popup from a toplevel), which is what causes yabridge-hosted
           # Windows VST context/hover menus to render in the wrong place
-          # or not show at all under sway. xwayland-satellite fixed this
-          # exact bug in v0.8.1 (github.com/Supreeeme/xwayland-satellite
-          # issue #293). Running it as its own X display here - rather
-          # than replacing sway's XWayland session-wide - scopes the fix
-          # to REAPER's process tree only; every other app keeps using
-          # sway's normal XWayland untouched.
+          # or not show at all under sway. xwayland-satellite (see
+          # xwaylandSatelliteStable above) fixes this
+          # (github.com/Supreeeme/xwayland-satellite issue #293), and -
+          # as of the commit currently pinned above - also fixes a
+          # separate Vulkan/DXVK plugin-GUI black-window bug hit along
+          # the way (see refactor.md's "Resolved" section). Running it
+          # as its own X display here - rather than replacing sway's
+          # XWayland session-wide - scopes both fixes to REAPER's
+          # process tree only; every other app keeps using sway's
+          # normal XWayland untouched.
           reaperNoNet = pkgs.symlinkJoin {
             name = "reaper-no-net";
             paths = [ config.programs.reaper.package ];

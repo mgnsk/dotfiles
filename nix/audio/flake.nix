@@ -380,7 +380,7 @@
           # buildRustPackage's cargoDeps vendor derivation is bound to the
           # original finalAttrs.cargoHash, not the overridden one - so the
           # vendor directory has to be overridden directly instead.
-          xwaylandSatelliteStable = audiopkgs.xwayland-satellite.overrideAttrs (old: {
+          xwaylandSatellite = audiopkgs.xwayland-satellite.overrideAttrs (old: {
             version = "unstable-2026-09-09";
             src = xwaylandSatelliteSrc;
             cargoDeps = audiopkgs.rustPlatform.fetchCargoVendor {
@@ -414,7 +414,7 @@
           # a popup from a toplevel), which is what causes yabridge-hosted
           # Windows VST context/hover menus to render in the wrong place
           # or not show at all under sway. xwayland-satellite (see
-          # xwaylandSatelliteStable above) fixes this
+          # xwaylandSatellite above) fixes this
           # (github.com/Supreeeme/xwayland-satellite issue #293), and -
           # as of the commit currently pinned above - also fixes a
           # separate Vulkan/DXVK plugin-GUI black-window bug hit along
@@ -440,7 +440,7 @@
               }
 
               disp_num=$(find_free_display)
-              ${lib.escapeShellArg "${xwaylandSatelliteStable}/bin/xwayland-satellite"} ":$disp_num" &
+              ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" &
               satellite_pid=$!
               trap 'kill "$satellite_pid" 2>/dev/null' EXIT
 
@@ -474,7 +474,7 @@
             # Also used internally by reaperNoNet above; kept on PATH too
             # so it can be run/inspected by hand (RUST_LOG=debug
             # xwayland-satellite :N) when debugging the wrapper.
-            xwaylandSatelliteStable
+            xwaylandSatellite
           ]
           ++ audioPkgs;
 

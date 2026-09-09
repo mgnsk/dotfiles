@@ -520,11 +520,12 @@
         ]
         # Plugins, wine and yabridge come from nixpkgs-audio rather than
         # nixpkgs-home (see nix/audio.nix) so REAPER works standalone,
-        # with no separate dev shell needed.
-        ++ winePkgs
-        ++ clapPlugins
-        ++ lv2Plugins
-        ++ vst3Plugins;
+        # with no separate dev shell needed. Gated to audioHosts like
+        # audio.homeModule below, so non-audio hosts don't build/download
+        # any of it.
+        ++ homepkgs.lib.optionals (builtins.elem hostname audioHosts) (
+          winePkgs ++ clapPlugins ++ lv2Plugins ++ vst3Plugins
+        );
 
       # Roots for closurePositions below. nixpkgs-home is derived from the
       # actual build output (home-manager's merged package list) rather than

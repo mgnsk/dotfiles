@@ -68,12 +68,7 @@
         };
       };
 
-      inherit (inputs.audio.packages.${system})
-        winePkgs
-        clapPlugins
-        lv2Plugins
-        vst3Plugins
-        ;
+      inherit (inputs.audio.packages.${system}) audioPkgs;
 
       hostname = builtins.getEnv "HOSTNAME";
       audioHosts = [ "probook" ];
@@ -516,9 +511,7 @@
         # nixpkgs-home, so REAPER works standalone, with no separate dev
         # shell needed. Gated to audioHosts like inputs.audio.homeModules.audio
         # below, so non-audio hosts don't build/download any of it.
-        ++ homepkgs.lib.optionals (builtins.elem hostname audioHosts) (
-          winePkgs ++ clapPlugins ++ lv2Plugins ++ vst3Plugins
-        );
+        ++ homepkgs.lib.optionals (builtins.elem hostname audioHosts) audioPkgs;
 
       # Roots for closurePositions below, derived from the actual build
       # output (home-manager's merged package list) rather than a

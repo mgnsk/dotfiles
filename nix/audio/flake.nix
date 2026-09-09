@@ -78,12 +78,7 @@
       homeModules.audio = homeModule;
 
       packages.${system} = {
-        inherit
-          winePkgs
-          clapPlugins
-          lv2Plugins
-          vst3Plugins
-          ;
+        audioPkgs = allPackages;
 
         # Not otherwise a single buildable output - exists so `flake-update`
         # (run from this directory) has something to build and

@@ -2133,11 +2133,14 @@
               # rc.xml: Openbox's own compiled-in mouse defaults (see
               # bind_default_mouse() in openbox/config.c), restated because
               # supplying a <mouse> section at all wipes every default
-              # binding rather than overriding individual ones. The only
-              # change from stock is Frame drag: Alt+Left/Alt+Middle become
+              # binding rather than overriding individual ones. Two changes
+              # from stock: Frame drag moves from Alt+Left/Alt+Middle to
               # Super+Left/Super+Middle, so Alt+click/drag reaches clients
-              # (Reaper) untouched. Everything not listed here (keyboard,
-              # theme, focus, desktops, ...) is left at Openbox's defaults.
+              # (Reaper) untouched; and a Root context is added (absent from
+              # the compiled-in defaults) so right-click on the desktop still
+              # opens the root menu, per menu.xml below. Everything else
+              # (keyboard, theme, focus, desktops, ...) is left at Openbox's
+              # defaults.
               xdg.configFile."openbox/rc.xml".text = ''
                 <?xml version="1.0" encoding="UTF-8"?>
                 <openbox_config xmlns="http://openbox.org/3.4/rc">
@@ -2211,6 +2214,15 @@
                       </mousebind>
                       <mousebind button="W-Middle" action="Drag">
                         <action name="Resize"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Root">
+                      <mousebind button="Right" action="Press">
+                        <action name="ShowMenu"><menu>root-menu</menu></action>
+                      </mousebind>
+                      <mousebind button="Middle" action="Press">
+                        <action name="ShowMenu"><menu>client-list-combined-menu</menu></action>
                       </mousebind>
                     </context>
                   </mouse>

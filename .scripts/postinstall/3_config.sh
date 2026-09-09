@@ -144,6 +144,12 @@ cat <<-'EOF' | sudo tee /etc/sysctl.d/80-aio.conf >/dev/null
 	fs.aio-max-nr = 1048576
 EOF
 
+# Enable ntsync kernel module (Wine/Proton sync primitives).
+cat <<-'EOF' | sudo tee /etc/modules-load.d/ntsync.conf >/dev/null
+	ntsync
+EOF
+sudo modprobe ntsync
+
 # Enable bluetooth.
 sudo systemctl enable bluetooth
 

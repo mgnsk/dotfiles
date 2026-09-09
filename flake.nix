@@ -2130,6 +2130,93 @@
                 settings.Keywords = "screenshot;";
               };
 
+              # rc.xml: Openbox's own compiled-in mouse defaults (see
+              # bind_default_mouse() in openbox/config.c), restated because
+              # supplying a <mouse> section at all wipes every default
+              # binding rather than overriding individual ones. The only
+              # change from stock is Frame drag: Alt+Left/Alt+Middle become
+              # Super+Left/Super+Middle, so Alt+click/drag reaches clients
+              # (Reaper) untouched. Everything not listed here (keyboard,
+              # theme, focus, desktops, ...) is left at Openbox's defaults.
+              xdg.configFile."openbox/rc.xml".text = ''
+                <?xml version="1.0" encoding="UTF-8"?>
+                <openbox_config xmlns="http://openbox.org/3.4/rc">
+                  <mouse>
+                    <context name="Client Desktop">
+                      <mousebind button="Left Middle Right" action="Press">
+                        <action name="Focus"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Titlebar Bottom BLCorner BRCorner TLCorner TRCorner Close Maximize Iconify Icon AllDesktops Shade">
+                      <mousebind button="Left" action="Press">
+                        <action name="Focus"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Client Titlebar BLCorner BRCorner TLCorner TRCorner Close Maximize Iconify Icon AllDesktops Shade">
+                      <mousebind button="Left" action="Click">
+                        <action name="Raise"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Titlebar">
+                      <mousebind button="Middle" action="Click">
+                        <action name="Lower"/>
+                      </mousebind>
+                      <mousebind button="Left" action="Drag">
+                        <action name="Move"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Close">
+                      <mousebind button="Left" action="Click">
+                        <action name="Close"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Maximize">
+                      <mousebind button="Left" action="Click">
+                        <action name="ToggleMaximize"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Iconify">
+                      <mousebind button="Left" action="Click">
+                        <action name="Iconify"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="AllDesktops">
+                      <mousebind button="Left" action="Click">
+                        <action name="ToggleOmnipresent"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Shade">
+                      <mousebind button="Left" action="Click">
+                        <action name="ToggleShade"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="TLCorner TRCorner BLCorner BRCorner Top Bottom Left Right">
+                      <mousebind button="Left" action="Drag">
+                        <action name="Resize"/>
+                      </mousebind>
+                    </context>
+
+                    <context name="Frame">
+                      <mousebind button="W-Left" action="Drag">
+                        <action name="Move"/>
+                      </mousebind>
+                      <mousebind button="W-Middle" action="Drag">
+                        <action name="Resize"/>
+                      </mousebind>
+                    </context>
+                  </mouse>
+                </openbox_config>
+              '';
+
               # jgmenu (github.com/jgmenu/jgmenu) replaces obmenu-generator:
               # right-click on the desktop still opens this static Openbox
               # pipe-menu (unchanged rc.xml/mousebind), but its one entry now

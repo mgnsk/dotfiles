@@ -570,12 +570,235 @@
         '';
       };
 
-      winePkgs = with audiopkgs; [
-        # Wine and yabridge.
-        yabridge
-        yabridgectl
-        wineWow64Packages.yabridge
-        winetricks
+      # Wine 11.16 in classic wine32+wine64 split mode (wineWow, as opposed
+      # to the merged WoW64 build nixpkgs exposes by default). yabridge's
+      # bitbridge (32-bit host support) only compiles against the classic
+      # split - see yabridge upstream issue #435 for the WoW64
+      # incompatibility - so this is what yabridgeGitMaster below is built
+      # against.
+      bitbridgeWine = audiopkgs.wine.override {
+        wineBuild = "wineWow";
+        wineRelease = "staging";
+      };
+
+      # yabridge built from upstream git master instead of nixpkgs' package,
+      # because nixpkgs' pkgs/by-name/ya/yabridge hardcodes
+      # -Dbitbridge=false and patches libyabridge to drop 32-bit support
+      # entirely. Modeled on that package.nix (as of nixpkgs-audio rev
+      # c043004d1c) minus libyabridge-drop-32-bit-support.patch, with
+      # bitbridge re-enabled and built against bitbridgeWine above.
+      #
+      # Pin: git master as of 2026-08-02 (commit b580a9f). This tracks an
+      # unreleased commit, not a tagged release - bump deliberately, and
+      # re-check that the reused nixpkgs patches (in
+      # ./nix/yabridge-git-master/) still apply when bumping.
+      yabridgeGitMaster =
+        let
+          wine = bitbridgeWine;
+
+          # Derived from subprojects/asio.wrap
+          asio = audiopkgs.fetchFromGitHub {
+            owner = "chriskohlhoff";
+            repo = "asio";
+            tag = "asio-1-28-2";
+            hash = "sha256-8Sw0LuAqZFw+dxlsTstlwz5oaz3+ZnKBuvSdLW6/DKQ=";
+          };
+
+          # Derived from subprojects/bitsery.wrap
+          bitsery = audiopkgs.fetchFromGitHub {
+            owner = "fraillt";
+            repo = "bitsery";
+            tag = "v5.2.3";
+            hash = "sha256-rmfcIYCrANycFuLtibQ5wOPwpMVhpTMpdGsUfpR3YsM=";
+          };
+
+          # Derived from subprojects/clap.wrap
+          clap = audiopkgs.fetchFromGitHub {
+            owner = "free-audio";
+            repo = "clap";
+            tag = "1.1.9";
+            hash = "sha256-z2P0U2NkDK1/5oDV35jn/pTXCcspuM1y2RgZyYVVO3w=";
+          };
+
+          # Derived from subprojects/function2.wrap
+          function2 = audiopkgs.fetchFromGitHub {
+            owner = "Naios";
+            repo = "function2";
+            tag = "4.2.3";
+            hash = "sha256-+fzntJn1fRifOgJhh5yiv+sWR9pyaeeEi2c1+lqX3X8=";
+          };
+
+          # Derived from subprojects/ghc_filesystem.wrap
+          ghc_filesystem = audiopkgs.fetchFromGitHub {
+            owner = "gulrak";
+            repo = "filesystem";
+            tag = "v1.5.14";
+            hash = "sha256-XZ0IxyNIAs2tegktOGQevkLPbWHam/AOFT+M6wAWPFg=";
+          };
+
+          # Derived from subprojects/tomlplusplus.wrap
+          tomlplusplus = audiopkgs.fetchFromGitHub {
+            owner = "marzer";
+            repo = "tomlplusplus";
+            tag = "v3.4.0";
+            hash = "sha256-h5tbO0Rv2tZezY58yUbyRVpsfRjY3i+5TPkkxr6La8M=";
+          };
+
+          # Derived from vst3.wrap
+          vst3 = audiopkgs.fetchFromGitHub {
+            owner = "robbert-vdh";
+            repo = "vst3sdk";
+            tag = "v3.7.7_build_19-patched";
+            fetchSubmodules = true;
+            hash = "sha256-LsPHPoAL21XOKmF1Wl/tvLJGzjaCLjaDAcUtDvXdXSU=";
+          };
+        in
+        audiopkgs.multiStdenv.mkDerivation {
+          pname = "yabridge";
+          version = "git-b580a9f-2026-08-02";
+
+          src = audiopkgs.fetchFromGitHub {
+            owner = "robbert-vdh";
+            repo = "yabridge";
+            rev = "b580a9f7fc46509767ca156d4f92872552b9e571";
+            hash = "sha256-TiKiyE3GZYCX1+vooHdD03fAhNQPAA1IzTfkG++I7TY=";
+          };
+
+          # Unpack subproject sources
+          postUnpack = ''
+            (
+              cd "$sourceRoot/subprojects"
+              cp -R --no-preserve=mode,ownership ${asio} asio
+              cp -R --no-preserve=mode,ownership ${bitsery} bitsery
+              cp -R --no-preserve=mode,ownership ${clap} clap
+              cp -R --no-preserve=mode,ownership ${function2} function2
+              cp -R --no-preserve=mode,ownership ${ghc_filesystem} ghc_filesystem
+              cp -R --no-preserve=mode,ownership ${tomlplusplus} tomlplusplus
+              cp -R --no-preserve=mode,ownership ${vst3} vst3
+            )
+          '';
+
+          patches = [
+            # Hard code bitbridge & runtime dependencies. Uses the older,
+            # bitbridge-aware revision of this patch (from nixpkgs commit
+            # 7d91ec6c, the last commit where nixpkgs still built bitbridge)
+            # rather than the current one, which dropped the libxcb32
+            # substitution once nixpkgs stopped building bitbridge.
+            (audiopkgs.replaceVars ./nix/yabridge-git-master/hardcode-dependencies.patch {
+              libdbus = audiopkgs.dbus.lib;
+              libxcb32 = audiopkgs.pkgsi686Linux.libxcb;
+              inherit wine;
+            })
+
+            # Patch the chainloader to search for libyabridge through NIX_PROFILES
+            ./nix/yabridge-git-master/libyabridge-from-nix-profiles.patch
+          ];
+
+          postPatch = ''
+            patchShebangs .
+            (
+              cd subprojects
+              cp packagefiles/asio/* asio
+              cp packagefiles/bitsery/* bitsery
+              cp packagefiles/clap/* clap
+              cp packagefiles/function2/* function2
+              cp packagefiles/ghc_filesystem/* ghc_filesystem
+            )
+          '';
+
+          nativeBuildInputs = [
+            audiopkgs.meson
+            audiopkgs.ninja
+            audiopkgs.pkg-config
+            wine
+          ];
+
+          buildInputs = [
+            audiopkgs.libxcb
+            audiopkgs.dbus
+          ];
+
+          mesonFlags = [
+            "--cross-file"
+            "cross-wine.conf"
+            "-Dbitbridge=true"
+
+            # Requires CMake and is unnecessary
+            "-Dtomlplusplus:generate_cmake_config=false"
+          ];
+
+          installPhase = ''
+            runHook preInstall
+            mkdir -p "$out/bin" "$out/lib"
+            cp yabridge-host.exe{,.so} "$out/bin"
+            cp yabridge-host-32.exe{,.so} "$out/bin"
+            cp libyabridge{,-chainloader}-{vst2,vst3,clap}.so "$out/lib"
+            runHook postInstall
+          '';
+
+          # Hard code wine path in wrapper scripts generated by winegcc
+          postFixup = ''
+            for exe in "$out"/bin/*.exe; do
+              substituteInPlace "$exe" \
+                --replace-fail 'WINELOADER="wine"' 'WINELOADER="${wine}/bin/wine"'
+            done
+          '';
+
+          meta = {
+            description = "Modern and transparent way to use Windows VST2 and VST3 plugins on Linux (git master, bitbridge re-enabled)";
+            homepage = "https://github.com/robbert-vdh/yabridge";
+            license = audiopkgs.lib.licenses.gpl3Plus;
+            platforms = [ "x86_64-linux" ];
+          };
+        };
+
+      yabridgectlGitMaster = audiopkgs.rustPlatform.buildRustPackage {
+        pname = "yabridgectl";
+        version = yabridgeGitMaster.version;
+
+        src = yabridgeGitMaster.src;
+        sourceRoot = "${yabridgeGitMaster.src.name}/tools/yabridgectl";
+
+        # Matches nixpkgs' pinned cargoHash: tools/yabridgectl/Cargo.lock is
+        # unchanged between the 5.1.1 tag and this git master pin. Re-check
+        # (and let the build tell you the correct hash) when bumping the pin.
+        cargoHash = "sha256-VcBQxKjjs9ESJrE4F1kxEp4ah3j9jiNPq/Kdz/qPvro=";
+
+        patches = [
+          # Patch yabridgectl to search for the chainloader through NIX_PROFILES
+          ./nix/yabridge-git-master/chainloader-from-nix-profiles.patch
+
+          # Dependencies are hardcoded in yabridge, so the check is unnecessary and likely incorrect
+          ./nix/yabridge-git-master/remove-dependency-verification.patch
+        ];
+
+        patchFlags = [ "-p3" ];
+
+        nativeBuildInputs = [ audiopkgs.makeWrapper ];
+
+        postFixup = ''
+          wrapProgram "$out/bin/yabridgectl" \
+            --prefix PATH : ${audiopkgs.lib.makeBinPath [ yabridgeGitMaster ]}
+        '';
+
+        meta = {
+          description = "Small, optional utility to help set up and update yabridge for several directories at once";
+          homepage = "https://github.com/robbert-vdh/yabridge/tree/${yabridgeGitMaster.version}/tools/yabridgectl";
+          license = audiopkgs.lib.licenses.gpl3Plus;
+          platforms = yabridgeGitMaster.meta.platforms;
+          mainProgram = "yabridgectl";
+        };
+      };
+
+      winePkgs = [
+        # Wine and yabridge. yabridge/yabridgectl are built from upstream
+        # git master (see yabridgeGitMaster/yabridgectlGitMaster above)
+        # rather than nixpkgs' packages, to get 32-bit bitbridge support
+        # back on a current Wine.
+        yabridgeGitMaster
+        yabridgectlGitMaster
+        bitbridgeWine
+        audiopkgs.winetricks
       ];
 
       clapPlugins = with audiopkgs; [
@@ -760,7 +983,7 @@
               # `nix develop`, so REAPER works standalone.
               home.activation.audioWinePrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] (
                 let
-                  wineBinPath = audiopkgs.lib.makeBinPath (winePkgs ++ [ audiopkgs.wineWow64Packages.yabridge ]);
+                  wineBinPath = audiopkgs.lib.makeBinPath (winePkgs ++ [ bitbridgeWine ]);
                   winPlugins = "/home/${username}/Shared/Audio/win-plugins";
                 in
                 # bash
@@ -772,7 +995,7 @@
                   # fresh login shell, not in the shell that invoked this
                   # activation script, so yabridgectl (used below) can't find
                   # its own libyabridge-chainloader-*.so without this too.
-                  export NIX_PROFILES=${audiopkgs.lib.escapeShellArg audiopkgs.yabridge}" $NIX_PROFILES"
+                  export NIX_PROFILES=${audiopkgs.lib.escapeShellArg yabridgeGitMaster}" $NIX_PROFILES"
 
                   # Needed for some Windows VST plugins (dxvk) and Guitar Pro 5 (gdiplus).
                   if [ ! -d "$WINEPREFIX" ]; then
@@ -870,7 +1093,7 @@
                 # Without it, yabridge's chainloader .so files can't find
                 # libyabridge-{vst2,vst3}.so at runtime and every bridged
                 # plugin fails to load in REAPER.
-                NIX_PROFILES = "${audiopkgs.yabridge} $NIX_PROFILES";
+                NIX_PROFILES = "${yabridgeGitMaster} $NIX_PROFILES";
               };
 
               programs.home-manager.enable = true;

@@ -368,6 +368,21 @@
           # Pass `--net` as the first argument (e.g. `reaper --net`) to
           # skip the namespace and get a normal, internet-connected
           # REAPER for one run - useful for a ReaPack sync or similar.
+          #
+          # Also starts a private xwayland-satellite instance on a spare
+          # X display and points only this REAPER invocation at it via
+          # $DISPLAY (inherited by wine, the yabridge host and every
+          # plugin GUI it spawns) - see refactor.md for the full writeup.
+          # sway's own built-in XWayland has an unresolved override-redirect
+          # popup positioning bug (ICCCM gives no reliable way to tell
+          # a popup from a toplevel), which is what causes yabridge-hosted
+          # Windows VST context/hover menus to render in the wrong place
+          # or not show at all under sway. xwayland-satellite fixed this
+          # exact bug in v0.8.1 (github.com/Supreeeme/xwayland-satellite
+          # issue #293). Running it as its own X display here - rather
+          # than replacing sway's XWayland session-wide - scopes the fix
+          # to REAPER's process tree only; every other app keeps using
+          # sway's normal XWayland untouched.
           reaperNoNet = pkgs.symlinkJoin {
             name = "reaper-no-net";
             paths = [ config.programs.reaper.package ];
@@ -375,11 +390,34 @@
               rm -f "$out/bin/reaper"
               cat > "$out/bin/reaper" <<'EOF'
               #!${pkgs.runtimeShell}
+
+              find_free_display() {
+                n=50
+                while [ -S "/tmp/.X11-unix/X$n" ] || [ -e "/tmp/.X$n-lock" ]; do
+                  n=$((n + 1))
+                done
+                echo "$n"
+              }
+
+              disp_num=$(find_free_display)
+              ${lib.escapeShellArg "${audiopkgs.xwayland-satellite}/bin/xwayland-satellite"} ":$disp_num" &
+              satellite_pid=$!
+              trap 'kill "$satellite_pid" 2>/dev/null' EXIT
+
+              i=0
+              while [ ! -S "/tmp/.X11-unix/X$disp_num" ] && [ "$i" -lt 100 ]; do
+                sleep 0.05
+                i=$((i + 1))
+              done
+
+              export DISPLAY=":$disp_num"
+
               if [ "$1" = "--net" ]; then
                 shift
-                exec ${lib.escapeShellArg "${config.programs.reaper.package}/bin/reaper"} "$@"
+                ${lib.escapeShellArg "${config.programs.reaper.package}/bin/reaper"} "$@"
+                exit $?
               fi
-              exec ${lib.escapeShellArg "${pkgs.util-linux}/bin/unshare"} --net --map-current-user -- ${lib.escapeShellArg "${config.programs.reaper.package}/bin/reaper"} "$@"
+              ${lib.escapeShellArg "${pkgs.util-linux}/bin/unshare"} --net --map-current-user -- ${lib.escapeShellArg "${config.programs.reaper.package}/bin/reaper"} "$@"
               EOF
               chmod +x "$out/bin/reaper"
             '';
@@ -393,6 +431,10 @@
             pkgs.qjackctl
             pkgs.fluidsynth
             reaperNoNet
+            # Also used internally by reaperNoNet above; kept on PATH too
+            # so it can be run/inspected by hand (RUST_LOG=debug
+            # xwayland-satellite :N) when debugging the wrapper.
+            audiopkgs.xwayland-satellite
           ]
           ++ audioPkgs;
 
@@ -535,6 +577,19 @@
                 no_verify = false;
                 blacklist = [ ];
               };
+
+          # yabridge searches for this file starting in the plugin's own
+          # directory and walking up parents, so placing it at the root of
+          # win-plugins/Plugins applies it to every bridged plugin.
+          home.file."Shared/Audio/win-plugins/Plugins/yabridge.toml".text = ''
+            # =====================================================================
+            # GLOBAL CONFIGURATION (Applies to all plugins)
+            # =====================================================================
+            ["*"]
+            # Force the plugin UI to open as a free-floating, detached desktop window.
+            # Options are: "embedded" (default Xembed) or "detached"
+            editor_type = "detached"
+          '';
 
           home.file."Shared/Audio/win-plugins/custom.reg".text = ''
             Windows Registry Editor Version 5.00

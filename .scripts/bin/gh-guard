@@ -121,6 +121,16 @@ def gh_api_is_read_only(args):
         an arbitrary request body, including a GraphQL query/mutation via
         `gh api graphql -f query=...` - the only way to put a body on that
         endpoint at all, so also caught again below by the graphql check.
+        The one exception is the REST Search endpoints (GET/HEAD
+        `search` or `search/...`, e.g. `search/issues`): per GitHub's
+        docs (docs.github.com/en/rest/search/search) that whole resource
+        is read-only - there is no mutating operation under `/search` -
+        and gh's own documented pattern for passing `q=` search syntax is
+        `-f`/`-F`, which gh sends as a URL query string rather than a
+        body as long as the method is explicitly GET/HEAD (omitting -X
+        makes gh default to POST instead, which doesn't work against
+        search's GET-only endpoints, so that case is still rejected below
+        by the method check).
       - --hostname, or an endpoint that is itself an absolute URL
         (scheme://...): gh will dial straight out to any host named this
         way - confirmed locally for both forms, including that a bare
@@ -210,14 +220,21 @@ def gh_api_is_read_only(args):
 
     if positional_count != 1 or endpoint is None:
         return False
-    if has_body_flag or has_hostname_flag:
+    if has_hostname_flag:
         return False
     if "://" in endpoint:
         return False
     normalized_endpoint = endpoint.lstrip("/").lower()
     if normalized_endpoint == "graphql" or normalized_endpoint.startswith("graphql/"):
         return False
-    if method is not None and method not in ("GET", "HEAD"):
+    is_search_endpoint = normalized_endpoint == "search" or normalized_endpoint.startswith("search/")
+    if has_body_flag and not is_search_endpoint:
+        return False
+    # Absent -X, gh sends -f/-F as a POST body, not a GET query string -
+    # so an implicit method with a body flag must resolve to POST here to
+    # mirror what gh will actually put on the wire.
+    effective_method = method or ("POST" if has_body_flag else "GET")
+    if effective_method not in ("GET", "HEAD"):
         return False
     return True
 

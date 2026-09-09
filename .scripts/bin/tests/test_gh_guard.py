@@ -164,14 +164,31 @@ def test_is_read_only_rejects_gh_api_with_a_mutating_method(argv):
         ["api", "repos/x/y/issues", "--field", "body=hi"],
         ["api", "repos/x/y", "--input", "file.json"],
         ["api", "repos/x/y", "--input=file.json"],
-        # Documented pattern (send -f fields as a GET query string) - still
-        # requires confirmation, since it keeps the parser from having to
-        # also reason about field values.
-        ["api", "-X", "GET", "search/issues", "-f", "q=is:open"],
+        # search/* is the one endpoint family where a body flag doesn't
+        # disqualify - see test_is_read_only_allows_search_endpoint_field_queries.
+        ["api", "search/issues", "-f", "q=is:open"],  # no -X: gh defaults to POST
+        ["api", "-X", "POST", "search/issues", "-f", "q=is:open"],
     ],
 )
 def test_is_read_only_rejects_gh_api_with_a_body_flag(argv):
     assert gh_guard.is_read_only(argv) is False
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["api", "-X", "GET", "search/issues", "-f", "q=is:open"],
+        ["api", "--method", "GET", "search/issues", "-F", "q=is:open"],
+        ["api", "-X", "HEAD", "search/repositories", "-f", "q=lang:go"],
+        ["api", "-X", "GET", "/search/code", "-f", "q=foo"],
+        ["api", "-X", "GET", "SEARCH/issues", "-f", "q=is:open"],
+    ],
+)
+def test_is_read_only_allows_search_endpoint_field_queries(argv):
+    """GitHub's Search API is entirely read-only, and gh's documented way to
+    pass `q=` search syntax on it is -f/-F with an explicit GET/HEAD method,
+    which gh sends as a query string rather than a body."""
+    assert gh_guard.is_read_only(argv) is True
 
 
 @pytest.mark.parametrize(

@@ -364,11 +364,18 @@
           # was brought in for (issue #293) - until #468 is fixed
           # upstream. Hashes are nixpkgs' own pre-bump ones, from the
           # 0.8.1->0.8.2 version-bump commit (84702aa153).
-          xwaylandSatellite081Src = audiopkgs.fetchFromGitHub {
+          # Unreleased commit past 0.8.2, fixing #468/#278 (popup focus
+          # handling) properly upstream instead of via the 0.8.1 pin
+          # this replaces. Does NOT fix the separate Vulkan/DXVK
+          # black-window bug (see xwayland-satellite-vulkan-issue.md) -
+          # that needs subsurface support satellite doesn't have yet -
+          # but is otherwise the best available base. Bump deliberately;
+          # re-pin to a tagged release once one exists past this commit.
+          xwaylandSatelliteSrc = audiopkgs.fetchFromGitHub {
             owner = "Supreeeme";
             repo = "xwayland-satellite";
-            tag = "v0.8.1";
-            hash = "sha256-BUE41HjLIGPjq3U8VXPjf8asH8GaMI7FYdgrIHKFMXA=";
+            rev = "add2795134593faafce60e404a0a75df68e9ee0c";
+            hash = "sha256-0TxfMgqW0/BLD4M942c5DCKYrtPvzsPJwvdcco4LQUM=";
           };
 
           # cargoHash alone doesn't propagate through overrideAttrs here -
@@ -376,11 +383,11 @@
           # original finalAttrs.cargoHash, not the overridden one - so the
           # vendor directory has to be overridden directly instead.
           xwaylandSatelliteStable = audiopkgs.xwayland-satellite.overrideAttrs (old: {
-            version = "0.8.1";
-            src = xwaylandSatellite081Src;
+            version = "unstable-2026-09-09";
+            src = xwaylandSatelliteSrc;
             cargoDeps = audiopkgs.rustPlatform.fetchCargoVendor {
-              src = xwaylandSatellite081Src;
-              hash = "sha256-16L6gsvze+m7XCJlOA1lsPNELE3D364ef2FTdkh0rVY=";
+              src = xwaylandSatelliteSrc;
+              hash = "sha256-s1gl9eR6Mt2QLrhfcowstPFjzwE/lz4PJhJzWYHoIHg=";
             };
           });
 

@@ -2603,6 +2603,10 @@
                   {
                     attribution.sessionUrl = false;
                     env.DISABLE_AUTOUPDATER = 1;
+                    permissions.allow = [
+                      "mcp__mcp-nixos__nix"
+                      "mcp__mcp-nixos__nix_versions"
+                    ];
                   };
 
               home.file.".config/yabridgectl/config.toml".source =

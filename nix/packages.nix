@@ -58,7 +58,6 @@ let
     [
       # General.
       asciinema
-      bash
       bash-completion
       bat
       buf
@@ -77,7 +76,6 @@ let
       gcc
       gh
       gh-tpl
-      git
       glibcLocalesUtf8
       glow
       gnugrep
@@ -231,11 +229,8 @@ let
       noto-fonts-lgc-plus
 
       # Sway companions (sway itself comes from wayland.windowManager.sway.enable).
-      swayidle
-      swaynotificationcenter
       j4-dmenu-desktop
       wmenu
-      gammastep
       kdePackages.dolphin
       networkmanagerapplet
       blueman

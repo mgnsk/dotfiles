@@ -300,8 +300,6 @@ in
       keep-open = "yes";
       save-position-on-quit = "yes";
       force-seekable = "yes";
-      vo = "gpu-next";
-      gpu-api = "vulkan";
       volume = 100;
       volume-max = 100;
       script-opts = "ytdl_hook-ytdl_path=yt-dlp";

@@ -380,6 +380,32 @@
           # buildRustPackage's cargoDeps vendor derivation is bound to the
           # original finalAttrs.cargoHash, not the overridden one - so the
           # vendor directory has to be overridden directly instead.
+          #
+          # patches/xwayland-satellite-subsurface-embed.patch: the pin above
+          # turned out not to reliably fix the Vulkan/DXVK black-window bug -
+          # it's a timing race, not a deterministic regression (see
+          # refactor.md's "Correction" section below the original
+          # "Resolved" entry for the full live-debugging trail). Root cause,
+          # confirmed via RUST_LOG=debug on a failing run: satellite's
+          # ReparentNotify handler unconditionally destroys tracking for any
+          # window reparented to a non-root parent
+          # (src/xstate/mod.rs:handle_events). Wine's nested Vulkan/GL
+          # "client window" gets reparented into its plugin GUI's embedded
+          # HWND *before* that HWND itself gets reparented into REAPER's
+          # tracked container - so depending on timing, the child's window
+          # (and its DXVK-driven content) can already be destroyed by the
+          # time its ancestor is actually embedded. This patch adds a
+          # `SurfaceRole::Subsurface` role: such windows are tracked as
+          # pending instead of destroyed, and promoted to a real
+          # `wl_subsurface` of their parent's surface once that parent
+          # itself becomes a tracked, rendered window (cascading through
+          # multi-level chains). Includes two new tests
+          # (embedded_child_reparented_before_parent_ready,
+          # embedded_child_parent_already_ready) reproducing the exact
+          # event ordering from the failing session's log; all 83
+          # pre-existing tests still pass. Not yet upstreamed - this is a
+          # local, unverified-in-production fix; re-evaluate against
+          # upstream once xwayland-satellite has moved past this commit.
           xwaylandSatellite = audiopkgs.xwayland-satellite.overrideAttrs (old: {
             version = "unstable-2026-09-09";
             src = xwaylandSatelliteSrc;
@@ -387,6 +413,9 @@
               src = xwaylandSatelliteSrc;
               hash = "sha256-s1gl9eR6Mt2QLrhfcowstPFjzwE/lz4PJhJzWYHoIHg=";
             };
+            patches = (old.patches or [ ]) ++ [
+              ./patches/xwayland-satellite-subsurface-embed.patch
+            ];
           });
 
           # Wraps the reaper-flake launcher (config.programs.reaper.package,

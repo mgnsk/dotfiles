@@ -5,14 +5,18 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "path": "./nix/audio",
-        "type": "path"
+        "lastModified": 1789021103,
+        "narHash": "sha256-abcEKF88i+LTwddQyNlZWQLMhnJyUst5jqhjl4ZRjhg=",
+        "owner": "mgnsk",
+        "repo": "nix-audio-production",
+        "rev": "5712c2400ae7a53a2e856dea922f56102c7fbc9f",
+        "type": "github"
       },
       "original": {
-        "path": "./nix/audio",
-        "type": "path"
-      },
-      "parent": []
+        "owner": "mgnsk",
+        "repo": "nix-audio-production",
+        "type": "github"
+      }
     },
     "firefox-addons": {
       "flake": false,

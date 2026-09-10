@@ -469,7 +469,7 @@
               }
 
               disp_num=$(find_free_display)
-              RUST_LOG=debug ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
+              RUST_LOG=debug ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
               satellite_pid=$!
               trap 'kill "$satellite_pid" 2>/dev/null' EXIT
 

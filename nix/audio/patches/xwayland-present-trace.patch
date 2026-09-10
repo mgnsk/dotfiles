@@ -1,8 +1,8 @@
 diff --git i/hw/xwayland/xwayland-present.c w/hw/xwayland/xwayland-present.c
-index 7b9a4ac..f0e1883 100644
+index 7b9a4ac..dd9ff12 100644
 --- i/hw/xwayland/xwayland-present.c
 +++ w/hw/xwayland/xwayland-present.c
-@@ -1160,7 +1160,14 @@ retry:
+@@ -1160,7 +1160,16 @@ retry:
          else if (xwl_present_window->flip_active)
              xwl_present_flips_stop(window);
  
@@ -10,18 +10,20 @@ index 7b9a4ac..f0e1883 100644
 +               (unsigned) GetTimeInMillis(),
 +               (unsigned long) vblank->window->drawable.id,
 +               (unsigned long) vblank->pixmap->drawable.id);
++        fflush(stderr);
          present_execute_copy(vblank, crtc_msc);
 +        ErrorF("XWLTRACE %u present_execute copy done window=0x%lx\n",
 +               (unsigned) GetTimeInMillis(),
 +               (unsigned long) vblank->window->drawable.id);
++        fflush(stderr);
          assert(!vblank->queued);
  
          /* Set the copy_executed field, so this will fall through to present_execute_post next time */
 diff --git i/hw/xwayland/xwayland-screen.c w/hw/xwayland/xwayland-screen.c
-index c83adda..41cd68d 100644
+index c83adda..471ea97 100644
 --- i/hw/xwayland/xwayland-screen.c
 +++ w/hw/xwayland/xwayland-screen.c
-@@ -445,12 +445,19 @@ xwl_screen_post_damage(struct xwl_screen *xwl_screen)
+@@ -445,12 +445,21 @@ xwl_screen_post_damage(struct xwl_screen *xwl_screen)
                                    &xwl_screen->damage_window_list, link_damage) {
          /* If we're waiting on a frame callback from the server,
           * don't attach a new buffer. */
@@ -30,6 +32,7 @@ index c83adda..41cd68d 100644
 +            ErrorF("XWLTRACE %u post_damage SKIP (frame_callback pending) window=0x%lx\n",
 +                   (unsigned) GetTimeInMillis(),
 +                   (unsigned long) xwl_window->surface_window->drawable.id);
++            fflush(stderr);
              continue;
 +        }
  
@@ -39,14 +42,15 @@ index c83adda..41cd68d 100644
 +        ErrorF("XWLTRACE %u post_damage window=0x%lx\n",
 +               (unsigned) GetTimeInMillis(),
 +               (unsigned long) xwl_window->surface_window->drawable.id);
++        fflush(stderr);
          xwl_window_post_damage(xwl_window);
          xorg_list_del(&xwl_window->link_damage);
          xorg_list_append(&xwl_window->link_damage, &commit_window_list);
 diff --git i/hw/xwayland/xwayland-window-buffers.c w/hw/xwayland/xwayland-window-buffers.c
-index a470ef3..62b741f 100644
+index a470ef3..9b7c767 100644
 --- i/hw/xwayland/xwayland-window-buffers.c
 +++ w/hw/xwayland/xwayland-window-buffers.c
-@@ -412,6 +412,12 @@ xwl_window_swap_pixmap(struct xwl_window *xwl_window, Bool handle_sync)
+@@ -412,6 +412,13 @@ xwl_window_swap_pixmap(struct xwl_window *xwl_window, Bool handle_sync)
  #ifdef XWL_HAS_GLAMOR
          xwl_glamor_gbm_wait_syncpts(xwl_window_buffer->pixmap);
  #endif /* XWL_HAS_GLAMOR */
@@ -56,14 +60,15 @@ index a470ef3..62b741f 100644
 +               nBox,
 +               (unsigned long) window_pixmap->drawable.id,
 +               (unsigned long) xwl_window_buffer->pixmap->drawable.id);
++        fflush(stderr);
          while (nBox--) {
              copy_pixmap_area(window_pixmap,
                               xwl_window_buffer->pixmap,
 diff --git i/hw/xwayland/xwayland-window.c w/hw/xwayland/xwayland-window.c
-index 4a9a58a..79fcb80 100644
+index 4a9a58a..a4bed55 100644
 --- i/hw/xwayland/xwayland-window.c
 +++ w/hw/xwayland/xwayland-window.c
-@@ -304,6 +304,14 @@ damage_report(DamagePtr pDamage, RegionPtr pRegion, void *data)
+@@ -304,6 +304,15 @@ damage_report(DamagePtr pDamage, RegionPtr pRegion, void *data)
      if (!xwl_window)
          return;
  
@@ -73,16 +78,17 @@ index 4a9a58a..79fcb80 100644
 +               (unsigned) GetTimeInMillis(),
 +               (unsigned long) window->drawable.id,
 +               extents->x1, extents->y1, extents->x2, extents->y2);
++        fflush(stderr);
 +    }
 +
      if (xwl_window->surface_window_damage &&
          RegionNotEmpty(pRegion)) {
          if (!RegionNotEmpty(xwl_window->surface_window_damage))
 diff --git i/present/present_execute.c w/present/present_execute.c
-index 5253344..fa3e9d8 100644
+index 5253344..c4c73c0 100644
 --- i/present/present_execute.c
 +++ w/present/present_execute.c
-@@ -115,7 +115,14 @@ present_execute_copy(present_vblank_ptr vblank, uint64_t crtc_msc)
+@@ -115,7 +115,16 @@ present_execute_copy(present_vblank_ptr vblank, uint64_t crtc_msc)
          return;
      }
  
@@ -90,10 +96,12 @@ index 5253344..fa3e9d8 100644
 +           (unsigned) GetTimeInMillis(),
 +           (unsigned long) window->drawable.id,
 +           (unsigned long) vblank->pixmap->drawable.id);
++    fflush(stderr);
      present_copy_region(&window->drawable, vblank->pixmap, vblank->update, vblank->x_off, vblank->y_off);
 +    ErrorF("XWLTRACE %u present_copy_region done window=0x%lx\n",
 +           (unsigned) GetTimeInMillis(),
 +           (unsigned long) window->drawable.id);
++    fflush(stderr);
  
      /* present_copy_region sticks the region into a scratch GC,
       * which is then freed, freeing the region

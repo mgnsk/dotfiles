@@ -742,3 +742,113 @@ properly (file an issue/PR against `Supreeeme/xwayland-satellite` with the
 debug log evidence above, which is considerably more concrete than what was
 available when the "drafted but never filed" report from the 2026-09-09
 "Root cause" section would have contained).
+
+## Correction (2026-09-10, later same day): the subsurface patch doesn't fix it either - root cause is inside Xwayland itself
+
+The `SurfaceRole::Subsurface` patch above (committed, built, verified via unit
+tests against the exact reparent ordering from the original bug report) does
+**not** reliably fix OTT in practice - still intermittent after switching to
+it. This section is the live-debugging trail that pinned down why, using
+matched fail/success log pairs (same build, same patch, run back to back,
+each log copied out immediately after the run so they could be compared
+directly).
+
+### Ruled out, in order
+
+- **The repo split** (`nix/audio` → `github:mgnsk/nix-audio-production`):
+  byte-identical content before/after, confirmed by diff.
+- **A system mesa/vulkan-radeon update**: unchanged (`1:26.2.2-1`) since
+  before the bug was last "confirmed fixed".
+- **Prefix freshness, a fixed delay before adding the plugin, `wineserver`
+  persistence**: tested explicitly (including killing `wineserver` before
+  every launch); none reliably predicted the outcome. One anecdotal
+  observation (successful launches seemed to bring OTT's window up faster)
+  fit a race but wasn't independently actionable.
+- **Suspend/resume**: worked for the first 3-4 attempts, then stopped -
+  not a reliable lever either, despite initially looking like one.
+- **A GPU/DRM-level leak or corruption that suspend clears**: `journalctl -k
+  -b | grep amdgpu` across many suspend/resume cycles shows completely clean
+  resumes, no reset/timeout/VRAM warnings. Ruled out.
+- **The subsurface race itself**: confirmed via `RUST_LOG=debug` on the
+  patched build that the new `SurfaceRole::Subsurface` code path *does* run
+  correctly (windows get marked "tracking as subsurface candidate" instead
+  of destroyed, exactly as designed) - but this happens identically in
+  matched fail/success pairs. The patch's own log lines prove it isn't the
+  differentiator.
+
+### Matched log-pair comparison: three independent layers, zero difference
+
+Three separate diagnostic angles were tried, each on a fail/success pair
+captured back-to-back with the log copied out immediately after each run
+(since the `reaper` wrapper overwrites `~/.cache/xwayland-satellite-debug.log`
+on every launch):
+
+1. **`xwayland-satellite`'s own `RUST_LOG=debug` event trace.** The nested
+   Vulkan/DRI3 child window chain (`16777216` → `14680067`, matching DXVK's
+   reported `310x440` swapchain size) never gets a `wl_surface` association
+   in *either* the failing or the successful run - confirmed across three
+   independent test pairs. Whatever decides the outcome isn't reflected in
+   satellite's own window-tracking at all.
+2. **`DXVK_LOG_LEVEL=debug`, captured to a file alongside the satellite log.**
+   Byte-for-byte identical structure in both runs: same swapchain creation
+   at `310x440`, same benign EDID/colorimetry errors (present in both), same
+   ongoing Direct2D draw-call traffic, no Vulkan errors, no crashes. DXVK
+   genuinely believes it presented successfully either way.
+3. **Xwayland's own `-verbose 10`** (wired into the `reaper` wrapper's
+   `xwayland-satellite` invocation, forwarded to the actual `Xwayland`
+   process it spawns) **and `WAYLAND_DEBUG=1`** (logs every Wayland protocol
+   message Xwayland itself sends/receives as a Wayland client of the private
+   satellite instance). `-verbose 10` added only static extension-init
+   messages, identical between runs. `WAYLAND_DEBUG=1` was far more
+   revealing structurally (see below) but showed no *differing* protocol
+   traffic between the fail and success cases either.
+
+### The actual finding: the visible OTT window isn't the DRI3 child at all
+
+Reading the `WAYLAND_DEBUG=1` trace closely reframed the whole
+investigation. The window previously assumed to be "REAPER's generic
+floating FX container" (`4194654` / `4194899` / etc. in various runs, the
+one the nested Vulkan child gets reparented into) is not generic - it gets
+titled `"VST3: OTT (Xfer Records) - Master Track"` and becomes a completely
+normal `xdg_toplevel`: `xdg_wm_base.get_xdg_surface` → `get_toplevel` →
+`set_title` → buffer `attach`/`commit`, the standard path, succeeding
+identically in both logs.
+
+**This is the window that's actually shown on screen.** The nested
+`16777216`/`14680067` chain (which never gets an explicit `wl_surface`
+association, in any captured run, success or fail) is wine's internal
+DRI3/Vulkan rendering target, not a surface Wayland ever composites
+directly. Under plain X11, a child window's content is simply visible
+within its parent by ordinary window-stacking - no protocol-level tracking
+needed. Xwayland has to replicate that for Wayland by having its *own*
+internal compositing manager (the X Composite extension + glamor's
+presentation code, not `xwayland-satellite`, not visible in the Wayland
+protocol trace) flatten the whole window subtree - ancestor plus the
+DRI3-rendered nested child - into the single buffer it hands over for the
+ancestor's `wl_surface`.
+
+**Conclusion**: the actual bug is a timing race entirely inside Xwayland's
+own C code, between DRI3/Present frame-readiness on the nested child window
+and whenever Xwayland's internal compositor takes its snapshot to build the
+ancestor's presented frame. This is consistent with every piece of evidence
+gathered: `xwayland-satellite`'s tracking, DXVK's log, and Xwayland's own
+extension/protocol-level logging all show success in both cases, because
+each of those layers *does* succeed regardless of the outcome - the failure
+happens one level lower, in glamor/Composite's own buffer-flattening, which
+none of the available logging surfaces at all.
+
+**This is out of scope for `xwayland-satellite`.** The subsurface patch
+(`nix/audio/patches/xwayland-satellite-subsurface-embed.patch`) is a real,
+tested fix for a real bug (satellite's own destroy-on-reparent race) - kept
+in place since it's harmless and may matter for some other case - but it
+was never going to fix this, since satellite never gets a chance to act on
+the nested child window either way.
+
+**Next step** (in progress): digging into Xwayland's own C source (the
+`composite` extension and glamor's Present/DRI3 integration in `xserver`)
+to find and potentially patch the actual race. This is a materially bigger
+undertaking than anything above - an unfamiliar, large C codebase, with no
+guarantee of a fixable result in reasonable time. TTY2 Xorg/Openbox/tint2
+(see the top of this document) remains the fallback if this doesn't pan
+out; it sidesteps the problem entirely since it has no Xwayland/Wayland
+bridging layer at all.

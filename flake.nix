@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs-home.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-    audio.url = "github:mgnsk/nix-audio-production";
+    audio.url = "path:./nix/audio"; # TEMP: local override for debugging, see refactor.md
 
     # Neovim plugins not in nixpkgs.
     nvim-plugin-tree-sitter-manager = {

@@ -20,7 +20,7 @@ index 7b9a4ac..dd9ff12 100644
  
          /* Set the copy_executed field, so this will fall through to present_execute_post next time */
 diff --git i/hw/xwayland/xwayland-screen.c w/hw/xwayland/xwayland-screen.c
-index c83adda..471ea97 100644
+index c83adda..a2dd96f 100644
 --- i/hw/xwayland/xwayland-screen.c
 +++ w/hw/xwayland/xwayland-screen.c
 @@ -445,12 +445,21 @@ xwl_screen_post_damage(struct xwl_screen *xwl_screen)
@@ -46,6 +46,15 @@ index c83adda..471ea97 100644
          xwl_window_post_damage(xwl_window);
          xorg_list_del(&xwl_window->link_damage);
          xorg_list_append(&xwl_window->link_damage, &commit_window_list);
+@@ -693,6 +702,8 @@ block_handler(void *data, void *timeout)
+ {
+     struct xwl_screen *xwl_screen = data;
+ 
++    ErrorF("XWLTRACE %u block_handler\n", (unsigned) GetTimeInMillis());
++    fflush(stderr);
+     xwl_screen_post_damage(xwl_screen);
+ #ifdef XWL_HAS_LIBDECOR
+     if (xwl_screen->libdecor_context) {
 diff --git i/hw/xwayland/xwayland-window-buffers.c w/hw/xwayland/xwayland-window-buffers.c
 index a470ef3..9b7c767 100644
 --- i/hw/xwayland/xwayland-window-buffers.c

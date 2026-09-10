@@ -113,7 +113,6 @@ let
 
       # Desktop and file management.
       arandr
-      ark
       baobab
       geany
       glances
@@ -121,6 +120,7 @@ let
       grim
       gthumb
       iotop
+      kdePackages.ark
       kdePackages.ffmpegthumbs
       kdePackages.kde-cli-tools
       kdePackages.kdegraphics-thumbnailers

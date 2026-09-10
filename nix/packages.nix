@@ -149,7 +149,6 @@ let
       handbrake
       inkscape
       picard
-      smplayer
       vmpk
       whipper
       yt-dlp

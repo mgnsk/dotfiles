@@ -418,6 +418,35 @@
             ];
           });
 
+          # TEMP debugging build: the subsurface patch above didn't fix the
+          # OTT/DXVK black-window bug after all - matched fail/success
+          # RUST_LOG=debug + DXVK_LOG_LEVEL=debug + WAYLAND_DEBUG=1 log
+          # pairs show every layer (xwayland-satellite's own tracking,
+          # DXVK, Xwayland's own protocol traffic) succeeding identically
+          # in both cases. See refactor.md's "later same day" correction -
+          # the actual visible OTT window is the embedded HWND ancestor
+          # (gets its own xdg_toplevel + the plugin's title), not the
+          # nested DRI3/Vulkan child satellite was never tracking anyway,
+          # so the bug must be inside Xwayland's own compositing (the
+          # Present copy-fallback path forced by the child/toplevel size
+          # mismatch, at xwayland-present.c:792, plus whatever turns that
+          # copied content into an actual commit). Adds ErrorF tracing
+          # (prefixed "XWLTRACE") at the specific points identified by
+          # reading Xwayland's source: xwl_present_execute's flip->copy
+          # fallback, present_execute_copy (generic Present code), the
+          # window-buffer swap/copy in xwl_window_swap_pixmap, the
+          # frame_callback-gated commit decision in xwl_screen_post_damage,
+          # and damage_report. Deliberately scoped to *only* the private
+          # xwayland-satellite instance the reaper wrapper spawns (via a
+          # PATH override right before that exec, below) - sway's own
+          # built-in XWayland and everything else keeps using the normal
+          # nixpkgs xwayland package untouched.
+          xwaylandTraced = audiopkgs.xwayland.overrideAttrs (old: {
+            patches = (old.patches or [ ]) ++ [
+              ./patches/xwayland-present-trace.patch
+            ];
+          });
+
           # Wraps the reaper-flake launcher (config.programs.reaper.package,
           # the one that already injects -cfgfile) in `unshare --net
           # --map-current-user`, the same manual invocation used before
@@ -469,7 +498,13 @@
               }
 
               disp_num=$(find_free_display)
-              RUST_LOG=debug WAYLAND_DEBUG=1 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
+              # PATH is only modified for this one command (not exported to
+              # the rest of the script), so the traced Xwayland build is
+              # picked up solely by this private xwayland-satellite
+              # instance's own "Xwayland" child process spawn - sway's own
+              # built-in XWayland and everything else on the system keeps
+              # using the normal nixpkgs xwayland package.
+              PATH=${lib.escapeShellArg "${xwaylandTraced}/bin"}:"$PATH" RUST_LOG=debug WAYLAND_DEBUG=1 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
               satellite_pid=$!
               trap 'kill "$satellite_pid" 2>/dev/null' EXIT
 

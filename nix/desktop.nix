@@ -234,6 +234,27 @@ in
         $DRY_RUN_CMD /usr/bin/sudo install -Dm644 ${bravePolicyFile} /etc/brave/policies/managed/policy.json
       '';
 
+  # KDE apps (dolphin, ark, kde-cli-tools) resolve .desktop files, MIME
+  # associations and service types through KService's ksycoca cache
+  # rather than scanning the filesystem live, so newly (un)installed
+  # home-manager packages/xdg.desktopEntries don't show up in their
+  # menus/Open With dialogs until it's rebuilt. home-manager already
+  # runs update-desktop-database for XDG's own mimeapps cache, but has
+  # no equivalent for KDE's - do it ourselves after packages/desktop
+  # entries are actually in place.
+  #
+  # `kbuildsycoca6 --noincremental` alone wasn't enough to drop a
+  # removed package's entries (confirmed: it left a stale KFileItemActions
+  # entry for a removed app behind across 9 rebuilds/logins) - deleting
+  # the cache files and letting the next KDE app rebuild from scratch
+  # was what actually cleared it.
+  home.activation.kdeSycocaUpdate =
+    inputs.home-manager.lib.hm.dag.entryAfter [ "linkGeneration" "installPackages" ]
+      # bash
+      ''
+        $DRY_RUN_CMD rm -f "$HOME"/.cache/ksycoca6_*
+      '';
+
   programs.thunderbird = {
     enable = true;
     package = pkgs.thunderbird;

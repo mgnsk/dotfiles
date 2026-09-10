@@ -551,7 +551,25 @@
     # sway-session.target auto-ordering itself after them right
     # back.
     waybar.Unit.DefaultDependencies = false;
-    swayidle.Unit.DefaultDependencies = false;
+
+    # swayidle's vendor unit (home-manager's services.swayidle
+    # module) is PartOf=sway-session.target with Restart=always and
+    # no StartLimitBurst override, so it has the same restart-storm
+    # exposure as xdg-desktop-portal-wlr above: a sway socket churn
+    # (crash, session restart) pulls it down and restarts it before
+    # systemd --user's environment has caught up, burning through
+    # the default 5-in-10s budget in under a second and leaving it
+    # permanently failed until something starts it again - which is
+    # why `home-manager switch` sometimes reports swayidle.service
+    # failed on the first run (it's inheriting a stale failure from
+    # before this activation) and clean on the second (that run's
+    # own "Starting units" step already cleared it).
+    swayidle.Unit = {
+      DefaultDependencies = false;
+      StartLimitIntervalSec = 30;
+      StartLimitBurst = 5;
+    };
+    swayidle.Service.RestartSec = 2;
 
     network-manager-applet.Unit = {
       After = [ "wait-for-tray.service" ];

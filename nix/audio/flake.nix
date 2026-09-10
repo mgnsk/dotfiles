@@ -416,6 +416,24 @@
             patches = (old.patches or [ ]) ++ [
               ./patches/xwayland-satellite-subsurface-embed.patch
             ];
+            # Upstream's own postFixup does
+            # `wrapProgram $out/bin/xwayland-satellite --prefix PATH :
+            # "${lib.makeBinPath [ xwayland ]}"` (see nixpkgs'
+            # pkgs/by-name/xw/xwayland-satellite/package.nix) - this
+            # unconditionally re-prepends the *stock* xwayland onto PATH
+            # at wrapper-exec time, in front of whatever PATH the caller
+            # already set. That's why the reaper wrapper's own `PATH=...`
+            # override below was silently losing every time (confirmed
+            # live via readlink -f /proc/<pid>/exe on the actually-running
+            # Xwayland process, and by reading /proc/<pid>/environ for the
+            # xwayland-satellite process directly - both showed the stock
+            # store path ahead of the traced one). Overriding postFixup
+            # here to point the wrapper at xwaylandTraced instead is the
+            # actual fix, not another PATH trick at the call site.
+            postFixup = ''
+              wrapProgram $out/bin/xwayland-satellite \
+                --prefix PATH : "${lib.makeBinPath [ xwaylandTraced ]}"
+            '';
           });
 
           # TEMP debugging build: the subsurface patch above didn't fix the
@@ -498,13 +516,14 @@
               }
 
               disp_num=$(find_free_display)
-              # PATH is only modified for this one command (not exported to
-              # the rest of the script), so the traced Xwayland build is
-              # picked up solely by this private xwayland-satellite
-              # instance's own "Xwayland" child process spawn - sway's own
-              # built-in XWayland and everything else on the system keeps
-              # using the normal nixpkgs xwayland package.
-              PATH=${lib.escapeShellArg "${xwaylandTraced}/bin"}:"$PATH" RUST_LOG=debug WAYLAND_DEBUG=1 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
+              # xwaylandSatellite's own wrapProgram postFixup (see its
+              # definition above) prepends xwaylandTraced onto PATH at
+              # exec time, so no PATH override is needed here - a plain
+              # PATH=... prefix on this line does NOT work, since
+              # wrapProgram's own --prefix PATH runs after and always
+              # wins (confirmed live: it re-prepends stock xwayland in
+              # front of whatever was set here, every time).
+              RUST_LOG=debug WAYLAND_DEBUG=1 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
               satellite_pid=$!
               trap 'kill "$satellite_pid" 2>/dev/null' EXIT
 

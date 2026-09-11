@@ -8,15 +8,26 @@ set -euo pipefail
 # script is run interactively (e.g. via the sway keybinding). Use absolute
 # paths for those so the lock is applied the same way on every trigger.
 
-# Lock the screen.
-/usr/bin/swaylock -f -c 000000
+# Lock the screen, unless a swaylock instance is already up - swayidle can
+# fire this script twice in quick succession (idle timeout and before-sleep
+# both run it), and sway's ext-session-lock protocol rejects a second
+# concurrent lock request outright ("Failed to lock session -- is another
+# lockscreen running?") without drawing anything. If that rejected attempt
+# was the one meant to protect a lid-close/suspend, and the first instance
+# then dies or gets frozen mid-setup by systemd's suspend-time cgroup
+# freeze, the session is left believing it's locked with no lock screen
+# actually rendered. Only invoke swaylock when nothing is already holding
+# the lock.
+if ! /usr/bin/pgrep -x swaylock &>/dev/null; then
+	/usr/bin/swaylock -f -c 000000
+fi
 
 # Lock the session.
 /usr/bin/loginctl lock-session
 
 # Lock 1password manually if it is running (it does not respect DBUS locking).
 if command -v /usr/bin/1password &>/dev/null; then
-	if pidof 1password; then
+	if /usr/bin/pidof 1password &>/dev/null; then
 		/usr/bin/1password --lock
 	fi
 fi

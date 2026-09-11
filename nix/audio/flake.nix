@@ -388,117 +388,23 @@
             sha256 = "0zbjnrxbd0pzjf1ll8m94ji06spxv9yhmjmc7l4pw9nwcdw5gl4z";
           };
 
-          # nixpkgs' xwayland-satellite (0.8.2 as of this writing) has a
-          # rendering regression - GPU-composited child/popup windows,
-          # including DXVK-rendered wine VST GUIs like Xfer OTT, showed
-          # as solid black instead of their real content - and pinning
-          # back to 0.8.1 alone wasn't enough either, since a separate
-          # bug (wine's nested Vulkan/GL "client window" never getting a
-          # Wayland surface of its own) also needed a fix that hadn't
-          # been tagged yet. Tracking this specific unreleased commit
-          # (post-0.8.2 main, fixing upstream issues #468/#278/#470 and
-          # whatever combination of the surrounding commits fixed the
-          # Vulkan black-window bug - see refactor.md's "Resolved"
-          # section for the full history and the not-fully-pinned-down
-          # "why") gets both fixed at once, confirmed live. Bump
-          # deliberately; re-pin to a proper tagged release once one
-          # exists past this commit (same caveat as yabridgeGitMaster's
-          # pin comment elsewhere in this file).
-          xwaylandSatelliteSrc = audiopkgs.fetchFromGitHub {
-            owner = "Supreeeme";
-            repo = "xwayland-satellite";
-            rev = "add2795134593faafce60e404a0a75df68e9ee0c";
-            hash = "sha256-0TxfMgqW0/BLD4M942c5DCKYrtPvzsPJwvdcco4LQUM=";
-          };
-
-          # cargoHash alone doesn't propagate through overrideAttrs here -
-          # buildRustPackage's cargoDeps vendor derivation is bound to the
-          # original finalAttrs.cargoHash, not the overridden one - so the
-          # vendor directory has to be overridden directly instead.
-          #
-          # patches/xwayland-satellite-subsurface-embed.patch: the pin above
-          # turned out not to reliably fix the Vulkan/DXVK black-window bug -
-          # it's a timing race, not a deterministic regression (see
-          # refactor.md's "Correction" section below the original
-          # "Resolved" entry for the full live-debugging trail). Root cause,
-          # confirmed via RUST_LOG=debug on a failing run: satellite's
-          # ReparentNotify handler unconditionally destroys tracking for any
-          # window reparented to a non-root parent
-          # (src/xstate/mod.rs:handle_events). Wine's nested Vulkan/GL
-          # "client window" gets reparented into its plugin GUI's embedded
-          # HWND *before* that HWND itself gets reparented into REAPER's
-          # tracked container - so depending on timing, the child's window
-          # (and its DXVK-driven content) can already be destroyed by the
-          # time its ancestor is actually embedded. This patch adds a
-          # `SurfaceRole::Subsurface` role: such windows are tracked as
-          # pending instead of destroyed, and promoted to a real
-          # `wl_subsurface` of their parent's surface once that parent
-          # itself becomes a tracked, rendered window (cascading through
-          # multi-level chains). Includes two new tests
-          # (embedded_child_reparented_before_parent_ready,
-          # embedded_child_parent_already_ready) reproducing the exact
-          # event ordering from the failing session's log; all 83
-          # pre-existing tests still pass. Not yet upstreamed - this is a
-          # local, unverified-in-production fix; re-evaluate against
-          # upstream once xwayland-satellite has moved past this commit.
-          xwaylandSatellite = audiopkgs.xwayland-satellite.overrideAttrs (old: {
-            version = "unstable-2026-09-09";
-            src = xwaylandSatelliteSrc;
-            cargoDeps = audiopkgs.rustPlatform.fetchCargoVendor {
-              src = xwaylandSatelliteSrc;
-              hash = "sha256-s1gl9eR6Mt2QLrhfcowstPFjzwE/lz4PJhJzWYHoIHg=";
-            };
-            patches = (old.patches or [ ]) ++ [
-              ./patches/xwayland-satellite-subsurface-embed.patch
-            ];
-            # Upstream's own postFixup does
-            # `wrapProgram $out/bin/xwayland-satellite --prefix PATH :
-            # "${lib.makeBinPath [ xwayland ]}"` (see nixpkgs'
-            # pkgs/by-name/xw/xwayland-satellite/package.nix) - this
-            # unconditionally re-prepends the *stock* xwayland onto PATH
-            # at wrapper-exec time, in front of whatever PATH the caller
-            # already set. That's why the reaper wrapper's own `PATH=...`
-            # override below was silently losing every time (confirmed
-            # live via readlink -f /proc/<pid>/exe on the actually-running
-            # Xwayland process, and by reading /proc/<pid>/environ for the
-            # xwayland-satellite process directly - both showed the stock
-            # store path ahead of the traced one). Overriding postFixup
-            # here to point the wrapper at xwaylandTraced instead is the
-            # actual fix, not another PATH trick at the call site.
-            postFixup = ''
-              wrapProgram $out/bin/xwayland-satellite \
-                --prefix PATH : "${lib.makeBinPath [ xwaylandTraced ]}"
-            '';
-          });
-
-          # TEMP debugging build: the subsurface patch above didn't fix the
-          # OTT/DXVK black-window bug after all - matched fail/success
-          # RUST_LOG=debug + DXVK_LOG_LEVEL=debug + WAYLAND_DEBUG=1 log
-          # pairs show every layer (xwayland-satellite's own tracking,
-          # DXVK, Xwayland's own protocol traffic) succeeding identically
-          # in both cases. See refactor.md's "later same day" correction -
-          # the actual visible OTT window is the embedded HWND ancestor
-          # (gets its own xdg_toplevel + the plugin's title), not the
-          # nested DRI3/Vulkan child satellite was never tracking anyway,
-          # so the bug must be inside Xwayland's own compositing (the
-          # Present copy-fallback path forced by the child/toplevel size
-          # mismatch, at xwayland-present.c:792, plus whatever turns that
-          # copied content into an actual commit). Adds ErrorF tracing
-          # (prefixed "XWLTRACE") at the specific points identified by
-          # reading Xwayland's source: xwl_present_execute's flip->copy
-          # fallback, present_execute_copy (generic Present code), the
-          # window-buffer swap/copy in xwl_window_swap_pixmap, the
-          # frame_callback-gated commit decision in xwl_screen_post_damage,
-          # and damage_report. Deliberately scoped to *only* the private
-          # xwayland-satellite instance the reaper wrapper spawns (via a
-          # PATH override right before that exec, below) - sway's own
-          # built-in XWayland and everything else keeps using the normal
-          # nixpkgs xwayland package untouched.
-          xwaylandTraced = audiopkgs.xwayland.overrideAttrs (old: {
-            patches = (old.patches or [ ]) ++ [
-              ./patches/xwayland-present-trace.patch
-            ];
-          });
+          # Plain upstream nixpkgs xwayland-satellite and xwayland - no
+          # custom pins, patches, or postFixup overrides. This setup used
+          # to carry a pinned xwayland-satellite commit plus a local
+          # subsurface-tracking patch, and later a separately-patched
+          # "xwaylandTraced" Xwayland build with ErrorF instrumentation,
+          # both aimed at what looked like a black-window bug in
+          # DXVK/Vulkan-rendered wine VST GUIs (Xfer OTT and others). That
+          # turned out to be a misdiagnosis: the actual cause was wine's
+          # own incomplete Direct2D/DirectComposition implementation (see
+          # refactor.md's 2026-09-10 updates and the switch to a
+          # giang17/wine-based bitbridgeWine above), unrelated to Xwayland
+          # or xwayland-satellite entirely. Both custom builds were
+          # reverted back to plain upstream once that was confirmed - see
+          # refactor.md for the full history and for the still-open
+          # separate issue (a plugin popup-menu flicker/positioning bug)
+          # this revert was done to get a clean baseline against.
+          xwaylandSatellite = audiopkgs.xwayland-satellite;
 
           # Wraps the reaper-flake launcher (config.programs.reaper.package,
           # the one that already injects -cfgfile) in `unshare --net
@@ -525,15 +431,13 @@
           # a popup from a toplevel), which is what causes yabridge-hosted
           # Windows VST context/hover menus to render in the wrong place
           # or not show at all under sway. xwayland-satellite (see
-          # xwaylandSatellite above) fixes this
-          # (github.com/Supreeeme/xwayland-satellite issue #293), and -
-          # as of the commit currently pinned above - also fixes a
-          # separate Vulkan/DXVK plugin-GUI black-window bug hit along
-          # the way (see refactor.md's "Resolved" section). Running it
-          # as its own X display here - rather than replacing sway's
-          # XWayland session-wide - scopes both fixes to REAPER's
-          # process tree only; every other app keeps using sway's
-          # normal XWayland untouched.
+          # xwaylandSatellite above) fixes this for most plugins
+          # (github.com/Supreeeme/xwayland-satellite issue #293) - though
+          # see refactor.md for an open exception (a specific plugin's
+          # menu still flickers/mispositions). Running it as its own X
+          # display here - rather than replacing sway's XWayland
+          # session-wide - scopes the fix to REAPER's process tree only;
+          # every other app keeps using sway's normal XWayland untouched.
           reaperNoNet = pkgs.symlinkJoin {
             name = "reaper-no-net";
             paths = [ config.programs.reaper.package ];
@@ -551,13 +455,10 @@
               }
 
               disp_num=$(find_free_display)
-              # xwaylandSatellite's own wrapProgram postFixup (see its
-              # definition above) prepends xwaylandTraced onto PATH at
-              # exec time, so no PATH override is needed here - a plain
-              # PATH=... prefix on this line does NOT work, since
-              # wrapProgram's own --prefix PATH runs after and always
-              # wins (confirmed live: it re-prepends stock xwayland in
-              # front of whatever was set here, every time).
+              # Verbose logging kept on for now while the popup-menu
+              # flicker/positioning bug (see refactor.md) is still open;
+              # xwayland-satellite runs plain upstream, no PATH override
+              # needed.
               RUST_LOG=debug WAYLAND_DEBUG=1 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
               satellite_pid=$!
               trap 'kill "$satellite_pid" 2>/dev/null' EXIT
@@ -659,9 +560,12 @@
               # its own libyabridge-chainloader-*.so without this too.
               export NIX_PROFILES=${audiopkgs.lib.escapeShellArg yabridgeGitMaster}" $NIX_PROFILES"
 
-              # Needed for some Windows VST plugins (dxvk) and Guitar Pro 5 (gdiplus).
+              # Needed for Guitar Pro 5 (gdiplus). DXVK is deliberately not
+              # installed here - giang17's Direct2D/DirectComposition wine
+              # fork (see bitbridgeWine above) explicitly says not to: DXVK
+              # replaces dxgi.dll/d3d11.dll and bypasses the composition-
+              # swapchain path the fork is built on.
               if [ ! -d "$WINEPREFIX" ]; then
-                winetricks -q dxvk
                 winetricks -q gdiplus
               fi
 

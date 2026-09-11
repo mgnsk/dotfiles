@@ -967,3 +967,44 @@ consistent with a real reimplementation rather than a no-op swap.
 sandbox has no display). Next step is for the user to run `./nix/switch.sh`
 and actually test OTT (and other previously-black Direct2D-based plugins)
 live.
+
+## Update (2026-09-11): confirmed live - and a separate, pre-existing bug resurfaces
+
+**The giang17/wine fix works.** Confirmed live by the user: OTT and other
+previously-black Vulkan/DXVK/Direct2D plugin GUIs now render reliably.
+This closes out the black-window investigation - it was never an
+Xwayland/xwayland-satellite bug at all, just wine's own incomplete
+Direct2D/DirectComposition implementation, as this document's
+2026-09-10 updates concluded.
+
+**New, separate finding**: a different plugin - Northern Artillery's
+Drums - has a menu that flickers and mispositions, "similar symptoms as
+if we didn't use xwayland-satellite" (the user's words). This is telling:
+it means the *original* bug xwayland-satellite exists to work around here
+(sway's own built-in XWayland override-redirect popup-positioning bug,
+github.com/Supreeeme/xwayland-satellite issue #293) is resurfacing for
+this specific plugin's menu, despite xwayland-satellite being active and
+routing REAPER's X11 traffic through it as designed. This was true even
+with the pinned unstable commit + the local subsurface-tracking patch
+from the black-window investigation in place - so those changes were
+never masking or interacting with it either way; it's an independent gap.
+
+**Action taken**: with the black-window bug now conclusively traced to
+wine rather than Xwayland/xwayland-satellite, there was no more reason to
+carry the custom-pinned `xwaylandSatelliteSrc`/`xwaylandSatellite`
+(unstable commit + `xwayland-satellite-subsurface-embed.patch`) or the
+`xwaylandTraced` (ErrorF-instrumented Xwayland,
+`xwayland-present-trace.patch`) builds from earlier in this document.
+Both were reverted back to plain, unmodified nixpkgs packages -
+`xwaylandSatellite = audiopkgs.xwayland-satellite;` (currently 0.8.2) and
+whatever `audiopkgs.xwayland` resolves to - confirmed via a real build
+(`nix build .#default`) and `strings` on the resulting binary showing
+xwayland-satellite's own `postFixup` now points at plain upstream
+`xwayland-24.1.13`, not any custom-patched store path. This gives a clean,
+unmodified baseline to debug the Northern Artillery Drums menu bug
+against, so any fix found won't be tangled up with leftover
+black-window-investigation scaffolding.
+
+**Next step**: diagnose the Northern Artillery Drums menu flicker/
+positioning bug fresh, against the clean upstream xwayland-satellite/
+xwayland baseline above. Not yet started.

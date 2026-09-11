@@ -1008,3 +1008,48 @@ black-window-investigation scaffolding.
 **Next step**: diagnose the Northern Artillery Drums menu flicker/
 positioning bug fresh, against the clean upstream xwayland-satellite/
 xwayland baseline above. Not yet started.
+
+## Update (2026-09-11): Northern Artillery Drums menu - root cause found, upstream limitation
+
+Root cause: **xwayland-satellite has no X11-popup-grab handling at all.**
+`grep -rn "grab\b"` on its actual source (0.8.2) returns nothing - it
+never issues an `xdg_popup.grab()` request when creating a popup.
+Pointer-grab emulation for X11 clients is normally Xwayland's own job
+(`maybe_fake_grab_devices()`, which tries a `zwp_pointer_constraints_v1`
+pointer lock) - and a live `RUST_LOG=debug WAYLAND_DEBUG=1` trace of 12
+dropdown-open attempts (`menu.log`, `.scripts/`) shows that protocol is
+bound at startup but never actually used. Without a real grab, whether
+the dropdown survives depends on winning a race against the
+compositor's ordinary (non-grab) pointer-focus reassignment logic.
+
+Evidence from the trace: every failed attempt creates the identical
+5-window group (a combo-box dropdown + 2 scrollbars: 1x1, 153x12,
+12x226 x2, 153x202 - `window_role_heuristics` classifies all of them
+"Popup" correctly, every time, so classification isn't the issue) and
+then unmaps+destroys all 5 within 15-45ms of creation - never
+actually rendered long enough to be seen. The one success (a 12th
+attempt) created the identical window group and it survived 3.5
+seconds before a normal close. Checked and ruled out two timing
+theories against the actual `wl_pointer.button` events: press-to-
+release click duration doesn't correlate (the successful click's 90ms
+duration was shorter than several failed ones' 97-174ms), and neither
+does the gap between retries (the successful retry had the *shortest*
+gap of the whole sequence). The user's own follow-up testing narrowed
+it further and matches the grab-race theory exactly: clicking fast
+reliably works, clicking slow reliably opens-then-closes.
+
+This is a known, currently-open class of upstream bug, not something
+introduced by this setup's configuration: xwayland-satellite issues
+**#293** ("REAPER + Yabridge + VST menus don't show as popups" - the
+original issue this setup adopted xwayland-satellite to fix in the
+first place), **#221** ("REAPER + ValhallaPlate dropdowns are not
+treated as popups"), and **#326** ("Menus that spawn multiple menus
+misbehave... may not spawn at all and auto-close" - this exact
+symptom). Unlike the wine/Direct2D case, there is no mature third-party
+fork already solving this - it would need a new upstream-style fix
+(implementing popup grab handling in xwayland-satellite itself) rather
+than adopting an existing patch.
+
+**Current status**: workaround only (click fast). Not yet decided
+whether to attempt an upstream-style fix or accept the workaround / fall
+back to TTY2 Xorg for cases where this matters.

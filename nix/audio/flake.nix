@@ -466,7 +466,19 @@
                 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" &
               fi
               satellite_pid=$!
-              trap 'kill "$satellite_pid" 2>/dev/null' EXIT
+              # On exit: kill this invocation's own xwayland-satellite and
+              # the Xwayland it spawned (looked up as its child, so only
+              # this REAPER run's display is touched, not any other
+              # xwayland-satellite/Xwayland instance), then wineserver -k
+              # to tear down the yabridge wine host and any wine-hosted
+              # plugins left running - REAPER's own exit doesn't always
+              # reap those.
+              trap '
+                xwayland_pid=$(${lib.escapeShellArg "${pkgs.procps}/bin/pgrep"} -P "$satellite_pid" -x Xwayland 2>/dev/null)
+                kill "$satellite_pid" 2>/dev/null
+                [ -n "$xwayland_pid" ] && kill "$xwayland_pid" 2>/dev/null
+                ${lib.escapeShellArg "${bitbridgeWine}/bin/wineserver"} -k 2>/dev/null
+              ' EXIT
 
               i=0
               while [ ! -S "/tmp/.X11-unix/X$disp_num" ] && [ "$i" -lt 100 ]; do

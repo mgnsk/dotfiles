@@ -342,11 +342,7 @@
               command = "floating enable, sticky enable, border none, move position 1000 0";
             }
             {
-              criteria.class = "REAPER";
-              command = "border normal, floating enable";
-            }
-            {
-              criteria.class = "yabridge-host.exe.so";
+              criteria.app_id = "REAPER";
               command = "border normal, floating enable";
             }
           ];

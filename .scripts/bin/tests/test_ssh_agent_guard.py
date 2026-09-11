@@ -267,12 +267,15 @@ def test_confirm_via_tmux_denied(monkeypatch, tmp_path):
 # -- handle_client() --------------------------------------------------------
 
 
-def _sign_request(key_blob=b"fake-key"):
-    return (
+def _sign_request(key_blob=b"fake-key", data=None):
+    payload = (
         bytes([ssh_agent_guard.SSH_AGENTC_SIGN_REQUEST])
         + struct.pack(">I", len(key_blob))
         + key_blob
     )
+    if data is not None:
+        payload += struct.pack(">I", len(data)) + data
+    return payload
 
 
 def _exchange(tmp_path, requests, upstream_replies=()):
@@ -355,6 +358,42 @@ def test_handle_client_sign_request_denied_never_reaches_upstream(tmp_path, monk
 
     assert responses == [bytes([ssh_agent_guard.SSH_AGENT_FAILURE])]
     assert upstream_seen == [None]
+
+
+def test_handle_client_commit_signature_skips_popup(tmp_path, monkeypatch):
+    """A sign request whose data carries the SSHSIG magic (commit/tag
+    signing via `ssh-keygen -Y sign`) is forwarded without confirmation."""
+    monkeypatch.setattr(
+        ssh_agent_guard,
+        "confirm_via_tmux",
+        lambda *a, **k: pytest.fail("commit signature reached the popup"),
+    )
+    request = _sign_request(data=b"SSHSIGnamespace-and-hash-bytes")
+    signature = bytes([14]) + b"signature-bytes"
+
+    responses, upstream_seen = _exchange(tmp_path, [request], upstream_replies=[signature])
+
+    assert upstream_seen == [request, None]
+    assert responses == [signature]
+
+
+def test_handle_client_non_sshsig_sign_request_still_prompts(tmp_path, monkeypatch):
+    """A sign request whose data isn't an SSHSIG blob (e.g. SSH transport
+    auth) still goes through the popup."""
+    prompted = []
+    monkeypatch.setattr(
+        ssh_agent_guard,
+        "confirm_via_tmux",
+        lambda *a, **k: (prompted.append(True), True)[1],
+    )
+    request = _sign_request(data=b"session-id-and-packet-bytes")
+    signature = bytes([14]) + b"signature-bytes"
+
+    responses, upstream_seen = _exchange(tmp_path, [request], upstream_replies=[signature])
+
+    assert prompted == [True]
+    assert upstream_seen == [request, None]
+    assert responses == [signature]
 
 
 @pytest.mark.parametrize(

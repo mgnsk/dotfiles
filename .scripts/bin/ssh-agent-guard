@@ -2,9 +2,11 @@
 """SSH agent proxy that gates every sign request behind a tmux popup.
 
 Sits between a sandboxed client and the real SSH agent socket. Identity
-listing is forwarded untouched; sign requests (SSH auth, commit signing)
-only reach the real agent after the user approves a tmux popup prompt.
-Every other request type is refused outright - see FORWARDABLE.
+listing is forwarded untouched; sign requests reach the real agent after the
+user approves a tmux popup prompt, except commit/tag signatures (identified
+by the SSHSIG magic preamble - see SSHSIG_MAGIC), which are forwarded
+without a prompt. Every other request type is refused outright - see
+FORWARDABLE.
 """
 
 import base64
@@ -38,6 +40,18 @@ SSH_AGENT_FAILURE = 5
 # extension as non-fatal, and `ssh-add -l` / `ssh-keygen -Y sign` (git's ssh
 # commit signing) only ever send the two types below.
 FORWARDABLE = frozenset({SSH_AGENTC_REQUEST_IDENTITIES, SSH_AGENTC_SIGN_REQUEST})
+
+# Magic preamble OpenSSH's `ssh-keygen -Y sign` wraps the to-be-signed data in
+# (see PROTOCOL.sshsig) before it ever reaches the agent - this is how git
+# commit/tag signing (gpg.format=ssh) signs. Plain SSH transport
+# authentication (git push/pull/clone over ssh, an interactive ssh session)
+# signs the session/packet data directly and never carries this preamble.
+# It's a fixed part of the signer's own wire format, not something a
+# sandboxed client can forge into meaning something else - it only changes
+# whether *this* request needs a popup, never what upstream is asked to sign.
+# Used to let commit/tag signing through without a confirmation popup while
+# still gating real SSH authentication.
+SSHSIG_MAGIC = b"SSHSIG"
 
 IDENTITY_COMMENTS = {}
 IDENTITY_LOCK = threading.Lock()
@@ -257,13 +271,16 @@ def handle_client(client, upstream_path):
 
             if msg_type == SSH_AGENTC_SIGN_REQUEST:
                 try:
-                    key_blob, _ = read_string(payload, 1)
+                    key_blob, offset = read_string(payload, 1)
+                    data, _ = read_string(payload, offset)
                     key_fp = fingerprint(key_blob)
                 except (struct.error, IndexError):
                     key_fp = "unknown"
+                    data = b""
+                is_commit_signature = data.startswith(SSHSIG_MAGIC)
                 with IDENTITY_LOCK:
                     key_comment = IDENTITY_COMMENTS.get(key_fp)
-                if not confirm_via_tmux(cwd, cmdline, key_comment):
+                if not is_commit_signature and not confirm_via_tmux(cwd, cmdline, key_comment):
                     write_frame(client, bytes([SSH_AGENT_FAILURE]))
                     continue
 

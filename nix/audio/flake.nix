@@ -438,6 +438,8 @@
           # display here - rather than replacing sway's XWayland
           # session-wide - scopes the fix to REAPER's process tree only;
           # every other app keeps using sway's normal XWayland untouched.
+          # Set DEBUG=1 to turn on rust/wayland debug logging for the
+          # satellite process (see below).
           reaperNoNet = pkgs.symlinkJoin {
             name = "reaper-no-net";
             paths = [ config.programs.reaper.package ];
@@ -455,11 +457,14 @@
               }
 
               disp_num=$(find_free_display)
-              # Verbose logging kept on for now while the popup-menu
-              # flicker/positioning bug (see refactor.md) is still open;
-              # xwayland-satellite runs plain upstream, no PATH override
-              # needed.
-              RUST_LOG=debug WAYLAND_DEBUG=1 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
+              # Set DEBUG=1 to enable rust/wayland debug logging and
+              # capture xwayland-satellite's verbose output to
+              # ~/.cache/xwayland-satellite-debug.log.
+              if [ "$DEBUG" = "1" ]; then
+                RUST_LOG=debug WAYLAND_DEBUG=1 ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" -verbose 10 > "$HOME/.cache/xwayland-satellite-debug.log" 2>&1 &
+              else
+                ${lib.escapeShellArg "${xwaylandSatellite}/bin/xwayland-satellite"} ":$disp_num" &
+              fi
               satellite_pid=$!
               trap 'kill "$satellite_pid" 2>/dev/null' EXIT
 
@@ -491,8 +496,9 @@
             pkgs.fluidsynth
             reaperNoNet
             # Also used internally by reaperNoNet above; kept on PATH too
-            # so it can be run/inspected by hand (RUST_LOG=debug
-            # xwayland-satellite :N) when debugging the wrapper.
+            # so it can be run/inspected by hand when debugging the
+            # wrapper (reaperNoNet itself picks up debug logging via
+            # DEBUG=1, see reaperNoNet above).
             xwaylandSatellite
           ]
           ++ audioPkgs;

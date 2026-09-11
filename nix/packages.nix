@@ -128,10 +128,7 @@ let
       libnotify
       libreoffice
       hunspellDicts.et-ee
-      jgmenu
-      openbox
       pavucontrol
-      picom
       powertop
       qdigidoc
       qt6Packages.qt6ct

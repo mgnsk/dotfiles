@@ -247,10 +247,9 @@ def _first_uncovered_home_manager_file():
 
 
 def test_home_manager_generated_files_are_mounted_read_only(project_dir):
-    """Once a program's config moves into a home-manager module in flake.nix it
-    drops out of dotfiles git (.gitconfig, .tmux.conf, mpv/fontconfig did in
-    d8b3f654) - the ls-tree loops stop seeing it, so the sandbox must instead
-    pick it up from the current generation's home-files store path.
+    """A program's config rendered by a home-manager module in flake.nix isn't
+    covered by the dotfiles_paths binds, so the sandbox must pick it up from
+    the current generation's home-files store path instead.
     """
     rel = _first_uncovered_home_manager_file()
     if rel is None:
@@ -262,6 +261,22 @@ def test_home_manager_generated_files_are_mounted_read_only(project_dir):
     assert result.stdout == expected
 
     result = run_sandbox(f'echo x > "$HOME/{rel}"\n', cwd=project_dir)
+    assert result.returncode != 0
+    assert "Read-only file system" in result.stderr
+
+
+def test_dotfiles_paths_are_mounted_read_only_outside_home(project_dir):
+    """Outside dotfiles-mode ($project != $HOME), the nvim config / .scripts /
+    nix / flake root files should still be visible for reference, but not
+    editable.
+    """
+    expected = (Path.home() / "README.md").read_text(encoding="utf-8")
+
+    result = run_sandbox('cat "$HOME/README.md"\n', cwd=project_dir)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == expected
+
+    result = run_sandbox('echo x > "$HOME/README.md"\n', cwd=project_dir)
     assert result.returncode != 0
     assert "Read-only file system" in result.stderr
 
@@ -414,18 +429,33 @@ def test_cleanup_survives_a_failing_kill():
     assert re.search(r"kill \"\$pid\" 2>/dev/null \|\| true", _cleanup_body())
 
 
-# -- tracked-file loops --------------------------------------------------------
+# -- dotfiles paths --------------------------------------------------------
 
 
-def test_ls_tree_loops_are_nul_delimited():
-    """These names become mount arguments; word splitting would mangle them."""
-    assert "ls-tree" in CODE
-    for invocation in re.findall(r"git -C \"\$HOME\" ls-tree[^\n)]*", CODE):
-        assert " -z " in invocation, invocation
-    assert "for f in $(" not in CODE
-    # The two ls-tree loops (project == $HOME / else) plus the home-manager
-    # home-files loop below.
-    assert len(re.findall(r"while IFS= read -r -d '' f; do", CODE)) == 3
+def test_dotfiles_paths_covers_nvim_scripts_nix_and_flake_root():
+    """The remaining pieces of the dotfiles repo not already picked up by the
+    home-manager home-files loop: the nvim config, .scripts (bin/sandbox and
+    the guards included), the nix/ modules, and the flake's own root files.
+    """
+    match = re.search(r"dotfiles_paths=\(\n(.*?)\n\)", CODE, re.DOTALL)
+    assert match, "expected a dotfiles_paths array"
+    entries = set(re.findall(r'"\$HOME/([^"]+)"', match.group(1)))
+    assert entries == {".config/nvim", ".scripts", "nix", "README.md", "flake.lock", "flake.nix"}
+
+
+def test_dotfiles_paths_are_bound_read_write_in_home_mode_read_only_otherwise():
+    """project == $HOME is the mode meant for editing the dotfiles repo itself;
+    everywhere else these paths are just available for reference.
+    """
+    home_branch, else_branch = re.search(
+        r'if \[\[ "\$project" == "\$HOME" \]\]; then\n(.*?)\nelse\n(.*?)\nfi\n',
+        CODE,
+        re.DOTALL,
+    ).groups()
+    assert re.search(r'for p in "\$\{dotfiles_paths\[@\]\}"; do\n\t\targs\+=\(--bind "\$p" "\$p"\)', home_branch)
+    assert re.search(
+        r'for p in "\$\{dotfiles_paths\[@\]\}"; do\n\t\targs\+=\(--ro-bind "\$p" "\$p"\)', else_branch
+    )
 
 
 def test_home_manager_files_loop_is_nul_delimited_and_guarded():

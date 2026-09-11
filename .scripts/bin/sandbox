@@ -230,27 +230,32 @@ if [[ -e "$home_manager_profile" ]]; then
 	done < <(find "$home_files" \( -type f -o -type l \) -print0)
 fi
 
+# The dotfiles repo: the nvim config, .scripts (including bin/sandbox and the
+# guards themselves), the nix/ modules, and the flake's root files.
+dotfiles_paths=(
+	"$HOME/.config/nvim"
+	"$HOME/.scripts"
+	"$HOME/nix"
+	"$HOME/README.md"
+	"$HOME/flake.lock"
+	"$HOME/flake.nix"
+)
+
 if [[ "$project" == "$HOME" ]]; then
 	args+=(
 		--bind "$HOME/.git" "$HOME/.git"
 		--setenv GIT_DISCOVERY_ACROSS_FILESYSTEM 1
 	)
-	# Read-write bind all files tracked by dotfiles git, including bin/sandbox
-	# and the guards themselves - editing the dotfiles repo is the point of
-	# this mode, not a boundary. -z/-d '': avoids word-splitting or C-quoting
-	# mangling names with whitespace.
-	while IFS= read -r -d '' f; do
-		args+=(
-			--bind "$HOME/$f" "$HOME/$f"
-		)
-	done < <(git -C "$HOME" ls-tree -r -z master --name-only)
+	# Read-write - editing the dotfiles repo is the point of this mode, not
+	# a boundary.
+	for p in "${dotfiles_paths[@]}"; do
+		args+=(--bind "$p" "$p")
+	done
 else
-	# Read-only bind all files tracked by dotfiles git.
-	while IFS= read -r -d '' f; do
-		args+=(
-			--ro-bind "$HOME/$f" "$HOME/$f"
-		)
-	done < <(git -C "$HOME" ls-tree -r -z master --name-only)
+	# Read-only: available for reference from other projects, not editable.
+	for p in "${dotfiles_paths[@]}"; do
+		args+=(--ro-bind "$p" "$p")
+	done
 fi
 
 function add_volume() {

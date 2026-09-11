@@ -43,16 +43,51 @@
         '';
       };
 
-      # Wine 11.16 in classic wine32+wine64 split mode (wineWow, as opposed
-      # to the merged WoW64 build nixpkgs exposes by default). yabridge's
-      # bitbridge (32-bit host support) only compiles against the classic
-      # split - see yabridge upstream issue #435 for the WoW64
-      # incompatibility - so this is what yabridgeGitMaster below is built
-      # against.
-      bitbridgeWine = audiopkgs.wine.override {
-        wineBuild = "wineWow";
-        wineRelease = "staging";
+      # giang17's Direct2D 1.3 / DirectComposition fork of Wine
+      # (https://github.com/giang17/wine, branch d2d1-dcomp-11.16, pinned to
+      # the same 11.16 version as the staging build this replaces below).
+      #
+      # Stock Wine (even with staging) only implements Direct2D up to
+      # feature level 1.2 and doesn't implement DCompositionCreateDevice at
+      # all (E_NOTIMPL). JUCE 8 plugins use Direct2D + DirectComposition
+      # unconditionally for their GUI, and some older JUCE plugins (e.g.
+      # Xfer OTT) also hit incomplete/stubbed Direct2D code paths - either
+      # way the result is a plugin window that's rendered but genuinely
+      # black, while audio/MIDI/automation keep working fine. This was
+      # confirmed empirically (not just by matching this known upstream
+      # issue): see the "2026-09-10" update in refactor.md - a matched
+      # fail/success xwayland-satellite/Xwayland trace pair showed the
+      # compositing pipeline (Xwayland + xwayland-satellite) faithfully
+      # copying every damaged region through to the Wayland surface in
+      # BOTH cases, ruling out any Xwayland-level race - the pixmap
+      # content itself is what's black, which points at wine's own
+      # Direct2D/DXVK rendering rather than anything downstream of it.
+      #
+      # giang17's fork is not layered as a patch on top of nixpkgs' own
+      # wine-staging patchset - it's a full modified source tree - so this
+      # replaces `src` (and drops staging + the small nixpkgs patches, none
+      # of which touch d2d1/dcomp) rather than trying to combine both.
+      wineD2DSrc = audiopkgs.fetchgit {
+        url = "https://github.com/giang17/wine";
+        rev = "a893414dfaa07d8d86719df8f67b1bd53b29dbb8"; # d2d1-dcomp-11.16 branch HEAD, 2026-09-04
+        hash = "sha256-YRlEUumTICo2y8+62sODmrNnYpRpmc8ftrprQnQ7yfY=";
       };
+
+      # wineWow (classic 32+64-bit split build, as opposed to the merged
+      # WoW64 build nixpkgs exposes by default) - yabridge's bitbridge
+      # (32-bit host support) only compiles against the classic split, see
+      # yabridge upstream issue #435 for the WoW64 incompatibility - so
+      # this is what yabridgeGitMaster below is built against.
+      bitbridgeWine =
+        (audiopkgs.wine.override {
+          wineBuild = "wineWow";
+          wineRelease = "unstable"; # version 11.16, matches wineD2DSrc's base
+        }).overrideAttrs
+          (old: {
+            version = "11.16-d2d1-dcomp";
+            src = wineD2DSrc;
+            patches = [ ];
+          });
 
       # Modern Wine merged the separate wine/wine64 loader binaries into a
       # single arch-detecting `wine` binary, but winetricks (as packaged in
@@ -791,7 +826,7 @@
       homeModules.audio = homeModule;
 
       packages.${system} = {
-        inherit audioPkgs;
+        inherit audioPkgs bitbridgeWine;
 
         # Not otherwise a single buildable output - exists so `flake-update`
         # (run from this directory) has something to build and

@@ -926,3 +926,44 @@ TTY2 Xorg/Openbox/tint2 remains the pragmatic fallback and sidesteps the
 problem entirely, since it has no Xwayland/Wayland bridging layer and no
 Direct2D wine peculiarities have ever been reported to cause black windows
 there.
+
+## Update (2026-09-10, later): matches a known, well-documented upstream Wine issue
+
+Web research confirms this is a known, already-solved-elsewhere problem, not
+something specific to this setup: JUCE plugins render their GUI via
+Direct2D + DirectComposition, but stock Wine (staging included) only
+implements Direct2D up to feature level 1.2 and doesn't implement
+`DCompositionCreateDevice` at all (`E_NOTIMPL`, `0x80004001`). JUCE 8
+requires 1.3 unconditionally; some older JUCE plugins (Xfer OTT's JUCE
+version predates 8, but our `dxvk-debug-fail.log` shows hundreds of
+`d2d:d2d_device_context_*` "fixme"/stub lines - it's clearly exercising the
+same incomplete Direct2D code, just via an older/narrower entry point) hit
+the same class of stubbed-out rendering path. The result in every reported
+case: audio/MIDI/automation work fine, GUI renders as a solid black window.
+This exactly matches every symptom gathered in this document, including the
+newly-observed focus-change trigger.
+
+**Fix applied**: `giang17/wine` (https://github.com/giang17/wine) maintains
+a Direct2D 1.3 + DirectComposition implementation on top of Wine, tracked
+per-Wine-version as branches (`d2d1-dcomp-11.0`, `-11.16`, etc; packaged
+for Arch/CachyOS as `mklnln/wine-d2d1-dcomp`). `nix/audio/flake.nix`'s
+`bitbridgeWine` - the single Wine build wired into every yabridge/REAPER
+plugin-hosting path in this setup, not staging-specific - now builds from
+`giang17/wine` branch `d2d1-dcomp-11.16` (pinned to commit `a893414`,
+2026-09-04) instead of nixpkgs' own wine-staging source, via the same
+`overrideAttrs`-swaps-`src` pattern used earlier in this document for
+`xwaylandTraced`/`xwaylandSatellite`. Staging patches are dropped (giang17's
+tree is a full modified source, not a patch layered on top of nixpkgs'
+own staging application), since none of the staging patchset touches
+d2d1/dcomp and version-matching them against a different tree wasn't worth
+the risk. Build succeeded (~25 minutes, full wineWow 32+64 split with the
+same mingw cross toolchains and support flags nixpkgs already uses for
+bitbridgeWine): `wine --version` reports `wine-11.16` as expected, and
+`d2d1.dll`/`dcomp.dll` are meaningfully different in size from stock
+(patched d2d1.dll 1.35MB vs stock 1.2MB, dcomp.dll 283KB vs 327KB) -
+consistent with a real reimplementation rather than a no-op swap.
+
+**Not yet verified**: only a static build check has been done (this
+sandbox has no display). Next step is for the user to run `./nix/switch.sh`
+and actually test OTT (and other previously-black Direct2D-based plugins)
+live.

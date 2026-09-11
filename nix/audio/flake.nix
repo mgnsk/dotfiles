@@ -226,6 +226,36 @@
               cp packagefiles/function2/* function2
               cp packagefiles/ghc_filesystem/* ghc_filesystem
             )
+
+            # Bump the linked PE stack reserve for yabridge-host(-32).exe from
+            # the linker's 1 MiB default to 8 MiB. The plugin DLL runs on the
+            # host exe's own thread, so it's this binary's SizeOfStackReserve
+            # (not any Wine env var - Wine has no runtime override for this)
+            # that bounds how deep a plugin's call stack can grow before
+            # hitting the guard page. Cause: PTE-qX (plugins4free.com/2468)
+            # started hitting ntdll's stack-overflow guard page on load after
+            # bitbridgeWine moved off nixpkgs wine-staging 11.16 to giang17's
+            # Direct2D fork (see refactor.md) - previously worked fine on
+            # wine 9.21 with the same 1 MiB default, so the fork evidently
+            # needs more exception-dispatch headroom than stock Wine did.
+            #
+            # yabridge-host.exe is one of Wine's ELF-based "builtin" PE
+            # modules (see the .exe/.exe.so pair installPhase copies below),
+            # so it's linked through the plain ELF ld.bfd, not a real PE
+            # linker - the usual `-Wl,--stack,<size>` GNU-ld flag is a PE-only
+            # ld feature and errors out here ("unrecognized option '--stack'").
+            # winebuild (which fabricates the fake PE header these modules
+            # carry) has no CLI flag for stack size either - the only place
+            # it reads spec->stack_size from is a STACKSIZE directive in a
+            # .spec/.def file passed alongside the object files, so we feed
+            # it a trivial one.
+            cat > stack-size.def <<'EOF'
+STACKSIZE 8388608
+EOF
+            substituteInPlace cross-wine.conf \
+              --replace-fail \
+                "cpp_link_args = ['-mwindows']" \
+                "cpp_link_args = ['-mwindows', '$(pwd)/stack-size.def']"
           '';
 
           nativeBuildInputs = [

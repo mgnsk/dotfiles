@@ -1084,10 +1084,17 @@ Confirmed by real use since the restructure:
   isn't relying on the incomplete Direct2D/DirectComposition code paths stock
   wine has, since standard Direct3D via DXVK is a different, complete code path)
   and the popup-grab bug (no Wayland bridging at all).
-- **TTY1/`reaper-experimental` still can't run Ozone** - consistent with this
-  document's own root-cause finding above (xwayland-satellite has no X11
-  popup-grab handling), Ozone's menus are still affected there. Not re-diagnosed
-  further here; Ozone work should go through TTY2/`reaper-stable` for now.
+- **TTY1/`reaper-experimental`'s only remaining issue is a stack overflow error
+  on Ozone plugins** - not the popup-grab menu bug documented above (that's a
+  sway/Wayland-wide issue, not Ozone-specific, and doesn't reproduce for other
+  plugins there in practice), but the `virtual_setup_exception` stack-overflow
+  crash risk already flagged in `nix/audio/flake.nix`'s `experimentalWine`
+  comment (giang17's fork's Direct2D/DirectComposition implementation, not
+  giang17's ntdll/exception/thread-stack code, which is unmodified from stock
+  wine - see the isolation test above). Everything else about `reaper-experimental`
+  works correctly. Ozone work should go through TTY2/`reaper-stable` until this
+  is fixed upstream or otherwise mitigated (e.g. the yabridge-host stack-reserve
+  bump attempted in `cb5c115`).
 - **DXVK works on both prefixes** (winetricks' `dxvk` verb on stable, the
   giang17 fork's own composition path on experimental).
 - **32-bit bitbridged plugins work on both prefixes** (both wine builds are
@@ -1096,7 +1103,9 @@ Confirmed by real use since the restructure:
 Net effect: TTY2/Openbox/`reaper-stable` is now the environment to reach for
 whenever a plugin's menus or GUI are in question, not just a fallback of last
 resort; TTY1/sway/`reaper-experimental` remains the everyday environment for
-everything else. The two prefixes are mutually exclusive at any one moment only
+everything else, with Ozone as the one specific, identified exception (the
+stack overflow above) rather than an open-ended "Wayland has problems" caveat.
+The two prefixes are mutually exclusive at any one moment only
 in the sense that yabridge's chainloaders for whichever prefix launches last
 overwrite the shared `~/.vst3` discovery path - both `reaper-stable` and
 `reaper-experimental` re-sync their own chainloaders on launch, so either one

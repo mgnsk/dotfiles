@@ -66,7 +66,8 @@ sudo gpasswd -a "$USER" docker
 # Set up nix.
 cat <<-'EOF' | sudo tee /etc/nix/nix.conf >/dev/null
 	build-users-group = nixbld
-	max-jobs = auto
+	max-jobs = 1
+	cores = 0
 EOF
 sudo systemctl enable nix-daemon.service
 

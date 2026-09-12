@@ -1,9 +1,5 @@
 {
-  lib,
   pkgs,
-  hostname,
-  audioHosts,
-  audioPkgs,
   ...
 }:
 let
@@ -53,193 +49,188 @@ let
     '';
   };
 
-  homePkgs =
-    with pkgs;
-    [
-      # General.
-      asciinema
-      bash-completion
-      bat
-      buf
-      caddy
-      coreutils
-      cspell
-      cuetools
-      curl
-      diff-highlight
-      fd
-      fdupes
-      file
-      findutils
-      fuse
-      gawk
-      gcc
-      gh
-      gh-tpl
-      glibcLocalesUtf8
-      glow
-      gnugrep
-      gnused
-      go-jsonnet
-      go-task
-      gojq
-      hadolint
-      helm-ls
-      inotify-tools
-      jq
-      jsonnet-language-server
-      just
-      less
-      libxml2
-      man
-      moreutils
-      ncurses
-      patchelf
-      qrcp
-      qrencode
-      rclone
-      ripgrep
-      rsync
-      shfmt
-      shntool
-      tree
-      tree-sitter
-      tusk-go
-      unzip
-      vim
-      vivid
-      wget
-      which
+  homePkgs = with pkgs; [
+    # General.
+    asciinema
+    bash-completion
+    bat
+    buf
+    caddy
+    coreutils
+    cspell
+    cuetools
+    curl
+    diff-highlight
+    fd
+    fdupes
+    file
+    findutils
+    fuse
+    gawk
+    gcc
+    gh
+    gh-tpl
+    glibcLocalesUtf8
+    glow
+    gnugrep
+    gnused
+    go-jsonnet
+    go-task
+    gojq
+    hadolint
+    helm-ls
+    inotify-tools
+    jq
+    jsonnet-language-server
+    just
+    less
+    libxml2
+    man
+    moreutils
+    ncurses
+    patchelf
+    qrcp
+    qrencode
+    rclone
+    ripgrep
+    rsync
+    shfmt
+    shntool
+    tree
+    tree-sitter
+    tusk-go
+    unzip
+    vim
+    vivid
+    wget
+    which
 
-      # Desktop and file management.
-      arandr
-      baobab
-      geany
-      glances
-      gnome-disk-utility
-      grim
-      gthumb
-      iotop
-      kdePackages.ark
-      kdePackages.ffmpegthumbs
-      kdePackages.kde-cli-tools
-      kdePackages.kdegraphics-thumbnailers
-      kdePackages.kimageformats
-      libnotify
-      libreoffice
-      hunspellDicts.et-ee
-      pavucontrol
-      powertop
-      qdigidoc
-      qt6Packages.qt6ct
-      qt6Packages.qtimageformats
-      slurp
-      unrar
-      wdisplays
-      web-eid-app
-      webp-pixbuf-loader
-      wl-clipboard
-      zenity
+    # Desktop and file management.
+    arandr
+    baobab
+    geany
+    glances
+    gnome-disk-utility
+    grim
+    gthumb
+    iotop
+    kdePackages.ark
+    kdePackages.ffmpegthumbs
+    kdePackages.kde-cli-tools
+    kdePackages.kdegraphics-thumbnailers
+    kdePackages.kimageformats
+    libnotify
+    libreoffice
+    hunspellDicts.et-ee
+    jgmenu
+    openbox
+    pavucontrol
+    picom
+    powertop
+    qdigidoc
+    qt6Packages.qt6ct
+    qt6Packages.qtimageformats
+    slurp
+    unrar
+    wdisplays
+    web-eid-app
+    webp-pixbuf-loader
+    wl-clipboard
+    zenity
 
-      # Multimedia.
-      gimp
-      handbrake
-      inkscape
-      picard
-      vmpk
-      whipper
-      yt-dlp
+    # Multimedia.
+    gimp
+    handbrake
+    inkscape
+    picard
+    vmpk
+    whipper
+    yt-dlp
 
-      # AI.
-      antigravity-cli
-      mcp-nixos
+    # AI.
+    antigravity-cli
+    mcp-nixos
 
-      # Bash.
-      bash-language-server
-      shellcheck
-      shfmt
+    # Bash.
+    bash-language-server
+    shellcheck
+    shfmt
 
-      # Git.
-      commitmsgfmt
+    # Git.
+    commitmsgfmt
 
-      # Go.
-      go
-      gopls
-      revive
-      ginkgo
+    # Go.
+    go
+    gopls
+    revive
+    ginkgo
 
-      # Lua.
-      lua-language-server
-      luajitPackages.luacheck
-      stylua
+    # Lua.
+    lua-language-server
+    luajitPackages.luacheck
+    stylua
 
-      # PHP.
-      php
-      phpPackages.composer
-      phpactor
-      phpstan
-      pint
+    # PHP.
+    php
+    phpPackages.composer
+    phpactor
+    phpstan
+    pint
 
-      # Python.
-      black
-      pylint
-      (python3.withPackages (
-        ps: with ps; [
-          dbus-next
-          pytest
-        ]
-      ))
-      ty
-      uv
+    # Python.
+    black
+    pylint
+    (python3.withPackages (
+      ps: with ps; [
+        dbus-next
+        pytest
+      ]
+    ))
+    ty
+    uv
 
-      # Web.
-      biome
-      markdownlint-cli
-      nodejs
-      npm-check-updates
-      pnpm
-      prettier
-      typescript-go
-      yaml-language-server
-      yamllint
+    # Web.
+    biome
+    markdownlint-cli
+    nodejs
+    npm-check-updates
+    pnpm
+    prettier
+    typescript-go
+    yaml-language-server
+    yamllint
 
-      # Ansible.
-      ansible
-      ansible-language-server
-      ansible-lint
+    # Ansible.
+    ansible
+    ansible-language-server
+    ansible-lint
 
-      # Nix.
-      nil
-      nixfmt
+    # Nix.
+    nil
+    nixfmt
 
-      # Fonts. otf-font-awesome moved from pacman here so nix-built GTK
-      # apps (waybar) can find it through their own fontconfig. Noto Sans
-      # is needed too: "Roboto, Helvetica, Arial" in the waybar style are
-      # not installed anywhere, so Pango skipped straight past them to
-      # Font Awesome (which covers plain ASCII) for regular bar text.
-      font-awesome
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-cjk-serif
-      noto-fonts-color-emoji
-      noto-fonts-lgc-plus
+    # Fonts. otf-font-awesome moved from pacman here so nix-built GTK
+    # apps (waybar) can find it through their own fontconfig. Noto Sans
+    # is needed too: "Roboto, Helvetica, Arial" in the waybar style are
+    # not installed anywhere, so Pango skipped straight past them to
+    # Font Awesome (which covers plain ASCII) for regular bar text.
+    font-awesome
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    noto-fonts-color-emoji
+    noto-fonts-lgc-plus
 
-      # Sway companions (sway itself comes from wayland.windowManager.sway.enable).
-      j4-dmenu-desktop
-      wmenu
-      kdePackages.dolphin
-      networkmanagerapplet
-      blueman
-      xwayland
-      xdg-desktop-portal-wlr
-      xdg-desktop-portal-gtk
-    ]
-    # Plugins, wine and yabridge come from the audio flake (nix/audio,
-    # its own flake with its own nixpkgs pin and lock file) rather than
-    # nixpkgs-home, so REAPER works standalone, with no separate dev
-    # shell needed. Gated to audioHosts like inputs.audio.homeModules.audio
-    # (see flake.nix), so non-audio hosts don't build/download any of it.
-    ++ lib.optionals (builtins.elem hostname audioHosts) audioPkgs;
+    # Sway companions (sway itself comes from wayland.windowManager.sway.enable).
+    j4-dmenu-desktop
+    wmenu
+    kdePackages.dolphin
+    networkmanagerapplet
+    blueman
+    xwayland
+    xdg-desktop-portal-wlr
+    xdg-desktop-portal-gtk
+  ];
 in
 {
   home.packages = homePkgs;

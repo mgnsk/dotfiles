@@ -142,6 +142,15 @@ in
         		exec sway --config ~/.config/sway/config
         	fi
         fi
+
+        # TTY2: start openbox at login if available.
+        if test -z "$DISPLAY" -a "$XDG_VTNR" = 2; then
+        	if command -v openbox-session &>/dev/null; then
+        		export XDG_CURRENT_DESKTOP=openbox
+        		pre
+        		exec startx
+        	fi
+        fi
       '';
   };
 

@@ -68,8 +68,6 @@
         };
       };
 
-      inherit (inputs.audio.packages.${system}) audioPkgs;
-
       hostname = builtins.getEnv "HOSTNAME";
       audioHosts = [ "probook" ];
 
@@ -132,9 +130,6 @@
           inherit
             inputs
             username
-            hostname
-            audioHosts
-            audioPkgs
             ;
         };
 
@@ -150,6 +145,7 @@
           ./nix/git.nix
           ./nix/neovim.nix
           ./nix/sway.nix
+          ./nix/openbox.nix
           ./nix/desktop.nix
           ./nix/dev-tools.nix
           ./nix/packages.nix

@@ -1053,3 +1053,51 @@ than adopting an existing patch.
 **Current status**: workaround only (click fast). Not yet decided
 whether to attempt an upstream-style fix or accept the workaround / fall
 back to TTY2 Xorg for cases where this matters.
+
+## Update (2026-09-12): TTY2 Xorg restored, decision made - two prefixes, not one
+
+The "not yet decided" above is now decided: TTY2 Xorg + Openbox + tint2 (deleted
+in `e866303`, "no xorg session is needed anymore now that sway is the only
+desktop") is back, and is now the reliable environment rather than a rare
+fallback. `nix/audio/flake.nix` was restructured around two separate wine
+prefixes/REAPER binaries instead of the single `~/.wine-audio` setup this whole
+document was written against:
+
+- **`reaper-stable`** (TTY2, Xorg/Openbox, `~/.wine-stable`) - nixpkgs' own
+  `wineRelease = "yabridge"` source (wine 9.21 + wine-staging, the pairing
+  nixpkgs curates specifically for building yabridge's 32-bit bitbridge on a
+  modern toolchain), DXVK via winetricks' `dxvk` verb. Real X11, no
+  xwayland-satellite involved at all - the popup-grab bug documented above
+  doesn't apply here, there's no Wayland bridging in the loop to have the bug.
+- **`reaper-experimental`** (TTY1, sway/Wayland, `~/.wine-experimental`) -
+  unchanged from the rest of this document: giang17's Direct2D/DirectComposition
+  wine fork, DXVK deliberately not installed (conflicts with the fork's own
+  composition-swapchain path), REAPER launched via a private xwayland-satellite
+  instance per the fix earlier in this document.
+
+Confirmed by real use since the restructure:
+
+- **TTY2/`reaper-stable` works for everything tried so far**, including Ozone
+  (the plugin whose Direct2D-dependent GUI motivated giang17's fork in the first
+  place) and DXVK-dependent plugins - stock/staging wine's ordinary Direct3D
+  path plus a real X11 session sidesteps both the black-window bug (Ozone here
+  isn't relying on the incomplete Direct2D/DirectComposition code paths stock
+  wine has, since standard Direct3D via DXVK is a different, complete code path)
+  and the popup-grab bug (no Wayland bridging at all).
+- **TTY1/`reaper-experimental` still can't run Ozone** - consistent with this
+  document's own root-cause finding above (xwayland-satellite has no X11
+  popup-grab handling), Ozone's menus are still affected there. Not re-diagnosed
+  further here; Ozone work should go through TTY2/`reaper-stable` for now.
+- **DXVK works on both prefixes** (winetricks' `dxvk` verb on stable, the
+  giang17 fork's own composition path on experimental).
+- **32-bit bitbridged plugins work on both prefixes** (both wine builds are
+  `wineWow` classic split, both yabridge builds have `-Dbitbridge=true`).
+
+Net effect: TTY2/Openbox/`reaper-stable` is now the environment to reach for
+whenever a plugin's menus or GUI are in question, not just a fallback of last
+resort; TTY1/sway/`reaper-experimental` remains the everyday environment for
+everything else. The two prefixes are mutually exclusive at any one moment only
+in the sense that yabridge's chainloaders for whichever prefix launches last
+overwrite the shared `~/.vst3` discovery path - both `reaper-stable` and
+`reaper-experimental` re-sync their own chainloaders on launch, so either one
+is always correct to run regardless of which ran last.
